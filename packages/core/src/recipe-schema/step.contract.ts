@@ -80,6 +80,18 @@ export interface SelectStep extends StepBaseFields, TargetFields {
   ignoreCase?: boolean
   /** How long to wait for the options to exist (a list the page loads after another pick); `limits.timeoutMs`, else 30 s. */
   timeoutMs?:  number
+  /** A widget that loads its options as you type: each value missing from the options is typed into `input` first. */
+  search?:     SelectSearch
+}
+/**
+ * The search box of a widget whose options load as you type. `open` is
+ * clicked when `input` is hidden; `close` is clicked after the last value (a
+ * list that closes only on an outside click would cover the next control).
+ */
+export interface SelectSearch {
+  input:  string
+  open?:  string
+  close?: string
 }
 export interface ScrollStep extends StepBaseFields { type: 'scroll', to: string, times?: number, untilStable?: boolean }
 /** Waits for an element, a time or the network to settle; `timeoutMs` bounds the element and network forms (default `limits.timeoutMs`). */
@@ -247,6 +259,7 @@ const clickStep = z.strictObject({ ...base, ...target, type: z.literal('click'),
 const fillStep = z.strictObject({ ...base, ...target, type: z.literal('fill'), value: z.string() }).refine(oneTarget, ONE_TARGET)
 const pressStep = z.strictObject({ ...base, ...target, type: z.literal('press'), key: z.string().min(1) })
   .refine(step => step.selector === undefined || step.target === undefined, 'give selector or target, not both')
+const selectSearch = z.strictObject({ input: plainSelector, open: plainSelector.optional(), close: plainSelector.optional() })
 const selectStep = z.strictObject({
   ...base,
   ...target,
@@ -259,6 +272,7 @@ const selectStep = z.strictObject({
   force:      z.boolean().optional(),
   ignoreCase: z.boolean().optional(),
   timeoutMs:  z.int().min(1).optional(),
+  search:     selectSearch.optional(),
 })
   .refine(oneTarget, ONE_TARGET)
   .refine(step => [step.value, step.label, step.index, step.values].filter(choice => choice !== undefined).length === 1, 'give exactly one of value, label, index or values')

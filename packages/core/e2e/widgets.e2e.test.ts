@@ -3,7 +3,7 @@ import type { Server } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createCrawler, loadRecipes, memorySink } from '../src/index'
-import { browserConfig, FIXTURE_BASE, startFixtureSite, stopFixtureSite } from './fixture-site'
+import { arrivals, browserConfig, FIXTURE_BASE, startFixtureSite, stopFixtureSite } from './fixture-site'
 
 let site: Server
 beforeAll(async () => { site = await startFixtureSite() })
@@ -24,6 +24,11 @@ async function crawl (steps: unknown[], mapping: Record<string, unknown>, vars: 
   }
 }
 
+/** How many searches the maker widget sent so far. */
+function searches (): number {
+  return arrivals.filter(arrival => arrival.path.startsWith('/widgets/makers')).length
+}
+
 describe('select and download (real chromium)', () => {
   it('drives hidden multi-selects the page listens to, waits for a list the page loads, and adds to a visible one', async () => {
     const { records, error } = await crawl([
@@ -38,7 +43,26 @@ describe('select and download (real chromium)', () => {
       { type: 'emit' },
     ], { name: { from: 'name' } }, { rtos: 'DL1, DL3 - OFFICE 3', none: '' })
     expect(error).toBeUndefined()
-    expect(records).toEqual([{ name: 'state=DL;rto=DL1,DL3;fuel=PETROL,DIESEL,CNG', total: null }])
+    expect(records).toEqual([{ name: 'state=DL;rto=DL1,DL3;maker=;fuel=PETROL,DIESEL,CNG', total: null }])
+  }, 60_000)
+
+  it('types into a widget search box to load options on demand, picks each, and closes the widget', async () => {
+    const before = searches()
+    const search = { input: '#makerSearch', open: '#makerToggle', close: 'h1' }
+    const { records, error } = await crawl([
+      // Present already: chosen without typing. Then two found by typing, the second search replacing the list.
+      { type: 'select', selector: '#maker', values: ['{{ split(vars.makers) }}'], force: true, ignoreCase: true, search },
+      { type: 'extract', id: 'name', selector: '#picked', kind: 'css' },
+      { type: 'emit' },
+    ], { name: { from: 'name' } }, { makers: 'ashok leyland, tata motors ltd, TVS MOTOR' })
+    expect(error).toBeUndefined()
+    expect(records[0].name).toBe('state=;rto=;maker=ASHOK LEYLAND,TATA MOTORS LTD,TVS MOTOR;fuel=')
+    expect(searches() - before).toBeGreaterThanOrEqual(2)
+    const missing = await crawl([
+      { type: 'set', id: 'name', value: 'x' },
+      { type: 'select', selector: '#maker', values: ['ATLANTIS CARS'], force: true, search, timeoutMs: 1500 },
+    ], { name: { from: 'name' } })
+    expect(missing.error).toMatch(/no option "ATLANTIS CARS" after 1500 ms/)
   }, 60_000)
 
   it('names what matched no option once its time is up', async () => {

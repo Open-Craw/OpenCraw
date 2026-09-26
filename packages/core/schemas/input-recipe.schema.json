@@ -976,6 +976,27 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 9007199254740991
+            },
+            "search": {
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "open": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "close": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "input"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -2838,6 +2859,27 @@
                         "type": "integer",
                         "minimum": 1,
                         "maximum": 9007199254740991
+                      },
+                      "search": {
+                        "type": "object",
+                        "properties": {
+                          "input": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "open": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "close": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "input"
+                        ],
+                        "additionalProperties": false
                       }
                     },
                     "required": [

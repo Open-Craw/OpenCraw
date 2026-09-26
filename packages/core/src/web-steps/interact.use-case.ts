@@ -1,7 +1,7 @@
 import type { Locator, Page } from 'playwright'
 import { isLiveElement } from '../extraction-scope'
 import type { ExtractionScope } from '../extraction-scope'
-import type { ClickStep, FillStep, PressStep, ScreenshotStep, ScrollStep, SelectStep, TargetFields, WaitStep } from '../recipe-schema'
+import type { ClickStep, FillStep, PressStep, ScreenshotStep, ScrollStep, SelectSearch, SelectStep, TargetFields, WaitStep } from '../recipe-schema'
 import { render, renderText } from '../template'
 
 const OPTIONAL_TIMEOUT_MS = 2000
@@ -62,6 +62,7 @@ interface OptionMatch {
 }
 
 const OPTION_POLL_MS = 250
+const TYPING_DELAY_MS = 20
 const DEFAULT_OPTION_TIMEOUT_MS = 30_000
 
 /**
@@ -82,12 +83,18 @@ const DEFAULT_OPTION_TIMEOUT_MS = 30_000
 export async function select (step: SelectStep, page: Page, scope: ExtractionScope, timeoutMs?: number): Promise<void> {
   const lookup = (path: string): unknown => scope.lookup(path)
   const target = targetOf(step, page, scope)
-  if (step.values !== undefined || step.multiple === true || step.force === true) {
+  if (step.values !== undefined || step.multiple === true || step.force === true || step.search !== undefined) {
     const query: OptionQuery = { wanted: wantedOf(step, lookup), index: step.index, ignoreCase: step.ignoreCase === true, multiple: step.multiple === true }
     // `values` that render to nothing (a blank filter var) leave the control alone.
     if (step.values !== undefined && query.wanted.length === 0) return
-    const values = await optionsFor(target, query, step.timeoutMs ?? timeoutMs ?? DEFAULT_OPTION_TIMEOUT_MS)
-    await (step.force === true ? target.evaluate(chooseOptions, values) : target.selectOption(values))
+    const timeout = step.timeoutMs ?? timeoutMs ?? DEFAULT_OPTION_TIMEOUT_MS
+    const choose = (values: string[]): Promise<unknown> => (step.force === true ? target.evaluate(chooseOptions, values) : target.selectOption(values))
+    if (step.search !== undefined) {
+      await searchAndChoose(page, target, query, step.search, timeout, choose)
+
+      return
+    }
+    await choose(await optionsFor(target, query, timeout))
 
     return
   }
@@ -109,6 +116,31 @@ function wantedOf (step: SelectStep, lookup: (path: string) => unknown): string[
 
     return (Array.isArray(value) ? value : [value]).map(entry => String(entry ?? '').trim()).filter(entry => entry !== '')
   })
+}
+
+/**
+ * Picks each wanted value in turn: one already among the options is chosen as
+ * it is; one that is not is typed into the widget's search box first (opened
+ * when hidden) and chosen once the page lists it. Picks add up; the widget is
+ * closed at the end when a `close` control is given.
+ */
+async function searchAndChoose (page: Page, target: Locator, query: OptionQuery, search: SelectSearch, timeoutMs: number, choose: (values: string[]) => Promise<unknown>): Promise<void> {
+  for (const [position, wanted] of query.wanted.entries()) {
+    // The first pick replaces the selection unless `multiple`; the next ones add to it.
+    const one: OptionQuery = { ...query, wanted: [wanted], multiple: query.multiple || position > 0 }
+    const listed = await target.evaluate(matchOptions, one)
+    if (listed.missing.length > 0) await typeInto(page, search, wanted)
+    await choose(listed.missing.length === 0 ? listed.values : await optionsFor(target, one, timeoutMs))
+  }
+  if (search.close !== undefined) await page.locator(search.close).first().click()
+}
+
+/** Types a value into a widget's search box, key by key so the page's handlers run, opening the widget first when the box is hidden. */
+async function typeInto (page: Page, search: SelectSearch, value: string): Promise<void> {
+  const input = page.locator(search.input).first()
+  if (search.open !== undefined && !await input.isVisible()) await page.locator(search.open).first().click()
+  await input.fill('')
+  await input.pressSequentially(value, { delay: TYPING_DELAY_MS })
 }
 
 /** Waits until every wanted option exists, then gives their values. */
