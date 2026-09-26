@@ -55,6 +55,21 @@ describe('retrying requests that fail in passing', () => {
     expect(Date.now() - started).toBeGreaterThanOrEqual(1000)
   }, 60000)
 
+  it('rides out an outage with a time budget, and stops when the budget ends', async () => {
+    // Down (404) for 1.5 s: more tries than attempts would ever allow, spaced at most 200 ms apart.
+    const budget = { forMs: 10_000, backoffMs: 50, maxDelayMs: 200, statuses: [404] }
+    const { report, retries, records } = await crawl([
+      recipe('web-down', 'web', 'key=web-down&downMs=1500&status=404', budget),
+      recipe('api-down', 'api', 'key=api-down&downMs=1500&status=404', budget),
+      recipe('too-long', 'api', 'key=too-long&downMs=60000&status=404', { ...budget, forMs: 500 }),
+    ])
+    expect(report.recipes.map(entry => entry.error)).toEqual([undefined, undefined, expect.stringContaining('HTTP 404')])
+    expect(records).toEqual([expect.stringMatching(/^ok after \d+$/), expect.stringMatching(/^ok after \d+$/)])
+    for (const id of ['web-down', 'api-down']) expect(retries.filter(event => event.recipeId === id).length).toBeGreaterThan(5)
+    expect(retries.every(event => event.delayMs <= 200)).toBe(true)
+    expect(report.recipes[2].durationMs).toBeLessThan(3000)
+  }, 60000)
+
   it('gives up after the attempts allowed, with the last error', async () => {
     const { report, retries } = await crawl([recipe('once', 'api', 'key=once&fail=1&mode=status', { attempts: 1 }), recipe('twice', 'api', 'key=twice&fail=5&mode=status', { attempts: 2, backoffMs: 10 })])
     expect(report.recipes.map(entry => entry.error)).toEqual([expect.stringContaining('HTTP 503'), expect.stringContaining('HTTP 503')])

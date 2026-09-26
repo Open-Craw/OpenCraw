@@ -126,6 +126,11 @@ export interface RetryRule {
   maxDelayMs?: number
   /** The statuses retried. Default `[408, 425, 429, 500, 502, 503, 504]`. */
   statuses?:   number[]
+  /**
+   * A time budget: keep retrying until this long after the first try, to ride out a site that is down for a
+   * while. Without `attempts`, tries are not counted; with it, whichever runs out first. No pause runs past it.
+   */
+  forMs?:      number
 }
 
 export interface CrawlLimits {
@@ -249,6 +254,7 @@ export const retryRuleSchema: z.ZodType<RetryRule> = z.strictObject({
   backoffMs:  z.int().nonnegative().optional(),
   maxDelayMs: z.int().nonnegative().optional(),
   statuses:   z.array(z.int().min(400).max(599)).optional(),
+  forMs:      z.int().positive().optional(),
 })
 
 const limitsSchema: z.ZodType<CrawlLimits> = z.strictObject({

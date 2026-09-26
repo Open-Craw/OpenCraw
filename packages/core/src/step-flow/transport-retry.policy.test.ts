@@ -54,6 +54,39 @@ describe('transport retry', () => {
     expect(events).toEqual([])
   })
 
+  it('under a time budget alone counts no tries; with attempts too, stops at whichever runs out first', () => {
+    expect(resolveRetryRule({ forMs: 60_000 }).attempts).toBe(Infinity)
+    expect(resolveRetryRule({ forMs: 60_000, attempts: 4 }).attempts).toBe(4)
+    expect(resolveRetryRule({ forMs: 60_000 }, { attempts: 2 }).attempts).toBe(2)
+    expect(resolveRetryRule(undefined, { forMs: 1000 })).toMatchObject({ forMs: 1000, attempts: Infinity })
+  })
+
+  it('keeps trying through an outage until the budget ends, the last pause cut to fit', async () => {
+    const events: CrawlEvent[] = []
+    const context = { recipeId: 'r', gate: new RunGate(1, 0), events: new EventBus((event) => { events.push(event) }), rule: resolveRetryRule({ forMs: 300, backoffMs: 20, maxDelayMs: 40 }) }
+    const down = { run: async () => 404, problem: () => ({ reason: 'HTTP 404' }) }
+    const started = Date.now()
+    await expect(withTransportRetry('https://a.example/', down, context)).resolves.toBe(404)
+    const took = Date.now() - started
+    const retries = events.filter(event => event.type === 'request:retry')
+    // More tries than the default 3, all within the budget, with no pause over maxDelayMs.
+    expect(retries.length).toBeGreaterThan(5)
+    expect(took).toBeGreaterThanOrEqual(250)
+    expect(took).toBeLessThan(600)
+    expect(retries.every(event => event.type === 'request:retry' && event.delayMs <= 40)).toBe(true)
+
+    let calls = 0
+    const recovers = {
+      run: async () => {
+        calls += 1
+
+        return calls < 8 ? 404 : 200
+      },
+      problem: (outcome: { value: number } | { error: unknown }) => ('value' in outcome && outcome.value === 404 ? { reason: 'HTTP 404' } : undefined),
+    }
+    await expect(withTransportRetry('https://a.example/', recovers, { ...context, rule: resolveRetryRule({ forMs: 5000, backoffMs: 1, maxDelayMs: 2 }) })).resolves.toBe(200)
+  })
+
   it('holds the whole site back for a Retry-After', async () => {
     const hosts = new HostThrottle()
     const pause = jest.spyOn(hosts, 'pause')

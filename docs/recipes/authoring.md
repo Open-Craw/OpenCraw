@@ -1084,6 +1084,7 @@ engine sends the same request again: that is `limits.retry`, and it is **on by d
 | `backoffMs` | `1000` | The first pause. It doubles on each retry, give or take 25% so parallel requests do not retry in step. |
 | `maxDelayMs` | `30000` | The longest pause. A server whose `Retry-After` asks for longer is not retried: it means "come back much later". |
 | `statuses` | `[408, 425, 429, 500, 502, 503, 504]` | Answers retried. Connection failures always are: resets, refusals, timeouts, a DNS lookup that could not run, a proxy that dropped the tunnel. A host that does not exist is not. |
+| `forMs` | none | A time budget: keep retrying until this long after the first try. Without `attempts`, tries are not counted; with it, whichever runs out first. No pause runs past the budget. |
 
 - It covers every `goto`, `request` and `next.url` page. A `Retry-After` (seconds or a date) is honoured, and it
   holds back **every** request to that site, not only the one that got it.
@@ -1096,6 +1097,16 @@ engine sends the same request again: that is `limits.retry`, and it is **on by d
 
 Like redialling a busy number: wait a moment, dial again, give up after a few tries. If the other end said "call
 back in a minute", wait that minute.
+
+**A site that goes down for a while.** Some sites fail every request for minutes at a time, then come back. For
+an unattended run, give the retry a time budget instead of a number of tries. This waits out up to 30 minutes of
+404s, trying about once a minute:
+
+```json
+"limits": { "retry": { "forMs": 1800000, "backoffMs": 5000, "maxDelayMs": 60000, "statuses": [404, 429, 500, 502, 503, 504] } }
+```
+
+Retry 404 only for a site known to answer it for an outage: on most sites a 404 means the page is not there.
 
 **A mapped value is missing** (`undefined`, `null`, `""`; an empty list is a value). The policy is the
 mapping rule's `onMissing`, else the field's, else `default` when the field has a `default`, else the

@@ -3,8 +3,8 @@ import type { RetryRule } from '../recipe-schema'
 import { sleep } from './retry.policy'
 import type { RunGate } from './run-gate.policy'
 
-/** A retry rule with every default filled in. */
-export type ResolvedRetryRule = Required<RetryRule>
+/** A retry rule with every default filled in; `forMs` stays optional (no budget), and `attempts` is `Infinity` under a budget alone. */
+export type ResolvedRetryRule = Required<Omit<RetryRule, 'forMs'>> & Pick<RetryRule, 'forMs'>
 
 /** Statuses a server uses for "not now": timeout, too early, too many requests, and the 5xx that pass. */
 export const RETRY_STATUSES: readonly number[] = [408, 425, 429, 500, 502, 503, 504]
@@ -49,7 +49,11 @@ export interface RetryContext {
  * @returns The rule.
  */
 export function resolveRetryRule (own?: RetryRule, crawler?: RetryRule): ResolvedRetryRule {
-  return { ...DEFAULT_RETRY_RULE, ...definedOf(crawler), ...definedOf(own) }
+  const given = { ...definedOf(crawler), ...definedOf(own) }
+  // A time budget alone does not count tries: the budget ends them.
+  const attempts = given.attempts ?? (given.forMs === undefined ? DEFAULT_RETRY_RULE.attempts : Infinity)
+
+  return { ...DEFAULT_RETRY_RULE, ...given, attempts }
 }
 
 /**
@@ -89,8 +93,10 @@ export function retryDelay (rule: ResolvedRetryRule, attempt: number, retryAfter
 /**
  * Sends a request through the gate (the recipe's rate, the site's lane), and
  * sends it again after a pause while it fails in a passing way, up to
- * `rule.attempts` tries in all. A `Retry-After` holds back every request to
- * that site, not only this one. Each retry is reported as `request:retry`.
+ * `rule.attempts` tries in all and, with `rule.forMs`, until that long after
+ * the first try (no pause runs past it). A `Retry-After` holds back every
+ * request to that site, not only this one. Each retry is reported as
+ * `request:retry`.
  *
  * Like redialling a busy number: wait a moment, dial again, give up after a
  * few tries; and if the other end said "call back in a minute", wait that minute.
@@ -103,6 +109,7 @@ export function retryDelay (rule: ResolvedRetryRule, attempt: number, retryAfter
  */
 export async function withTransportRetry<T> (url: string, attempt: TransportAttempt<T>, context: RetryContext): Promise<T> {
   const { rule } = context
+  const deadline = rule.forMs === undefined ? Infinity : Date.now() + rule.forMs
   for (let tries = 1; ; tries += 1) {
     const release = await context.gate.request(url)
     let outcome: { value: T } | { error: unknown }
@@ -113,8 +120,11 @@ export async function withTransportRetry<T> (url: string, attempt: TransportAtte
     } finally {
       release()
     }
-    const transient = tries < rule.attempts ? attempt.problem(outcome) : undefined
-    const delay = transient === undefined ? undefined : retryDelay(rule, tries, transient.retryAfter)
+    const left = deadline - Date.now()
+    const transient = tries < rule.attempts && left > 0 ? attempt.problem(outcome) : undefined
+    const wanted = transient === undefined ? undefined : retryDelay(rule, tries, transient.retryAfter)
+    // The last pause is cut to the budget, so the last try lands at its end.
+    const delay = wanted === undefined ? undefined : Math.min(wanted, left)
     if (transient === undefined || delay === undefined) {
       if ('error' in outcome) throw outcome.error
 

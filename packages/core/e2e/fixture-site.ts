@@ -190,19 +190,24 @@ function captchaRoute (incoming: IncomingMessage, outgoing: ServerResponse, url:
   }
 }
 
-/** Hits per `/flaky` key, so each test gets its own failure count. */
+/** Hits per `/flaky` key, so each test gets its own failure count, and when each key was first hit. */
 const flakyHits = new Map<string, number>()
+const flakyFirst = new Map<string, number>()
 
 /**
  * Fails its first `fail` hits per `key`, the way a struggling server does:
  * `mode=reset` drops the connection, `status` answers 503, `retry-after`
- * answers 429 asking for one second. Then it answers normally.
+ * answers 429 asking for one second. Then it answers normally. With
+ * `downMs`, it is down (answering `status`, 503 by default) for that long
+ * after the key's first hit, however many hits: a site's outage.
  */
 function flakyRoute (incoming: IncomingMessage, outgoing: ServerResponse, url: URL): void {
   const key = url.searchParams.get('key') ?? ''
   const hits = (flakyHits.get(key) ?? 0) + 1
   flakyHits.set(key, hits)
-  if (hits <= Number(url.searchParams.get('fail') ?? '0')) {
+  if (!flakyFirst.has(key)) flakyFirst.set(key, Date.now())
+  const down = Date.now() - (flakyFirst.get(key) ?? 0) < Number(url.searchParams.get('downMs') ?? '0')
+  if (down || hits <= Number(url.searchParams.get('fail') ?? '0')) {
     const mode = url.searchParams.get('mode')
     if (mode === 'reset') {
       incoming.socket.destroy()
@@ -216,7 +221,7 @@ function flakyRoute (incoming: IncomingMessage, outgoing: ServerResponse, url: U
 
       return
     }
-    outgoing.writeHead(mode === 'retry-after' ? 429 : 503, { 'content-type': 'text/plain', ...(mode === 'retry-after' && { 'retry-after': '1' }) })
+    outgoing.writeHead(mode === 'retry-after' ? 429 : Number(url.searchParams.get('status') ?? '503'), { 'content-type': 'text/plain', ...(mode === 'retry-after' && { 'retry-after': '1' }) })
     outgoing.end('try later')
 
     return

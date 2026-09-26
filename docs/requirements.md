@@ -89,12 +89,13 @@ with its own context or session; reports keep the set's order; `onRecipeError: '
 started. `dedupe: 'recipe'` keeps a key set per recipe run; `run` shares one.
 
 **Retries.** A request that fails in passing is sent again before the step's error policy sees it:
-`limits.retry: { attempts?, backoffMs?, maxDelayMs?, statuses? }`, over `CrawlOptions.retry` (CLI `--retries`),
+`limits.retry: { attempts?, backoffMs?, maxDelayMs?, statuses?, forMs? }`, over `CrawlOptions.retry` (CLI `--retries`),
 over the default of 3 tries, 1 s doubling with ±25 % jitter, capped at 30 s, statuses 408, 425, 429, 500, 502,
 503, 504, plus connection failures and timeouts (not unknown hosts). `Retry-After` is honoured when within
 `maxDelayMs` and pauses the whole site in the per-site throttle; a longer one is not retried. It covers `goto`,
 `request` and `next.url`; each retry is a `request:retry` event. After the last try the outcome goes on as
-before: block detection, then the step's `onError`.
+before: block detection, then the step's `onError`. `forMs` is a time budget from the first try: without
+`attempts` it alone ends the tries (to ride out an outage), with it whichever runs out first; no pause runs past it.
 
 **Change detection.** `diffRecords(previous, current, { key?, ignore?, shrink? })` compares two runs' records
 by key (the key fields' values, the `recordKey` formula, or each line's `_key`): `added`, `removed`, `changed`
