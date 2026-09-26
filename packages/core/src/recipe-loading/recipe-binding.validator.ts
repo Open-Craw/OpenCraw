@@ -43,6 +43,9 @@ export function validateBinding (input: InputRecipe, output: OutputRecipe): Bind
     walkSteps(input.session.bootstrap.steps, 'session.bootstrap.steps', 'web', new Set(RESERVED), report, { emitting: false, ids: new Set(), bootstrap: true, solver })
   }
   if (!solver && input.session?.onBlock?.solve === true) report('session.onBlock.solve', 'solving a block needs a solver: add session.captcha')
+  for (const name of matrixNames(input)) {
+    if (!Object.hasOwn(input.vars ?? {}, name)) report(`matrix.${name}`, `"${name}" is not a var of this recipe: declare it in vars (with the value a run without the matrix uses)`)
+  }
   if (input.mode === 'api' && input.session?.onBlock?.solve === true) report('session.onBlock.solve', 'captchas are solved on a live page; this recipe runs in api mode (solve them in session.bootstrap)')
 
   for (const [target, rule] of Object.entries(input.mapping)) {
@@ -164,4 +167,12 @@ export function fieldAt (fields: Record<string, FieldSpec>, target: string): Fie
   }
 
   return current
+}
+
+/** The var names a recipe's matrix sets. */
+function matrixNames (input: InputRecipe): string[] {
+  const matrix = input.matrix
+  if (matrix === undefined) return []
+
+  return [...new Set(Array.isArray(matrix) ? matrix.flatMap(set => Object.keys(set)) : Object.keys(matrix))]
 }

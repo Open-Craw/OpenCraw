@@ -143,6 +143,7 @@ fields is never de-duplicated. Duplicates are reported (`record:duplicate`) and 
 | `mode` | `web`: a real browser page (Playwright). `api`: HTTP requests through Playwright's request context, no browser. See §2.1. |
 | `start` | One or more start points `{ url, vars? }`. Each runs the whole step list from a fresh scope with `start.url` and its `vars`. |
 | `vars` | Values templates read as `{{vars.name}}`. Start-point `vars` override recipe `vars`. |
+| `matrix` | Runs the recipe once per set of vars, each run with its own report. An object of lists runs every combination, the first var slowest: `{ "state": ["Delhi", "Goa"], "year": [2025, 2026] }` is four runs. A list of objects runs those sets as given: `[{ "state": "Delhi" }, { "state": "Goa", "year": 2026 }]`. Each set overrides `vars`, so every name must be declared in `vars` (with the value a run without the matrix uses). The runs of one recipe go one after the other; `parallel` spreads different recipes. Reports and the trace name each run's vars (`▶ report [state=Delhi, year=2025]`). |
 | `session` | §2.2. |
 | `limits` | `maxRecords` stops the walk after that many records, exactly, whatever runs in parallel. `delayMs` is the minimum interval between two request starts across the recipe. `timeoutMs` bounds navigations, requests and `wait` steps. `concurrency` (default `1`) is how many `forEach` iterations may run at once in `api` mode (§3.9). `retry` sends a request that fails in passing again (§7; on by default). |
 | `onError` | The default policy for every step. §7. |

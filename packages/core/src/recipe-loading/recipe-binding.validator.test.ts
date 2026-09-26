@@ -42,6 +42,12 @@ describe('validateBinding', () => {
     expect(messages({ ...api, steps: [...api.steps, { ...captchaStep, solver: 'capsolver' }] })[0]).toContain('"captcha" needs a browser')
   })
 
+  it('needs every matrix name declared in vars', () => {
+    const withVars: InputRecipe = { ...api, vars: { ...api.vars, year: '2026' } }
+    expect(messages({ ...withVars, matrix: { year: [2025, 2026] } })).toEqual([])
+    expect(messages({ ...withVars, matrix: [{ year: 2025 }, { year: 2026, state: 'DL' }] })).toEqual(['matrix.state: "state" is not a var of this recipe: declare it in vars (with the value a run without the matrix uses)'])
+  })
+
   it('reports a required field that is never mapped', () => {
     const { title: _title, ...rest } = api.mapping
     expect(messages({ ...api, mapping: rest })).toContain('mapping: required output field "title" is not mapped')

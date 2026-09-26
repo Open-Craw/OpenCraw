@@ -36,6 +36,8 @@ describe('traceLine', () => {
 
   it('shows pages, records and the recipe summary', () => {
     expect(traceLine({ type: 'recipe:start', at, recipeId: 'tmdb', mode: 'api' })).toBe('▶ tmdb (api)')
+    expect(traceLine({ type: 'recipe:start', at, recipeId: 'vahan', mode: 'web', variant: { state: 'Delhi', year: 2026 } })).toBe('▶ vahan [state=Delhi, year=2026] (web)')
+    expect(traceLine({ type: 'recipe:finish', at, recipeId: 'vahan', variant: { state: 'Delhi' }, emitted: 3, rejected: 0, duplicates: 0, skipped: 0, pages: 1, durationMs: 5 })).toBe('■ vahan [state=Delhi]: 3 emitted, 0 rejected, 0 duplicates, 1 pages, 5 ms')
     expect(traceLine({ type: 'page:visit', at, recipeId: 'r', url: 'https://x/p', number: 2 })).toBe('  ⇢ page 2  https://x/p')
     expect(traceLine({ type: 'record:emit', at, recipeId: 'r', url: 'https://x/p', key: '["a","b"]', data: {} })).toBe('  ✚ record ["a","b"]')
     expect(traceLine({ type: 'record:reject', at, recipeId: 'r', url: 'https://x/p', field: 'title', reason: 'missing' })).toBe('  ✖ record rejected: title: missing')

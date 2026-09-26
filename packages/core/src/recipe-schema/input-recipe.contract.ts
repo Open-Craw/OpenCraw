@@ -139,6 +139,12 @@ export interface CrawlLimits {
   retry?:       RetryRule
 }
 
+/** A var's value. */
+export type VarValue = string | number | boolean
+
+/** The combinations a recipe runs: each var's values (every combination is run), or the var sets themselves. */
+export type RecipeMatrix = Record<string, VarValue[]> | Record<string, VarValue>[]
+
 /** Where to start, how to navigate, what to extract, and how it maps to one output recipe. */
 export interface InputRecipe {
   $schema?:     string
@@ -150,6 +156,12 @@ export interface InputRecipe {
   description?: string
   start:        StartPoint[]
   vars?:        Record<string, string | number | boolean>
+  /**
+   * Runs the recipe once per combination of vars: an object of lists runs
+   * every combination (`{ state: [a, b], group: [c, d] }`: 4 runs), a list of
+   * var sets runs those. Each run is a full run with its vars overridden.
+   */
+  matrix?:      RecipeMatrix
   session?:     SessionSpec
   limits?:      CrawlLimits
   /** Default policy for every step. */
@@ -160,7 +172,9 @@ export interface InputRecipe {
 }
 
 const scalar = z.union([z.string(), z.number(), z.boolean()])
-const vars = z.record(z.string().regex(/^[A-Z_]\w*$/i), scalar)
+const varName = z.string().regex(/^[A-Z_]\w*$/i)
+const vars = z.record(varName, scalar)
+const matrixSchema: z.ZodType<RecipeMatrix> = z.union([z.record(varName, z.array(scalar).min(1)), z.array(vars).min(1)])
 
 export const startPointSchema: z.ZodType<StartPoint> = z.strictObject({ url: z.string().min(1), vars: vars.optional() })
 
@@ -254,6 +268,7 @@ export const inputRecipeSchema: z.ZodType<InputRecipe> = z.strictObject({
   description: z.string().optional(),
   start:       z.array(startPointSchema).min(1),
   vars:        vars.optional(),
+  matrix:      matrixSchema.optional(),
   session:     sessionSpecSchema.optional(),
   limits:      limitsSchema.optional(),
   onError:     errorPolicySchema.optional(),

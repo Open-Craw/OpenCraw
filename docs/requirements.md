@@ -41,6 +41,7 @@ JavaScript module whose default export is the name -> function map.
 | `mode` | `web` (Playwright browser page) or `api` (Playwright request context, no browser). |
 | `start` | One or more `{ url, vars? }`; each start point runs the whole step list. |
 | `vars` | Recipe-level variables, read in templates as `{{vars.name}}`. |
+| `matrix` | Sets of vars to run the recipe with, once each: an object of lists (every combination) or a list of objects. Names must be declared in `vars`. Each run is reported with its `variant`. |
 | `session` | Headers, cookies, user agent, viewport, a saved `storageStatePath`, a `bootstrap`, `access` (`{ profile?, country?, sticky? }`), `blockedWhen`, `onBlock`, `captcha` and `browserProfile` (section 2.1). |
 | `limits` | `maxRecords` (exact, whatever is in flight), `delayMs` (minimum interval between request starts across the recipe), `timeoutMs`, `concurrency` (`forEach` iterations over a list in flight: requests in api mode, tabs in web mode; default `1`), `retry` (see Retries). |
 | `onError` | Default step policy: `fail`, `skip`, or `retry { attempts, backoffMs }`. |

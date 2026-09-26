@@ -9,7 +9,7 @@ import { ExtractionScope } from '../extraction-scope'
 import type { HookRegistry } from '../hooks'
 import { HttpClient } from '../http-session'
 import { mapRecord, RecordRejectedError } from '../output-mapping'
-import type { InputRecipe, OutputRecipe, RetryRule } from '../recipe-schema'
+import type { InputRecipe, OutputRecipe, RetryRule, VarValue } from '../recipe-schema'
 import type { DedupePolicy, RecordSink } from '../record-sink'
 import { resolveRetryRule, RunGate, runSteps } from '../step-flow'
 import type { HostThrottle } from '../step-flow'
@@ -65,12 +65,13 @@ interface RunContext {
  * @param recipe - The input recipe.
  * @param output - The output recipe it feeds.
  * @param deps - Shared browser, hooks, events, sink and de-duplication.
+ * @param variant - The vars a matrix set for this run, reported with it.
  * @returns What happened.
  */
-export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe, deps: RecipeRunDependencies): Promise<RecipeReport> {
+export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe, deps: RecipeRunDependencies, variant?: Record<string, VarValue>): Promise<RecipeReport> {
   const input: InputRecipe = { ...recipe, limits: { ...recipe.limits, retry: resolveRetryRule(recipe.limits?.retry, deps.retry) } }
   const started = Date.now()
-  const report: RecipeReport = { recipeId: input.id, mode: input.mode, emitted: 0, rejected: 0, duplicates: 0, skipped: 0, stepsSkipped: 0, pages: 0, durationMs: 0 }
+  const report: RecipeReport = { recipeId: input.id, ...(variant !== undefined && { variant }), mode: input.mode, emitted: 0, rejected: 0, duplicates: 0, skipped: 0, stepsSkipped: 0, pages: 0, durationMs: 0 }
   const captchas = { detected: 0, solved: 0, failed: 0 }
   const limits = input.limits ?? {}
   // Parallel iterations: requests in api mode, tabs of the recipe's context in web mode.
@@ -84,7 +85,7 @@ export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe,
     if (event.type === 'captcha:solved' && event.recipeId === input.id) captchas.solved += 1
     if (event.type === 'captcha:failed' && event.recipeId === input.id) captchas.failed += 1
   })
-  deps.events.emit({ type: 'recipe:start', recipeId: input.id, mode: input.mode })
+  deps.events.emit({ type: 'recipe:start', recipeId: input.id, mode: input.mode, ...(variant !== undefined && { variant }) })
   const dedupe = deps.dedupe.forRecipe()
   let runner: StepRunner | undefined
   try {
@@ -121,7 +122,7 @@ export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe,
     unsubscribe()
     if (captchas.detected > 0) report.captchas = captchas
     report.durationMs = Date.now() - started
-    deps.events.emit({ type: 'recipe:finish', recipeId: input.id, emitted: report.emitted, rejected: report.rejected, duplicates: report.duplicates, skipped: report.skipped, stepsSkipped: report.stepsSkipped, pages: report.pages, durationMs: report.durationMs, error: report.error })
+    deps.events.emit({ type: 'recipe:finish', recipeId: input.id, ...(variant !== undefined && { variant }), emitted: report.emitted, rejected: report.rejected, duplicates: report.duplicates, skipped: report.skipped, stepsSkipped: report.stepsSkipped, pages: report.pages, durationMs: report.durationMs, error: report.error })
   }
 
   return report

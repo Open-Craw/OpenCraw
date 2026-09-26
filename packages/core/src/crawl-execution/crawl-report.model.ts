@@ -3,6 +3,8 @@ import type { SinkSummary } from '../record-sink'
 /** What one input recipe did. */
 export interface RecipeReport {
   recipeId:     string
+  /** The vars a `matrix` set for this run, when the recipe has one. */
+  variant?:     Record<string, string | number | boolean>
   mode:         'web' | 'api'
   emitted:      number
   rejected:     number
