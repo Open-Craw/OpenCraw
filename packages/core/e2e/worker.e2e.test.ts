@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process'
 import type { Server } from 'node:http'
 import { createCrawler, loadRecipes, memorySink, workFrom } from '../src/index'
-import type { CrawlEvent, RecipeReport, WorkItem, WorkOptions, WorkSource } from '../src/index'
+import type { CaptchaSolver, CrawlEvent, RecipeReport, WorkItem, WorkOptions, WorkSource } from '../src/index'
 import { browserConfig, FIXTURE_BASE, startFixtureSite, stopFixtureSite } from './fixture-site'
 import { workerSite } from './worker-site'
 
@@ -126,6 +126,44 @@ describe('worker mode', () => {
     const { result, rows } = await work(source, { windows: 1 })
     expect(result.items.success).toBe(4)
     expect(rows).toHaveLength(4)
+  }, 60_000)
+
+  it('on a reused page, takes only a new report as proof the captcha passed, never the last item\'s', async () => {
+    // Each Apply fetches the report and a new captcha, and replaces the page's body 400 ms later: until then the last item's report stays on screen.
+    const solver: CaptchaSolver = {
+      name:  'reader',
+      solve: async (challenge, { page }) => {
+        const answer = await page.request.get(`${FIXTURE_BASE}/form-captcha/answer`)
+        await page.locator(challenge.field ?? '#externalCaptcha').fill(await answer.text())
+
+        return { status: 'solved' }
+      },
+    }
+    const form = {
+      kind:   'input',
+      id:     'form',
+      output: 'row',
+      mode:   'web',
+      vars:   { q: '' },
+      start:  [{ url: `${FIXTURE_BASE}/form-captcha?ajax=1` }],
+      steps:  [
+        { type: 'goto', url: '{{ start.url }}', keep: true },
+        { type: 'fill', selector: '#q', value: '{{ vars.q }}' },
+        { type: 'captcha', solver: 'reader', image: '#captchaImage', refresh: '#captchaImg', field: '#externalCaptcha', submit: [{ type: 'click', selector: '#applyTrigger' }], verify: { selector: '#makerDynamicReportHeader', failure: '#captchaMsg' } },
+        { type: 'extract', id: 'names', selector: '#rows .item', kind: 'css', many: true },
+        { type: 'forEach', over: 'names', as: 'row', emit: true, steps: [] },
+      ],
+      mapping: { row: { from: 'row' } },
+    }
+    const sink = memorySink()
+    const crawler = createCrawler({ browser: browserConfig(), sink, captchaSolvers: [solver] })
+    try {
+      const result = await crawler.work(await loadRecipes([output, form]), workFrom(['lynx', 'otter', 'heron'].map(q => ({ id: q, vars: { q } }))), { windows: 1 })
+      expect(result.items.success).toBe(3)
+    } finally {
+      await crawler.close()
+    }
+    expect(sink.records.map(({ source, data }) => `${source.item}: ${String(data.row)}`)).toEqual(['lynx: lynx-1', 'lynx: lynx-2', 'otter: otter-1', 'otter: otter-2', 'heron: heron-1', 'heron: heron-2'])
   }, 60_000)
 
   it('runs api recipes the same way, one HTTP session per window', async () => {

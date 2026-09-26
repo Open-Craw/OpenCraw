@@ -42,11 +42,24 @@ function formHtml (action: string, clip: boolean, values: { q: string }, message
 <input type="text" id="externalCaptcha" autocomplete="off"><div id="captchaError"></div>
 ${message === undefined ? '' : `<div id="captchaMsg">${message}</div>`}
 <button id="applyTrigger" type="submit" form="report">Apply</button>
-<script>document.getElementById('report').addEventListener('submit', function (event) {
-  var typed = document.getElementById('externalCaptcha').value
-  if (typed === '') { event.preventDefault(); document.getElementById('captchaError').textContent = 'Please enter captcha.'; return }
-  document.getElementById('hiddenCaptchaField').value = typed
-})</script></body></html>`
+<script>
+if (!window.formBound) {
+  window.formBound = true
+  // On the document, so it outlives a body the ajax variant replaces.
+  document.addEventListener('submit', function (event) {
+    var form = event.target
+    var typed = document.getElementById('externalCaptcha').value
+    if (typed === '') { event.preventDefault(); document.getElementById('captchaError').textContent = 'Please enter captcha.'; return }
+    document.getElementById('hiddenCaptchaField').value = typed
+    if (!${JSON.stringify(action.includes('ajax=1'))}) return
+    // The ajax variant: the last report stays on screen until the new one replaces the whole body.
+    event.preventDefault()
+    fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)) }).then(function (response) { return response.text() }).then(function (html) {
+      document.body.innerHTML = new DOMParser().parseFromString(html, 'text/html').body.innerHTML
+    })
+  })
+}
+</script></body></html>`
 }
 
 function reportHtml (action: string, clip: boolean, q: string): string {
@@ -80,14 +93,8 @@ export function formCaptchaRoute (incoming: IncomingMessage, outgoing: ServerRes
       let body = ''
       incoming.on('data', (chunk: Buffer) => { body += chunk.toString() })
       incoming.on('end', () => {
-        const form = new URLSearchParams(body)
-        const q = form.get('q') ?? ''
-        const expected = visitor === undefined ? undefined : codes.get(visitor)
-        if (expected !== undefined && form.get('captcha') === expected) {
-          send('text/html; charset=utf-8', reportHtml(action, clip, q))
-        } else {
-          send('text/html; charset=utf-8', formHtml(action, clip, { q: url.searchParams.get('variant') === 'clear' ? '' : q }, 'Invalid CAPTCHA.'))
-        }
+        // The ajax variant's server takes a moment: long enough for a stale report to fool a check that does not look for a new one.
+        setTimeout(() => { answer(body) }, url.searchParams.get('ajax') === '1' ? 400 : 0)
       })
 
       return true
@@ -106,6 +113,17 @@ export function formCaptchaRoute (incoming: IncomingMessage, outgoing: ServerRes
     }
     default: {
       return false
+    }
+  }
+
+  function answer (body: string): void {
+    const form = new URLSearchParams(body)
+    const q = form.get('q') ?? ''
+    const expected = visitor === undefined ? undefined : codes.get(visitor)
+    if (expected !== undefined && form.get('captcha') === expected) {
+      send('text/html; charset=utf-8', reportHtml(action, clip, q))
+    } else {
+      send('text/html; charset=utf-8', formHtml(action, clip, { q: url.searchParams.get('variant') === 'clear' ? '' : q }, 'Invalid CAPTCHA.'))
     }
   }
 }

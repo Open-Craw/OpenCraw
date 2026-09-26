@@ -94,8 +94,10 @@ and so does this step:
 2. **The engine runs `submit`**: the button, or the fills a form that empties itself after a wrong code needs
    first. Clicks, fills, key presses, selects, waits and scripts; each may have a `when`.
 3. **The page answers.** `verify.selector` showing is a yes. `verify.failure` showing is a no, at once, not
-   after a timeout, even when the page already showed the message from the attempt before (the engine tells
-   the new page from the old one). The page keeps a captcha after a success (the next report needs a new
+   after a timeout, even when the page already showed the message from the attempt before. The engine tells
+   the new page, or a newly drawn element, from the old one. The same holds for the yes: on a page that
+   already shows the last report (a [worker window](./worker-mode.md) on its next item, a site that swaps the
+   report in without a reload), only a report drawn after this submit counts. The page keeps a captcha after a success (the next report needs a new
    one), so `gone` is not asked.
 4. **The solver hears the verdict** (`verdict`, below), and the next attempt starts on the new image.
 
