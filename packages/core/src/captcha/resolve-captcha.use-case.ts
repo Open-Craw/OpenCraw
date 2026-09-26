@@ -42,9 +42,11 @@ export interface CaptchaForm {
 }
 
 /** A mark put on the page before an attempt, to tell a refusal the attempt caused from one left over from the attempt before. */
+/** The page as it was before an attempt: a token on the document and on the verify elements already showing. */
 interface PageMark {
   token:        string
   failureShown: boolean
+  shownShown:   boolean
 }
 
 /**
@@ -76,7 +78,7 @@ export async function resolveCaptcha (plan: CaptchaAttemptPlan): Promise<void> {
     }
     events.emit({ type: 'captcha:solve', recipeId, url: challenge.url, kind: challenge.kind, solver: solver.name, attempt })
     const started = Date.now()
-    const mark = await markPage(page, plan.verify?.failure)
+    const mark = await markPage(page, plan.verify?.failure, plan.verify?.selector)
     const outcome = await solveOnce(plan, challenge, attempt)
     if (outcome.status === 'solved') {
       const verdict = await submitAndCheck(plan, challenge, outcome, mark)
@@ -185,9 +187,10 @@ async function confirmed (page: Page, challenge: CaptchaChallenge, plan: Captcha
   const timeout = plan.verify?.timeoutMs ?? VERIFY_TIMEOUT_MS
   const deadline = Date.now() + timeout
   for (;;) {
-    if (failure !== undefined && await isVisible(page, failure) && await isFresh(page, mark)) return { status: 'rejected', reason: `the page refused it${await textOf(page, failure)}` }
+    if (failure !== undefined && await isVisible(page, failure) && await isFresh(page, mark, failure, mark?.failureShown)) return { status: 'rejected', reason: `the page refused it${await textOf(page, failure)}` }
     const gone = !needGone || await isClear(page, plan.selector)
-    const visible = shown === undefined || await isVisible(page, shown)
+    // On a page that already showed the success element (a reused worker window, the last item's report), only a new one counts.
+    const visible = shown === undefined || (await isVisible(page, shown) && await isFresh(page, mark, shown, mark?.shownShown))
     if (positive && gone && visible) return { status: 'solved' }
     if (Date.now() >= deadline) {
       if (!positive) return { status: 'solved' }
@@ -198,24 +201,43 @@ async function confirmed (page: Page, challenge: CaptchaChallenge, plan: Captcha
   }
 }
 
-/** Marks the page before an attempt, when a refusal element is to be watched, noting whether one shows already. */
-async function markPage (page: Page, failure: string | undefined): Promise<PageMark | undefined> {
-  if (failure === undefined) return undefined
+/**
+ * Marks the page before an attempt, when verify elements are to be watched:
+ * a token on the document and on each verify element already showing, so an
+ * element that shows after the attempt can be told from one left by an
+ * earlier attempt or an earlier item.
+ */
+async function markPage (page: Page, failure: string | undefined, shown: string | undefined): Promise<PageMark | undefined> {
+  if (failure === undefined && shown === undefined) return undefined
   const token = randomUUID()
+  const selectors = [failure, shown].filter((selector): selector is string => selector !== undefined)
   try {
-    await page.evaluate(`document.documentElement.dataset.opencrawCaptcha = ${JSON.stringify(token)}`)
+    await page.evaluate(`(() => {
+      document.documentElement.dataset.opencrawCaptcha = ${JSON.stringify(token)}
+      for (const selector of ${JSON.stringify(selectors)}) {
+        try { const element = document.querySelector(selector); if (element) element.dataset.opencrawCaptcha = ${JSON.stringify(token)} } catch {}
+      }
+    })()`)
   } catch {
-    // a page navigating away has nothing to mark; the refusal element counts as new
+    // a page navigating away has nothing to mark; what shows next counts as new
   }
 
-  return { token, failureShown: await isVisible(page, failure) }
+  return { token, failureShown: failure !== undefined && await isVisible(page, failure), shownShown: shown !== undefined && await isVisible(page, shown) }
 }
 
-/** Whether a refusal element belongs to this attempt: none showed before it, or the page is a new one (the mark is gone). */
-async function isFresh (page: Page, mark: PageMark | undefined): Promise<boolean> {
-  if (mark === undefined || !mark.failureShown) return true
+/**
+ * Whether a verify element belongs to this attempt: none showed before it,
+ * the page is a new one (the document's mark is gone), or the element is a
+ * new one (its mark is gone: the page drew it again).
+ */
+async function isFresh (page: Page, mark: PageMark | undefined, selector: string, shownBefore: boolean | undefined): Promise<boolean> {
+  if (mark === undefined || shownBefore !== true) return true
+  const token = JSON.stringify(mark.token)
   try {
-    return await page.evaluate(`document.documentElement.dataset.opencrawCaptcha !== ${JSON.stringify(mark.token)}`)
+    return await page.evaluate(`(() => {
+      if (document.documentElement.dataset.opencrawCaptcha !== ${token}) return true
+      try { const element = document.querySelector(${JSON.stringify(selector)}); return element !== null && element.dataset.opencrawCaptcha !== ${token} } catch { return false }
+    })()`)
   } catch {
     return false
   }

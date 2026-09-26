@@ -126,6 +126,11 @@ export interface RetryRule {
   maxDelayMs?: number
   /** The statuses retried. Default `[408, 425, 429, 500, 502, 503, 504]`. */
   statuses?:   number[]
+  /**
+   * A time budget: keep retrying until this long after the first try, to ride out a site that is down for a
+   * while. Without `attempts`, tries are not counted; with it, whichever runs out first. No pause runs past it.
+   */
+  forMs?:      number
 }
 
 export interface CrawlLimits {
@@ -139,6 +144,12 @@ export interface CrawlLimits {
   retry?:       RetryRule
 }
 
+/** A var's value. */
+export type VarValue = string | number | boolean
+
+/** The combinations a recipe runs: each var's values (every combination is run), or the var sets themselves. */
+export type RecipeMatrix = Record<string, VarValue[]> | Record<string, VarValue>[]
+
 /** Where to start, how to navigate, what to extract, and how it maps to one output recipe. */
 export interface InputRecipe {
   $schema?:     string
@@ -150,6 +161,14 @@ export interface InputRecipe {
   description?: string
   start:        StartPoint[]
   vars?:        Record<string, string | number | boolean>
+  /**
+   * Runs the recipe once per combination of vars: an object of lists runs
+   * every combination (`{ state: [a, b], group: [c, d] }`: 4 runs), a list of
+   * var sets runs those. Each run is a full run with its vars overridden.
+   */
+  matrix?:      RecipeMatrix
+  /** Worker mode: how a window that runs item after item stays trustworthy. */
+  window?:      WindowSpec
   session?:     SessionSpec
   limits?:      CrawlLimits
   /** Default policy for every step. */
@@ -159,8 +178,23 @@ export interface InputRecipe {
   mapping:      Record<string, MappingRule>
 }
 
+/**
+ * How a worker window stays trustworthy between items. `check` is an element
+ * the page must still show before an item runs on a reused window (a session
+ * that expired, a page that went elsewhere); without it the window is
+ * replaced. After `maxItems` items the window is replaced anyway (memory,
+ * server state that grows stale).
+ */
+export interface WindowSpec {
+  check?:    string
+  maxItems?: number
+}
+
 const scalar = z.union([z.string(), z.number(), z.boolean()])
-const vars = z.record(z.string().regex(/^[A-Z_]\w*$/i), scalar)
+const windowSchema: z.ZodType<WindowSpec> = z.strictObject({ check: z.string().min(1).optional(), maxItems: z.int().min(1).optional() })
+const varName = z.string().regex(/^[A-Z_]\w*$/i)
+const vars = z.record(varName, scalar)
+const matrixSchema: z.ZodType<RecipeMatrix> = z.union([z.record(varName, z.array(scalar).min(1)), z.array(vars).min(1)])
 
 export const startPointSchema: z.ZodType<StartPoint> = z.strictObject({ url: z.string().min(1), vars: vars.optional() })
 
@@ -235,6 +269,7 @@ export const retryRuleSchema: z.ZodType<RetryRule> = z.strictObject({
   backoffMs:  z.int().nonnegative().optional(),
   maxDelayMs: z.int().nonnegative().optional(),
   statuses:   z.array(z.int().min(400).max(599)).optional(),
+  forMs:      z.int().positive().optional(),
 })
 
 const limitsSchema: z.ZodType<CrawlLimits> = z.strictObject({
@@ -254,6 +289,8 @@ export const inputRecipeSchema: z.ZodType<InputRecipe> = z.strictObject({
   description: z.string().optional(),
   start:       z.array(startPointSchema).min(1),
   vars:        vars.optional(),
+  matrix:      matrixSchema.optional(),
+  window:      windowSchema.optional(),
   session:     sessionSpecSchema.optional(),
   limits:      limitsSchema.optional(),
   onError:     errorPolicySchema.optional(),

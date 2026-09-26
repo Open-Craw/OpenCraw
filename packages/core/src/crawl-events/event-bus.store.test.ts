@@ -12,6 +12,22 @@ describe('EventBus', () => {
     expect(Date.parse(seen[0].at)).not.toBeNaN()
   })
 
+  it('stamps what a scoped bus emits, which its own listeners and the parent hear; the parent\'s own events stay unstamped', () => {
+    const parent: CrawlEvent[] = []
+    const child: CrawlEvent[] = []
+    const bus = new EventBus((event) => { parent.push(event) })
+    let item: string | undefined = 'DL-1'
+    const scoped = bus.scoped(() => ({ window: 2, item }))
+    scoped.subscribe((event) => { child.push(event) })
+    scoped.emit({ type: 'warning', recipeId: 'r', message: 'm' })
+    item = undefined
+    scoped.emit({ type: 'warning', recipeId: 'r', message: 'n' })
+    bus.emit({ type: 'warning', recipeId: 'r', message: 'o' })
+    expect(parent.map(event => [event.window, event.item])).toEqual([[2, 'DL-1'], [2, undefined], [undefined, undefined]])
+    expect(child).toHaveLength(2)
+    expect('item' in parent[1]).toBe(false)
+  })
+
   it('unsubscribes and survives a throwing listener', () => {
     const seen: string[] = []
     const bus = new EventBus()

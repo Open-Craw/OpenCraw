@@ -46,10 +46,11 @@ async function measure (clip: boolean): Promise<{ right: number, refused: number
 describe('tesseract reader (real chromium, real Tesseract)', () => {
   it('reads most clean codes right, and refuses rather than submits many it cannot read', async () => {
     const clean = await measure(false)
-    // Measured when written, over 80 codes: 78% right, 10% refused (refreshed, never submitted), 13% wrong.
-    // Mixed-case codes are hard for OCR (k/K, j/J, 8/B look alike); the engine's attempts absorb the misses.
-    expect(clean.right).toBeGreaterThanOrEqual(SAMPLES * 0.6)
-    expect(clean.wrong.length).toBeLessThanOrEqual(SAMPLES * 0.25)
+    // Measured with the cross-check, over 80 stored codes: 75% right, 16% refused (refreshed, never submitted),
+    // 9% wrong; four runs of 40 fresh codes: 60–75% right and no wrong read. Mixed-case codes are hard for OCR
+    // (j/J, s/S, y/Y look alike); the engine's attempts absorb the misses.
+    expect(clean.right).toBeGreaterThanOrEqual(SAMPLES * 0.45)
+    expect(clean.wrong.length).toBeLessThanOrEqual(SAMPLES * 0.15)
   }, 120_000)
 
   it('refuses codes whose last character is cut off far more often than it submits them wrong', async () => {

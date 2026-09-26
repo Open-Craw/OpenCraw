@@ -4,11 +4,18 @@
  * richer record and error types from the slices above it.
  */
 
-interface Base { at: string, recipeId: string }
+interface Base {
+  at:       string
+  recipeId: string
+  /** In worker mode: the work item the event belongs to. */
+  item?:    string
+  /** In worker mode: the window (a numbered lane with its browser context or HTTP session) it happened in. */
+  window?:  number
+}
 
 export type CrawlEvent =
-  | (Base & { type: 'recipe:start', mode: 'web' | 'api' }) |
-  (Base & { type: 'recipe:finish', emitted: number, rejected: number, duplicates: number, skipped: number, stepsSkipped?: number, pages: number, durationMs: number, error?: string }) |
+  | (Base & { type: 'recipe:start', mode: 'web' | 'api', variant?: Record<string, string | number | boolean> }) |
+  (Base & { type: 'recipe:finish', variant?: Record<string, string | number | boolean>, emitted: number, rejected: number, duplicates: number, skipped: number, stepsSkipped?: number, pages: number, durationMs: number, error?: string }) |
   /** `status` is the HTTP status of the navigation or request, when there was a response. */
   (Base & { type: 'page:visit', url: string, number: number, status?: number }) |
   /** How a recipe run reaches the network. Never carries credentials. */
@@ -40,6 +47,18 @@ export type CrawlEvent =
   (Base & { type: 'record:duplicate', url: string, key: string }) |
   /** A resumed run found the key already in the sink. */
   (Base & { type: 'record:skipped', url: string, key: string }) |
+  /** Worker mode: a window opened (`start`, `grow`, `fresh` after a failure or a failed check, `recycle` after `maxItems`, `restart`). */
+  (Base & { type: 'window:open', reason: string }) |
+  /** Worker mode: a window closed between items (`retire`, `drained`, `fresh`, `recycle`, `restart`, `recipe`). */
+  (Base & { type: 'window:close', reason: string }) |
+  /** Worker mode: the number of windows the pool aims for changed. */
+  (Base & { type: 'windows:change', from: number, to: number, reason: string }) |
+  /** Worker mode: the browser was relaunched, with every window closed first. */
+  (Base & { type: 'browser:restart', reason: string }) |
+  /** Worker mode: an item ended. `neutral` items go back to the source without counting for or against the site. */
+  (Base & { type: 'item:finish', outcome: 'success' | 'failure' | 'neutral', durationMs: number, error?: string }) |
+  /** A `keep` step skipped: the window already holds what it would set. */
+  (Base & { type: 'step:kept', stepType: string, stepId?: string, path: string }) |
   (Base & { type: 'warning', message: string, meta?: Record<string, unknown> }) |
   (Base & { type: 'error', message: string, meta?: Record<string, unknown> })
 

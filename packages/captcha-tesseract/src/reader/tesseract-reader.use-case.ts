@@ -1,13 +1,16 @@
 import { expandCharset } from '../charset'
-import { cleanImage } from '../image-cleanup'
+import { cleanImage, respaceGlyphs } from '../image-cleanup'
 import { fixLetterCase } from './letter-case.algorithm'
 import { judgeRead } from './read-check.policy'
-import type { ChallengeLike, ImageRead, PageLike, SolveContextLike, SolveOutcome, SolveVerdict, TesseractRead, TesseractReader, TesseractReaderOptions } from './reader.contract'
+import type { JudgedRead } from './read-check.policy'
+import type { ChallengeLike, ImageRead, PageLike, ReadSymbol, SolveContextLike, SolveOutcome, SolveVerdict, TesseractRead, TesseractReader, TesseractReaderOptions } from './reader.contract'
 import { TesseractEngine } from './tesseract-engine.client'
 
 const DEFAULT_REFRESHES = 5
-const DEFAULT_MIN_CONFIDENCE = 50
+const DEFAULT_MIN_CONFIDENCE = 30
 const DEFAULT_TIMEOUT_MS = 60_000
+/** White columns (of the cleaned image) between glyphs for the cross-check read. */
+const CROSS_CHECK_GAP = 10
 /** An image counts as settled once its `src` stayed the same this long. */
 const SETTLE_MS = 300
 const SETTLE_LIMIT_MS = 5000
@@ -40,15 +43,28 @@ export function tesseractReader (options: TesseractReaderOptions = {}): Tesserac
     }
   }
 
-  const read = async (png: Buffer): Promise<ImageRead> => {
-    const started = Date.now()
-    const cleaned = cleanImage(png, options.preprocess)
+  const crossCheck = options.crossCheck ?? true
+
+  /** One Tesseract read of a cleaned image, judged. */
+  const readOnce = async (cleaned: Buffer): Promise<{ raw: string, symbols: ReadSymbol[], judged: JudgedRead }> => {
     const { raw, symbols: read } = await engine.read(cleaned)
     // Tesseract sees one line with no size reference: the case of same-shape letters is put right by their size.
     const symbols = caseSensitive ? fixLetterCase(read, characters) : read
-    const judged = judgeRead(caseSensitive ? symbols.map(symbol => symbol.text).join('') : raw, symbols, rules)
 
-    return { ...judged, raw, symbols, image: png, cleaned, durationMs: Date.now() - started }
+    return { raw, symbols, judged: judgeRead(caseSensitive ? symbols.map(symbol => symbol.text).join('') : raw, symbols, rules) }
+  }
+
+  const read = async (png: Buffer): Promise<ImageRead> => {
+    const started = Date.now()
+    const cleaned = cleanImage(png, options.preprocess)
+    const { raw, symbols, judged } = await readOnce(cleaned)
+    const done = { raw, symbols, image: png, cleaned }
+    if (!crossCheck || judged.problem !== undefined) return { ...judged, ...done, durationMs: Date.now() - started }
+    const { judged: second } = await readOnce(respaceGlyphs(cleaned, CROSS_CHECK_GAP))
+    const confidence = Math.min(judged.confidence, second.confidence)
+    const problem = second.text === judged.text ? second.problem : `a second read, with the characters spaced apart, gave "${second.text}"`
+
+    return { text: judged.text, confidence, second: second.text, ...(problem !== undefined && { problem }), ...done, durationMs: Date.now() - started }
   }
 
   const solve = async (challenge: ChallengeLike, context: SolveContextLike): Promise<SolveOutcome> => {

@@ -41,6 +41,7 @@ JavaScript module whose default export is the name -> function map.
 | `mode` | `web` (Playwright browser page) or `api` (Playwright request context, no browser). |
 | `start` | One or more `{ url, vars? }`; each start point runs the whole step list. |
 | `vars` | Recipe-level variables, read in templates as `{{vars.name}}`. |
+| `matrix` | Sets of vars to run the recipe with, once each: an object of lists (every combination) or a list of objects. Names must be declared in `vars`. Each run is reported with its `variant`. |
 | `session` | Headers, cookies, user agent, viewport, a saved `storageStatePath`, a `bootstrap`, `access` (`{ profile?, country?, sticky? }`), `blockedWhen`, `onBlock`, `captcha` and `browserProfile` (section 2.1). |
 | `limits` | `maxRecords` (exact, whatever is in flight), `delayMs` (minimum interval between request starts across the recipe), `timeoutMs`, `concurrency` (`forEach` iterations over a list in flight: requests in api mode, tabs in web mode; default `1`), `retry` (see Retries). |
 | `onError` | Default step policy: `fail`, `skip`, or `retry { attempts, backoffMs }`. |
@@ -88,12 +89,13 @@ with its own context or session; reports keep the set's order; `onRecipeError: '
 started. `dedupe: 'recipe'` keeps a key set per recipe run; `run` shares one.
 
 **Retries.** A request that fails in passing is sent again before the step's error policy sees it:
-`limits.retry: { attempts?, backoffMs?, maxDelayMs?, statuses? }`, over `CrawlOptions.retry` (CLI `--retries`),
+`limits.retry: { attempts?, backoffMs?, maxDelayMs?, statuses?, forMs? }`, over `CrawlOptions.retry` (CLI `--retries`),
 over the default of 3 tries, 1 s doubling with ±25 % jitter, capped at 30 s, statuses 408, 425, 429, 500, 502,
 503, 504, plus connection failures and timeouts (not unknown hosts). `Retry-After` is honoured when within
 `maxDelayMs` and pauses the whole site in the per-site throttle; a longer one is not retried. It covers `goto`,
 `request` and `next.url`; each retry is a `request:retry` event. After the last try the outcome goes on as
-before: block detection, then the step's `onError`.
+before: block detection, then the step's `onError`. `forMs` is a time budget from the first try: without
+`attempts` it alone ends the tries (to ride out an outage), with it whichever runs out first; no pause runs past it.
 
 **Change detection.** `diffRecords(previous, current, { key?, ignore?, shrink? })` compares two runs' records
 by key (the key fields' values, the `recordKey` formula, or each line's `_key`): `added`, `removed`, `changed`
@@ -323,6 +325,22 @@ const crawler = createCrawler({ hooks, sink: jsonLinesSink('out.jsonl'), onEvent
 const report = await crawler.run(recipes)
 await crawler.close()
 ```
+
+**Worker mode.** `crawler.work(recipes, source, { windows, classify })` runs work items (`{ id, vars,
+recipe? }`, the vars over the recipe's) from a `WorkSource` (`next`, `done`, `failed`) on a pool of windows,
+until `next` returns `undefined`. Each window is a browser context (or HTTP session) that lives across items
+and takes the next item as soon as it is free. Top-level steps marked `keep` are skipped when the window
+already did the same (their rendered form); a kept step that runs again forgets the kept steps after it. A
+failed item's window is replaced; `window.check` (an element a reused page must show) and `window.maxItems`
+replace it too. An item's records are held and written only when it succeeds; `done` receives them. The
+window count (`windows: { min, max, start, grow: { after }, shrink: 'one' | 'half', restart: { after } }`)
+grows by one after `grow.after` successes in a row and shrinks on a failure, once per generation (items
+already running at a shrink do not shrink it again); a window leaves only between items, never with an item
+running. `restart.after` failures in a row relaunch the browser once no item runs; a browser that dies is
+relaunched on the next window. `classify(report)` decides `success`, `failure` or `neutral` (default: a
+captcha that beat the solver or a closed browser is `neutral`: back to the source, the pool unchanged).
+Events: `window:open`, `window:close`, `windows:change`, `browser:restart`, `item:finish`, `step:kept`; every
+event of a window carries `window` and `item`.
 
 Recipes load from any source, not only files: `loadRecipes(source)` takes one source holding the output
 recipe and its inputs (found by `kind`), `loadRecipeSet({ output, inputs })` takes them apart. A source is a

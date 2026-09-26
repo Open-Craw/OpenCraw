@@ -9,9 +9,10 @@ import { ExtractionScope } from '../extraction-scope'
 import type { HookRegistry } from '../hooks'
 import { HttpClient } from '../http-session'
 import { mapRecord, RecordRejectedError } from '../output-mapping'
-import type { InputRecipe, OutputRecipe, RetryRule } from '../recipe-schema'
+import type { OutputRecord } from '../output-mapping'
+import type { InputRecipe, OutputRecipe, RetryRule, VarValue } from '../recipe-schema'
 import type { DedupePolicy, RecordSink } from '../record-sink'
-import { resolveRetryRule, RunGate, runSteps } from '../step-flow'
+import { resolveRetryRule, RunGate, runSteps, StepMemory } from '../step-flow'
 import type { HostThrottle } from '../step-flow'
 import type { EmitOutcome, StepRunner } from '../step-flow'
 import { WebStepRunner } from '../web-steps'
@@ -19,6 +20,7 @@ import { accessOptions, openBrowserProfile, readSavedState, resolveStorageState,
 import { RotatingRunner } from './rotating-runner.use-case'
 import type { LeasedRunner } from './rotating-runner.use-case'
 import type { RecipeReport } from './crawl-report.model'
+import { errorKindOf } from './error-kind.mapper'
 
 export interface RecipeRunDependencies {
   browser:            () => Promise<BrowserClient>
@@ -53,51 +55,167 @@ interface RunContext {
 }
 
 /**
+ * A recipe's runner kept open across runs: a worker window. Its browser
+ * context (or HTTP session), page, access lease and per-run gate stay; each
+ * run on it gets its own vars, report and captcha budget.
+ */
+export interface RecipeWindow {
+  /** The recipe it was opened for, retry rule resolved. */
+  readonly recipe: InputRecipe
+  readonly runner: StepRunner
+  readonly gate:   RunGate
+  readonly budget: CaptchaBudget
+  /** What the window's kept steps left on the page. */
+  readonly memory: StepMemory
+  dispose (): Promise<void>
+}
+
+/** How one run goes: on its own runner (a plain run) or on a window, and whether its records wait for it to succeed. */
+export interface RecipeRunOptions {
+  /** The vars a `matrix` set or a work item brought, reported with the run. */
+  variant?: Record<string, VarValue>
+  /** Run on this open window instead of opening (and closing) a runner. */
+  window?:  RecipeWindow
+  /** The work item this run is, stamped on its report and records. */
+  item?:    string
+  /** Hold the records back and write them only when the run succeeds: a failed item leaves nothing behind. */
+  hold?:    boolean
+}
+
+/** A run's report and, when held, the records it wrote. */
+export interface RecipeRunResult {
+  report:  RecipeReport
+  records: OutputRecord[]
+}
+
+/**
+ * The recipe with the crawler's retry rule under its own.
+ *
+ * @param recipe - The input recipe.
+ * @param deps - The crawler's dependencies.
+ * @returns The recipe to run.
+ */
+function prepared (recipe: InputRecipe, deps: RecipeRunDependencies): InputRecipe {
+  return { ...recipe, limits: { ...recipe.limits, retry: resolveRetryRule(recipe.limits?.retry, deps.retry) } }
+}
+
+/**
+ * Opens a window for a recipe: its access lease and runner (with block
+ * rotation, the bootstrap, saved state) and its gate, kept open until
+ * `dispose`. Events go to `deps.events`.
+ *
+ * @param recipe - The input recipe.
+ * @param deps - The crawler's dependencies.
+ * @returns The window.
+ */
+export async function openRecipeWindow (recipe: InputRecipe, deps: RecipeRunDependencies): Promise<RecipeWindow> {
+  const input = prepared(recipe, deps)
+  const limits = input.limits ?? {}
+  const context = runContext(input, deps, new RunGate(limits.concurrency ?? 1, limits.delayMs ?? 0, deps.hosts))
+  const runner = await openRotating(input, deps, context)
+
+  return { recipe: input, runner, gate: context.gate, budget: context.budget, memory: new StepMemory(), dispose: () => runner.dispose() }
+}
+
+function runContext (input: InputRecipe, deps: RecipeRunDependencies, gate: RunGate): RunContext {
+  const solvers = deps.captchaSolvers ?? new CaptchaSolverRegistry()
+  for (const name of captchaSolverNames(input)) solvers.resolve(name)
+
+  return { gate, solvers, budget: new CaptchaBudget(input.session?.captcha?.maxSolves ?? DEFAULT_MAX_SOLVES) }
+}
+
+function openRotating (input: InputRecipe, deps: RecipeRunDependencies, context: RunContext): Promise<RotatingRunner> {
+  const onBlock = input.session?.onBlock
+
+  return RotatingRunner.open({
+    recipe:       input,
+    events:       deps.events,
+    maxRotations: onBlock?.rotate === true ? (onBlock.attempts ?? 2) : 0,
+    open:         attempt => openLeased(input, deps, context, attempt),
+  })
+}
+
+/**
  * Runs one input recipe end to end: session, runner, the step walk, and for
  * every emitted scope the mapping, de-duplication and the sink. A step or
  * mapping failure under the `fail` policy ends the recipe and is reported,
  * never thrown: the caller decides whether the run goes on.
  *
- * Emits are serialised through one promise chain whatever the concurrency, so
- * the sink sees one record at a time and `maxRecords` is exact: once reached,
- * every later emit returns `stop` before mapping.
- *
  * @param recipe - The input recipe.
  * @param output - The output recipe it feeds.
  * @param deps - Shared browser, hooks, events, sink and de-duplication.
+ * @param variant - The vars a matrix set for this run, reported with it.
  * @returns What happened.
  */
-export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe, deps: RecipeRunDependencies): Promise<RecipeReport> {
-  const input: InputRecipe = { ...recipe, limits: { ...recipe.limits, retry: resolveRetryRule(recipe.limits?.retry, deps.retry) } }
+export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe, deps: RecipeRunDependencies, variant?: Record<string, VarValue>): Promise<RecipeReport> {
+  const { report } = await runRecipe(recipe, output, deps, { variant })
+
+  return report
+}
+
+/**
+ * Runs a recipe once, on its own runner or on an open window. On a window the
+ * runner stays open afterwards, and the captcha budget starts again.
+ *
+ * Emits are serialised through one promise chain whatever the concurrency, so
+ * the sink sees one record at a time and `maxRecords` is exact: once reached,
+ * every later emit returns `stop` before mapping. With `hold`, mapped records
+ * wait in memory; de-duplication, `resume` and the sink see them only once the
+ * whole run succeeded, so a failed run (a work item to retry) writes nothing
+ * and leaves no key behind.
+ *
+ * @param recipe - The input recipe (with the item's vars, in worker mode).
+ * @param output - The output recipe it feeds.
+ * @param deps - Shared browser, hooks, events (the window's, in worker mode), sink and de-duplication.
+ * @param options - The variant, the window, the item, whether to hold records.
+ * @returns The report, and the records written when they were held.
+ */
+export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps: RecipeRunDependencies, options: RecipeRunOptions = {}): Promise<RecipeRunResult> {
+  const { variant, window, item } = options
+  const input = window === undefined ? prepared(recipe, deps) : { ...window.recipe, vars: recipe.vars }
   const started = Date.now()
-  const report: RecipeReport = { recipeId: input.id, mode: input.mode, emitted: 0, rejected: 0, duplicates: 0, skipped: 0, stepsSkipped: 0, pages: 0, durationMs: 0 }
+  const report: RecipeReport = { recipeId: input.id, ...(variant !== undefined && { variant }), ...(item !== undefined && { item }), mode: input.mode, emitted: 0, rejected: 0, duplicates: 0, skipped: 0, stepsSkipped: 0, pages: 0, durationMs: 0 }
   const captchas = { detected: 0, solved: 0, failed: 0 }
   const limits = input.limits ?? {}
-  // Parallel iterations: requests in api mode, tabs of the recipe's context in web mode.
-  const gate = new RunGate(limits.concurrency ?? 1, limits.delayMs ?? 0, deps.hosts)
+  const held: { record: OutputRecord, url: string, snapshot: Record<string, unknown> }[] = []
+  const written: OutputRecord[] = []
   let stopped = false
   let chain: Promise<unknown> = Promise.resolve()
   const unsubscribe = deps.events.subscribe((event) => {
-    if (event.type === 'page:visit' && event.recipeId === input.id) report.pages += 1
-    if (event.type === 'step:skip' && event.recipeId === input.id) report.stepsSkipped += 1
-    if (event.type === 'captcha:detected' && event.recipeId === input.id) captchas.detected += 1
-    if (event.type === 'captcha:solved' && event.recipeId === input.id) captchas.solved += 1
-    if (event.type === 'captcha:failed' && event.recipeId === input.id) captchas.failed += 1
+    if (event.recipeId !== input.id) return
+    switch (event.type) {
+      case 'page:visit': {
+        report.pages += 1
+        break
+      }
+      case 'step:skip': {
+        report.stepsSkipped += 1
+        break
+      }
+      case 'captcha:detected': {
+        captchas.detected += 1
+        break
+      }
+      case 'captcha:solved': {
+        captchas.solved += 1
+        break
+      }
+      case 'captcha:failed': { {
+        captchas.failed += 1
+        // No default
+      }
+      break
+      }
+    }
   })
-  deps.events.emit({ type: 'recipe:start', recipeId: input.id, mode: input.mode })
+  deps.events.emit({ type: 'recipe:start', recipeId: input.id, mode: input.mode, ...(variant !== undefined && { variant }) })
   const dedupe = deps.dedupe.forRecipe()
   let runner: StepRunner | undefined
   try {
-    const onBlock = input.session?.onBlock
-    const solvers = deps.captchaSolvers ?? new CaptchaSolverRegistry()
-    for (const name of captchaSolverNames(input)) solvers.resolve(name)
-    const context: RunContext = { gate, solvers, budget: new CaptchaBudget(input.session?.captcha?.maxSolves ?? DEFAULT_MAX_SOLVES) }
-    runner = await RotatingRunner.open({
-      recipe:       input,
-      events:       deps.events,
-      maxRotations: onBlock?.rotate === true ? (onBlock.attempts ?? 2) : 0,
-      open:         attempt => openLeased(input, deps, context, attempt),
-    })
+    // Parallel iterations: requests in api mode, tabs of the recipe's context in web mode.
+    const gate = window?.gate ?? new RunGate(limits.concurrency ?? 1, limits.delayMs ?? 0, deps.hosts)
+    window?.budget.reset()
+    runner = window?.runner ?? await openRotating(input, deps, runContext(input, deps, gate))
     for (const point of input.start) {
       const scope = new ExtractionScope()
       scope.set('vars', { ...input.vars, ...point.vars })
@@ -109,22 +227,26 @@ export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe,
         hooks:  deps.hooks,
         events: deps.events,
         gate,
+        memory: window?.memory,
         onEmit: (emitScope, outputId) => emit(emitScope, outputId, point.url),
       })
       if (outcome === 'stop') break
     }
+    await chain
+    for (const entry of held) await write(entry.record, entry.url, entry.snapshot)
   } catch (error) {
     report.error = error instanceof Error ? error.message : String(error)
+    report.errorKind = errorKindOf(error)
     deps.events.emit({ type: 'error', recipeId: input.id, message: report.error })
   } finally {
-    await runner?.dispose()
+    if (window === undefined) await runner?.dispose()
     unsubscribe()
     if (captchas.detected > 0) report.captchas = captchas
     report.durationMs = Date.now() - started
-    deps.events.emit({ type: 'recipe:finish', recipeId: input.id, emitted: report.emitted, rejected: report.rejected, duplicates: report.duplicates, skipped: report.skipped, stepsSkipped: report.stepsSkipped, pages: report.pages, durationMs: report.durationMs, error: report.error })
+    deps.events.emit({ type: 'recipe:finish', recipeId: input.id, ...(variant !== undefined && { variant }), emitted: report.emitted, rejected: report.rejected, duplicates: report.duplicates, skipped: report.skipped, stepsSkipped: report.stepsSkipped, pages: report.pages, durationMs: report.durationMs, error: report.error })
   }
 
-  return report
+  return { report, records: written }
 
   function emit (scope: ExtractionScope, outputId: string | undefined, startUrl: string): Promise<EmitOutcome> {
     if (outputId !== undefined && outputId !== output.id) throw new Error(`emit names output "${outputId}" but this run produces "${output.id}"`)
@@ -149,25 +271,32 @@ export async function runInputRecipe (recipe: InputRecipe, output: OutputRecipe,
     if (stopped) return 'stop'
     try {
       const record = await mapRecord({ snapshot, input, output, hooks: deps.hooks, url, log: (level, message, meta) => { deps.events.emit({ type: level === 'error' ? 'error' : 'warning', recipeId: input.id, message: `[${level}] ${message}`, meta }) } })
-      if (deps.resume === true && record.key !== null && await deps.sink.has?.(record.key) === true) {
-        report.skipped += 1
-        deps.events.emit({ type: 'record:skipped', recipeId: input.id, url, key: record.key })
-      } else if (dedupe.isDuplicate(record)) {
-        report.duplicates += 1
-        deps.events.emit({ type: 'record:duplicate', recipeId: input.id, url, key: record.key ?? '' })
-      } else {
-        await deps.sink.write(record)
-        report.emitted += 1
-        deps.events.emit({ type: 'record:emit', recipeId: input.id, url, key: record.key, data: record.data, scope: deps.debug === true ? snapshot : undefined })
-      }
+      if (item !== undefined) record.source.item = item
+      if (options.hold === true) held.push({ record, url, snapshot })
+      else await write(record, url, snapshot)
     } catch (error) {
       if (!(error instanceof RecordRejectedError)) throw error
       report.rejected += 1
       deps.events.emit({ type: 'record:reject', recipeId: input.id, url, field: error.field, reason: error.reason, scope: deps.debug === true ? snapshot : undefined })
     }
-    if (limits.maxRecords !== undefined && report.emitted >= limits.maxRecords) stopped = true
+    if (limits.maxRecords !== undefined && report.emitted + held.length >= limits.maxRecords) stopped = true
 
     return stopped ? 'stop' : 'continue'
+  }
+
+  async function write (record: OutputRecord, url: string, snapshot: Record<string, unknown>): Promise<void> {
+    if (deps.resume === true && record.key !== null && await deps.sink.has?.(record.key) === true) {
+      report.skipped += 1
+      deps.events.emit({ type: 'record:skipped', recipeId: input.id, url, key: record.key })
+    } else if (dedupe.isDuplicate(record)) {
+      report.duplicates += 1
+      deps.events.emit({ type: 'record:duplicate', recipeId: input.id, url, key: record.key ?? '' })
+    } else {
+      await deps.sink.write(record)
+      report.emitted += 1
+      if (options.hold === true) written.push(record)
+      deps.events.emit({ type: 'record:emit', recipeId: input.id, url, key: record.key, data: record.data, scope: deps.debug === true ? snapshot : undefined })
+    }
   }
 }
 

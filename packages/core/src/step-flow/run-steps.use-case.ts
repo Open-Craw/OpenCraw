@@ -10,20 +10,23 @@ import type { RunGate } from './run-gate.policy'
 import { BlockedError } from './blocked.error'
 import { StepFailure } from './step-failure.error'
 import type { StepRunner } from './step-runner.contract'
+import type { StepMemory } from './step-memory.store'
 
 /** Whether the walk goes on after a record was emitted. */
 export type EmitOutcome = 'continue' | 'stop'
 
 /** Everything a step walk needs. */
 export interface StepWalkOptions {
-  recipe: InputRecipe
-  runner: StepRunner
-  hooks:  HookRegistry
-  events: EventBus
+  recipe:  InputRecipe
+  runner:  StepRunner
+  hooks:   HookRegistry
+  events:  EventBus
   /** Called with the scope to snapshot for each record; `stop` ends the walk. */
-  onEmit: (scope: ExtractionScope, output?: string) => Promise<EmitOutcome>
+  onEmit:  (scope: ExtractionScope, output?: string) => Promise<EmitOutcome>
   /** Bounds concurrency and request rate; absent means sequential and unthrottled. */
-  gate?:  RunGate
+  gate?:   RunGate
+  /** A worker window's memory of its kept steps; without it `keep` changes nothing. */
+  memory?: StepMemory
 }
 
 /** The walk as the control-flow steps see it: options plus the current path. */
@@ -46,18 +49,37 @@ export interface StepWalk extends StepWalkOptions {
  * @throws StepFailure when a step fails under the `fail` policy.
  */
 export async function runSteps (steps: readonly Step[], scope: ExtractionScope, options: StepWalkOptions, path = 'steps'): Promise<EmitOutcome> {
+  // Kept steps are the top-level list's; nested lists run as they are.
+  const memory = path === 'steps' ? options.memory : undefined
   for (const [index, step] of steps.entries()) {
     if (step.when !== undefined && !isTruthy(render(step.when, lookupIn(scope)))) continue
     const at = `${path}.${index}`
+    const form = memory !== undefined && step.keep === true ? keptForm(step, scope) : undefined
+    if (form !== undefined && memory?.holds(index, form) === true) {
+      options.events.emit({ type: 'step:kept', recipeId: options.recipe.id, stepType: step.type, stepId: step.id, path: at })
+      continue
+    }
     const walk: StepWalk = { ...options, path: at, runSteps: (inner, innerScope, innerPath, overrides) => runSteps(inner, innerScope, { ...options, ...overrides }, innerPath) }
     const outcome = await runWithPolicy(step, scope, walk)
     if (outcome === 'stop') return 'stop'
+    // A step its error policy skipped did not do its job: nothing to remember, and what came after it is unknown.
+    if (form !== undefined) {
+      if (outcome === 'skipped') memory?.remember(index, '')
+      else memory?.remember(index, form)
+    }
   }
 
   return 'continue'
 }
 
-async function runWithPolicy (step: Step, scope: ExtractionScope, walk: StepWalk): Promise<EmitOutcome> {
+/** A kept step as it would run now: every template in it rendered. */
+function keptForm (step: Step, scope: ExtractionScope): string {
+  const { keep: _keep, onError: _onError, when: _when, ...action } = step
+
+  return JSON.stringify(renderDeep(action, lookupIn(scope)))
+}
+
+async function runWithPolicy (step: Step, scope: ExtractionScope, walk: StepWalk): Promise<EmitOutcome | 'skipped'> {
   const policy = resolveErrorPolicy(step, walk.recipe)
   const attempts = policy.policy === 'retry' ? policy.attempts : 1
   let attempt = 1
@@ -83,7 +105,7 @@ async function runWithPolicy (step: Step, scope: ExtractionScope, walk: StepWalk
       if (policy.policy === 'skip') {
         walk.events.emit({ type: 'step:skip', recipeId: walk.recipe.id, stepType: step.type, stepId: step.id, path: walk.path, error: message })
 
-        return 'continue'
+        return 'skipped'
       }
       throw new StepFailure(walk.path, step.type, error)
     }

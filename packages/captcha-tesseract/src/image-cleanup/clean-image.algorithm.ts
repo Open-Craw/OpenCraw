@@ -16,6 +16,8 @@ export interface CleanupOptions {
 
 const WHITE = 255
 const BLACK = 0
+/** PNG output for Tesseract, not for storage: no row filter search and light compression, many times faster to write. */
+export const FAST_PNG = { filterType: 0, deflateLevel: 1 }
 
 /**
  * Cleans a captcha image for OCR: grayscale, black ink on white (a threshold
@@ -42,7 +44,7 @@ export function cleanImage (png: Buffer, options: CleanupOptions = {}): Buffer {
   if (options.invert === true || ((options.invert ?? 'auto') === 'auto' && inkShare > 0.5)) ink = ink.map(value => 1 - value)
   if (options.median === true) ink = medianOf(ink, width, height)
 
-  return PNG.sync.write(render(ink, width, height, padding))
+  return PNG.sync.write(render(ink, width, height, padding), FAST_PNG)
 }
 
 /**

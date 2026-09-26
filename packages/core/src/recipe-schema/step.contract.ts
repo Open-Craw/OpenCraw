@@ -23,6 +23,13 @@ export interface StepBaseFields {
   onError?: ErrorPolicy
   /** A template; the step runs only when it renders truthy. */
   when?:    string
+  /**
+   * Worker mode: the window remembers this step as it last ran it (its rendered
+   * form), and skips it on the next item while it would do the same; a kept
+   * step that does run makes the window forget the kept steps after it.
+   * Top-level steps without an `id` only: a page action, not a value.
+   */
+  keep?:    boolean
 }
 
 /**
@@ -80,6 +87,20 @@ export interface SelectStep extends StepBaseFields, TargetFields {
   ignoreCase?: boolean
   /** How long to wait for the options to exist (a list the page loads after another pick); `limits.timeoutMs`, else 30 s. */
   timeoutMs?:  number
+  /** A widget that loads its options as you type: each value missing from the options is typed into `input` first. */
+  search?:     SelectSearch
+  /** `values` that render to nothing clear the control, instead of leaving it as it is: a reused page must not keep the last item's filter. */
+  clear?:      boolean
+}
+/**
+ * The search box of a widget whose options load as you type. `open` is
+ * clicked when `input` is hidden; `close` is clicked after the last value (a
+ * list that closes only on an outside click would cover the next control).
+ */
+export interface SelectSearch {
+  input:  string
+  open?:  string
+  close?: string
 }
 export interface ScrollStep extends StepBaseFields { type: 'scroll', to: string, times?: number, untilStable?: boolean }
 /** Waits for an element, a time or the network to settle; `timeoutMs` bounds the element and network forms (default `limits.timeoutMs`). */
@@ -232,7 +253,7 @@ export const paginateNextSchema: z.ZodType<PaginateNext> = z.union([
 ])
 
 const stepId = z.string().regex(/^[A-Z_]\w*$/i, 'an id is a word: letters, digits and underscores, not starting with a digit')
-const base = { id: stepId.optional(), onError: errorPolicySchema.optional(), when: z.string().optional() }
+const base = { id: stepId.optional(), onError: errorPolicySchema.optional(), when: z.string().optional(), keep: z.boolean().optional() }
 const stringMap = z.record(z.string(), z.string())
 
 /** A plain selector: never rendered, so a placeholder in it is a mistake that would wait for the braces literally. */
@@ -247,6 +268,7 @@ const clickStep = z.strictObject({ ...base, ...target, type: z.literal('click'),
 const fillStep = z.strictObject({ ...base, ...target, type: z.literal('fill'), value: z.string() }).refine(oneTarget, ONE_TARGET)
 const pressStep = z.strictObject({ ...base, ...target, type: z.literal('press'), key: z.string().min(1) })
   .refine(step => step.selector === undefined || step.target === undefined, 'give selector or target, not both')
+const selectSearch = z.strictObject({ input: plainSelector, open: plainSelector.optional(), close: plainSelector.optional() })
 const selectStep = z.strictObject({
   ...base,
   ...target,
@@ -259,6 +281,8 @@ const selectStep = z.strictObject({
   force:      z.boolean().optional(),
   ignoreCase: z.boolean().optional(),
   timeoutMs:  z.int().min(1).optional(),
+  search:     selectSearch.optional(),
+  clear:      z.boolean().optional(),
 })
   .refine(oneTarget, ONE_TARGET)
   .refine(step => [step.value, step.label, step.index, step.values].filter(choice => choice !== undefined).length === 1, 'give exactly one of value, label, index or values')

@@ -2,6 +2,16 @@ import { depthOf, traceLine } from './trace-line.mapper'
 
 const at = '2026-01-01T00:00:00.000Z'
 
+describe('traceLine in worker mode', () => {
+  it('starts each line with its window, and shows the pool and its items', () => {
+    const at = '2026-09-26T00:00:00.000Z'
+    expect(traceLine({ type: 'windows:change', at, recipeId: 'r', window: 3, from: 4, to: 2, reason: 'an item failed' })).toBe('[w3] ⇅ windows 4 → 2: an item failed')
+    expect(traceLine({ type: 'item:finish', at, recipeId: 'r', window: 1, item: 'DL-1', outcome: 'neutral', durationMs: 900, error: 'captcha' })).toBe('[w1] ↩ item DL-1 neutral, 900 ms: captcha')
+    expect(traceLine({ type: 'step:kept', at, recipeId: 'r', window: 1, stepType: 'select', path: 'steps.2' })).toBe('[w1]   ≡ steps.2  select  kept')
+    expect(traceLine({ type: 'browser:restart', at, recipeId: 'r', reason: '20 failures in a row' })).toBe('⟳ browser restarted: 20 failures in a row')
+  })
+})
+
 describe('traceLine', () => {
   it('indents steps by their depth in the tree and names them by type and id', () => {
     expect(traceLine({ type: 'step:finish', at, recipeId: 'r', stepType: 'extract', stepId: 'actor_name', path: 'steps.3', durationMs: 4 })).toBe('  · steps.3  extract actor_name  4 ms')
@@ -36,6 +46,8 @@ describe('traceLine', () => {
 
   it('shows pages, records and the recipe summary', () => {
     expect(traceLine({ type: 'recipe:start', at, recipeId: 'tmdb', mode: 'api' })).toBe('▶ tmdb (api)')
+    expect(traceLine({ type: 'recipe:start', at, recipeId: 'vahan', mode: 'web', variant: { state: 'Delhi', year: 2026 } })).toBe('▶ vahan [state=Delhi, year=2026] (web)')
+    expect(traceLine({ type: 'recipe:finish', at, recipeId: 'vahan', variant: { state: 'Delhi' }, emitted: 3, rejected: 0, duplicates: 0, skipped: 0, pages: 1, durationMs: 5 })).toBe('■ vahan [state=Delhi]: 3 emitted, 0 rejected, 0 duplicates, 1 pages, 5 ms')
     expect(traceLine({ type: 'page:visit', at, recipeId: 'r', url: 'https://x/p', number: 2 })).toBe('  ⇢ page 2  https://x/p')
     expect(traceLine({ type: 'record:emit', at, recipeId: 'r', url: 'https://x/p', key: '["a","b"]', data: {} })).toBe('  ✚ record ["a","b"]')
     expect(traceLine({ type: 'record:reject', at, recipeId: 'r', url: 'https://x/p', field: 'title', reason: 'missing' })).toBe('  ✖ record rejected: title: missing')

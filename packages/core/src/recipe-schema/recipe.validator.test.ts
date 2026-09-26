@@ -174,6 +174,9 @@ describe('recipeKindOf', () => {
     ]))
     expect(parsed.steps).toMatchObject([{ values: ['{{ split(vars.states) }}'], force: true }, { download: { as: 'xlsx' } }])
     expect(() => parseInputRecipe(recipe([{ type: 'select', selector: '#s', value: 'a', values: ['b'] }]))).toThrow('give exactly one of value, label, index or values')
+    const search = { input: '.multiselect-dropdown-search', open: '.multiselect-dropdown', close: 'header h1' }
+    expect(parseInputRecipe(recipe([{ type: 'select', selector: '#maker', values: ['{{vars.maker}}'], force: true, search }])).steps[0]).toMatchObject({ search })
+    expect(() => parseInputRecipe(recipe([{ type: 'select', selector: '#maker', values: ['x'], search: { open: '.toggle' } }]))).toThrow()
     expect(() => parseInputRecipe(recipe([{ type: 'click', selector: '#x', download: { as: 'exe' } }]))).toThrow()
   })
 

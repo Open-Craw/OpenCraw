@@ -72,6 +72,61 @@
         ]
       }
     },
+    "matrix": {
+      "anyOf": [
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z_]\\w*$"
+          },
+          "additionalProperties": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean"
+              ]
+            }
+          }
+        },
+        {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^[A-Z_]\\w*$"
+            },
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number",
+                "boolean"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "window": {
+      "type": "object",
+      "properties": {
+        "check": {
+          "type": "string",
+          "minLength": 1
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "additionalProperties": false
+    },
     "session": {
       "type": "object",
       "properties": {
@@ -367,6 +422,11 @@
                 "minimum": 400,
                 "maximum": 599
               }
+            },
+            "forMs": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
             }
           },
           "additionalProperties": false
@@ -523,6 +583,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "goto"
@@ -633,6 +696,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "selector": {
               "type": "string",
@@ -760,6 +826,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "selector": {
               "type": "string",
               "minLength": 1
@@ -845,6 +914,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "selector": {
               "type": "string",
@@ -933,6 +1005,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "selector": {
               "type": "string",
               "minLength": 1
@@ -976,6 +1051,30 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 9007199254740991
+            },
+            "search": {
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "open": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "close": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "input"
+              ],
+              "additionalProperties": false
+            },
+            "clear": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -1046,6 +1145,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1133,6 +1235,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1226,6 +1331,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "evaluate"
@@ -1312,6 +1420,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "screenshot"
@@ -1390,6 +1501,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1561,6 +1675,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1739,6 +1856,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "set"
@@ -1814,6 +1934,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1896,6 +2019,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "emit"
@@ -1972,6 +2098,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -2058,6 +2187,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -2174,6 +2306,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "if"
@@ -2265,6 +2400,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -2403,6 +2541,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "captcha"
@@ -2495,6 +2636,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "selector": {
                         "type": "string",
@@ -2622,6 +2766,9 @@
                       "when": {
                         "type": "string"
                       },
+                      "keep": {
+                        "type": "boolean"
+                      },
                       "selector": {
                         "type": "string",
                         "minLength": 1
@@ -2707,6 +2854,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "selector": {
                         "type": "string",
@@ -2795,6 +2945,9 @@
                       "when": {
                         "type": "string"
                       },
+                      "keep": {
+                        "type": "boolean"
+                      },
                       "selector": {
                         "type": "string",
                         "minLength": 1
@@ -2838,6 +2991,30 @@
                         "type": "integer",
                         "minimum": 1,
                         "maximum": 9007199254740991
+                      },
+                      "search": {
+                        "type": "object",
+                        "properties": {
+                          "input": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "open": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "close": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "input"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "clear": {
+                        "type": "boolean"
                       }
                     },
                     "required": [
@@ -2908,6 +3085,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "type": {
                         "type": "string",
@@ -3000,6 +3180,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "type": {
                         "type": "string",
