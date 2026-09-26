@@ -27,4 +27,9 @@ export class CaptchaBudget {
 
     return true
   }
+
+  /** Starts counting again: a worker window's next item gets the whole budget. */
+  reset (): void {
+    this.used = 0
+  }
 }

@@ -167,6 +167,8 @@ export interface InputRecipe {
    * var sets runs those. Each run is a full run with its vars overridden.
    */
   matrix?:      RecipeMatrix
+  /** Worker mode: how a window that runs item after item stays trustworthy. */
+  window?:      WindowSpec
   session?:     SessionSpec
   limits?:      CrawlLimits
   /** Default policy for every step. */
@@ -176,7 +178,20 @@ export interface InputRecipe {
   mapping:      Record<string, MappingRule>
 }
 
+/**
+ * How a worker window stays trustworthy between items. `check` is an element
+ * the page must still show before an item runs on a reused window (a session
+ * that expired, a page that went elsewhere); without it the window is
+ * replaced. After `maxItems` items the window is replaced anyway (memory,
+ * server state that grows stale).
+ */
+export interface WindowSpec {
+  check?:    string
+  maxItems?: number
+}
+
 const scalar = z.union([z.string(), z.number(), z.boolean()])
+const windowSchema: z.ZodType<WindowSpec> = z.strictObject({ check: z.string().min(1).optional(), maxItems: z.int().min(1).optional() })
 const varName = z.string().regex(/^[A-Z_]\w*$/i)
 const vars = z.record(varName, scalar)
 const matrixSchema: z.ZodType<RecipeMatrix> = z.union([z.record(varName, z.array(scalar).min(1)), z.array(vars).min(1)])
@@ -275,6 +290,7 @@ export const inputRecipeSchema: z.ZodType<InputRecipe> = z.strictObject({
   start:       z.array(startPointSchema).min(1),
   vars:        vars.optional(),
   matrix:      matrixSchema.optional(),
+  window:      windowSchema.optional(),
   session:     sessionSpecSchema.optional(),
   limits:      limitsSchema.optional(),
   onError:     errorPolicySchema.optional(),

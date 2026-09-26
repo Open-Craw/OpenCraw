@@ -23,6 +23,13 @@ export interface StepBaseFields {
   onError?: ErrorPolicy
   /** A template; the step runs only when it renders truthy. */
   when?:    string
+  /**
+   * Worker mode: the window remembers this step as it last ran it (its rendered
+   * form), and skips it on the next item while it would do the same; a kept
+   * step that does run makes the window forget the kept steps after it.
+   * Top-level steps without an `id` only: a page action, not a value.
+   */
+  keep?:    boolean
 }
 
 /**
@@ -82,6 +89,8 @@ export interface SelectStep extends StepBaseFields, TargetFields {
   timeoutMs?:  number
   /** A widget that loads its options as you type: each value missing from the options is typed into `input` first. */
   search?:     SelectSearch
+  /** `values` that render to nothing clear the control, instead of leaving it as it is: a reused page must not keep the last item's filter. */
+  clear?:      boolean
 }
 /**
  * The search box of a widget whose options load as you type. `open` is
@@ -244,7 +253,7 @@ export const paginateNextSchema: z.ZodType<PaginateNext> = z.union([
 ])
 
 const stepId = z.string().regex(/^[A-Z_]\w*$/i, 'an id is a word: letters, digits and underscores, not starting with a digit')
-const base = { id: stepId.optional(), onError: errorPolicySchema.optional(), when: z.string().optional() }
+const base = { id: stepId.optional(), onError: errorPolicySchema.optional(), when: z.string().optional(), keep: z.boolean().optional() }
 const stringMap = z.record(z.string(), z.string())
 
 /** A plain selector: never rendered, so a placeholder in it is a mistake that would wait for the braces literally. */
@@ -273,6 +282,7 @@ const selectStep = z.strictObject({
   ignoreCase: z.boolean().optional(),
   timeoutMs:  z.int().min(1).optional(),
   search:     selectSearch.optional(),
+  clear:      z.boolean().optional(),
 })
   .refine(oneTarget, ONE_TARGET)
   .refine(step => [step.value, step.label, step.index, step.values].filter(choice => choice !== undefined).length === 1, 'give exactly one of value, label, index or values')

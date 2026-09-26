@@ -7,6 +7,7 @@ import { RunGate } from './run-gate.policy'
 import { runSteps } from './run-steps.use-case'
 import { BlockedError } from './blocked.error'
 import { StepFailure } from './step-failure.error'
+import { StepMemory } from './step-memory.store'
 import type { NextPageResult, StepRunner } from './step-runner.contract'
 
 const recipe: InputRecipe = { kind: 'input', id: 'r', output: 'o', mode: 'api', start: [{ url: 'http://x/1' }], steps: [], mapping: {} }
@@ -47,17 +48,19 @@ function fakeRunner (documents: Record<string, unknown[]>, nextPages: Record<str
   return runner
 }
 
-async function run (steps: Step[], runner: StepRunner, options: { limit?: number, hooks?: HookRegistry, recipe?: InputRecipe, gate?: RunGate } = {}): Promise<{ emitted: Record<string, unknown>[], events: CrawlEvent[], outcome: string }> {
+async function run (steps: Step[], runner: StepRunner, options: { limit?: number, hooks?: HookRegistry, recipe?: InputRecipe, gate?: RunGate, memory?: StepMemory, vars?: Record<string, unknown> } = {}): Promise<{ emitted: Record<string, unknown>[], events: CrawlEvent[], outcome: string }> {
   const emitted: Record<string, unknown>[] = []
   const events: CrawlEvent[] = []
   const scope = new ExtractionScope()
   scope.setPage({ url: 'http://x/1', number: 1 })
+  if (options.vars !== undefined) scope.set('vars', options.vars)
   const outcome = await runSteps(steps, scope, {
     recipe: options.recipe ?? recipe,
     runner,
     hooks:  options.hooks ?? new HookRegistry(),
     events: new EventBus((event) => { events.push(event) }),
     gate:   options.gate,
+    memory: options.memory,
     onEmit: async (emitScope) => {
       emitted.push(emitScope.snapshot())
 
@@ -338,5 +341,29 @@ describe('runSteps', () => {
       await expect(run([{ type: 'extract', id: 'x', selector: 'h1', kind: 'css' }], runner)).rejects.toThrow('steps.0 (extract) failed: blocked at http://x/1: HTTP 403')
       expect(runner.rotations).toBe(2)
     })
+  })
+
+  it('skips kept steps a window already holds, and runs again the kept steps after one that changed', async () => {
+    const steps: Step[] = [
+      { type: 'goto', url: 'http://x/report', keep: true },
+      { type: 'select', selector: '#state', values: ['{{ vars.state }}'], keep: true },
+      { type: 'select', selector: '#rto', values: ['{{ vars.rto }}'], keep: true },
+      { type: 'click', selector: '#apply' },
+    ]
+    const memory = new StepMemory()
+    const runner = fakeRunner({})
+    await run(steps, runner, { memory, vars: { state: 'DL', rto: 'DL1' } })
+    expect(runner.leaves).toEqual(['goto', 'select', 'select', 'click'])
+    runner.leaves.length = 0
+    const same = await run(steps, runner, { memory, vars: { state: 'DL', rto: 'DL2' } })
+    expect(runner.leaves).toEqual(['select', 'click'])
+    expect(same.events.filter(event => event.type === 'step:kept').map(event => event.type === 'step:kept' && event.path)).toEqual(['steps.0', 'steps.1'])
+    runner.leaves.length = 0
+    // A new state: the RTO pick runs again even though its value is the one the window holds.
+    await run(steps, runner, { memory, vars: { state: 'GA', rto: 'DL2' } })
+    expect(runner.leaves).toEqual(['select', 'select', 'click'])
+    runner.leaves.length = 0
+    await run(steps, runner, { vars: { state: 'GA', rto: 'DL2' } })
+    expect(runner.leaves).toEqual(['goto', 'select', 'select', 'click'])
   })
 })

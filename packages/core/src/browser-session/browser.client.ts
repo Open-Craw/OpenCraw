@@ -132,6 +132,11 @@ export class BrowserClient {
     return new BrowserSession(context, page)
   }
 
+  /** Whether the browser is still there: not closed, not crashed. */
+  isConnected (): boolean {
+    return this.browser.isConnected()
+  }
+
   async close (): Promise<void> {
     await this.browser.close()
   }

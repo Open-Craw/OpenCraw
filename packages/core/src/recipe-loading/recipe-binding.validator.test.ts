@@ -42,6 +42,16 @@ describe('validateBinding', () => {
     expect(messages({ ...api, steps: [...api.steps, { ...captchaStep, solver: 'capsolver' }] })[0]).toContain('"captcha" needs a browser')
   })
 
+  it('keeps top-level page actions only, and never a step that binds a value', () => {
+    const kept: InputRecipe = { ...web, steps: [{ type: 'goto', url: 'x', keep: true }, ...web.steps] }
+    expect(messages(kept)).toEqual([])
+    expect(messages({ ...web, steps: [{ type: 'extract', id: 'price', selector: '.p', kind: 'css', keep: true }, ...web.steps] }).filter(message => message.includes('keep'))).toEqual([
+      'steps.0.keep: a "extract" step cannot be kept: keep is for page actions (goto, click, fill, press, select, scroll, wait, evaluate)',
+      'steps.0.keep: a kept step is skipped when the window already holds its result, so its id "price" would be unset: drop the id or the keep',
+    ])
+    expect(messages({ ...web, steps: [{ type: 'if', test: 'x', steps: [{ type: 'click', selector: '#a', keep: true }] }, ...web.steps] })).toContain('steps.0.steps.0.keep: keep works on the recipe\'s top-level steps only')
+  })
+
   it('needs every matrix name declared in vars', () => {
     const withVars: InputRecipe = { ...api, vars: { ...api.vars, year: '2026' } }
     expect(messages({ ...withVars, matrix: { year: [2025, 2026] } })).toEqual([])

@@ -4,12 +4,19 @@ import type { CrawlEvent } from './crawl-event.contract'
  * One line of a crawl trace: the route a recipe takes (pages visited, steps
  * run, records produced, policies fired), indented by how deep in the step
  * tree the event happened. `step:start` yields nothing; `step:finish` carries
- * the duration, so every step prints once.
+ * the duration, so every step prints once. In worker mode each line starts
+ * with its window (`[w3]`).
  *
  * @param event - Any crawl event.
  * @returns The line, or `undefined` for events a trace does not show.
  */
 export function traceLine (event: CrawlEvent): string | undefined {
+  const line = lineOf(event)
+
+  return line === undefined || event.window === undefined ? line : `[w${event.window}] ${line}`
+}
+
+function lineOf (event: CrawlEvent): string | undefined {
   switch (event.type) {
     case 'recipe:start': { return `▶ ${event.recipeId}${variantOf(event.variant)} (${event.mode})`
     }
@@ -52,6 +59,18 @@ export function traceLine (event: CrawlEvent): string | undefined {
     case 'record:duplicate': { return `${indent(1)}≡ duplicate ${event.key}`
     }
     case 'record:skipped': { return `${indent(1)}⤼ skipped ${event.key}`
+    }
+    case 'window:open': { return `⧉ window opened (${event.reason})`
+    }
+    case 'window:close': { return `⧉ window closed (${event.reason})`
+    }
+    case 'windows:change': { return `⇅ windows ${event.from} → ${event.to}: ${event.reason}`
+    }
+    case 'browser:restart': { return `⟳ browser restarted: ${event.reason}`
+    }
+    case 'item:finish': { return `${{ success: '✓', failure: '✖', neutral: '↩' }[event.outcome]} item ${event.item ?? ''} ${event.outcome}, ${event.durationMs} ms${event.error === undefined ? '' : `: ${event.error}`}`
+    }
+    case 'step:kept': { return `${indent(depthOf(event.path))}≡ ${stepLabel(event)}  kept`
     }
     case 'warning': { return `${indent(1)}! ${event.message}`
     }

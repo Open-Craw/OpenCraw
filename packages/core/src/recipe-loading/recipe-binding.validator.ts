@@ -82,6 +82,7 @@ function walkSteps (steps: readonly Step[], path: string, mode: 'web' | 'api', k
 }
 
 function walkStep (step: Step, at: string, mode: 'web' | 'api', known: Set<string>, report: (path: string, message: string) => void, state: WalkState): void {
+  if (step.keep === true) checkKept(step, at, report)
   if (mode === 'api' && WEB_ONLY.has(step.type)) report(at, `"${step.type}" needs a browser; this recipe runs in api mode (use session.bootstrap for browser steps)`)
   if (mode === 'web' && API_ONLY.has(step.type)) report(at, `"${step.type}" is an api step; this recipe runs in web mode`)
   if (mode === 'api' && step.type === 'request' && step.form !== undefined) report(`${at}.form`, 'a form body is read from a live page: web mode only (or send the fields as "body")')
@@ -167,6 +168,16 @@ export function fieldAt (fields: Record<string, FieldSpec>, target: string): Fie
   }
 
   return current
+}
+
+/** Step types a window can remember: page actions that produce no value. */
+const KEEPABLE = new Set(['goto', 'click', 'fill', 'press', 'select', 'scroll', 'wait', 'evaluate'])
+
+/** `keep` is for top-level page actions: a skipped step that bound a value would leave it unset for the next item. */
+function checkKept (step: Step, at: string, report: (path: string, message: string) => void): void {
+  if (!/^steps\.\d+$/.test(at)) report(`${at}.keep`, 'keep works on the recipe\'s top-level steps only')
+  if (!KEEPABLE.has(step.type)) report(`${at}.keep`, `a "${step.type}" step cannot be kept: keep is for page actions (${[...KEEPABLE].join(', ')})`)
+  if (step.id !== undefined) report(`${at}.keep`, `a kept step is skipped when the window already holds its result, so its id "${step.id}" would be unset: drop the id or the keep`)
 }
 
 /** The var names a recipe's matrix sets. */

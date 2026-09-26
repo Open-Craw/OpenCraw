@@ -112,6 +112,21 @@
         }
       ]
     },
+    "window": {
+      "type": "object",
+      "properties": {
+        "check": {
+          "type": "string",
+          "minLength": 1
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "additionalProperties": false
+    },
     "session": {
       "type": "object",
       "properties": {
@@ -568,6 +583,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "goto"
@@ -678,6 +696,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "selector": {
               "type": "string",
@@ -805,6 +826,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "selector": {
               "type": "string",
               "minLength": 1
@@ -890,6 +914,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "selector": {
               "type": "string",
@@ -978,6 +1005,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "selector": {
               "type": "string",
               "minLength": 1
@@ -1042,6 +1072,9 @@
                 "input"
               ],
               "additionalProperties": false
+            },
+            "clear": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -1112,6 +1145,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1199,6 +1235,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1292,6 +1331,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "evaluate"
@@ -1378,6 +1420,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "screenshot"
@@ -1456,6 +1501,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1627,6 +1675,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1805,6 +1856,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "set"
@@ -1880,6 +1934,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -1962,6 +2019,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "emit"
@@ -2038,6 +2098,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -2124,6 +2187,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -2240,6 +2306,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "if"
@@ -2331,6 +2400,9 @@
             },
             "when": {
               "type": "string"
+            },
+            "keep": {
+              "type": "boolean"
             },
             "type": {
               "type": "string",
@@ -2469,6 +2541,9 @@
             "when": {
               "type": "string"
             },
+            "keep": {
+              "type": "boolean"
+            },
             "type": {
               "type": "string",
               "const": "captcha"
@@ -2561,6 +2636,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "selector": {
                         "type": "string",
@@ -2688,6 +2766,9 @@
                       "when": {
                         "type": "string"
                       },
+                      "keep": {
+                        "type": "boolean"
+                      },
                       "selector": {
                         "type": "string",
                         "minLength": 1
@@ -2773,6 +2854,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "selector": {
                         "type": "string",
@@ -2861,6 +2945,9 @@
                       "when": {
                         "type": "string"
                       },
+                      "keep": {
+                        "type": "boolean"
+                      },
                       "selector": {
                         "type": "string",
                         "minLength": 1
@@ -2925,6 +3012,9 @@
                           "input"
                         ],
                         "additionalProperties": false
+                      },
+                      "clear": {
+                        "type": "boolean"
                       }
                     },
                     "required": [
@@ -2995,6 +3085,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "type": {
                         "type": "string",
@@ -3087,6 +3180,9 @@
                       },
                       "when": {
                         "type": "string"
+                      },
+                      "keep": {
+                        "type": "boolean"
                       },
                       "type": {
                         "type": "string",

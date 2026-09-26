@@ -7,6 +7,8 @@ export interface OutputRecord {
     recipeId:  string
     url:       string
     emittedAt: string
+    /** In worker mode: the work item the record came from. */
+    item?:     string
   }
 }
 

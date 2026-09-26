@@ -1,4 +1,5 @@
 import type { SinkSummary } from '../record-sink'
+import type { ErrorKind } from './error-kind.mapper'
 
 /** What one input recipe did. */
 export interface RecipeReport {
@@ -19,6 +20,10 @@ export interface RecipeReport {
   captchas?:    { detected: number, solved: number, failed: number }
   /** Set when the recipe stopped on a failure. */
   error?:       string
+  /** Why it stopped, when it did: what a worker pool reads to tell the site's health from a recipe problem. */
+  errorKind?:   ErrorKind
+  /** In worker mode: the work item this run was. */
+  item?:        string
 }
 
 /** What a whole run did. */

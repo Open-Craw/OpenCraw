@@ -326,6 +326,22 @@ const report = await crawler.run(recipes)
 await crawler.close()
 ```
 
+**Worker mode.** `crawler.work(recipes, source, { windows, classify })` runs work items (`{ id, vars,
+recipe? }`, the vars over the recipe's) from a `WorkSource` (`next`, `done`, `failed`) on a pool of windows,
+until `next` returns `undefined`. Each window is a browser context (or HTTP session) that lives across items
+and takes the next item as soon as it is free. Top-level steps marked `keep` are skipped when the window
+already did the same (their rendered form); a kept step that runs again forgets the kept steps after it. A
+failed item's window is replaced; `window.check` (an element a reused page must show) and `window.maxItems`
+replace it too. An item's records are held and written only when it succeeds; `done` receives them. The
+window count (`windows: { min, max, start, grow: { after }, shrink: 'one' | 'half', restart: { after } }`)
+grows by one after `grow.after` successes in a row and shrinks on a failure, once per generation (items
+already running at a shrink do not shrink it again); a window leaves only between items, never with an item
+running. `restart.after` failures in a row relaunch the browser once no item runs; a browser that dies is
+relaunched on the next window. `classify(report)` decides `success`, `failure` or `neutral` (default: a
+captcha that beat the solver or a closed browser is `neutral`: back to the source, the pool unchanged).
+Events: `window:open`, `window:close`, `windows:change`, `browser:restart`, `item:finish`, `step:kept`; every
+event of a window carries `window` and `item`.
+
 Recipes load from any source, not only files: `loadRecipes(source)` takes one source holding the output
 recipe and its inputs (found by `kind`), `loadRecipeSet({ output, inputs })` takes them apart. A source is a
 path (a `.json` or `.jsonl` file, or a directory of them), JSON or JSON Lines text (a string starting with

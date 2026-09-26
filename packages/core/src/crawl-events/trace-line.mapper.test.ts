@@ -2,6 +2,16 @@ import { depthOf, traceLine } from './trace-line.mapper'
 
 const at = '2026-01-01T00:00:00.000Z'
 
+describe('traceLine in worker mode', () => {
+  it('starts each line with its window, and shows the pool and its items', () => {
+    const at = '2026-09-26T00:00:00.000Z'
+    expect(traceLine({ type: 'windows:change', at, recipeId: 'r', window: 3, from: 4, to: 2, reason: 'an item failed' })).toBe('[w3] ⇅ windows 4 → 2: an item failed')
+    expect(traceLine({ type: 'item:finish', at, recipeId: 'r', window: 1, item: 'DL-1', outcome: 'neutral', durationMs: 900, error: 'captcha' })).toBe('[w1] ↩ item DL-1 neutral, 900 ms: captcha')
+    expect(traceLine({ type: 'step:kept', at, recipeId: 'r', window: 1, stepType: 'select', path: 'steps.2' })).toBe('[w1]   ≡ steps.2  select  kept')
+    expect(traceLine({ type: 'browser:restart', at, recipeId: 'r', reason: '20 failures in a row' })).toBe('⟳ browser restarted: 20 failures in a row')
+  })
+})
+
 describe('traceLine', () => {
   it('indents steps by their depth in the tree and names them by type and id', () => {
     expect(traceLine({ type: 'step:finish', at, recipeId: 'r', stepType: 'extract', stepId: 'actor_name', path: 'steps.3', durationMs: 4 })).toBe('  · steps.3  extract actor_name  4 ms')
