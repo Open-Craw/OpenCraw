@@ -15,6 +15,7 @@ describe('transport retry', () => {
     expect(transientError(new Error('apiRequestContext.fetch: read ECONNRESET'))).toEqual({ reason: 'ECONNRESET' })
     expect(transientError(new Error('page.goto: net::ERR_CONNECTION_RESET at https://x/'))).toEqual({ reason: 'net::ERR_CONNECTION_RESET' })
     expect(transientError(new Error('page.goto: Timeout 30000ms exceeded.'))).toEqual({ reason: 'Timeout 30000ms exceeded' })
+    expect(transientError(new Error('page.goto: net::ERR_TOO_MANY_RETRIES at https://x/'))).toEqual({ reason: 'net::ERR_TOO_MANY_RETRIES' })
     expect(transientError(new Error('getaddrinfo ENOTFOUND shop.exampel'))).toBeUndefined()
     expect(transientError(new Error('net::ERR_NAME_NOT_RESOLVED'))).toBeUndefined()
     expect(transientError(new Error('no match for .price'))).toBeUndefined()
