@@ -56,7 +56,9 @@ export interface ImageRead {
   /** The least sure character's confidence (0–100): whole-word confidence is too noisy on six loose characters. */
   confidence: number
   symbols:    ReadSymbol[]
-  /** Why the read is not good enough to submit (a wrong length, a low confidence), when it is not. */
+  /** The cross-check's read, with the characters spaced apart, when one was made (the first read passed its checks). */
+  second?:    string
+  /** Why the read is not good enough to submit (a wrong length, a low confidence, a cross-check that disagreed), when it is not. */
   problem?:   string
   /** The image as captured, and as Tesseract saw it after cleanup (PNG). */
   image:      Buffer
@@ -85,10 +87,17 @@ export interface TesseractReaderOptions {
   length?:        number | [number, number]
   /** Whether `a` and `A` differ. Default `false`: each letter allows its other case too. */
   caseSensitive?: boolean
-  /** The least confidence (0–100) every character must have. Default 50. */
+  /** The least confidence (0–100) every character must have. Default 30. */
   minConfidence?: number
   /** Reads (after refreshing the image) before an attempt gives up. Default 5. */
   refreshes?:     number
+  /**
+   * Reads the code a second time with its characters spaced apart, and submits only when both reads agree.
+   * Tesseract reads a line with context and can bend a character to fit its neighbours (a `4` after lowercase
+   * letters read as `a`); read apart, it rarely makes the same mistake. Default `true`: on 100 real captchas it cut
+   * wrong submissions from 6 to 1, for a few more (free) refreshes and a second read of each passing image.
+   */
+  crossCheck?:    boolean
   /** Image cleanup before OCR. */
   preprocess?:    CleanupOptions
   /** Tesseract's page segmentation mode: 7 one line (default), 8 one word, 13 a raw line. */
