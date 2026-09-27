@@ -81,7 +81,7 @@
         "oldPrice": null,
         "onSale": false,
         "subtitle": null,
-        "scrapedAt": "2026-09-27T17:28:59.981Z",
+        "scrapedAt": "2026-09-27T17:40:57.616Z",
         "scrapedOn": "2026-09-27",
         "sourceUrl": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
         "recipe": "attic-api"
