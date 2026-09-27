@@ -77,6 +77,13 @@ describe('mapRecord', () => {
     await expect(mapRecord({ snapshot: { ...webSnapshot, raw_price: 'call us' }, input: badPrice, output, hooks, url: 'https://shop.example/p/1' })).rejects.toThrow(RecordRejectedError)
   })
 
+  it('applies the output recipe\'s onMissing to a value that cannot be coerced (#65)', async () => {
+    const plainPrice: InputRecipe = { ...web, mapping: { ...web.mapping, price: { from: 'raw_price' } } }
+    const request = { snapshot: { ...webSnapshot, raw_price: 'call us' }, input: plainPrice, hooks, url: 'https://shop.example/p/1' }
+    await expect(mapRecord({ ...request, output: { ...output, onMissing: 'skip-record' } })).rejects.toThrow(RecordRejectedError)
+    await expect(mapRecord({ ...request, output })).rejects.toThrow(MappingFailedError)
+  })
+
   it('rejects the record, not the recipe, when a transform fails under a skip-record rule', async () => {
     const skipping: InputRecipe = { ...web, mapping: { ...web.mapping, price: { from: 'raw_price', transform: [{ op: 'number' }], onMissing: 'skip-record' } } }
     await expect(mapRecord({ snapshot: { ...webSnapshot, raw_price: 'OTR £' }, input: skipping, output, hooks, url: 'https://shop.example/p/1' })).rejects.toThrow(RecordRejectedError)

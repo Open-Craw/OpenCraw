@@ -134,7 +134,7 @@ function finishObject (raw: Record<string, unknown>, fields: Record<string, Fiel
 function finishField (rawValue: unknown, field: FieldSpec, output: OutputRecipe, rules: Map<string, MappingRule>, path: string): unknown {
   const value = rawValue !== undefined && rawValue !== null && field.type === 'object' && field.fields !== undefined
     ? finishObject(rawValue as Record<string, unknown>, field.fields, output, rules, path)
-    : coerceOrReject(rawValue, field, path, rules)
+    : coerceOrReject(rawValue, field, path, rules, output)
   const emptyObject = field.type === 'object' && !isMissing(value) && Object.keys(value as Record<string, unknown>).length === 0
   if (!emptyObject && !isMissing(value)) {
     const problems = validateField(value, field)
@@ -149,12 +149,16 @@ function finishField (rawValue: unknown, field: FieldSpec, output: OutputRecipe,
   return reject(field, path, 'missing', rules.get(path), output, policy)
 }
 
-function coerceOrReject (rawValue: unknown, field: FieldSpec, path: string, rules: Map<string, MappingRule>): unknown {
+/**
+ * A value that cannot be coerced follows the missing-value precedence (rule,
+ * field, `default`, recipe): `skip-record` drops the record, anything else
+ * stops the recipe.
+ */
+function coerceOrReject (rawValue: unknown, field: FieldSpec, path: string, rules: Map<string, MappingRule>, output: OutputRecipe): unknown {
   try {
     return coerceValue(rawValue, field, path)
   } catch (error) {
-    const policy = resolveMissingPolicy(field, { kind: 'output', id: '', version: 1, fields: {} }, rules.get(path))
-    if (policy === 'skip-record') throw new RecordRejectedError(path, (error as Error).message)
+    if (resolveMissingPolicy(field, output, rules.get(path)) === 'skip-record') throw new RecordRejectedError(path, (error as Error).message)
     throw new MappingFailedError(path, (error as Error).message, { cause: error })
   }
 }
