@@ -99,4 +99,16 @@ describe('createWorkInbox', () => {
     expect(inbox.running).toBe(0)
     expect(await inbox.source.next()).toBeUndefined()
   })
+
+  it('takes a waiting window off the list when its wait is aborted, so no item goes to it', async () => {
+    const inbox = createWorkInbox()
+    const control = new AbortController()
+    const retiring = inbox.source.next({ signal: control.signal })
+    const staying = inbox.source.next()
+    control.abort(new Error('retired'))
+    await expect(retiring).rejects.toThrow('retired')
+    expect(inbox.idle).toBe(1)
+    void inbox.submit(item('a'))
+    await expect(staying).resolves.toMatchObject({ id: 'a' })
+  })
 })

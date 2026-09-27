@@ -51,4 +51,21 @@ describe('WindowCount', () => {
     expect(count.record('failure', count.generation)).toMatchObject({ kind: 'restart', to: 2 })
     expect(count.target).toBe(2)
   })
+
+  it('lets an idle window go: one fewer than are running, never under min, and no failure counted', () => {
+    const count = new WindowCount(resolveWindowsPolicy({ min: 1, max: 4, start: 3, idle: { afterMs: 500 } }))
+    const generation = count.generation
+    expect(count.idleAfterMs).toBe(500)
+    expect(count.idle(3)).toEqual({ kind: 'shrink', from: 3, to: 2, reason: 'idle for 500 ms' })
+    // Already aiming lower than the windows running: the idle one just leaves.
+    expect(count.idle(3)).toBeUndefined()
+    expect(count.idle(2)).toMatchObject({ from: 2, to: 1 })
+    expect(count.idle(1)).toBeUndefined()
+    expect(count.target).toBe(1)
+    expect(count.generation).toBe(generation)
+  })
+
+  it('refuses an idle wait that is not a positive number', () => {
+    expect(() => resolveWindowsPolicy({ idle: { afterMs: 0 } })).toThrow('windows.idle.afterMs')
+  })
 })

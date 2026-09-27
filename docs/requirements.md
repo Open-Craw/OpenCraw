@@ -340,7 +340,7 @@ replace it too. An item's records are held and written only when it succeeds; `d
 window count (`windows: { min, max, start, grow: { after }, shrink: 'one' | 'half', restart: { after } }`)
 grows by one after `grow.after` successes in a row and shrinks on a failure, once per generation (items
 already running at a shrink do not shrink it again); a window leaves only between items, never with an item
-running. `restart.after` failures in a row relaunch the browser once no item runs; a browser that dies is
+running. `idle.afterMs` retires a window that waited that long for an item, never below `min` (the waiting `next` gets an aborted signal; an item that still arrives gets a window of its own). `restart.after` failures in a row relaunch the browser once no item runs; a browser that dies is
 relaunched on the next window. `classify(report)` decides `success`, `failure` or `neutral` (default: a
 captcha that beat the solver or a closed browser is `neutral`: back to the source, the pool unchanged).
 Events: `window:open`, `window:close`, `windows:change`, `browser:restart`, `item:finish`, `step:kept`; every

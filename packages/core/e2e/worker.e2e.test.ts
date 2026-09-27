@@ -208,6 +208,66 @@ describe('worker mode', () => {
     }
   }, 60_000)
 
+  it('lets idle windows go when pushes slow down, and grows again when they pick up', async () => {
+    const events: CrawlEvent[] = []
+    const inbox = createWorkInbox()
+    const crawler = createCrawler({ browser: browserConfig(), onEvent: (event) => { events.push(event) } })
+    const combos: [string, string, string][] = [['DL', 'DL1', ''], ['DL', 'DL2', 'Bus'], ['GA', 'GA1', 'Car'], ['DL', 'DL1', 'Car']]
+    const burst = (tag: string): Promise<unknown>[] => Array.from({ length: 12 }, (_, index) => {
+      const [state, rto, group] = combos[index % combos.length]
+
+      return inbox.submit({ id: `${tag}-${index}`, vars: { state, rto, group } })
+    })
+    try {
+      const working = crawler.work(await loadRecipes([output, report]), inbox.source, { windows: { min: 1, max: 3, grow: { after: 2 }, idle: { afterMs: 800 } } })
+      const first = await Promise.all(burst('a'))
+      const grown = ofType(events, 'windows:change').map(event => event.to)
+      expect(Math.max(...grown)).toBe(3)
+      // The caller pauses: the windows wait, then all but one go.
+      await pause(2500)
+      const idle = ofType(events, 'windows:change').filter(event => event.reason.startsWith('idle'))
+      expect(idle.at(-1)?.to).toBe(1)
+      expect(ofType(events, 'window:close').filter(event => event.reason === 'idle')).toHaveLength(2)
+      expect(inbox.idle).toBe(1)
+      const marker = events.length
+      const second = await Promise.all(burst('b'))
+      expect(ofType(events.slice(marker), 'windows:change').some(event => event.to > event.from)).toBe(true)
+      inbox.close()
+      const result = await working
+      expect(result.items).toEqual({ success: 24, failure: 0, neutral: 0 })
+      expect([...first, ...second].every(entry => (entry as { outcome: string }).outcome === 'success')).toBe(true)
+      expect(new Set(ofType(events, 'item:finish').map(event => event.item)).size).toBe(24)
+    } finally {
+      inbox.abort()
+      await crawler.close()
+    }
+  }, 90_000)
+
+  it('gives an item a retired window was still waiting for a window of its own, when the source ignores the abort', async () => {
+    const events: CrawlEvent[] = []
+    const waiting: ((next: WorkItem | undefined) => void)[] = []
+    // A source that cannot take a wait back: every call waits for the next push, whatever the signal says.
+    const source: WorkSource = { next: async () => await new Promise<WorkItem | undefined>((resolve) => { waiting.push(resolve) }) }
+    const sink = memorySink()
+    const crawler = createCrawler({ sink, onEvent: (event) => { events.push(event) } })
+    try {
+      const working = crawler.work(await loadRecipes([output, makers]), source, { windows: { min: 1, max: 2, start: 2, idle: { afterMs: 200 } } })
+      await pause(600)
+      expect(ofType(events, 'windows:change').map(event => event.to)).toEqual([1])
+      waiting.shift()?.({ id: 'TATA', vars: { q: 'TATA' } })
+      waiting.shift()?.({ id: 'TVS', vars: { q: 'TVS' } })
+      await pause(600)
+      for (const wake of waiting) wake(undefined)
+      waiting.length = 0
+      const result = await working
+      expect(result.items).toEqual({ success: 2, failure: 0, neutral: 0 })
+      expect(ofType(events, 'window:open').map(event => event.reason)).toContain('late')
+      expect(new Set(sink.records.map(({ source: from }) => from.item))).toEqual(new Set(['TATA', 'TVS']))
+    } finally {
+      await crawler.close()
+    }
+  }, 30_000)
+
   it('runs api recipes the same way, one HTTP session per window', async () => {
     const sink = memorySink()
     const crawler = createCrawler({ sink })

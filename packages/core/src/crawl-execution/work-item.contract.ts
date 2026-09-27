@@ -21,8 +21,14 @@ export interface WorkItem {
  * windows at once.
  */
 export interface WorkSource {
-  /** The next item; may wait (for a refill). `undefined` means there is no more work. */
-  next (): Promise<WorkItem | undefined>
+  /**
+   * The next item; may wait (for a refill). `undefined` means there is no more
+   * work. With `windows.idle`, the pool passes a signal that aborts when the
+   * waiting window retires: a source that can take the wait back should
+   * (rejecting is fine). One that ignores it may still return an item, which
+   * then gets a window of its own.
+   */
+  next (options?: { signal?: AbortSignal }): Promise<WorkItem | undefined>
   /** The item succeeded: its records are written (and given here too, for a source that files them per item). */
   done? (item: WorkItem, report: RecipeReport, records: OutputRecord[]): Promise<void> | void
   /** The item failed (`failure`) or should go back to the queue as it is (`neutral`: a captcha that beat the solver, a browser that died). Nothing of it was written. */

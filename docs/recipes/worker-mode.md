@@ -151,6 +151,7 @@ One `run` or `work` at a time per crawler: they share its sink.
 | `grow.after` | 10 | One more window after this many successes in a row. |
 | `shrink` | `half` | On a failure: half the windows (`half`) or one fewer (`one`). |
 | `restart.after` | never | After this many failures in a row, the browser is relaunched and the pool goes back to `min`. |
+| `idle.afterMs` | never | A window that has waited this long for an item retires, never below `min`. For push-fed sources (the inbox), whose callers slow down. |
 
 What makes the pool safe to leave running overnight:
 
@@ -165,6 +166,11 @@ What makes the pool safe to leave running overnight:
 - **A restart waits for every running item to finish.** New items wait for the relaunch; windows opened in
   the old browser are replaced when their next item comes. After a restart the pool is back at `min` and
   grows again from there.
+- **An idle window goes, then comes back when needed.** With `idle.afterMs`, a window that waits that long for
+  an item retires through the same path as a shrink (`window:close idle`, `windows:change`), never below
+  `min`. Successes grow the pool again. The pool passes `next` a signal that aborts when the window retires;
+  the inbox takes the wait back. A source that can't may still return an item for it later: that item gets a
+  window of its own (`window:open late`), so nothing is lost.
 - **A browser that dies is relaunched.** Items that were running end as `neutral` (the source gets them back
   untouched), and the next window launches a new browser.
 

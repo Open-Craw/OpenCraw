@@ -87,12 +87,27 @@ export function createWorkInbox (): WorkInbox {
   }
 
   const source: WorkSource = {
-    next: async () => {
+    next: async (options = {}) => {
       const entry = queue.shift()
       if (entry !== undefined) return hand(entry)
       if (closed) return
+      const { signal } = options
+      signal?.throwIfAborted()
+      const { promise, resolve, reject } = Promise.withResolvers<WorkItem | undefined>()
+      // A window that stops waiting (it retired) is taken off the list, so no item goes to it.
+      const onAbort = (): void => {
+        const at = waiters.indexOf(wake)
+        if (at !== -1) waiters.splice(at, 1)
+        reject(signal?.reason)
+      }
+      const wake = (item: WorkItem | undefined): void => {
+        signal?.removeEventListener('abort', onAbort)
+        resolve(item)
+      }
+      signal?.addEventListener('abort', onAbort, { once: true })
+      waiters.push(wake)
 
-      return await new Promise<WorkItem | undefined>((resolve) => { waiters.push(resolve) })
+      return await promise
     },
     done:   (item, report, records) => { settle(item, { outcome: 'success', report, records }) },
     failed: (item, report, outcome) => { settle(item, { outcome, report }) },

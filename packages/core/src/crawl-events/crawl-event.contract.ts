@@ -49,7 +49,7 @@ export type CrawlEvent =
   (Base & { type: 'record:skipped', url: string, key: string }) |
   /** Worker mode: a window opened (`start`, `grow`, `fresh` after a failure or a failed check, `recycle` after `maxItems`, `restart`). */
   (Base & { type: 'window:open', reason: string }) |
-  /** Worker mode: a window closed between items (`retire`, `drained`, `fresh`, `recycle`, `restart`, `recipe`). */
+  /** Worker mode: a window closed between items (`retire`, `idle`, `drained`, `fresh`, `recycle`, `restart`, `recipe`). */
   (Base & { type: 'window:close', reason: string }) |
   /** Worker mode: the number of windows the pool aims for changed. */
   (Base & { type: 'windows:change', from: number, to: number, reason: string }) |
