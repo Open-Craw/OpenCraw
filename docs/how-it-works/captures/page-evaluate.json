@@ -1,0 +1,333 @@
+{
+  "scene": "page-evaluate",
+  "summary": [
+    {
+      "recipeId": "js-data",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ js-data (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/js/",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  evaluate total  … ms",
+    "  · steps.2  evaluate quotes  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+    "  ✚ record [\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+    "  · steps.3  forEach  … ms",
+    "■ js-data: 3 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/js/",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "scope": {
+        "vars": {
+          "count": 3
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/js/"
+        },
+        "total": 10,
+        "quotes": [
+          {
+            "tags": [
+              "change",
+              "deep-thoughts",
+              "thinking",
+              "world"
+            ],
+            "author": {
+              "name": "Albert Einstein",
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+          },
+          {
+            "tags": [
+              "abilities",
+              "choices"
+            ],
+            "author": {
+              "name": "J.K. Rowling",
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+          },
+          {
+            "tags": [
+              "inspirational",
+              "life",
+              "live",
+              "miracle",
+              "miracles"
+            ],
+            "author": {
+              "name": "Albert Einstein",
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/js/",
+          "number": 1
+        },
+        "quote": {
+          "tags": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+          ],
+          "author": {
+            "name": "Albert Einstein",
+            "goodreads_link": "/author/show/9810.Albert_Einstein",
+            "slug": "Albert-Einstein"
+          },
+          "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+          ],
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/js/",
+      "key": "[\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+      "data": {
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling",
+        "tags": [
+          "abilities",
+          "choices"
+        ]
+      },
+      "scope": {
+        "vars": {
+          "count": 3
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/js/"
+        },
+        "total": 10,
+        "quotes": [
+          {
+            "tags": [
+              "change",
+              "deep-thoughts",
+              "thinking",
+              "world"
+            ],
+            "author": {
+              "name": "Albert Einstein",
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+          },
+          {
+            "tags": [
+              "abilities",
+              "choices"
+            ],
+            "author": {
+              "name": "J.K. Rowling",
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+          },
+          {
+            "tags": [
+              "inspirational",
+              "life",
+              "live",
+              "miracle",
+              "miracles"
+            ],
+            "author": {
+              "name": "Albert Einstein",
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/js/",
+          "number": 1
+        },
+        "quote": {
+          "tags": [
+            "abilities",
+            "choices"
+          ],
+          "author": {
+            "name": "J.K. Rowling",
+            "goodreads_link": "/author/show/1077326.J_K_Rowling",
+            "slug": "J-K-Rowling"
+          },
+          "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "steps": []
+        },
+        "author": {
+          "from": "J.K. Rowling",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "abilities",
+            "choices"
+          ],
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/js/",
+      "key": "[\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+      "data": {
+        "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "inspirational",
+          "life",
+          "live",
+          "miracle",
+          "miracles"
+        ]
+      },
+      "scope": {
+        "vars": {
+          "count": 3
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/js/"
+        },
+        "total": 10,
+        "quotes": [
+          {
+            "tags": [
+              "change",
+              "deep-thoughts",
+              "thinking",
+              "world"
+            ],
+            "author": {
+              "name": "Albert Einstein",
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+          },
+          {
+            "tags": [
+              "abilities",
+              "choices"
+            ],
+            "author": {
+              "name": "J.K. Rowling",
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+          },
+          {
+            "tags": [
+              "inspirational",
+              "life",
+              "live",
+              "miracle",
+              "miracles"
+            ],
+            "author": {
+              "name": "Albert Einstein",
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/js/",
+          "number": 1
+        },
+        "quote": {
+          "tags": [
+            "inspirational",
+            "life",
+            "live",
+            "miracle",
+            "miracles"
+          ],
+          "author": {
+            "name": "Albert Einstein",
+            "goodreads_link": "/author/show/9810.Albert_Einstein",
+            "slug": "Albert-Einstein"
+          },
+          "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "inspirational",
+            "life",
+            "live",
+            "miracle",
+            "miracles"
+          ],
+          "steps": []
+        }
+      }
+    }
+  ]
+}

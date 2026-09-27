@@ -1,0 +1,396 @@
+{
+  "scene": "page-scroll",
+  "summary": [
+    {
+      "recipeId": "scroll-and-wait",
+      "emitted": 30,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "scroll-until-stable",
+      "emitted": 10,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ scroll-and-wait (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/scroll",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  wait  … ms",
+    "  · steps.2  scroll  … ms",
+    "  · steps.3  wait  … ms",
+    "  · steps.4  scroll  … ms",
+    "  · steps.5  wait  … ms",
+    "  · steps.6  extract quotes  … ms",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Try not to become a man of success. Rather become a man of value.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It is better to be hated for what you are than to be loved for what you are not.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“I have not failed. I've just found 10,000 ways that won't work.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“A woman is like a tea bag; you never know how strong it is until it's in hot water.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“A day without sunshine is like, you know, night.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“If you can't explain it to a six year old, you don't understand it yourself.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“I like nonsense, it wakes up the brain cells. Fantasy is a necessary ingredient in living.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“I may not have gone where I intended to go, but I think I have ended up where I needed to be.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The opposite of love is not hate, it's indifference. The opposite of art is not ugliness, it's indifference. The opposite of faith is not heresy, it's indifference. And the opposite of life is not death, it's indifference.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It is not a lack of love, but a lack of friendship that makes unhappy marriages.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Good friends, good books, and a sleepy conscience: this is the ideal life.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Life is what happens to us while we are making other plans.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“If I had a flower for every time I thought of you...I could walk through my garden forever.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Some people never go crazy. What truly horrible lives they must lead.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The trouble with having an open mind, of course, is that people will insist on coming along and trying to put things in it.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Think left and think right and think low and think high. Oh, the thinks you can think up if only you try!”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The reason I talk to myself is because I’m the only one whose answers I accept.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“You may say I'm a dreamer, but I'm not the only one. I hope someday you'll join us. And the world will live as one.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“I am free of all prejudice. I hate everyone equally. ”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The question isn't who is going to let me; it's who is going to stop me.”\"]",
+    "    · steps.7.steps.0  extract text  … ms",
+    "    · steps.7.steps.1  extract author  … ms",
+    "    · steps.7.steps.2  extract tags  … ms",
+    "  ✚ record [\"“′Classic′ - a book which people praise and don't read.”\"]",
+    "  · steps.7  forEach  … ms",
+    "■ scroll-and-wait: 30 emitted, 0 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ scroll-until-stable (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/scroll",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  wait  … ms",
+    "  · steps.2  scroll  … ms",
+    "  · steps.3  extract quotes  … ms",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“Try not to become a man of success. Rather become a man of value.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It is better to be hated for what you are than to be loved for what you are not.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“I have not failed. I've just found 10,000 ways that won't work.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“A woman is like a tea bag; you never know how strong it is until it's in hot water.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“A day without sunshine is like, you know, night.”\"]",
+    "  · steps.4  forEach  … ms",
+    "■ scroll-until-stable: 10 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/scroll",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/scroll"
+        },
+        "quotes": [
+          "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+          "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+          "<span class=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">inspirational</a> <a class=\"tag\">life</a> <a class=\"tag\">live</a> <a class=\"tag\">miracle</a> <a class=\"tag\">miracles</a></div>",
+          "<span class=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span><span>by <small class=\"author\">Jane Austen</small></span><div class=\"tags\">Tags: <a class=\"tag\">aliteracy</a> <a class=\"tag\">books</a> <a class=\"tag\">classic</a> <a class=\"tag\">humor</a></div>",
+          "<span class=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span><span>by <small class=\"author\">Marilyn Monroe</small></span><div class=\"tags\">Tags: <a class=\"tag\">be-yourself</a> <a class=\"tag\">inspirational</a></div>",
+          "<span class=\"text\">“Try not to become a man of success. Rather become a man of value.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">adulthood</a> <a class=\"tag\">success</a> <a class=\"tag\">value</a></div>",
+          "<span class=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span><span>by <small class=\"author\">André Gide</small></span><div class=\"tags\">Tags: <a class=\"tag\">life</a> <a class=\"tag\">love</a></div>",
+          "<span class=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span><span>by <small class=\"author\">Thomas A. Edison</small></span><div class=\"tags\">Tags: <a class=\"tag\">edison</a> <a class=\"tag\">failure</a> <a class=\"tag\">inspirational</a> <a class=\"tag\">paraphrased</a></div>",
+          "<span class=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span><span>by <small class=\"author\">Eleanor Roosevelt</small></span><div class=\"tags\">Tags: <a class=\"tag\">misattributed-eleanor-roosevelt</a></div>",
+          "<span class=\"text\">“A day without sunshine is like, you know, night.”</span><span>by <small class=\"author\">Steve Martin</small></span><div class=\"tags\">Tags: <a class=\"tag\">humor</a> <a class=\"tag\">obvious</a> <a class=\"tag\">simile</a></div>",
+          "… 20 more"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/scroll",
+          "number": 1
+        },
+        "quote": "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+          ],
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/scroll",
+      "key": "[\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+      "data": {
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling",
+        "tags": [
+          "abilities",
+          "choices"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/scroll"
+        },
+        "quotes": [
+          "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+          "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+          "<span class=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">inspirational</a> <a class=\"tag\">life</a> <a class=\"tag\">live</a> <a class=\"tag\">miracle</a> <a class=\"tag\">miracles</a></div>",
+          "<span class=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span><span>by <small class=\"author\">Jane Austen</small></span><div class=\"tags\">Tags: <a class=\"tag\">aliteracy</a> <a class=\"tag\">books</a> <a class=\"tag\">classic</a> <a class=\"tag\">humor</a></div>",
+          "<span class=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span><span>by <small class=\"author\">Marilyn Monroe</small></span><div class=\"tags\">Tags: <a class=\"tag\">be-yourself</a> <a class=\"tag\">inspirational</a></div>",
+          "<span class=\"text\">“Try not to become a man of success. Rather become a man of value.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">adulthood</a> <a class=\"tag\">success</a> <a class=\"tag\">value</a></div>",
+          "<span class=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span><span>by <small class=\"author\">André Gide</small></span><div class=\"tags\">Tags: <a class=\"tag\">life</a> <a class=\"tag\">love</a></div>",
+          "<span class=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span><span>by <small class=\"author\">Thomas A. Edison</small></span><div class=\"tags\">Tags: <a class=\"tag\">edison</a> <a class=\"tag\">failure</a> <a class=\"tag\">inspirational</a> <a class=\"tag\">paraphrased</a></div>",
+          "<span class=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span><span>by <small class=\"author\">Eleanor Roosevelt</small></span><div class=\"tags\">Tags: <a class=\"tag\">misattributed-eleanor-roosevelt</a></div>",
+          "<span class=\"text\">“A day without sunshine is like, you know, night.”</span><span>by <small class=\"author\">Steve Martin</small></span><div class=\"tags\">Tags: <a class=\"tag\">humor</a> <a class=\"tag\">obvious</a> <a class=\"tag\">simile</a></div>",
+          "… 20 more"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/scroll",
+          "number": 1
+        },
+        "quote": "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling",
+        "tags": [
+          "abilities",
+          "choices"
+        ]
+      },
+      "mapping": {
+        "text": {
+          "from": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "steps": []
+        },
+        "author": {
+          "from": "J.K. Rowling",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "abilities",
+            "choices"
+          ],
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/scroll",
+      "key": "[\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+      "data": {
+        "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "inspirational",
+          "life",
+          "live",
+          "miracle",
+          "miracles"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/scroll"
+        },
+        "quotes": [
+          "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+          "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+          "<span class=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">inspirational</a> <a class=\"tag\">life</a> <a class=\"tag\">live</a> <a class=\"tag\">miracle</a> <a class=\"tag\">miracles</a></div>",
+          "<span class=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span><span>by <small class=\"author\">Jane Austen</small></span><div class=\"tags\">Tags: <a class=\"tag\">aliteracy</a> <a class=\"tag\">books</a> <a class=\"tag\">classic</a> <a class=\"tag\">humor</a></div>",
+          "<span class=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span><span>by <small class=\"author\">Marilyn Monroe</small></span><div class=\"tags\">Tags: <a class=\"tag\">be-yourself</a> <a class=\"tag\">inspirational</a></div>",
+          "<span class=\"text\">“Try not to become a man of success. Rather become a man of value.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">adulthood</a> <a class=\"tag\">success</a> <a class=\"tag\">value</a></div>",
+          "<span class=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span><span>by <small class=\"author\">André Gide</small></span><div class=\"tags\">Tags: <a class=\"tag\">life</a> <a class=\"tag\">love</a></div>",
+          "<span class=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span><span>by <small class=\"author\">Thomas A. Edison</small></span><div class=\"tags\">Tags: <a class=\"tag\">edison</a> <a class=\"tag\">failure</a> <a class=\"tag\">inspirational</a> <a class=\"tag\">paraphrased</a></div>",
+          "<span class=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span><span>by <small class=\"author\">Eleanor Roosevelt</small></span><div class=\"tags\">Tags: <a class=\"tag\">misattributed-eleanor-roosevelt</a></div>",
+          "<span class=\"text\">“A day without sunshine is like, you know, night.”</span><span>by <small class=\"author\">Steve Martin</small></span><div class=\"tags\">Tags: <a class=\"tag\">humor</a> <a class=\"tag\">obvious</a> <a class=\"tag\">simile</a></div>",
+          "… 20 more"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/scroll",
+          "number": 1
+        },
+        "quote": "<span class=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">inspirational</a> <a class=\"tag\">life</a> <a class=\"tag\">live</a> <a class=\"tag\">miracle</a> <a class=\"tag\">miracles</a></div>",
+        "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "inspirational",
+          "life",
+          "live",
+          "miracle",
+          "miracles"
+        ]
+      },
+      "mapping": {
+        "text": {
+          "from": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "inspirational",
+            "life",
+            "live",
+            "miracle",
+            "miracles"
+          ],
+          "steps": []
+        }
+      }
+    }
+  ]
+}

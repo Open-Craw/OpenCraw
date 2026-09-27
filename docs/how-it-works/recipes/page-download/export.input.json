@@ -35,7 +35,7 @@
       "id": "table",
       "from": "export",
       "kind": "table",
-      "selector": "^text$",
+      "selector": "^text author$",
       "columns": {
         "text": "^text$",
         "author": "^author$"

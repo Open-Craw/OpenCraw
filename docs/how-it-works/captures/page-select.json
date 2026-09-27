@@ -1,0 +1,123 @@
+{
+  "scene": "page-select",
+  "summary": [
+    {
+      "recipeId": "search",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ search (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/search.aspx",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  select  … ms",
+    "  · steps.2  select  … ms",
+    "  · steps.3  click  … ms",
+    "  · steps.4  wait  … ms",
+    "  · steps.5  extract quotes  … ms",
+    "    · steps.6.steps.0  extract text  … ms",
+    "    · steps.6.steps.1  extract author  … ms",
+    "    · steps.6.steps.2  extract tag  … ms",
+    "  ✚ record [\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+    "    · steps.6.steps.0  extract text  … ms",
+    "    · steps.6.steps.1  extract author  … ms",
+    "    · steps.6.steps.2  extract tag  … ms",
+    "  ✚ record [\"“Life is like riding a bicycle. To keep your balance, you must keep moving.”\"]",
+    "  · steps.6  forEach  … ms",
+    "■ search: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/filter.aspx",
+      "key": "[\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+      "data": {
+        "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+        "author": "Albert Einstein",
+        "tag": "life"
+      },
+      "scope": {
+        "vars": {
+          "author": "Albert Einstein",
+          "tag": "life"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/search.aspx"
+        },
+        "quotes": [
+          "\n            <span class=\"content\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span> - \n            <span class=\"author\">Albert Einstein</span> (<span class=\"tag\">life</span>)\n        ",
+          "\n            <span class=\"content\">“Life is like riding a bicycle. To keep your balance, you must keep moving.”</span> - \n            <span class=\"author\">Albert Einstein</span> (<span class=\"tag\">life</span>)\n        "
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/filter.aspx",
+          "number": 1
+        },
+        "quote": "\n            <span class=\"content\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span> - \n            <span class=\"author\">Albert Einstein</span> (<span class=\"tag\">life</span>)\n        ",
+        "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+        "author": "Albert Einstein",
+        "tag": "life"
+      },
+      "mapping": {
+        "text": {
+          "from": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tag": {
+          "from": "life",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/filter.aspx",
+      "key": "[\"“Life is like riding a bicycle. To keep your balance, you must keep moving.”\"]",
+      "data": {
+        "text": "“Life is like riding a bicycle. To keep your balance, you must keep moving.”",
+        "author": "Albert Einstein",
+        "tag": "life"
+      },
+      "scope": {
+        "vars": {
+          "author": "Albert Einstein",
+          "tag": "life"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/search.aspx"
+        },
+        "quotes": [
+          "\n            <span class=\"content\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span> - \n            <span class=\"author\">Albert Einstein</span> (<span class=\"tag\">life</span>)\n        ",
+          "\n            <span class=\"content\">“Life is like riding a bicycle. To keep your balance, you must keep moving.”</span> - \n            <span class=\"author\">Albert Einstein</span> (<span class=\"tag\">life</span>)\n        "
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/filter.aspx",
+          "number": 1
+        },
+        "quote": "\n            <span class=\"content\">“Life is like riding a bicycle. To keep your balance, you must keep moving.”</span> - \n            <span class=\"author\">Albert Einstein</span> (<span class=\"tag\">life</span>)\n        ",
+        "text": "“Life is like riding a bicycle. To keep your balance, you must keep moving.”",
+        "author": "Albert Einstein",
+        "tag": "life"
+      },
+      "mapping": {
+        "text": {
+          "from": "“Life is like riding a bicycle. To keep your balance, you must keep moving.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tag": {
+          "from": "life",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

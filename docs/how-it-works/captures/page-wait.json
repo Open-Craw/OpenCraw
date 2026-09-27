@@ -1,0 +1,259 @@
+{
+  "scene": "page-wait",
+  "summary": [
+    {
+      "recipeId": "delayed-no-wait",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.1 (extract) failed: no match for .quote .text"
+    },
+    {
+      "recipeId": "delayed-wait",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "js-no-wait",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ delayed-no-wait (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/js-delayed/",
+    "  · steps.0  goto  … ms",
+    "  ✖ step steps.1 (extract) failed: no match for .quote .text",
+    "■ delayed-no-wait: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.1 (extract) failed: no match for .quote .text",
+    "▶ delayed-wait (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/js-delayed/",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  wait  … ms",
+    "  · steps.2  extract first  … ms",
+    "  · steps.3  extract quotes  … ms",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "    · steps.4.steps.0  extract text  … ms",
+    "    · steps.4.steps.1  extract author  … ms",
+    "    · steps.4.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+    "  · steps.4  forEach  … ms",
+    "■ delayed-wait: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ js-no-wait (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/js/",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  extract first  … ms",
+    "  · steps.2  extract quotes  … ms",
+    "    · steps.3.steps.0  extract text  … ms",
+    "    · steps.3.steps.1  extract author  … ms",
+    "    · steps.3.steps.2  extract tags  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "    · steps.3.steps.0  extract text  … ms",
+    "    · steps.3.steps.1  extract author  … ms",
+    "    · steps.3.steps.2  extract tags  … ms",
+    "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+    "  · steps.3  forEach  … ms",
+    "■ js-no-wait: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/js-delayed/",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/js-delayed/"
+        },
+        "first": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "quotes": [
+          "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+          "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+          "<span class=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">inspirational</a> <a class=\"tag\">life</a> <a class=\"tag\">live</a> <a class=\"tag\">miracle</a> <a class=\"tag\">miracles</a></div>",
+          "<span class=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span><span>by <small class=\"author\">Jane Austen</small></span><div class=\"tags\">Tags: <a class=\"tag\">aliteracy</a> <a class=\"tag\">books</a> <a class=\"tag\">classic</a> <a class=\"tag\">humor</a></div>",
+          "<span class=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span><span>by <small class=\"author\">Marilyn Monroe</small></span><div class=\"tags\">Tags: <a class=\"tag\">be-yourself</a> <a class=\"tag\">inspirational</a></div>",
+          "<span class=\"text\">“Try not to become a man of success. Rather become a man of value.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">adulthood</a> <a class=\"tag\">success</a> <a class=\"tag\">value</a></div>",
+          "<span class=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span><span>by <small class=\"author\">André Gide</small></span><div class=\"tags\">Tags: <a class=\"tag\">life</a> <a class=\"tag\">love</a></div>",
+          "<span class=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span><span>by <small class=\"author\">Thomas A. Edison</small></span><div class=\"tags\">Tags: <a class=\"tag\">edison</a> <a class=\"tag\">failure</a> <a class=\"tag\">inspirational</a> <a class=\"tag\">paraphrased</a></div>",
+          "<span class=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span><span>by <small class=\"author\">Eleanor Roosevelt</small></span><div class=\"tags\">Tags: <a class=\"tag\">misattributed-eleanor-roosevelt</a></div>",
+          "<span class=\"text\">“A day without sunshine is like, you know, night.”</span><span>by <small class=\"author\">Steve Martin</small></span><div class=\"tags\">Tags: <a class=\"tag\">humor</a> <a class=\"tag\">obvious</a> <a class=\"tag\">simile</a></div>"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/js-delayed/",
+          "number": 1
+        },
+        "quote": "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+          ],
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/js-delayed/",
+      "key": "[\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+      "data": {
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling",
+        "tags": [
+          "abilities",
+          "choices"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/js-delayed/"
+        },
+        "first": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "quotes": [
+          "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+          "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+          "<span class=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">inspirational</a> <a class=\"tag\">life</a> <a class=\"tag\">live</a> <a class=\"tag\">miracle</a> <a class=\"tag\">miracles</a></div>",
+          "<span class=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span><span>by <small class=\"author\">Jane Austen</small></span><div class=\"tags\">Tags: <a class=\"tag\">aliteracy</a> <a class=\"tag\">books</a> <a class=\"tag\">classic</a> <a class=\"tag\">humor</a></div>",
+          "<span class=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span><span>by <small class=\"author\">Marilyn Monroe</small></span><div class=\"tags\">Tags: <a class=\"tag\">be-yourself</a> <a class=\"tag\">inspirational</a></div>",
+          "<span class=\"text\">“Try not to become a man of success. Rather become a man of value.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">adulthood</a> <a class=\"tag\">success</a> <a class=\"tag\">value</a></div>",
+          "<span class=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span><span>by <small class=\"author\">André Gide</small></span><div class=\"tags\">Tags: <a class=\"tag\">life</a> <a class=\"tag\">love</a></div>",
+          "<span class=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span><span>by <small class=\"author\">Thomas A. Edison</small></span><div class=\"tags\">Tags: <a class=\"tag\">edison</a> <a class=\"tag\">failure</a> <a class=\"tag\">inspirational</a> <a class=\"tag\">paraphrased</a></div>",
+          "<span class=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span><span>by <small class=\"author\">Eleanor Roosevelt</small></span><div class=\"tags\">Tags: <a class=\"tag\">misattributed-eleanor-roosevelt</a></div>",
+          "<span class=\"text\">“A day without sunshine is like, you know, night.”</span><span>by <small class=\"author\">Steve Martin</small></span><div class=\"tags\">Tags: <a class=\"tag\">humor</a> <a class=\"tag\">obvious</a> <a class=\"tag\">simile</a></div>"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/js-delayed/",
+          "number": 1
+        },
+        "quote": "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling",
+        "tags": [
+          "abilities",
+          "choices"
+        ]
+      },
+      "mapping": {
+        "text": {
+          "from": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "steps": []
+        },
+        "author": {
+          "from": "J.K. Rowling",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "abilities",
+            "choices"
+          ],
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/js/",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/js/"
+        },
+        "first": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "quotes": [
+          "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+          "<span class=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span><span>by <small class=\"author\">J.K. Rowling</small></span><div class=\"tags\">Tags: <a class=\"tag\">abilities</a> <a class=\"tag\">choices</a></div>",
+          "<span class=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">inspirational</a> <a class=\"tag\">life</a> <a class=\"tag\">live</a> <a class=\"tag\">miracle</a> <a class=\"tag\">miracles</a></div>",
+          "<span class=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span><span>by <small class=\"author\">Jane Austen</small></span><div class=\"tags\">Tags: <a class=\"tag\">aliteracy</a> <a class=\"tag\">books</a> <a class=\"tag\">classic</a> <a class=\"tag\">humor</a></div>",
+          "<span class=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span><span>by <small class=\"author\">Marilyn Monroe</small></span><div class=\"tags\">Tags: <a class=\"tag\">be-yourself</a> <a class=\"tag\">inspirational</a></div>",
+          "<span class=\"text\">“Try not to become a man of success. Rather become a man of value.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">adulthood</a> <a class=\"tag\">success</a> <a class=\"tag\">value</a></div>",
+          "<span class=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span><span>by <small class=\"author\">André Gide</small></span><div class=\"tags\">Tags: <a class=\"tag\">life</a> <a class=\"tag\">love</a></div>",
+          "<span class=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span><span>by <small class=\"author\">Thomas A. Edison</small></span><div class=\"tags\">Tags: <a class=\"tag\">edison</a> <a class=\"tag\">failure</a> <a class=\"tag\">inspirational</a> <a class=\"tag\">paraphrased</a></div>",
+          "<span class=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span><span>by <small class=\"author\">Eleanor Roosevelt</small></span><div class=\"tags\">Tags: <a class=\"tag\">misattributed-eleanor-roosevelt</a></div>",
+          "<span class=\"text\">“A day without sunshine is like, you know, night.”</span><span>by <small class=\"author\">Steve Martin</small></span><div class=\"tags\">Tags: <a class=\"tag\">humor</a> <a class=\"tag\">obvious</a> <a class=\"tag\">simile</a></div>"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/js/",
+          "number": 1
+        },
+        "quote": "<span class=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span><span>by <small class=\"author\">Albert Einstein</small></span><div class=\"tags\">Tags: <a class=\"tag\">change</a> <a class=\"tag\">deep-thoughts</a> <a class=\"tag\">thinking</a> <a class=\"tag\">world</a></div>",
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+          ],
+          "steps": []
+        }
+      }
+    }
+  ]
+}

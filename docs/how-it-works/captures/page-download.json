@@ -1,0 +1,569 @@
+{
+  "scene": "page-download",
+  "summary": [
+    {
+      "recipeId": "export",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ export (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  evaluate rowsWritten  … ms",
+    "  · steps.2  click export  … ms",
+    "  · steps.3  extract table  … ms",
+    "  · steps.4  set rows  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+    "  ✚ record [\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+    "  · steps.5  forEach  … ms",
+    "■ export: 3 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "rowsWritten": 10,
+        "export": {
+          "kind": "workbook",
+          "sheets": [
+            {
+              "name": "quotes",
+              "rows": [
+                [
+                  "text",
+                  "author"
+                ],
+                [
+                  "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+                  "J.K. Rowling"
+                ],
+                [
+                  "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+                  "Jane Austen"
+                ],
+                [
+                  "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+                  "Marilyn Monroe"
+                ],
+                [
+                  "“Try not to become a man of success. Rather become a man of value.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“It is better to be hated for what you are than to be loved for what you are not.”",
+                  "André Gide"
+                ],
+                [
+                  "“I have not failed. I've just found 10,000 ways that won't work.”",
+                  "Thomas A. Edison"
+                ],
+                [
+                  "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+                  "Eleanor Roosevelt"
+                ],
+                "… 1 more"
+              ]
+            }
+          ],
+          "csv": {
+            "encoding": "utf-8",
+            "delimiter": ","
+          }
+        },
+        "table": {
+          "sheet": "quotes",
+          "title": "text",
+          "header": [
+            "text",
+            "author"
+          ],
+          "rows": [
+            {
+              "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+              "author": "J.K. Rowling"
+            },
+            {
+              "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+              "author": "Jane Austen"
+            },
+            {
+              "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+              "author": "Marilyn Monroe"
+            },
+            {
+              "text": "“Try not to become a man of success. Rather become a man of value.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“It is better to be hated for what you are than to be loved for what you are not.”",
+              "author": "André Gide"
+            },
+            {
+              "text": "“I have not failed. I've just found 10,000 ways that won't work.”",
+              "author": "Thomas A. Edison"
+            },
+            {
+              "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+              "author": "Eleanor Roosevelt"
+            },
+            {
+              "text": "“A day without sunshine is like, you know, night.”",
+              "author": "Steve Martin"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+            "author": "J.K. Rowling"
+          },
+          {
+            "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+            "author": "Jane Austen"
+          },
+          {
+            "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+            "author": "Marilyn Monroe"
+          },
+          {
+            "text": "“Try not to become a man of success. Rather become a man of value.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“It is better to be hated for what you are than to be loved for what you are not.”",
+            "author": "André Gide"
+          },
+          {
+            "text": "“I have not failed. I've just found 10,000 ways that won't work.”",
+            "author": "Thomas A. Edison"
+          },
+          {
+            "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+            "author": "Eleanor Roosevelt"
+          },
+          {
+            "text": "“A day without sunshine is like, you know, night.”",
+            "author": "Steve Martin"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/",
+          "number": 1
+        },
+        "row": {
+          "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "author": "Albert Einstein"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/",
+      "key": "[\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+      "data": {
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "rowsWritten": 10,
+        "export": {
+          "kind": "workbook",
+          "sheets": [
+            {
+              "name": "quotes",
+              "rows": [
+                [
+                  "text",
+                  "author"
+                ],
+                [
+                  "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+                  "J.K. Rowling"
+                ],
+                [
+                  "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+                  "Jane Austen"
+                ],
+                [
+                  "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+                  "Marilyn Monroe"
+                ],
+                [
+                  "“Try not to become a man of success. Rather become a man of value.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“It is better to be hated for what you are than to be loved for what you are not.”",
+                  "André Gide"
+                ],
+                [
+                  "“I have not failed. I've just found 10,000 ways that won't work.”",
+                  "Thomas A. Edison"
+                ],
+                [
+                  "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+                  "Eleanor Roosevelt"
+                ],
+                "… 1 more"
+              ]
+            }
+          ],
+          "csv": {
+            "encoding": "utf-8",
+            "delimiter": ","
+          }
+        },
+        "table": {
+          "sheet": "quotes",
+          "title": "text",
+          "header": [
+            "text",
+            "author"
+          ],
+          "rows": [
+            {
+              "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+              "author": "J.K. Rowling"
+            },
+            {
+              "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+              "author": "Jane Austen"
+            },
+            {
+              "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+              "author": "Marilyn Monroe"
+            },
+            {
+              "text": "“Try not to become a man of success. Rather become a man of value.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“It is better to be hated for what you are than to be loved for what you are not.”",
+              "author": "André Gide"
+            },
+            {
+              "text": "“I have not failed. I've just found 10,000 ways that won't work.”",
+              "author": "Thomas A. Edison"
+            },
+            {
+              "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+              "author": "Eleanor Roosevelt"
+            },
+            {
+              "text": "“A day without sunshine is like, you know, night.”",
+              "author": "Steve Martin"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+            "author": "J.K. Rowling"
+          },
+          {
+            "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+            "author": "Jane Austen"
+          },
+          {
+            "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+            "author": "Marilyn Monroe"
+          },
+          {
+            "text": "“Try not to become a man of success. Rather become a man of value.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“It is better to be hated for what you are than to be loved for what you are not.”",
+            "author": "André Gide"
+          },
+          {
+            "text": "“I have not failed. I've just found 10,000 ways that won't work.”",
+            "author": "Thomas A. Edison"
+          },
+          {
+            "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+            "author": "Eleanor Roosevelt"
+          },
+          {
+            "text": "“A day without sunshine is like, you know, night.”",
+            "author": "Steve Martin"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/",
+          "number": 1
+        },
+        "row": {
+          "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "author": "J.K. Rowling"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "steps": []
+        },
+        "author": {
+          "from": "J.K. Rowling",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/",
+      "key": "[\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
+      "data": {
+        "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+        "author": "Albert Einstein"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "rowsWritten": 10,
+        "export": {
+          "kind": "workbook",
+          "sheets": [
+            {
+              "name": "quotes",
+              "rows": [
+                [
+                  "text",
+                  "author"
+                ],
+                [
+                  "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+                  "J.K. Rowling"
+                ],
+                [
+                  "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+                  "Jane Austen"
+                ],
+                [
+                  "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+                  "Marilyn Monroe"
+                ],
+                [
+                  "“Try not to become a man of success. Rather become a man of value.”",
+                  "Albert Einstein"
+                ],
+                [
+                  "“It is better to be hated for what you are than to be loved for what you are not.”",
+                  "André Gide"
+                ],
+                [
+                  "“I have not failed. I've just found 10,000 ways that won't work.”",
+                  "Thomas A. Edison"
+                ],
+                [
+                  "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+                  "Eleanor Roosevelt"
+                ],
+                "… 1 more"
+              ]
+            }
+          ],
+          "csv": {
+            "encoding": "utf-8",
+            "delimiter": ","
+          }
+        },
+        "table": {
+          "sheet": "quotes",
+          "title": "text",
+          "header": [
+            "text",
+            "author"
+          ],
+          "rows": [
+            {
+              "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+              "author": "J.K. Rowling"
+            },
+            {
+              "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+              "author": "Jane Austen"
+            },
+            {
+              "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+              "author": "Marilyn Monroe"
+            },
+            {
+              "text": "“Try not to become a man of success. Rather become a man of value.”",
+              "author": "Albert Einstein"
+            },
+            {
+              "text": "“It is better to be hated for what you are than to be loved for what you are not.”",
+              "author": "André Gide"
+            },
+            {
+              "text": "“I have not failed. I've just found 10,000 ways that won't work.”",
+              "author": "Thomas A. Edison"
+            },
+            {
+              "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+              "author": "Eleanor Roosevelt"
+            },
+            {
+              "text": "“A day without sunshine is like, you know, night.”",
+              "author": "Steve Martin"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+            "author": "J.K. Rowling"
+          },
+          {
+            "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+            "author": "Jane Austen"
+          },
+          {
+            "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
+            "author": "Marilyn Monroe"
+          },
+          {
+            "text": "“Try not to become a man of success. Rather become a man of value.”",
+            "author": "Albert Einstein"
+          },
+          {
+            "text": "“It is better to be hated for what you are than to be loved for what you are not.”",
+            "author": "André Gide"
+          },
+          {
+            "text": "“I have not failed. I've just found 10,000 ways that won't work.”",
+            "author": "Thomas A. Edison"
+          },
+          {
+            "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
+            "author": "Eleanor Roosevelt"
+          },
+          {
+            "text": "“A day without sunshine is like, you know, night.”",
+            "author": "Steve Martin"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/",
+          "number": 1
+        },
+        "row": {
+          "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+          "author": "Albert Einstein"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

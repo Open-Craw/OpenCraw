@@ -37,8 +37,6 @@
     "■ goto-pages: 3 emitted, 0 rejected, 0 duplicates, 3 pages, … ms",
     "▶ request-missing (web)",
     "  ⇄ access direct (direct)",
-    "  ↺ https://quotes.toscrape.com/: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
-    "  ↺ https://quotes.toscrape.com/: net::ERR_TOO_MANY_RETRIES, try 3 in … ms",
     "  ⇢ page 1  https://quotes.toscrape.com/",
     "  · steps.0  goto  … ms",
     "  ⇢ page 1  https://quotes.toscrape.com/does-not-exist  [404]",

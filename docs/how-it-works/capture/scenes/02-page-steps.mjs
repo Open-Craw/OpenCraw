@@ -2,6 +2,10 @@
 // ../../recipes/<name>/, keeps `keep` records, and takes each of its `screenshots`: open `url`, run `steps`
 // (fill, click, wait, select), outline each `highlight` selector with its label, save the viewport or the
 // `clip` element.
+//
+// A screenshot `click` waits for the page's load event, but only for the page it starts on. After a step that
+// navigates (a login, a postback), a click on something inert (a heading, a label) waits for the new page's
+// load, stylesheets included, so the outlines and labels land where the page finally puts the elements.
 
 export const SCENES = [
   {
@@ -32,7 +36,7 @@ export const SCENES = [
         steps:     [{ fill: '#username', value: 'scraper' }, { fill: '#password', value: 'practice' }, { click: 'input[type=submit]' }, { wait: "a[href='/logout']" }, { click: '.tags-box h2' }],
         height:    560,
         highlight: [
-          { selector: "a[href='/logout']", label: "wait a[href='/logout']" },
+          { selector: "a[href='/logout']", label: 'wait' },
           { selector: ".quote a[href*='goodreads.com']", label: 'only shown after a login' },
         ],
       },
@@ -58,7 +62,7 @@ export const SCENES = [
       },
       {
         url:       'https://quotes.toscrape.com/search.aspx',
-        steps:     [{ select: '#author', value: 'Albert Einstein' }, { select: '#tag', value: 'life' }],
+        steps:     [{ select: '#author', value: 'Albert Einstein' }, { select: '#tag', value: 'life' }, { click: 'label[for=author]' }],
         clip:      'form',
         highlight: [
           { selector: '#author', label: 'Albert Einstein, kept by the ViewState' },
@@ -119,7 +123,7 @@ export const SCENES = [
       url:       'https://quotes.toscrape.com/',
       height:    420,
       highlight: [
-        { selector: '.header-box p', label: 'the script adds "Export CSV" here' },
+        { selector: '.header-box p', label: 'link' },
         { selector: '.quote', label: 'the rows it writes to the CSV' },
       ],
     }],
