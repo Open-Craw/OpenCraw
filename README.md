@@ -27,6 +27,31 @@ Several input recipes can feed one output; a run processes them one after anothe
 |---|---|
 | [`apps/azure-host`](./apps/azure-host) | A complete Azure Functions app on `@opencraw/azure-durable`, ready to build, run in Docker and deploy with one script: `/crawl`, `/jobs`, `/mcp`, and two recipe sets that work the moment it is up. |
 
+## What it reads
+
+One recipe format covers every source below. A site, an API and a PDF price list can feed the same output, and
+the records come out typed and checked alike. Documents arrive by a `request` (typed by `Content-Type`), a local
+`file:` URL (typed by extension), or a browser download; `as` overrides the guess.
+
+| Source | Reaches a recipe by | Read with | What the reader does |
+|---|---|---|---|
+| **Live web pages** | a real browser (Playwright): `goto`, `click`, `fill`, `select`, `scroll`, `wait` | `css`, `xpath`, `regex`, `table` | Renders JavaScript, logs in, follows postbacks and infinite scroll, and hands its cookies to API calls. [→](./docs/how-it-works/02-page-steps.md) |
+| **HTML over HTTP** | `request`, no browser | `css`, `xpath`, `regex`, `table` | Fast static reads; pulls JSON out of `<script>` state and JSON-LD; HTML tables read with `rowspan`/`colspan` placed. [→](./docs/how-it-works/03-data-steps.md) |
+| **JSON APIs, JSON Lines** | `request` (GET, POST, forms, cursors, pages) | `jsonpath`, `regex` | Unwraps JSONP, `)]}'` guards and `window.__STATE__ = …` assignments without running them. [→](./docs/how-it-works/06-documents.md#10-json-and-json-lines) |
+| **XML, RSS, Atom, sitemaps** | `request` or `file:` (`.xml.gz` gunzipped) | `xpath`, `css`, `regex` | XPath 1.0 with namespaces, or `ignoreNamespaces`; entities never expanded, nothing external fetched. [→](./docs/how-it-works/06-documents.md#9-xml) |
+| **YAML** | `request` or `file:` | `jsonpath`, `regex` | YAML 1.2 always (`NO` stays `"NO"`), merge keys, several documents; "billion laughs" files refused. [→](./docs/how-it-works/06-documents.md#8-yaml) |
+| **CSV, TSV** | `request` or `file:` | `table`, `jsonpath`, `regex` | Guesses the delimiter and the encoding (BOM, charset, UTF-8, then Windows-1252 for Excel's exports). [→](./docs/how-it-works/06-documents.md#3-spreadsheets-and-csv) |
+| **Excel** (`.xlsx`, `.xlsm`) | `request`, `file:` or a download | `table`, `jsonpath`, `regex` | Every sheet with merged cells, hidden sheets and rows, typed numbers, dates from number formats, and formula results as last saved. [→](./docs/how-it-works/06-documents.md#33-the-xlsx-reader) |
+| **PowerPoint** (`.pptx`) | `request`, `file:` or a download | `table`, `jsonpath`, `regex` | Shapes in reading order with their positions, tables with merges, chart series from the chart's own data, and speaker notes. [→](./docs/how-it-works/06-documents.md#4-powerpoint) |
+| **Word** (`.docx`) | `request`, `file:` or a download | `css`, `xpath`, `regex`, `table` | Read as HTML: headings, lists, tables, headers, footers and notes, tracked changes accepted. [→](./docs/how-it-works/06-documents.md#5-word) |
+| **PDF** | `request`, `file:` or a download | `table`, `jsonpath`, `regex` | Rebuilds tables from text positions alone: cells, rows, columns and headers, wrapped cells regrouped, with no ruling lines needed. Text-layer PDFs; no OCR. [→](./docs/how-it-works/06-documents.md#2-pdf) |
+| **Markdown** | `request` or `file:` | `css`, `xpath`, `regex`, `table` | GitHub-flavoured, rendered to HTML with one section per heading; front matter read as YAML. [→](./docs/how-it-works/06-documents.md#7-markdown) |
+| **Plain text** | anything else | `regex`, `xpath` | The decoded text, as is. |
+
+The document readers load on first use, so a crawl that reads only web pages never loads pdf.js or the Office
+reader. Legacy binary Office files (`.xls`, `.ppt`, `.doc`), encrypted Office files and OpenDocument are refused
+with a clear error.
+
 ## Quick start
 
 ```sh
