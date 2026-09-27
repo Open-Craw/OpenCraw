@@ -15,6 +15,12 @@ export interface WindowsPolicy {
   shrink?:  'one' | 'half'
   /** After this many failures in a row, restart the browser and go back to `min`. Default: never. */
   restart?: { after?: number }
+  /**
+   * A window that has waited this long for an item retires, never below
+   * `min`: for sources fed by pushes, whose callers slow down. Default: a
+   * window waits as long as the source takes.
+   */
+  idle?:    { afterMs: number }
 }
 
 export interface ResolvedWindowsPolicy {
@@ -24,6 +30,7 @@ export interface ResolvedWindowsPolicy {
   growAfter:     number
   shrink:        'one' | 'half'
   restartAfter?: number
+  idleAfterMs?:  number
 }
 
 /** A change the pool must carry out. */
@@ -49,8 +56,18 @@ export function resolveWindowsPolicy (policy: WindowsPolicy | number = 1): Resol
   if (!Number.isSafeInteger(min) || min < 1) throw new Error(`windows.min must be a whole number from 1, got ${min}`)
   if (!Number.isSafeInteger(max) || max < min) throw new Error(`windows.max must be a whole number from windows.min (${min}), got ${max}`)
   if (!Number.isSafeInteger(start) || start < min || start > max) throw new Error(`windows.start must be between ${min} and ${max}, got ${start}`)
+  const idleAfterMs = given.idle?.afterMs
+  if (idleAfterMs !== undefined && (!Number.isFinite(idleAfterMs) || idleAfterMs <= 0)) throw new Error(`windows.idle.afterMs must be a positive number of milliseconds, got ${idleAfterMs}`)
 
-  return { min, max, start, growAfter: given.grow?.after ?? DEFAULT_GROW_AFTER, shrink: given.shrink ?? 'half', ...(given.restart?.after !== undefined && { restartAfter: given.restart.after }) }
+  return {
+    min,
+    max,
+    start,
+    growAfter: given.grow?.after ?? DEFAULT_GROW_AFTER,
+    shrink:    given.shrink ?? 'half',
+    ...(given.restart?.after !== undefined && { restartAfter: given.restart.after }),
+    ...(idleAfterMs !== undefined && { idleAfterMs }),
+  }
 }
 
 /**
@@ -75,8 +92,10 @@ export class WindowCount {
     this.count = policy.start
   }
 
-  private succeeded (): WindowCountChange | undefined {
+  private succeeded (saturated: boolean): WindowCountChange | undefined {
     this.failures = 0
+    // A window already waiting for work says more windows would only wait too.
+    if (!saturated) return undefined
     this.successes += 1
     if (this.successes < this.policy.growAfter) return undefined
     this.successes = 0
@@ -101,6 +120,16 @@ export class WindowCount {
     return this.count
   }
 
+  /** Never fewer windows. */
+  get min (): number {
+    return this.policy.min
+  }
+
+  /** How long a window waits for an item before it retires, when it may. */
+  get idleAfterMs (): number | undefined {
+    return this.policy.idleAfterMs
+  }
+
   /** Increases at every shrink: an item remembers it when it starts. */
   get generation (): number {
     return this.shrinks
@@ -111,11 +140,12 @@ export class WindowCount {
    *
    * @param outcome - How it ended.
    * @param generation - `generation` when the item started.
+   * @param saturated - Whether every window was busy: a success counts towards growing only then.
    * @returns The change to carry out, if any.
    */
-  record (outcome: WorkOutcome, generation: number): WindowCountChange | undefined {
+  record (outcome: WorkOutcome, generation: number, saturated = true): WindowCountChange | undefined {
     if (outcome === 'neutral') return undefined
-    if (outcome === 'success') return this.succeeded()
+    if (outcome === 'success') return this.succeeded(saturated)
     this.successes = 0
     this.failures += 1
     const { restartAfter, min } = this.policy
@@ -130,6 +160,22 @@ export class WindowCount {
     if (generation < this.shrinks) return undefined
 
     return this.shrunk()
+  }
+
+  /**
+   * A window waited too long for an item and retires. The pool aims for one
+   * window fewer than are running, unless it already aims lower. Not a
+   * failure: the generation and the counts in a row stay as they are.
+   *
+   * @param active - Windows running, the idle one included.
+   * @returns The change, when the target moved.
+   */
+  idle (active: number): WindowCountChange | undefined {
+    if (this.count < active || this.count <= this.policy.min) return undefined
+    const from = this.count
+    this.count = Math.max(this.policy.min, active - 1)
+
+    return { kind: 'shrink', from, to: this.count, reason: `idle for ${this.policy.idleAfterMs ?? 0} ms` }
   }
 
   /** Starts counting again after a restart. */

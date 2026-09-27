@@ -1139,7 +1139,7 @@ const recipes = await loadRecipeSet({ output: 'recipes/movie.output.json', input
 const crawler = createCrawler({
   sink:    jsonLinesSink('out/movies.jsonl'),          // default: memorySink()
   hooks:   { positive: input => Number(input) > 0 },
-  dedupe:  'run',                                       // 'run' | 'recipe' | 'off'
+  dedupe:  'run',                                       // 'run' | 'recipe' | 'off'; worker mode defaults to 'recipe' (per item)
   onRecipeError: 'continue',                            // or 'stop'
   browser: { headless: true },                          // Playwright launch settings
   onEvent: event => { const line = traceLine(event); if (line) console.log(line) },
@@ -1176,6 +1176,24 @@ With `resume`, a record whose key the sink has is not written again: it is count
 reported as `record:skipped`. The steps still run (the engine has to reach the record to know its key), so
 a resumed run costs the requests but not the duplicates. Any sink can support this by implementing `has(key)`;
 `memorySink` does. `resume` with a sink that cannot answer throws at `createCrawler`.
+
+**Running recipes you don't trust.** A service that runs other people's recipes must not become a way into
+its own network or files. `allowedHosts` limits every request the crawler makes:
+
+```ts
+const crawler = createCrawler({ allowedHosts: ['example.com', '*.shop.example', 'api.example.org:8443'] })
+```
+
+- A pattern is a host, `*.host` (its subdomains and the host itself), `host:port`, or `*` for any host.
+- It holds wherever a request leaves: navigations, the page's own requests (a script's `fetch`, images,
+  frames), web sockets, `request` steps, and every redirect hop, which is checked before it is followed.
+- `file:` is refused whatever the list says; `data:`, `blob:` and `about:` never leave the page and pass.
+- Service workers are blocked, since their requests would bypass the check. A remote browser's own service
+  workers (`cdp` profiles) can't be blocked.
+- A refused request fails the step: `HostNotAllowedError` in api mode, `net::ERR_BLOCKED_BY_CLIENT` in a
+  browser, both reported as `errorKind: 'host'`.
+- The check is by name. A public name that resolves to a private address is not caught, so run the service
+  in a network that can't reach anything it shouldn't.
 
 ### 8.1 Change detection
 

@@ -1,4 +1,5 @@
 import { once } from 'node:events'
+import { setTimeout as delay } from 'node:timers/promises'
 import type { EventBus } from '../crawl-events'
 import { ExtractionScope } from '../extraction-scope'
 import type { RecipeSet } from '../recipe-loading'
@@ -14,6 +15,9 @@ import { defaultOutcome } from './work-outcome.policy'
 
 /** How long a reused window's `check` element may take to show. */
 const CHECK_TIMEOUT_MS = 5000
+
+/** What a lane waiting for work got: an item, the end of the work, or too long a wait. */
+const IDLE = Symbol('idle')
 
 /** What a worker pool needs from the crawler besides the run dependencies. */
 export interface WorkDependencies extends RecipeRunDependencies {
@@ -63,10 +67,14 @@ export class WorkPool {
   private readonly count:    WindowCount
   private readonly classify: (report: RecipeReport) => WorkOutcome
   private readonly lanes = new Map<number, Promise<void>>()
+  /** Waits for an item that retired lanes gave up on; an item still coming goes to a new lane. */
+  private readonly abandoned = new Set<Promise<void>>()
   private readonly tally:    Record<WorkOutcome, number> = { success: 0, failure: 0, neutral: 0 }
   private readonly recipeId: string
   private active = 0
   private busy = 0
+  /** Lanes waiting for an item: while any is, the pool has windows to spare. */
+  private waiting = 0
   private lanesOpened = 0
   private peak = 0
   private epoch = 0
@@ -82,7 +90,7 @@ export class WorkPool {
     this.recipeId = set.inputs.length === 1 ? set.inputs[0].id : ''
   }
 
-  private spawn (reason: string): void {
+  private spawn (reason: string, first?: WorkItem): void {
     this.lanesOpened += 1
     const no = this.lanesOpened
     const lane: Lane = { no, bus: this.deps.events.scoped(() => ({ window: no, item: lane.current })), epoch: this.epoch, items: 0, counted: true }
@@ -90,7 +98,7 @@ export class WorkPool {
     this.peak = Math.max(this.peak, this.active)
     const running = (async (): Promise<void> => {
       try {
-        await this.work(lane, reason)
+        await this.work(lane, reason, first)
       } finally {
         this.lanes.delete(no)
       }
@@ -98,22 +106,32 @@ export class WorkPool {
     this.lanes.set(no, running)
   }
 
-  private async work (lane: Lane, reason: string): Promise<void> {
+  private async work (lane: Lane, reason: string, first?: WorkItem): Promise<void> {
     let openReason = reason
     let leaving = 'drained'
+    let item = first
     try {
       for (;;) {
-        if (this.leaves(lane)) {
-          leaving = 'retire'
+        if (item === undefined) {
+          if (this.leaves(lane)) {
+            leaving = 'retire'
 
-          return
+            return
+          }
+          const taken = await this.take(lane)
+          if (taken === IDLE) {
+            leaving = 'idle'
+
+            return
+          }
+          if (taken === undefined) return
+          item = taken
         }
-        const item = await this.take()
-        if (item === undefined) return
         await this.enter()
         try {
           openReason = await this.runItem(lane, item, openReason)
         } finally {
+          item = undefined
           this.busy -= 1
           this.checkRestart()
         }
@@ -140,18 +158,99 @@ export class WorkPool {
     return true
   }
 
-  private async take (): Promise<WorkItem | undefined> {
-    if (this.drained) return undefined
+  /**
+   * The lane's next item. With `windows.idle`, a lane that waits too long
+   * retires when the pool may lose a window; the item it was waiting for, if
+   * the source still sends one, goes to a new lane.
+   */
+  private async take (lane: Lane): Promise<WorkItem | undefined | typeof IDLE> {
+    this.waiting += 1
     try {
-      const item = await this.source.next()
-      if (item === undefined) this.drained = true
+      return await this.wait(lane)
+    } finally {
+      this.waiting -= 1
+    }
+  }
 
-      return item
+  private async wait (lane: Lane): Promise<WorkItem | undefined | typeof IDLE> {
+    if (this.drained) return undefined
+    const idleAfterMs = this.count.idleAfterMs
+    const waiting = idleAfterMs === undefined ? undefined : new AbortController()
+    let pending: Promise<WorkItem | undefined>
+    try {
+      pending = this.source.next(waiting === undefined ? undefined : { signal: waiting.signal })
     } catch (error) {
-      this.fatal ??= error
-      this.drained = true
+      return this.failTaking(error)
+    }
+    if (waiting === undefined || idleAfterMs === undefined) {
+      try {
+        return this.taken(await pending)
+      } catch (error) {
+        return this.failTaking(error)
+      }
+    }
+    const outcome = (async (): Promise<{ item: WorkItem | undefined } | { error: unknown }> => {
+      try {
+        return { item: await pending }
+      } catch (error) {
+        return { error }
+      }
+    })()
+    for (;;) {
+      const timer = new AbortController()
+      const got = await Promise.race([outcome, delay(idleAfterMs, IDLE, { signal: timer.signal })])
+      timer.abort()
+      if (got !== IDLE) return 'error' in got ? this.failTaking(got.error) : this.taken(got.item)
+      if (this.retiresIdle(lane)) {
+        waiting.abort()
+        this.abandon(pending)
 
-      return undefined
+        return IDLE
+      }
+    }
+  }
+
+  private taken (item: WorkItem | undefined): WorkItem | undefined {
+    if (item === undefined) this.drained = true
+
+    return item
+  }
+
+  private failTaking (error: unknown): undefined {
+    this.fatal ??= error
+    this.drained = true
+
+    return
+  }
+
+  /** Whether an idle lane may retire now; if so it is counted out in the same tick. */
+  private retiresIdle (lane: Lane): boolean {
+    if (this.drained || this.active <= this.count.min) return false
+    const change = this.count.idle(this.active)
+    this.active -= 1
+    lane.counted = false
+    if (change !== undefined) lane.bus.emit({ type: 'windows:change', recipeId: lane.window?.recipe.id ?? this.recipeId, from: change.from, to: change.to, reason: change.reason })
+
+    return true
+  }
+
+  /** A retired lane's wait: a source that ignores the abort may still send an item, which then gets a lane of its own. */
+  private abandon (pending: Promise<WorkItem | undefined>): void {
+    const settled = this.adopt(pending)
+    this.abandoned.add(settled)
+    void (async (): Promise<void> => {
+      await settled
+      this.abandoned.delete(settled)
+    })()
+  }
+
+  private async adopt (pending: Promise<WorkItem | undefined>): Promise<void> {
+    try {
+      const item = await pending
+      if (item === undefined) this.drained = true
+      else this.spawn('late', item)
+    } catch {
+      // the source took the wait back
     }
   }
 
@@ -206,7 +305,7 @@ export class WorkPool {
     lane.bus.emit({ type: 'item:finish', recipeId: recipe.id, outcome, durationMs: Date.now() - started, ...(report.error !== undefined && { error: report.error }) })
     await this.settle(item, report, records, outcome, lane.bus)
     lane.current = undefined
-    this.apply(this.count.record(outcome, generation), lane.bus, recipe.id)
+    this.apply(this.count.record(outcome, generation, this.waiting === 0), lane.bus, recipe.id)
     if (report.errorKind === 'browser' && !this.deps.browserAlive()) this.beginRestart('the browser went away', lane.bus, recipe.id)
     if (outcome !== 'success') {
       // A failed item leaves its page in a state nobody knows: the next item gets a fresh window.
@@ -322,7 +421,7 @@ export class WorkPool {
     const started = Date.now()
     const start = this.count.target
     for (let lane = 0; lane < start; lane += 1) this.spawn('start')
-    while (this.lanes.size > 0) await Promise.race(this.lanes.values())
+    while (this.lanes.size > 0 || this.abandoned.size > 0) await Promise.race([...this.lanes.values(), ...this.abandoned])
     if (this.fatal !== undefined) throw this.fatal
 
     return { items: { ...this.tally }, records: this.records, windows: { start, peak: this.peak, final: this.count.target }, restarts: this.restarts, durationMs: Date.now() - started }

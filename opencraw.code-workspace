@@ -137,6 +137,20 @@
         "script": "captcha-tesseract:build",
         "problemMatcher": [],
         "group": "build"
+      },
+      {
+        "label": "azure-durable: qa",
+        "type": "npm",
+        "script": "azure-durable:qa",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "azure-durable: build",
+        "type": "npm",
+        "script": "azure-durable:build",
+        "problemMatcher": [],
+        "group": "build"
       }
     ]
   },

@@ -16,7 +16,12 @@ export interface CrawlOptions {
   /** Where records go; default: kept in memory and returned in the report. */
   sink?:            RecordSink
   onEvent?:         CrawlListener
-  /** Default `run`: a key seen once is dropped for the rest of the run. */
+  /**
+   * Default `run`: a key seen once is dropped for the rest of the run. In
+   * worker mode (`work`) the default is `recipe`, which there means one item:
+   * a key seen twice within an item is a duplicate, the same key in another
+   * item is not. `run` across a `work` call spans every item.
+   */
   dedupe?:          DedupeScope
   /**
    * How many input recipes of a set run at once; default 1, one after
@@ -64,4 +69,13 @@ export interface CrawlOptions {
   accessPlugins?:   AccessPlugin[]
   /** Solvers recipes name in `session.captcha.solver` and `captcha` steps. */
   captchaSolvers?:  CaptchaSolver[]
+  /**
+   * The only hosts the crawler may reach, for recipes it does not trust
+   * (a service running other people's recipes): `example.com`,
+   * `*.example.com` (subdomains and the host), `host:port`, or `*`. Enforced on
+   * every request: navigations, a page's own requests and web sockets,
+   * `request` steps and each redirect hop. `file:` is refused whatever the
+   * list. Default: no limit.
+   */
+  allowedHosts?:    string[]
 }

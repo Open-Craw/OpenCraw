@@ -4,8 +4,10 @@ import { BrowserClient, BrowserProfiles } from '../browser-session'
 import { CaptchaSolverRegistry } from '../captcha'
 import { EventBus } from '../crawl-events'
 import { HookRegistry } from '../hooks'
+import { HostAllowlist } from '../host-allowlist'
 import type { RecipeSet } from '../recipe-loading'
 import { DedupePolicy, memorySink } from '../record-sink'
+import type { DedupeScope } from '../record-sink'
 import { HostThrottle } from '../step-flow'
 import type { CrawlOptions } from './crawl-options.config'
 import type { CrawlReport } from './crawl-report.model'
@@ -21,7 +23,9 @@ export interface Crawler {
    * Worker mode: runs the source's items (a recipe with an item's vars each) on
    * a pool of windows until the source runs dry. Each window keeps its browser
    * context between items; the pool grows and shrinks with `options.windows`.
-   * One `run` or `work` at a time per crawler: they share its sink.
+   * One `run` or `work` at a time per crawler: they share its sink. Unless
+   * `dedupe` says otherwise, a key repeats only within one item: the same key
+   * in another item is that item's record.
    */
   work:  (set: RecipeSet, source: WorkSource, options?: WorkOptions) => Promise<WorkReport>
   /** Closes the browser if one was launched. Safe to call more than once. */
@@ -35,7 +39,7 @@ export interface Crawler {
  * @param options - Hooks, sink, events, browser settings, access, captcha solvers, policies.
  * @returns The crawler.
  * @throws AccessConfigError when the access config cannot work.
- * @throws Error when two captcha solvers share a name.
+ * @throws Error when two captcha solvers share a name, or an allowed host is not a host pattern.
  */
 export function createCrawler (options: CrawlOptions = {}): Crawler {
   const sink = options.sink ?? memorySink()
@@ -46,6 +50,7 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
   const hosts = new HostThrottle(options.throttle ?? options.access?.throttle)
   const profiles = new BrowserProfiles(options.profilesDir ?? resolve(options.storageStateDir ?? '.', '.opencraw', 'profiles'), options.browser)
   const events = new EventBus(options.onEvent)
+  const allowedHosts = HostAllowlist.of(options.allowedHosts)
   let browser: Promise<BrowserClient> | undefined
   let launched: BrowserClient | undefined
   const start = async (): Promise<BrowserClient> => {
@@ -81,12 +86,12 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
     }
     await client.close()
   }
-  const deps = (): RecipeRunDependencies => ({
+  const deps = (dedupe: DedupeScope = 'run'): RecipeRunDependencies => ({
     browser:         launch,
     hooks,
     events,
     sink,
-    dedupe:          new DedupePolicy(options.dedupe),
+    dedupe:          new DedupePolicy(options.dedupe ?? dedupe),
     storageStateDir: options.storageStateDir,
     resume:          options.resume === true,
     debug:           options.debug === true,
@@ -95,6 +100,7 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
     hosts,
     profiles,
     retry:           options.retry,
+    allowedHosts,
 
     ignoreHTTPSErrors: options.browser?.ignoreHTTPSErrors,
   })
@@ -102,7 +108,8 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
   return {
     async work (set, source, workOptions = {}) {
       await sink.open(set.output)
-      const pool = new WorkPool(set, source, workOptions, { ...deps(), restartBrowser, browserAlive: () => launched?.isConnected() ?? true })
+      // Each item is a run of its recipe, so the `recipe` scope de-duplicates within one item.
+      const pool = new WorkPool(set, source, workOptions, { ...deps('recipe'), restartBrowser, browserAlive: () => launched?.isConnected() ?? true })
       let result: Omit<WorkReport, 'sink'>
       try {
         result = await pool.run()

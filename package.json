@@ -28,7 +28,10 @@
     "office-reader:e2e": "nx run office-reader:e2e",
     "captcha-tesseract:qa": "nx run captcha-tesseract:lint && nx run captcha-tesseract:test",
     "captcha-tesseract:build": "nx run captcha-tesseract:build",
-    "captcha-tesseract:e2e": "nx run captcha-tesseract:e2e"
+    "captcha-tesseract:e2e": "nx run captcha-tesseract:e2e",
+    "azure-durable:qa": "nx run azure-durable:lint && nx run azure-durable:test",
+    "azure-durable:build": "nx run azure-durable:build",
+    "azure-durable:e2e": "nx run azure-durable:e2e"
   },
   "private": true,
   "devDependencies": {
@@ -49,6 +52,7 @@
     "@types/node": "^24.0.0",
     "@types/pngjs": "^6.0.5",
     "@typescript/native": "npm:typescript@^7.0.2",
+    "azurite": "^3.37.0",
     "eslint": "^10.8.0",
     "husky": "^9.1.7",
     "jest": "~30.3.0",
@@ -88,7 +92,8 @@
     "postcss": {
       "nanoid": "^3.3.18"
     },
-    "brace-expansion@4.0.0 - 5.0.8": "^5.0.9"
+    "brace-expansion@4.0.0 - 5.0.8": "^5.0.9",
+    "uuid": "^11.1.1"
   },
   "nx": {
     "includedScripts": [],

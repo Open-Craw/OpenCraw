@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { request } from 'playwright'
 import type { APIRequestContext, APIResponse } from 'playwright'
 import { readPptxDeck } from '../deck-document'
+import type { HostAllowlist } from '../host-allowlist'
 import { readDocxHtml } from '../docx-document'
 import { readMarkdown } from '../markdown-document'
 import { readPdf } from '../pdf-document'
@@ -15,6 +16,9 @@ import { gunzipIfNeeded, parseXml } from '../xml-document'
 import { HttpError } from './http-response.contract'
 import type { HttpBody, HttpRequest, HttpResponse, HttpSender } from './http-response.contract'
 import { charsetOf, decodeText } from './text-decoding.algorithm'
+
+/** Redirects followed one by one under an allowlist; Playwright's own default. */
+const MAX_REDIRECTS = 20
 
 /** Playwright's storage state: cookies plus per-origin local storage. */
 export type StorageState = Awaited<ReturnType<APIRequestContext['storageState']>>
@@ -28,6 +32,8 @@ export interface HttpClientOptions {
   ignoreHTTPSErrors?: boolean
   /** Send every request through this proxy. */
   proxy?:             { server: string, username?: string, password?: string, bypass?: string }
+  /** The hosts requests may reach, redirects included; `file:` is refused. */
+  allowedHosts?:      HostAllowlist
 }
 
 /**
@@ -46,7 +52,7 @@ export class HttpClient implements HttpSender {
       proxy:             options.proxy,
     })
 
-    return new HttpClient(context, options.timeoutMs, true)
+    return new HttpClient(context, options.timeoutMs, true, options.allowedHosts)
   }
 
   /**
@@ -57,13 +63,45 @@ export class HttpClient implements HttpSender {
    *
    * @param context - The request context.
    * @param timeoutMs - The default timeout.
+   * @param allowedHosts - The hosts requests may reach, when limited.
    * @returns The client.
    */
-  static over (context: APIRequestContext, timeoutMs?: number): HttpClient {
-    return new HttpClient(context, timeoutMs, false)
+  static over (context: APIRequestContext, timeoutMs?: number, allowedHosts?: HostAllowlist): HttpClient {
+    return new HttpClient(context, timeoutMs, false, allowedHosts)
   }
 
-  private constructor (private readonly context: APIRequestContext, private readonly timeoutMs: number | undefined, private readonly owned: boolean) {}
+  private constructor (private readonly context: APIRequestContext, private readonly timeoutMs: number | undefined, private readonly owned: boolean, private readonly allowedHosts?: HostAllowlist) {}
+
+  /**
+   * Sends a request, following redirects one hop at a time so every hop is
+   * checked against the allowed hosts. Without a limit Playwright follows
+   * them itself.
+   */
+  private async fetch (httpRequest: HttpRequest): Promise<APIResponse> {
+    const options = {
+      method:  httpRequest.method ?? (httpRequest.body === undefined ? 'GET' : 'POST'),
+      params:  httpRequest.query,
+      headers: httpRequest.headers,
+      data:    httpRequest.body as string | Record<string, unknown> | undefined,
+      timeout: httpRequest.timeoutMs ?? this.timeoutMs,
+    }
+    if (this.allowedHosts === undefined) return this.context.fetch(httpRequest.url, options)
+    let url = httpRequest.url
+    let hop = { ...options, maxRedirects: 0 }
+    for (let redirects = 0; ; redirects += 1) {
+      this.allowedHosts.assert(url)
+      const response = await this.context.fetch(url, hop)
+      const location = response.headers().location
+      const status = response.status()
+      if (location === undefined || status < 300 || status >= 400) return response
+      if (redirects >= MAX_REDIRECTS) throw new Error(`${httpRequest.url} redirected more than ${MAX_REDIRECTS} times`)
+      await response.dispose()
+      url = new URL(location, response.url()).href
+      // As browsers do: a 303, or a 301/302 after a POST, becomes a GET without a body.
+      const toGet = status === 303 || (hop.method === 'POST' && (status === 301 || status === 302))
+      hop = { ...hop, params: undefined, ...(toGet && { method: 'GET', data: undefined }) }
+    }
+  }
 
   /**
    * Sends a request and parses the body.
@@ -73,14 +111,12 @@ export class HttpClient implements HttpSender {
    * @throws HttpError for a 4xx or 5xx status.
    */
   async send (httpRequest: HttpRequest): Promise<HttpResponse> {
-    if (httpRequest.url.startsWith('file:')) return readLocalFile(httpRequest)
-    const response = await this.context.fetch(httpRequest.url, {
-      method:  httpRequest.method ?? (httpRequest.body === undefined ? 'GET' : 'POST'),
-      params:  httpRequest.query,
-      headers: httpRequest.headers,
-      data:    httpRequest.body as string | Record<string, unknown> | undefined,
-      timeout: httpRequest.timeoutMs ?? this.timeoutMs,
-    })
+    if (httpRequest.url.startsWith('file:')) {
+      this.allowedHosts?.assert(httpRequest.url)
+
+      return readLocalFile(httpRequest)
+    }
+    const response = await this.fetch(httpRequest)
     const { body, warnings, format } = await readBody(response, httpRequest)
     const result: HttpResponse = { status: response.status(), url: response.url(), headers: response.headers(), body, format, ...(warnings.length > 0 && { warnings }) }
     if (response.status() >= 400) throw new HttpError(response.status(), response.url(), body, response.headers())

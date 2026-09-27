@@ -81,10 +81,47 @@ interface WorkSource {
 - `item.id` is on every event of the item, on its report (`item`) and on its records (`record.source.item`).
 - `item.recipe` picks the input recipe when the set has several.
 
+### Pushing items: the inbox
+
+Some callers don't own a queue: they receive items one at a time (an HTTP request each, a message handler)
+and want each item's result back where they asked for it. `createWorkInbox()` turns pushes into a source:
+
+```ts
+import { createWorkInbox } from '@opencraw/core'
+
+const inbox = createWorkInbox()
+const working = crawler.work(recipes, inbox.source, { windows: { min: 1, max: 8 } })
+working.catch(error => inbox.abort(error))     // work itself failed: reject what is still waiting
+
+const result = await inbox.submit({ id: 'r-42', vars: { state: 'DL' } })
+// { outcome: 'success', report, records } | { outcome: 'failure' | 'neutral', report }
+
+inbox.close()                                  // no new items; queued and running ones finish
+const report = await working                   // then work() ends with its report
+```
+
+- **Items first come, first served; windows last come, first served.** The window that just finished takes
+  the next item while its page is warm. One that has waited long stays idle and, with `windows.idle`, retires.
+- **One result per item.** `submit` resolves when that item ends, with its own records only. `neutral` is
+  returned, not retried: the caller decides whether to submit it again.
+- **No double runs.** Submitting an id that is queued or running returns that run's result. Once it has
+  ended, the same id runs again.
+- **Demand.** `inbox.idle` counts windows waiting for an item, `inbox.queued` items waiting for a window,
+  `inbox.running` items in progress. Keep submitting while `idle` is above zero, or the pool can't grow: it
+  only keeps as many windows busy as the caller keeps items in flight.
+- **Cancel before start.** `submit(item, { signal })` takes the item back while it is queued; a running item
+  is not interrupted.
+- `close()` refuses new items; `abort(reason)` also rejects every item not finished yet.
+
 **Records are held until the item succeeds.** Mapped records wait in memory. De-duplication, `resume` and
 the sink see them only when the whole item succeeded. A failed item therefore writes nothing and leaves no
 key behind, so running it again later is safe. `done` receives the records, for a source that files one
 document per item.
+
+**De-duplication is per item.** A key seen twice within one item is a duplicate. The same key in another item
+is that item's record: two state reports that both list the same maker each keep their row. This is the
+`recipe` scope, since each item is one run of its recipe. Pass `dedupe: 'run'` to `createCrawler` to drop a
+key for the rest of the `work` call, or `'off'` to keep everything.
 
 ## 3. Running it
 
@@ -112,9 +149,10 @@ One `run` or `work` at a time per crawler: they share its sink.
 | `windows: 4` | 1 | A fixed pool of four. |
 | `min`, `max` | 1, `min` | The bounds. |
 | `start` | `min` | Where the pool starts. |
-| `grow.after` | 10 | One more window after this many successes in a row. |
+| `grow.after` | 10 | One more window after this many successes in a row, counted only while every window is busy: with a window waiting for work, another would only wait too. |
 | `shrink` | `half` | On a failure: half the windows (`half`) or one fewer (`one`). |
 | `restart.after` | never | After this many failures in a row, the browser is relaunched and the pool goes back to `min`. |
+| `idle.afterMs` | never | A window that has waited this long for an item retires, never below `min`. For push-fed sources (the inbox), whose callers slow down. |
 
 What makes the pool safe to leave running overnight:
 
@@ -129,6 +167,11 @@ What makes the pool safe to leave running overnight:
 - **A restart waits for every running item to finish.** New items wait for the relaunch; windows opened in
   the old browser are replaced when their next item comes. After a restart the pool is back at `min` and
   grows again from there.
+- **An idle window goes, then comes back when needed.** With `idle.afterMs`, a window that waits that long for
+  an item retires through the same path as a shrink (`window:close idle`, `windows:change`), never below
+  `min`. Successes grow the pool again. The pool passes `next` a signal that aborts when the window retires;
+  the inbox takes the wait back. A source that can't may still return an item for it later: that item gets a
+  window of its own (`window:open late`), so nothing is lost.
 - **A browser that dies is relaunched.** Items that were running end as `neutral` (the source gets them back
   untouched), and the next window launches a new browser.
 
@@ -141,7 +184,7 @@ What makes the pool safe to leave running overnight:
 | `neutral` | a captcha the solver could not get past; the browser closed under the item | The pool does not move; fresh window; `failed(…, 'neutral')`: put it back as it was. |
 
 `report.errorKind` says why a run stopped (`captcha`, `blocked`, `browser`, `http`, `timeout`, `network`,
-`step`, `mapping`, `error`). Write your own `classify` from it, for instance to treat `step` failures (a
+`step`, `mapping`, `host`, `error`). Write your own `classify` from it, for instance to treat `step` failures (a
 selector that matched nothing: a recipe problem, not the site's health) as `neutral`.
 
 ## 5. Watching it

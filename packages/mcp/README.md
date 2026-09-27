@@ -4,6 +4,9 @@ An MCP (Model Context Protocol) server exposing [`@opencraw/core`](../core) as t
 directly: probe a page, validate recipes, run a crawl, list what's already authored. Local transport only
 (stdio) — the host launches it as a subprocess, the same shape as the [`opencraw` cli](../cli).
 
+For a shared, remote endpoint that authors recipes where they will run (and publishes them to a crawl host), see
+[`@opencraw/azure-durable`](../azure-durable/README.md#write-recipes-over-mcp)'s `/mcp`.
+
 This does **not** auto-author recipes from a sentence. The four tools are the same primitives the
 `opencraw` cli gives a terminal; the calling agent still writes the JSON recipes, using `probe` and
 `validate` to iterate, the same way this project's own example recipes were built by hand. An agent that

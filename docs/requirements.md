@@ -86,7 +86,14 @@ HTTP session in api mode, tabs of the recipe's browser context in web mode (`Ste
 rotation by forking again from the new runner). Loops over live elements stay sequential.
 `CrawlOptions.parallel` (CLI `--parallel`, MCP `parallel`) runs that many input recipes of a set at once, each
 with its own context or session; reports keep the set's order; `onRecipeError: 'stop'` stops those not yet
-started. `dedupe: 'recipe'` keeps a key set per recipe run; `run` shares one.
+started. `dedupe: 'recipe'` keeps a key set per recipe run; `run` shares one. Worker mode defaults to `recipe`,
+one key set per item.
+
+**Allowed hosts.** `CrawlOptions.allowedHosts` (`host`, `*.host`, `host:port`, `*`) limits every request:
+browser contexts route every request and web socket through the list (a refused one aborts with
+`ERR_BLOCKED_BY_CLIENT`; service workers are blocked), and the HTTP client checks each target and follows
+redirects one checked hop at a time (`HostNotAllowedError`). `file:` is refused, `data:`/`blob:`/`about:` pass.
+Both report `errorKind: 'host'`. The check is by host name, not resolved address.
 
 **Retries.** A request that fails in passing is sent again before the step's error policy sees it:
 `limits.retry: { attempts?, backoffMs?, maxDelayMs?, statuses?, forMs? }`, over `CrawlOptions.retry` (CLI `--retries`),
@@ -328,15 +335,18 @@ await crawler.close()
 
 **Worker mode.** `crawler.work(recipes, source, { windows, classify })` runs work items (`{ id, vars,
 recipe? }`, the vars over the recipe's) from a `WorkSource` (`next`, `done`, `failed`) on a pool of windows,
-until `next` returns `undefined`. Each window is a browser context (or HTTP session) that lives across items
+until `next` returns `undefined`. `createWorkInbox()` is a source fed by pushes (items first in first out, waiting windows last in first out): `submit(item, { signal? })`
+resolves with that item's outcome and records, an id queued or running is not run twice, `close()` lets the
+pool run dry, `abort()` rejects what is unfinished; `queued`, `running` and `idle` (windows waiting) tell a
+caller how much to keep in flight. Each window is a browser context (or HTTP session) that lives across items
 and takes the next item as soon as it is free. Top-level steps marked `keep` are skipped when the window
 already did the same (their rendered form); a kept step that runs again forgets the kept steps after it. A
 failed item's window is replaced; `window.check` (an element a reused page must show) and `window.maxItems`
 replace it too. An item's records are held and written only when it succeeds; `done` receives them. The
 window count (`windows: { min, max, start, grow: { after }, shrink: 'one' | 'half', restart: { after } }`)
-grows by one after `grow.after` successes in a row and shrinks on a failure, once per generation (items
+grows by one after `grow.after` successes in a row (counted only while no window waits for work) and shrinks on a failure, once per generation (items
 already running at a shrink do not shrink it again); a window leaves only between items, never with an item
-running. `restart.after` failures in a row relaunch the browser once no item runs; a browser that dies is
+running. `idle.afterMs` retires a window that waited that long for an item, never below `min` (the waiting `next` gets an aborted signal; an item that still arrives gets a window of its own). `restart.after` failures in a row relaunch the browser once no item runs; a browser that dies is
 relaunched on the next window. `classify(report)` decides `success`, `failure` or `neutral` (default: a
 captcha that beat the solver or a closed browser is `neutral`: back to the source, the pool unchanged).
 Events: `window:open`, `window:close`, `windows:change`, `browser:restart`, `item:finish`, `step:kept`; every
