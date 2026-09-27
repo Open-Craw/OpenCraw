@@ -1,0 +1,637 @@
+{
+  "scene": "books-list",
+  "summary": [
+    {
+      "recipeId": "mystery-web",
+      "emitted": 32,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2
+    }
+  ],
+  "trace": [
+    "▶ mystery-web (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  set starWords  … ms",
+    "    · steps.2.steps.0  extract books  … ms",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/sharp-objects_997/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-time-of-torment-charlie-parker-14_657/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-study-in-scarlet-sherlock-holmes-1_656/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/poisonous-max-revere-novels-3_627/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/most-wanted_623/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/hide-away-eve-duncan-20_620/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/boar-island-anna-pigeon-19_613/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-widow_609/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/playing-with-fire_602/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/delivering-the-truth-quaker-midwife-mystery-1_464/index.html\"]",
+    "    · steps.2.steps.1  forEach  … ms",
+    "  ⇢ page 2  https://books.toscrape.com/catalogue/category/books/mystery_3/page-2.html",
+    "    · steps.2.steps.0  extract books  … ms",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-mysterious-affair-at-styles-hercule-poirot-1_452/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/in-the-woods-dublin-murder-squad-1_433/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-silkworm-cormoran-strike-2_280/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-exiled_247/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-cuckoos-calling-cormoran-strike-1_239/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/extreme-prey-lucas-davenport-26_154/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/career-of-evil-cormoran-strike-3_137/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-no-1-ladies-detective-agency-no-1-ladies-detective-agency-1_76/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-girl-you-lost_66/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-girl-in-the-ice-dci-erika-foster-1_65/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/blood-defense-samantha-brinkman-1_8/index.html\"]",
+    "      · steps.2.steps.1.steps.0  extract title  … ms",
+    "      · steps.2.steps.1.steps.1  extract link  … ms",
+    "      · steps.2.steps.1.steps.2  extract price  … ms",
+    "      · steps.2.steps.1.steps.3  extract rating  … ms",
+    "      · steps.2.steps.1.steps.4  extract stock  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/1st-to-die-womens-murder-club-1_2/index.html\"]",
+    "    · steps.2.steps.1  forEach  … ms",
+    "  · steps.2  paginate  … ms",
+    "■ mystery-web: 32 emitted, 0 rejected, 0 duplicates, 2 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/sharp-objects_997/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+        "title": "Sharp Objects",
+        "price": {
+          "amount": 47.82,
+          "currency": "GBP"
+        },
+        "stars": 4,
+        "inStock": true,
+        "category": "Mystery",
+        "page": 1
+      },
+      "scope": {
+        "vars": {
+          "category": "Mystery"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "starWords": [
+          {
+            "word": "One",
+            "n": 1
+          },
+          {
+            "word": "Two",
+            "n": 2
+          },
+          {
+            "word": "Three",
+            "n": 3
+          },
+          {
+            "word": "Four",
+            "n": 4
+          },
+          {
+            "word": "Five",
+            "n": 5
+          }
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+          "number": 1
+        },
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-murder-in-time_877/index.html\"><img src=\"../../../../media/cache/11/aa/11aaad48b5f15e262456ca65294084da.jpg\" alt=\"A Murder in Time\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-murder-in-time_877/index.html\" title=\"A Murder in Time\">A Murder in Time</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£16.64</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\"><img src=\"../../../../media/cache/29/fe/29fe70b1b2e5a9ba61d4bd331255e19e.jpg\" alt=\"The Murder of Roger Ackroyd (Hercule Poirot #4)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\" title=\"The Murder of Roger Ackroyd (Hercule Poirot #4)\">The Murder of Roger ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£44.10</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-last-mile-amos-decker-2_754/index.html\"><img src=\"../../../../media/cache/37/f1/37f118b4a56d866e1e8b563759d6966c.jpg\" alt=\"The Last Mile (Amos Decker #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-last-mile-amos-decker-2_754/index.html\" title=\"The Last Mile (Amos Decker #2)\">The Last Mile (Amos ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£54.21</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../that-darkness-gardiner-and-renner-1_743/index.html\"><img src=\"../../../../media/cache/44/9e/449ed681142bc336646abee754e96639.jpg\" alt=\"That Darkness (Gardiner and Renner #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../that-darkness-gardiner-and-renner-1_743/index.html\" title=\"That Darkness (Gardiner and Renner #1)\">That Darkness (Gardiner and ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£13.92</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../tastes-like-fear-di-marnie-rome-3_742/index.html\"><img src=\"../../../../media/cache/3c/91/3c91d97266bd6dda322089695fb46daf.jpg\" alt=\"Tastes Like Fear (DI Marnie Rome #3)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../tastes-like-fear-di-marnie-rome-3_742/index.html\" title=\"Tastes Like Fear (DI Marnie Rome #3)\">Tastes Like Fear (DI ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£10.69</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-time-of-torment-charlie-parker-14_657/index.html\"><img src=\"../../../../media/cache/e8/c0/e8c0ba15066bab950ae161fd60949b9a.jpg\" alt=\"A Time of Torment (Charlie Parker #14)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-time-of-torment-charlie-parker-14_657/index.html\" title=\"A Time of Torment (Charlie Parker #14)\">A Time of Torment ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£48.35</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html\"><img src=\"../../../../media/cache/8f/a4/8fa41d6caa10e427356b8a590eb4d96b.jpg\" alt=\"A Study in Scarlet (Sherlock Holmes #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html\" title=\"A Study in Scarlet (Sherlock Holmes #1)\">A Study in Scarlet ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£16.73</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../poisonous-max-revere-novels-3_627/index.html\"><img src=\"../../../../media/cache/23/52/2352718971d5e166fa9541a5a7d716fa.jpg\" alt=\"Poisonous (Max Revere Novels #3)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../poisonous-max-revere-novels-3_627/index.html\" title=\"Poisonous (Max Revere Novels #3)\">Poisonous (Max Revere Novels ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£26.80</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html\"><img src=\"../../../../media/cache/c3/8d/c38d65cd155b67ca025f0655bd1bb095.jpg\" alt=\"Murder at the 42nd Street Library (Raymond Ambler #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html\" title=\"Murder at the 42nd Street Library (Raymond Ambler #1)\">Murder at the 42nd ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£54.36</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../most-wanted_623/index.html\"><img src=\"../../../../media/cache/8b/bc/8bbc5ab4c3784b4d9b93eb0fd1fb6fd6.jpg\" alt=\"Most Wanted\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../most-wanted_623/index.html\" title=\"Most Wanted\">Most Wanted</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£35.28</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../hide-away-eve-duncan-20_620/index.html\"><img src=\"../../../../media/cache/57/07/5707c3d5d4fd44d943d51730ba7d429a.jpg\" alt=\"Hide Away (Eve Duncan #20)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../hide-away-eve-duncan-20_620/index.html\" title=\"Hide Away (Eve Duncan #20)\">Hide Away (Eve Duncan ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£11.84</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../boar-island-anna-pigeon-19_613/index.html\"><img src=\"../../../../media/cache/d5/81/d58157866ea8f015a8e4c55b23b8c96f.jpg\" alt=\"Boar Island (Anna Pigeon #19)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../boar-island-anna-pigeon-19_613/index.html\" title=\"Boar Island (Anna Pigeon #19)\">Boar Island (Anna Pigeon ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£59.48</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-widow_609/index.html\"><img src=\"../../../../media/cache/fd/71/fd71fb07247bf911505a351c0670c6dc.jpg\" alt=\"The Widow\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-widow_609/index.html\" title=\"The Widow\">The Widow</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£27.26</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../playing-with-fire_602/index.html\"><img src=\"../../../../media/cache/90/0b/900bd2e60d56b6480a4e8eb2dddb46d6.jpg\" alt=\"Playing with Fire\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../playing-with-fire_602/index.html\" title=\"Playing with Fire\">Playing with Fire</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£13.71</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html\"><img src=\"../../../../media/cache/c7/ab/c7abb5e32bd37118a87523dcee0a70a6.jpg\" alt=\"What Happened on Beale Street (Secrets of the South Mysteries #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html\" title=\"What Happened on Beale Street (Secrets of the South Mysteries #2)\">What Happened on Beale ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£25.37</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html\"><img src=\"../../../../media/cache/95/d7/95d7541679fcbd579b8a4f2b47231aaf.jpg\" alt=\"The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html\" title=\"The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)\">The Bachelor Girl's Guide ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£52.30</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html\"><img src=\"../../../../media/cache/57/31/5731a5d46c2c1e88977eb5e6d1337a2e.jpg\" alt=\"Delivering the Truth (Quaker Midwife Mystery #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html\" title=\"Delivering the Truth (Quaker Midwife Mystery #1)\">Delivering the Truth (Quaker ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£20.89</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    "
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+        "title": "Sharp Objects",
+        "link": "../../../sharp-objects_997/index.html",
+        "price": "£47.82",
+        "rating": "star-rating Four",
+        "stock": "In stock"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../sharp-objects_997/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "price": {
+          "from": "£47.82",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 47.82,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "stars": {
+          "from": "star-rating Four",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "Four"
+            },
+            {
+              "op": "lookup",
+              "value": 4
+            }
+          ]
+        },
+        "inStock": {
+          "from": "In stock",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "In stock"
+            },
+            {
+              "op": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "category": {
+          "from": "Mystery",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+        "title": "In a Dark, Dark Wood",
+        "price": {
+          "amount": 19.63,
+          "currency": "GBP"
+        },
+        "stars": 1,
+        "inStock": true,
+        "category": "Mystery",
+        "page": 1
+      },
+      "scope": {
+        "vars": {
+          "category": "Mystery"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "starWords": [
+          {
+            "word": "One",
+            "n": 1
+          },
+          {
+            "word": "Two",
+            "n": 2
+          },
+          {
+            "word": "Three",
+            "n": 3
+          },
+          {
+            "word": "Four",
+            "n": 4
+          },
+          {
+            "word": "Five",
+            "n": 5
+          }
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+          "number": 1
+        },
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-murder-in-time_877/index.html\"><img src=\"../../../../media/cache/11/aa/11aaad48b5f15e262456ca65294084da.jpg\" alt=\"A Murder in Time\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-murder-in-time_877/index.html\" title=\"A Murder in Time\">A Murder in Time</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£16.64</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\"><img src=\"../../../../media/cache/29/fe/29fe70b1b2e5a9ba61d4bd331255e19e.jpg\" alt=\"The Murder of Roger Ackroyd (Hercule Poirot #4)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\" title=\"The Murder of Roger Ackroyd (Hercule Poirot #4)\">The Murder of Roger ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£44.10</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-last-mile-amos-decker-2_754/index.html\"><img src=\"../../../../media/cache/37/f1/37f118b4a56d866e1e8b563759d6966c.jpg\" alt=\"The Last Mile (Amos Decker #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-last-mile-amos-decker-2_754/index.html\" title=\"The Last Mile (Amos Decker #2)\">The Last Mile (Amos ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£54.21</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../that-darkness-gardiner-and-renner-1_743/index.html\"><img src=\"../../../../media/cache/44/9e/449ed681142bc336646abee754e96639.jpg\" alt=\"That Darkness (Gardiner and Renner #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../that-darkness-gardiner-and-renner-1_743/index.html\" title=\"That Darkness (Gardiner and Renner #1)\">That Darkness (Gardiner and ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£13.92</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../tastes-like-fear-di-marnie-rome-3_742/index.html\"><img src=\"../../../../media/cache/3c/91/3c91d97266bd6dda322089695fb46daf.jpg\" alt=\"Tastes Like Fear (DI Marnie Rome #3)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../tastes-like-fear-di-marnie-rome-3_742/index.html\" title=\"Tastes Like Fear (DI Marnie Rome #3)\">Tastes Like Fear (DI ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£10.69</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-time-of-torment-charlie-parker-14_657/index.html\"><img src=\"../../../../media/cache/e8/c0/e8c0ba15066bab950ae161fd60949b9a.jpg\" alt=\"A Time of Torment (Charlie Parker #14)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-time-of-torment-charlie-parker-14_657/index.html\" title=\"A Time of Torment (Charlie Parker #14)\">A Time of Torment ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£48.35</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html\"><img src=\"../../../../media/cache/8f/a4/8fa41d6caa10e427356b8a590eb4d96b.jpg\" alt=\"A Study in Scarlet (Sherlock Holmes #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html\" title=\"A Study in Scarlet (Sherlock Holmes #1)\">A Study in Scarlet ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£16.73</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../poisonous-max-revere-novels-3_627/index.html\"><img src=\"../../../../media/cache/23/52/2352718971d5e166fa9541a5a7d716fa.jpg\" alt=\"Poisonous (Max Revere Novels #3)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../poisonous-max-revere-novels-3_627/index.html\" title=\"Poisonous (Max Revere Novels #3)\">Poisonous (Max Revere Novels ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£26.80</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html\"><img src=\"../../../../media/cache/c3/8d/c38d65cd155b67ca025f0655bd1bb095.jpg\" alt=\"Murder at the 42nd Street Library (Raymond Ambler #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html\" title=\"Murder at the 42nd Street Library (Raymond Ambler #1)\">Murder at the 42nd ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£54.36</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../most-wanted_623/index.html\"><img src=\"../../../../media/cache/8b/bc/8bbc5ab4c3784b4d9b93eb0fd1fb6fd6.jpg\" alt=\"Most Wanted\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../most-wanted_623/index.html\" title=\"Most Wanted\">Most Wanted</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£35.28</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../hide-away-eve-duncan-20_620/index.html\"><img src=\"../../../../media/cache/57/07/5707c3d5d4fd44d943d51730ba7d429a.jpg\" alt=\"Hide Away (Eve Duncan #20)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../hide-away-eve-duncan-20_620/index.html\" title=\"Hide Away (Eve Duncan #20)\">Hide Away (Eve Duncan ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£11.84</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../boar-island-anna-pigeon-19_613/index.html\"><img src=\"../../../../media/cache/d5/81/d58157866ea8f015a8e4c55b23b8c96f.jpg\" alt=\"Boar Island (Anna Pigeon #19)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../boar-island-anna-pigeon-19_613/index.html\" title=\"Boar Island (Anna Pigeon #19)\">Boar Island (Anna Pigeon ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£59.48</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-widow_609/index.html\"><img src=\"../../../../media/cache/fd/71/fd71fb07247bf911505a351c0670c6dc.jpg\" alt=\"The Widow\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-widow_609/index.html\" title=\"The Widow\">The Widow</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£27.26</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../playing-with-fire_602/index.html\"><img src=\"../../../../media/cache/90/0b/900bd2e60d56b6480a4e8eb2dddb46d6.jpg\" alt=\"Playing with Fire\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../playing-with-fire_602/index.html\" title=\"Playing with Fire\">Playing with Fire</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£13.71</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html\"><img src=\"../../../../media/cache/c7/ab/c7abb5e32bd37118a87523dcee0a70a6.jpg\" alt=\"What Happened on Beale Street (Secrets of the South Mysteries #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html\" title=\"What Happened on Beale Street (Secrets of the South Mysteries #2)\">What Happened on Beale ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£25.37</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html\"><img src=\"../../../../media/cache/95/d7/95d7541679fcbd579b8a4f2b47231aaf.jpg\" alt=\"The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html\" title=\"The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)\">The Bachelor Girl's Guide ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£52.30</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html\"><img src=\"../../../../media/cache/57/31/5731a5d46c2c1e88977eb5e6d1337a2e.jpg\" alt=\"Delivering the Truth (Quaker Midwife Mystery #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html\" title=\"Delivering the Truth (Quaker Midwife Mystery #1)\">Delivering the Truth (Quaker ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£20.89</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    "
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+        "title": "In a Dark, Dark Wood",
+        "link": "../../../in-a-dark-dark-wood_963/index.html",
+        "price": "£19.63",
+        "rating": "star-rating One",
+        "stock": "In stock"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../in-a-dark-dark-wood_963/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "In a Dark, Dark Wood",
+          "steps": []
+        },
+        "price": {
+          "from": "£19.63",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 19.63,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "stars": {
+          "from": "star-rating One",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "One"
+            },
+            {
+              "op": "lookup",
+              "value": 1
+            }
+          ]
+        },
+        "inStock": {
+          "from": "In stock",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "In stock"
+            },
+            {
+              "op": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "category": {
+          "from": "Mystery",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+        "title": "The Past Never Ends",
+        "price": {
+          "amount": 56.5,
+          "currency": "GBP"
+        },
+        "stars": 4,
+        "inStock": true,
+        "category": "Mystery",
+        "page": 1
+      },
+      "scope": {
+        "vars": {
+          "category": "Mystery"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "starWords": [
+          {
+            "word": "One",
+            "n": 1
+          },
+          {
+            "word": "Two",
+            "n": 2
+          },
+          {
+            "word": "Three",
+            "n": 3
+          },
+          {
+            "word": "Four",
+            "n": 4
+          },
+          {
+            "word": "Five",
+            "n": 5
+          }
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+          "number": 1
+        },
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-murder-in-time_877/index.html\"><img src=\"../../../../media/cache/11/aa/11aaad48b5f15e262456ca65294084da.jpg\" alt=\"A Murder in Time\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-murder-in-time_877/index.html\" title=\"A Murder in Time\">A Murder in Time</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£16.64</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\"><img src=\"../../../../media/cache/29/fe/29fe70b1b2e5a9ba61d4bd331255e19e.jpg\" alt=\"The Murder of Roger Ackroyd (Hercule Poirot #4)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\" title=\"The Murder of Roger Ackroyd (Hercule Poirot #4)\">The Murder of Roger ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£44.10</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-last-mile-amos-decker-2_754/index.html\"><img src=\"../../../../media/cache/37/f1/37f118b4a56d866e1e8b563759d6966c.jpg\" alt=\"The Last Mile (Amos Decker #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-last-mile-amos-decker-2_754/index.html\" title=\"The Last Mile (Amos Decker #2)\">The Last Mile (Amos ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£54.21</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../that-darkness-gardiner-and-renner-1_743/index.html\"><img src=\"../../../../media/cache/44/9e/449ed681142bc336646abee754e96639.jpg\" alt=\"That Darkness (Gardiner and Renner #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../that-darkness-gardiner-and-renner-1_743/index.html\" title=\"That Darkness (Gardiner and Renner #1)\">That Darkness (Gardiner and ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£13.92</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../tastes-like-fear-di-marnie-rome-3_742/index.html\"><img src=\"../../../../media/cache/3c/91/3c91d97266bd6dda322089695fb46daf.jpg\" alt=\"Tastes Like Fear (DI Marnie Rome #3)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../tastes-like-fear-di-marnie-rome-3_742/index.html\" title=\"Tastes Like Fear (DI Marnie Rome #3)\">Tastes Like Fear (DI ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£10.69</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-time-of-torment-charlie-parker-14_657/index.html\"><img src=\"../../../../media/cache/e8/c0/e8c0ba15066bab950ae161fd60949b9a.jpg\" alt=\"A Time of Torment (Charlie Parker #14)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-time-of-torment-charlie-parker-14_657/index.html\" title=\"A Time of Torment (Charlie Parker #14)\">A Time of Torment ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£48.35</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html\"><img src=\"../../../../media/cache/8f/a4/8fa41d6caa10e427356b8a590eb4d96b.jpg\" alt=\"A Study in Scarlet (Sherlock Holmes #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html\" title=\"A Study in Scarlet (Sherlock Holmes #1)\">A Study in Scarlet ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£16.73</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../poisonous-max-revere-novels-3_627/index.html\"><img src=\"../../../../media/cache/23/52/2352718971d5e166fa9541a5a7d716fa.jpg\" alt=\"Poisonous (Max Revere Novels #3)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../poisonous-max-revere-novels-3_627/index.html\" title=\"Poisonous (Max Revere Novels #3)\">Poisonous (Max Revere Novels ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£26.80</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html\"><img src=\"../../../../media/cache/c3/8d/c38d65cd155b67ca025f0655bd1bb095.jpg\" alt=\"Murder at the 42nd Street Library (Raymond Ambler #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html\" title=\"Murder at the 42nd Street Library (Raymond Ambler #1)\">Murder at the 42nd ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£54.36</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../most-wanted_623/index.html\"><img src=\"../../../../media/cache/8b/bc/8bbc5ab4c3784b4d9b93eb0fd1fb6fd6.jpg\" alt=\"Most Wanted\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../most-wanted_623/index.html\" title=\"Most Wanted\">Most Wanted</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£35.28</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../hide-away-eve-duncan-20_620/index.html\"><img src=\"../../../../media/cache/57/07/5707c3d5d4fd44d943d51730ba7d429a.jpg\" alt=\"Hide Away (Eve Duncan #20)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../hide-away-eve-duncan-20_620/index.html\" title=\"Hide Away (Eve Duncan #20)\">Hide Away (Eve Duncan ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£11.84</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../boar-island-anna-pigeon-19_613/index.html\"><img src=\"../../../../media/cache/d5/81/d58157866ea8f015a8e4c55b23b8c96f.jpg\" alt=\"Boar Island (Anna Pigeon #19)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../boar-island-anna-pigeon-19_613/index.html\" title=\"Boar Island (Anna Pigeon #19)\">Boar Island (Anna Pigeon ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£59.48</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-widow_609/index.html\"><img src=\"../../../../media/cache/fd/71/fd71fb07247bf911505a351c0670c6dc.jpg\" alt=\"The Widow\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-widow_609/index.html\" title=\"The Widow\">The Widow</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£27.26</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../playing-with-fire_602/index.html\"><img src=\"../../../../media/cache/90/0b/900bd2e60d56b6480a4e8eb2dddb46d6.jpg\" alt=\"Playing with Fire\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../playing-with-fire_602/index.html\" title=\"Playing with Fire\">Playing with Fire</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£13.71</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html\"><img src=\"../../../../media/cache/c7/ab/c7abb5e32bd37118a87523dcee0a70a6.jpg\" alt=\"What Happened on Beale Street (Secrets of the South Mysteries #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html\" title=\"What Happened on Beale Street (Secrets of the South Mysteries #2)\">What Happened on Beale ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£25.37</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html\"><img src=\"../../../../media/cache/95/d7/95d7541679fcbd579b8a4f2b47231aaf.jpg\" alt=\"The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html\" title=\"The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)\">The Bachelor Girl's Guide ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£52.30</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html\"><img src=\"../../../../media/cache/57/31/5731a5d46c2c1e88977eb5e6d1337a2e.jpg\" alt=\"Delivering the Truth (Quaker Midwife Mystery #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html\" title=\"Delivering the Truth (Quaker Midwife Mystery #1)\">Delivering the Truth (Quaker ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£20.89</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    "
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+        "title": "The Past Never Ends",
+        "link": "../../../the-past-never-ends_942/index.html",
+        "price": "£56.50",
+        "rating": "star-rating Four",
+        "stock": "In stock"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../the-past-never-ends_942/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "The Past Never Ends",
+          "steps": []
+        },
+        "price": {
+          "from": "£56.50",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 56.5,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "stars": {
+          "from": "star-rating Four",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "Four"
+            },
+            {
+              "op": "lookup",
+              "value": 4
+            }
+          ]
+        },
+        "inStock": {
+          "from": "In stock",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "In stock"
+            },
+            {
+              "op": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "category": {
+          "from": "Mystery",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    }
+  ]
+}
