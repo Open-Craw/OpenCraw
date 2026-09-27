@@ -790,7 +790,8 @@ the Markdown source instead, request it with `as: "text"`.
 
 `table` also reads an HTML document's `<table>`s: a fetched page, rendered Markdown, or, in web mode, the live
 page. Every table becomes a grid: `thead`, `tbody` and `tfoot` rows in order, `th` and `td` alike, cell text
-with whitespace collapsed, and `colspan` / `rowspan` as merged ranges. From there it is the grid table of §4.7:
+with whitespace collapsed (a `<br>` or a paragraph inside a cell reads as a space: `2659<br>$560` is
+`2659 $560`), and `colspan` / `rowspan` as merged ranges. From there it is the grid table of §4.7:
 the `selector` matches the header row, merged cells are filled, `headerRows` joins a header over two rows,
 `fillDown` and `columns` work the same. A table inside a table is read on its own.
 
