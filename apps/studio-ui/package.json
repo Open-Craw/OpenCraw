@@ -1,0 +1,59 @@
+{
+  "name": "@opencraw/studio-ui",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build-dev": {
+        "executor": "nx:run-commands",
+        "outputs": [
+          "{workspaceRoot}/apps/studio-ui/dist-dev"
+        ],
+        "options": {
+          "command": "vite build --mode dev --outDir dist-dev",
+          "cwd": "apps/studio-ui"
+        }
+      },
+      "build-uat": {
+        "executor": "nx:run-commands",
+        "outputs": [
+          "{workspaceRoot}/apps/studio-ui/dist-uat"
+        ],
+        "options": {
+          "command": "vite build --mode uat --outDir dist-uat",
+          "cwd": "apps/studio-ui"
+        }
+      },
+      "build-prod": {
+        "executor": "nx:run-commands",
+        "outputs": [
+          "{workspaceRoot}/apps/studio-ui/dist-prod"
+        ],
+        "options": {
+          "command": "vite build --mode prod --outDir dist-prod",
+          "cwd": "apps/studio-ui"
+        }
+      },
+      "package": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build-dev",
+          "build-uat",
+          "build-prod"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/drop/react-app-studio-ui-dev.zip",
+          "{workspaceRoot}/dist/drop/react-app-studio-ui-uat.zip",
+          "{workspaceRoot}/dist/drop/react-app-studio-ui-prod.zip"
+        ],
+        "options": {
+          "command": "node -e \"const fs=require('node:fs');fs.mkdirSync('dist/drop',{recursive:true});const A=require('adm-zip');let z;z=new A();z.addLocalFolder('apps/studio-ui/dist-dev');z.writeZip('dist/drop/react-app-studio-ui-dev.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-uat');z.writeZip('dist/drop/react-app-studio-ui-uat.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-prod');z.writeZip('dist/drop/react-app-studio-ui-prod.zip')\""
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@chakra-ui/react": "3.37.0",
+    "@emotion/react": "11.14.0"
+  }
+}

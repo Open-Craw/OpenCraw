@@ -186,6 +186,41 @@
         "script": "examples:test",
         "problemMatcher": [],
         "group": "qa"
+      },
+      {
+        "label": "studio: qa",
+        "type": "npm",
+        "script": "studio:qa",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "studio: build",
+        "type": "npm",
+        "script": "studio:build",
+        "problemMatcher": [],
+        "group": "build"
+      },
+      {
+        "label": "studio-ui: qa",
+        "type": "npm",
+        "script": "studio-ui:qa",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "studio-ui: build",
+        "type": "npm",
+        "script": "studio-ui:build",
+        "problemMatcher": [],
+        "group": "build"
+      },
+      {
+        "label": "studio-ui: start",
+        "type": "npm",
+        "script": "studio-ui:start",
+        "problemMatcher": [],
+        "isBackground": true
       }
     ]
   },

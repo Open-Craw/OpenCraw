@@ -23,6 +23,12 @@
     },
     {
       "path": "./apps/azure-host"
+    },
+    {
+      "path": "./packages/studio"
+    },
+    {
+      "path": "./apps/studio-ui"
     }
   ],
   "compilerOptions": {}
