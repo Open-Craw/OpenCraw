@@ -19,7 +19,7 @@ export const SCENES = [
         { selector: 'div.quote', label: 'quotes: div.quote (many, take html)' },
         { selector: 'div.quote span.text', label: 'text: span.text' },
         { selector: 'div.quote small.author', label: 'author: //small[@class=\'author\']' },
-        { selector: 'div.tags-box a.tag', label: 'topTags (xpath, live page)' },
+        { selector: 'div.tags-box a.tag', label: 'topTags' },
       ],
     }],
   },
@@ -53,8 +53,8 @@ export const SCENES = [
       url:       'https://books.toscrape.com/catalogue/sharp-objects_997/index.html',
       clip:      'table.table-striped',
       highlight: [
-        { selector: 'table.table-striped tr', label: 'rows: table.table-striped tr (take html)' },
-        { selector: 'table.table-striped th', label: 'name: th' },
+        { selector: 'table.table-striped tr' },
+        { selector: 'table.table-striped th', label: 'name: th, in each row' },
         { selector: 'table.table-striped td', label: 'value: td' },
       ],
     }],
@@ -64,11 +64,10 @@ export const SCENES = [
     keep:        2,
     screenshots: [{
       url:       'https://www.scrapethissite.com/pages/simple/',
-      clip:      'div.container',
+      clip:      'section#countries',
       maxHeight: 620,
       highlight: [
         { selector: 'div.row:has(div.country)', label: 'rows: div.row:has(div.country), a wrapper of three' },
-        { selector: 'div.country', label: 'countries: div.country, one each' },
       ],
     }],
   },
@@ -82,7 +81,7 @@ export const SCENES = [
       maxHeight: 420,
       highlight: [
         { selector: 'form', label: 'form: { selector: "form" }, read with FormData' },
-        { selector: 'div.header-box p a', label: 'liveLink: still the live page' },
+        { selector: 'div.header-box p a', label: 'liveLink' },
       ],
     }],
   },
@@ -97,7 +96,7 @@ export const SCENES = [
       url:       'https://books.toscrape.com/catalogue/page-1.html',
       clip:      'ul.pager',
       highlight: [
-        { selector: 'li.next a', label: 'next: li.next a (clicked)' },
+        { selector: 'li.next a', label: 'next' },
         { selector: 'li.current', label: 'pager: li.current' },
       ],
     }],

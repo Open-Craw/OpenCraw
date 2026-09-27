@@ -48,11 +48,7 @@
           "sandslash",
           "nidoran-f",
           "nidorina",
-          "nidoqueen",
-          "nidoran-m",
-          "nidorino",
-          "nidoking",
-          "clefairy"
+          "… 5 more"
         ],
         "pagesRead": 3,
         "pageUrl": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=5"
@@ -73,11 +69,7 @@
           "sandslash",
           "nidoran-f",
           "nidorina",
-          "nidoqueen",
-          "nidoran-m",
-          "nidorino",
-          "nidoking",
-          "clefairy"
+          "… 5 more"
         ],
         "count": 15,
         "page": {
@@ -102,11 +94,7 @@
             "sandslash",
             "nidoran-f",
             "nidorina",
-            "nidoqueen",
-            "nidoran-m",
-            "nidorino",
-            "nidoking",
-            "clefairy"
+            "… 5 more"
           ],
           "steps": []
         },

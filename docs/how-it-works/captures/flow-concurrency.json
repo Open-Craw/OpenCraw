@@ -1,0 +1,355 @@
+{
+  "scene": "flow-concurrency",
+  "summary": [
+    {
+      "recipeId": "mystery-parallel",
+      "emitted": 6,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 9
+    }
+  ],
+  "trace": [
+    "▶ mystery-parallel (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract links  … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/sharp-objects_997/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract upc  … ms",
+    "  · steps.2  forEach  … ms",
+    "■ mystery-parallel: 6 emitted, 0 rejected, 0 duplicates, 9 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/sharp-objects_997/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+        "title": "Sharp Objects",
+        "upc": "e00eb4fd7b871a48"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "… 10 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "link": "../../../sharp-objects_997/index.html",
+        "title": "Sharp Objects",
+        "upc": "e00eb4fd7b871a48"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "upc": {
+          "from": "e00eb4fd7b871a48",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+        "title": "In a Dark, Dark Wood",
+        "upc": "19ed25f4641d5efd"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "… 10 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+          "number": 1
+        },
+        "link": "../../../in-a-dark-dark-wood_963/index.html",
+        "title": "In a Dark, Dark Wood",
+        "upc": "19ed25f4641d5efd"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "In a Dark, Dark Wood",
+          "steps": []
+        },
+        "upc": {
+          "from": "19ed25f4641d5efd",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+        "title": "The Past Never Ends",
+        "upc": "5ee94540d0749ea0"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "… 10 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+          "number": 1
+        },
+        "link": "../../../the-past-never-ends_942/index.html",
+        "title": "The Past Never Ends",
+        "upc": "5ee94540d0749ea0"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "The Past Never Ends",
+          "steps": []
+        },
+        "upc": {
+          "from": "5ee94540d0749ea0",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html",
+        "title": "A Murder in Time",
+        "upc": "f733e8c19d40ec2e"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "… 10 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html",
+          "number": 1
+        },
+        "link": "../../../a-murder-in-time_877/index.html",
+        "title": "A Murder in Time",
+        "upc": "f733e8c19d40ec2e"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "A Murder in Time",
+          "steps": []
+        },
+        "upc": {
+          "from": "f733e8c19d40ec2e",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+        "title": "The Murder of Roger Ackroyd (Hercule Poirot #4)",
+        "upc": "c7b5183f4d1d4efe"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "… 10 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "number": 1
+        },
+        "link": "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+        "title": "The Murder of Roger Ackroyd (Hercule Poirot #4)",
+        "upc": "c7b5183f4d1d4efe"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "The Murder of Roger Ackroyd (Hercule Poirot #4)",
+          "steps": []
+        },
+        "upc": {
+          "from": "c7b5183f4d1d4efe",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html",
+        "title": "The Last Mile (Amos Decker #2)",
+        "upc": "3bc89353f7e3a3cc"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "… 10 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html",
+          "number": 1
+        },
+        "link": "../../../the-last-mile-amos-decker-2_754/index.html",
+        "title": "The Last Mile (Amos Decker #2)",
+        "upc": "3bc89353f7e3a3cc"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "The Last Mile (Amos Decker #2)",
+          "steps": []
+        },
+        "upc": {
+          "from": "3bc89353f7e3a3cc",
+          "steps": []
+        }
+      }
+    }
+  ]
+}
