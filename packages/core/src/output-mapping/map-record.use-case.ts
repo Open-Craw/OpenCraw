@@ -5,6 +5,7 @@ import { applyTransformChain } from '../transformation'
 import type { TransformContext } from '../transformation'
 import { coerceValue } from './coerce-field.mapper'
 import { generatedValue } from './generated-field.mapper'
+import type { MappingTrace } from './mapping-trace.model'
 import { MappingFailedError, RecordRejectedError } from './mapping.error'
 import { isMissing, resolveMissingPolicy } from './missing-value.policy'
 import { validateField } from './output-field.validator'
@@ -21,6 +22,8 @@ export interface MapRecordRequest {
   url:        string
   emittedAt?: string
   log?:       TransformContext['log']
+  /** Filled with each mapped field's source value and its value after each transform. */
+  trace?:     MappingTrace
 }
 
 /**
@@ -49,7 +52,7 @@ export async function mapRecord (request: MapRecordRequest): Promise<OutputRecor
   const rulesByTarget = new Map<string, MappingRule>()
   for (const [target, rule] of Object.entries(input.mapping)) {
     rulesByTarget.set(target, rule)
-    const value = await resolveRule(rule, snapshot, snapshot, context, target)
+    const value = await resolveRule(rule, snapshot, snapshot, context, target, request.trace)
     if (value !== undefined) setPath(raw, target, value)
   }
   for (const [name, field] of Object.entries(output.fields)) {
@@ -62,14 +65,29 @@ export async function mapRecord (request: MapRecordRequest): Promise<OutputRecor
   return { data, key: recordKey(data, keyFields), source: { recipeId: input.id, url: request.url, emittedAt } }
 }
 
-async function resolveRule (rule: MappingRule, scope: Record<string, unknown>, self: unknown, context: TransformContext, target: string): Promise<unknown> {
+/**
+ * @param target - The rule's target, for errors (`variants.size`).
+ * @param trace - Filled with the field's source and each transform's value, when given.
+ * @param traceKey - Where in `trace` (`variants[1].size` for an item of `each`).
+ */
+async function resolveRule (rule: MappingRule, scope: Record<string, unknown>, self: unknown, context: TransformContext, target: string, trace?: MappingTrace, traceKey = target): Promise<unknown> {
   try {
-    if ('each' in rule) return await resolveEach(rule, scope, context, target)
+    if ('each' in rule) return await resolveEach(rule, scope, context, target, trace, traceKey)
     const sources = Array.isArray(rule.from) ? rule.from : [rule.from]
     const values = sources.map(source => (source === '.' ? self : getPath(scope, source)))
     const value = Array.isArray(rule.from) ? values : values[0]
+    const transforms = rule.transform ?? []
+    if (trace === undefined) return await applyTransformChain(value, transforms, context)
+    // One transform at a time, the way the chain applies them, to keep each intermediate value.
+    const steps: MappingTrace[string]['steps'] = []
+    trace[traceKey] = { from: value, steps }
+    let current = value
+    for (const transform of transforms) {
+      current = await applyTransformChain(current, [transform], context)
+      steps.push({ op: transform.op, value: current })
+    }
 
-    return await applyTransformChain(value, rule.transform ?? [], context)
+    return current
   } catch (error) {
     if (error instanceof MappingFailedError || error instanceof RecordRejectedError) throw error
     // A rule that says skip-record means "this record is not worth keeping without
@@ -79,17 +97,17 @@ async function resolveRule (rule: MappingRule, scope: Record<string, unknown>, s
   }
 }
 
-async function resolveEach (rule: Extract<MappingRule, { each: string }>, scope: Record<string, unknown>, context: TransformContext, target: string): Promise<unknown[] | undefined> {
+async function resolveEach (rule: Extract<MappingRule, { each: string }>, scope: Record<string, unknown>, context: TransformContext, target: string, trace: MappingTrace | undefined, traceKey: string): Promise<unknown[] | undefined> {
   const list = getPath(scope, rule.each)
   if (list === undefined || list === null) return undefined
   if (!Array.isArray(list)) throw new MappingFailedError(target, `"${rule.each}" is not a list`)
   const items: unknown[] = []
-  for (const item of list) {
+  for (const [index, item] of list.entries()) {
     const itemScope = itemAsScope(item)
     const built: Record<string, unknown> = {}
     const nestedRules = Object.entries(rule.fields)
     for (const [name, nested] of nestedRules) {
-      const value = await resolveRule(nested, itemScope, item, { ...context, scope: itemScope, lookup: itemLookup(itemScope, context.lookup) }, `${target}.${name}`)
+      const value = await resolveRule(nested, itemScope, item, { ...context, scope: itemScope, lookup: itemLookup(itemScope, context.lookup) }, `${target}.${name}`, trace, `${traceKey}[${index}].${name}`)
       if (value !== undefined) setPath(built, name, value)
     }
     items.push(built)

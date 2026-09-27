@@ -8,7 +8,7 @@ export { parseInputRecipe, parseOutputRecipe, RecipeValidationError, inputRecipe
 export type { InputRecipe, OutputRecipe, FieldSpec, Step, StepType, MappingRule, TransformRule, ErrorPolicy, PaginateNext, SessionSpec, SessionAccess, CaptchaSettings, CaptchaStep, CaptchaCheck, CaptchaSubmitStep, RecipeMatrix, VarValue, RetryRule, RecipeIssue } from './recipe-schema'
 export type { Hook, HookMap, HookContext } from './hooks'
 export { UnknownHookError } from './hooks'
-export type { OutputRecord } from './output-mapping'
+export type { FieldTrace, MappingTrace, OutputRecord } from './output-mapping'
 export { RecordRejectedError, MappingFailedError } from './output-mapping'
 export type { RecordSink, SinkSummary, MemorySink, DedupeScope } from './record-sink'
 export { memorySink, jsonLinesSink } from './record-sink'

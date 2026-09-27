@@ -155,4 +155,15 @@ describe('mapRecord', () => {
       { code: 'X00', label: 'C-Class X00' },
     ])
   })
+
+  it('traces each field: what it read, then its value after each transform', async () => {
+    const trace = {}
+    await mapRecord({ snapshot: webSnapshot, input: web, output, hooks, url: 'https://shop.example/p/1', trace })
+    expect(trace).toMatchObject({
+      title:  { from: '  Blue Shoe ', steps: [{ op: 'trim', value: 'Blue Shoe' }] },
+      price:  { from: 'Price: 1.299,00 €', steps: [{ op: 'regex', value: '1.299,00' }, { op: 'currency', value: { amount: 1299 } }] },
+      images: { from: ['/img/1.jpg', '/img/1.jpg', 'https://cdn.example/2.jpg'], steps: [{ op: 'absoluteUrl', value: ['https://shop.example/img/1.jpg', 'https://shop.example/img/1.jpg', 'https://cdn.example/2.jpg'] }, { op: 'unique', value: ['https://shop.example/img/1.jpg', 'https://cdn.example/2.jpg'] }] },
+    })
+    expect(trace).toHaveProperty(['variants[1].size'], { from: '<td class="size">L</td><td class="price">12,50 €</td>', steps: [{ op: 'regex', value: 'L' }] })
+  })
 })
