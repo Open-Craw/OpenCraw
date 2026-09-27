@@ -55,8 +55,8 @@ typo never silently does nothing.
 | `type` | `string`, `number`, `integer`, `boolean`, `date`, `datetime`, `currency`, `url`, `enum`, `array`, `object`, `json`. |
 | `required` | Missing value fails the recipe (unless a policy says otherwise). Default `false`. |
 | `nullable` | Allows `null` on a `required` field when the resolved policy is `null` (§7). A field that is not required is `null` when missing anyway. |
-| `default` | Used when the value is missing and the resolved policy is `default` (it is, automatically, when a default exists and nothing else is said). |
-| `onMissing` | Per-field policy: `fail`, `skip-record`, `null`, `default`. |
+| `default` | Used when the value is missing and the resolved policy is `default` (it is, automatically, when a default exists and nothing else is said). Coerced and validated like a mapped value when the recipes load, so `"default": "0"` on a `number` field is `0`, and a default that can't be the field's type is a load error. |
+| `onMissing` | Per-field policy: `fail`, `skip-record`, `null`, `default`. `default` on a field without a `default` is a load error. |
 | `key` | Part of the record identity. All `key` fields together form the key; repeated keys are dropped as duplicates. |
 | `generated` | `now` (ISO instant), `uuid`, `sourceUrl` (the page the record was emitted from), `recipeId`. Engine-supplied; mapping it is a binding error. |
 | `format` | Input format for `date` / `datetime` (tokens `YYYY MM DD HH mm ss`); output is always ISO 8601. |
@@ -76,17 +76,21 @@ text is predictable, strict where a wrong value would poison the data.
 | Type | Accepts | Produces |
 |---|---|---|
 | `string` | text, numbers, booleans | text. A list is an error: extract one value or `join` it. |
-| `number` | text with a number in it (`"1.299,00 €"`, `"$1,299"`), numbers | a number. Without a `locale` transform the decimal separator is guessed: the last separator followed by 1 or 2 digits. |
-| `integer` | as `number` | truncated. |
+| `number` | text holding **one** number, with a sign, a currency symbol or code, words and thousands separators around it (`"1.299,00 €"`, `"$1,299"`, `"In stock (22 available)"`), numbers | a number. Text with two numbers or more (`"2 for 10,00"`, an id like `"a897fe39b1053632"`) is an error that names the text: pick the one you want with a `regex` transform first. Without a `number` transform's `locale` the decimal separator is guessed: of two kinds of separator, the last one (`1.299,50` → 1299.5); a single separator is a thousands separator only when exactly three digits follow it and one to three digits other than a lone `0` precede it (`1.299` → 1299, but `0.125` → 0.125 and `10,00` → 10); a repeated one groups thousands (`1,234,567`). Separators that make no number (`1.2.3`) are an error. |
+| `integer` | as `number` | truncated. Errors name `integer`. |
 | `boolean` | booleans, numbers, text | `true` when the whole text is `true`, `yes`, `y`, `1` or `on`, or it contains the words `in stock` or `available` (case-insensitive). So `"none"`, `"2021"` and `"unavailable"` are `false`. Negation is not read: `"not available"` is `true`. For other phrases, use the `boolean` transform with `truthy`. |
 | `date` | ISO text, `Date.parse`-able text, epoch ms, or text matching `format` | `YYYY-MM-DD` (UTC). |
-| `datetime` | same | ISO 8601 instant. |
-| `currency` | text with amount and symbol or code, a number, or `{ amount, currency }` | `{ "amount": 1299, "currency": "EUR" }`. Needs a code from the text, the transform or the field, else an error. |
+| `datetime` | same | ISO 8601 instant. Text that names no zone (`Z`, `+02:00`, `GMT`) is read as UTC, or in the `date` transform's `timezone`: never in the zone of the machine running the crawl. |
+| `currency` | text with **one** amount and a symbol or code, a number, or `{ amount, currency }` | `{ "amount": 1299, "currency": "EUR" }`. The code comes from the field, else the transform, else an ISO 4217 code next to the amount (`USD 12.50`), else a symbol, else an ISO 4217 code anywhere in the text; three capitals that are not an ISO 4217 code (`OTR £34,000`) are ignored. No code at all is an error. |
 | `url` | an absolute URL string | normalised. A relative link is an error: use the `absoluteUrl` transform first. |
 | `enum` | text among `values` | the text. |
-| `array` | a list, or a single value (wrapped) | a list; each item coerced by `items`. |
+| `array` | a list, or a single value (wrapped) | a list; each item coerced and validated by `items`. The members of an object item (an `each` rule's) get the missing-value policy, `default` and validation like any field, reported at their index (`variants[1].size`); a missing scalar item is `null`. |
 | `object` | an object | only the declared `fields`, each coerced. **Undeclared keys are dropped.** |
 | `json` | any JSON value: an object of any shape, a list, text, a number, a boolean | the value, **verbatim**: every key kept, however nested, nothing coerced. Only what JSON cannot hold (`NaN`, `Infinity`, a `Date`, a function) is an error. |
+
+Blank text (`""`, or only spaces) in a field of any type but `string` and `json` is no value rather than a
+value that fails to convert: it follows the missing-value policy (§7), so `default` and `null` apply. In a
+`string` or `json` field, `""` is missing too.
 
 `object` is for a shape you know: it validates it and keeps nothing else. `json` is for a payload whose
 shape you don't know or don't want to fix: archival, a schema that evolves, "land it now, parse it later".
@@ -878,10 +882,13 @@ it as `.docx`, or export it as PDF (§4.6). `probe` lists a document's sections 
 - `from` is an id or a path into one (`item.href`, `page.url`). Several sources give the chain a **list** of
   values (then `join`, `coalesce`, `sum`...).
 - `each` builds an `array` of `object` from a list id; inside `fields`, `from` is relative to each item and
-  `.` is the item itself.
-- `onMissing` on a rule overrides the field's policy for this recipe.
-- Generated fields are not mapped; required fields must be mapped, defaulted or generated. The binding
-  validator enforces both at load time.
+  `.` is the item itself. Each key of `fields` names a field of the items (a typo is a load error), and each
+  member gets its rule's `onMissing`, its field's policy, `default` and validation, reported at its index
+  (`mapping failed: variants[1].size: missing`).
+- `onMissing` on a rule overrides the field's policy for this recipe. `onMissing: "default"` needs a `default`
+  on the field.
+- Generated fields are not mapped; required fields, and required members of an `each` item, must be mapped,
+  defaulted or generated. The binding validator enforces these at load time.
 
 ### 5.1 Transforms
 
@@ -901,11 +908,11 @@ reaches the missing-value policy untouched.
 | `slice` | `start`, `end?` | list | a sub-list |
 | `coalesce` | – | list | the first item that is not missing or blank |
 | `default` | `value` | list | replaces `undefined`, `null` or `''` |
-| `number` | `locale?` | scalar | parse (`"1.299,00"` with `de-DE` → 1299) |
-| `integer` | – | scalar | parse and truncate |
+| `number` | `locale?` | scalar | reads the one number in the text (`"1.299,00"` with `de-DE` → 1299, `"£51.77"` → 51.77); two numbers or more is an error, so `regex` first. Separators as for the `number` type (§1.2) |
+| `integer` | – | scalar | as `number`, truncated |
 | `boolean` | `truthy?` | scalar | `truthy`: `true` when the text contains a phrase (substring, case-insensitive). Without it, the field type's default phrases (§1.2). |
-| `currency` | `locale?`, `currency?` | scalar | `{ amount, currency }`; the code from the arg, else the text's symbol or code |
-| `date` | `format?`, `timezone?` | scalar | a Date; `format` tokens `YYYY MM DD HH mm ss`; `timezone` an IANA zone for text without an offset |
+| `currency` | `locale?`, `currency?` | scalar | `{ amount, currency }`; the amount as `number` reads it; the code from the arg, else an ISO 4217 code next to the amount, else a symbol, else an ISO 4217 code anywhere in the text |
+| `date` | `format?`, `timezone?` | scalar | a Date; `format` tokens `YYYY MM DD HH mm ss`; `timezone` an IANA zone for text without an offset, UTC without one (never the host's zone); a date alone (`2026-03-04`) is midnight UTC |
 | `absoluteUrl` | `base?` | scalar | resolve against `base`, else `page.url` |
 | `urlEncode` | – | scalar | percent-encodes one URL component (`encodeURIComponent`): `#` → `%23`, space → `%20`, `&` → `%26`, `+` → `%2B`, `é` → `%C3%A9` |
 | `flatten`, `unique` | – | list | nested lists flattened; duplicates removed |
@@ -967,7 +974,9 @@ const crawler = createCrawler({ hooks: {
 
 `(input, args, context) => value`, sync or async. From a `hook` **step**, `input` is `undefined` and the
 result is bound under the step's `id`; from a `hook` **transform**, `input` is the value so far. `context`
-gives `recipeId`, the scope snapshot and a `log`. A recipe naming an unregistered hook fails at the call.
+gives `recipeId`, the scope snapshot and a `log`. A recipe naming an unregistered hook fails the run before
+its first request: `crawler.run` and `crawler.work` reject with `UnknownHookError`, naming the recipe and where
+it calls the hook (`shop mapping.inStock.transform.1: unknown hook "positive"`).
 
 **From the cli and the MCP server**, hooks come from a JavaScript module whose default export is the map
 (named function exports work too):
@@ -1114,7 +1123,9 @@ an unattended run, give the retry a time budget instead of a number of tries. Th
 
 Retry 404 only for a site known to answer it for an outage: on most sites a 404 means the page is not there.
 
-**A mapped value is missing** (`undefined`, `null`, `""`; an empty list is a value). The policy is the
+**A mapped value is missing** (`undefined`, `null`, `""`, and in a field that is not `string` or `json` text
+with nothing but spaces; an empty list is a value). This holds for every field type: an empty table cell
+mapped to an `integer` is missing, not a number that failed to parse. The policy is the
 mapping rule's `onMissing`, else the field's, else `default` when the field has a `default`, else the
 recipe's, else `fail` for required fields and `null` otherwise:
 
@@ -1123,10 +1134,12 @@ recipe's, else `fail` for required fields and `null` otherwise:
 | `fail` | The recipe stops (`MappingFailedError`). |
 | `skip-record` | This record is dropped and reported (`record:reject`); the walk continues. |
 | `null` | The field is `null` (the field must be `nullable` or not `required`). |
-| `default` | The field's `default`. |
+| `default` | The field's `default`, coerced to the field's type. |
 
 **A value cannot be coerced** (`"call us"` into a `number`, a relative link into a `url`) follows the same
-missing-value policy: `skip-record` drops the record, anything else stops the recipe.
+missing-value policy: `skip-record` drops the record, anything else stops the recipe. The message names the
+field and its type, not a transform the rule doesn't have: `mapping failed: price: number field: no number in
+"call us"`.
 
 **A transform throws** (a `number` op on `"OTR £"`, a hook error): the recipe stops, unless the mapping rule
 itself says `onMissing: "skip-record"`, which reads as "without this field the record is worthless" and
@@ -1161,8 +1174,10 @@ only.
 
 `loadRecipeSet` parses every file against its schema (`RecipeValidationError` lists every problem with its
 JSON path) and then **binds** the inputs to the output (`RecipeBindingError`): every mapping key names an
-output field, every `from` starts with a known id, required fields are covered, web steps stay in web
-recipes, `next.selector` only in web mode, one emitting construct per path.
+output field and every `each` field a field of the items, every `from` starts with a known id, required fields
+are covered, every `default` coerces to its field's type and passes its rules, `onMissing: "default"` has a
+`default`, web steps stay in web recipes, `next.selector` only in web mode, one emitting construct per path.
+Hook names are checked when the crawler runs the set, before any request (§6).
 
 The report gives, per recipe: `emitted`, `rejected`, `duplicates`, `skipped` (records a resumed run already
 had), `stepsSkipped` (steps whose `onError: skip` swallowed a failure: a check that found nothing), `pages`,

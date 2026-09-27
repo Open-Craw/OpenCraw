@@ -5,14 +5,22 @@ import { parseBoolean, parseCurrency, parseDate, parseInteger, parseNumber, toIs
 export class CoercionError extends Error {
   override readonly name = 'CoercionError'
 
-  constructor (readonly path: string, reason: string) {
+  /**
+   * @param path - Where the value is (`price`, `variants[1].size`).
+   * @param reason - Why, without the path.
+   */
+  constructor (readonly path: string, readonly reason: string) {
     super(`${path}: ${reason}`)
   }
 }
 
+/** Types that keep blank text as text; every other type reads text that is empty once trimmed as missing. */
+const TEXT_TYPES = new Set<FieldSpec['type']>(['string', 'json'])
+
 /**
- * Converts a transformed value into the field's declared type.
- * `null` and `undefined` pass through: missing-value policies decide about them.
+ * Converts a transformed value into the field's declared type. `null` and `undefined` pass through, and blank
+ * text becomes `undefined` in a field that is not `string` or `json` (`""` is no number rather than a number
+ * that fails to parse): missing-value policies decide about them.
  *
  * @param value - The value after its transform chain.
  * @param field - The output field.
@@ -22,11 +30,13 @@ export class CoercionError extends Error {
  */
 export function coerceValue (value: unknown, field: FieldSpec, path: string): unknown {
   if (value === undefined || value === null) return value
+  if (typeof value === 'string' && !TEXT_TYPES.has(field.type) && value.trim() === '') return undefined
   try {
     return coerce(value, field, path)
   } catch (error) {
     if (error instanceof CoercionError) throw error
-    throw new CoercionError(path, error instanceof TransformError ? error.message : `cannot convert ${JSON.stringify(value)} to ${field.type}`)
+    // Named after the field's type, not the parser's op: the rule may have no transform at all.
+    throw new CoercionError(path, error instanceof TransformError ? `${field.type} field: ${error.reason}` : `cannot convert ${JSON.stringify(value)} to ${field.type}`)
   }
 }
 
@@ -66,7 +76,7 @@ function text (value: unknown, path: string): string {
 
 function currency (value: unknown, field: FieldSpec, path: string): { amount: number, currency: string } {
   const money = typeof value === 'object' && value !== null && 'amount' in value
-    ? { amount: parseNumber((value).amount), currency: (value as { currency?: string }).currency }
+    ? { amount: parseNumber((value).amount, undefined, 'currency'), currency: (value as { currency?: string }).currency }
     : parseCurrency(value, undefined, field.currency)
   const code = field.currency ?? money.currency
   if (code === undefined) throw new CoercionError(path, 'no currency: set "currency" on the field or use the currency transform')

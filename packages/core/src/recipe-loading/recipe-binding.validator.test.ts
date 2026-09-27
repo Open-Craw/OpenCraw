@@ -71,6 +71,22 @@ describe('validateBinding', () => {
     ]))
   })
 
+  it('checks the fields of an each rule against the item\'s fields (#78)', () => {
+    const variants = api.mapping.variants as Extract<InputRecipe['mapping'][string], { each: string }>
+    const typo: InputRecipe = { ...api, mapping: { ...api.mapping, variants: { ...variants, fields: { ...variants.fields, szie: { from: 'size' } } } } }
+    expect(messages(typo)).toEqual(['mapping.variants.fields.szie: the items of "variants" have no field "szie"'])
+    const strict = parseOutputRecipe({ ...output, fields: { ...output.fields, variants: { type: 'array', items: { type: 'object', fields: { size: { type: 'string', required: true }, price: { type: 'currency' } } } } } })
+    const { size: _size, ...priceOnly } = variants.fields
+    expect(validateBinding({ ...api, mapping: { ...api.mapping, variants: { ...variants, fields: priceOnly } } }, strict).map(issue => `${issue.path}: ${issue.message}`)).toEqual([
+      'mapping.variants.fields: required field of the items of "variants" "size" is not mapped',
+    ])
+  })
+
+  it('needs a default for a rule whose onMissing is default (#78)', () => {
+    expect(messages({ ...api, mapping: { ...api.mapping, title: { from: 'item.name', onMissing: 'default' } } })).toEqual(['mapping.title.onMissing: onMissing "default" needs a default: "title" has none'])
+    expect(messages({ ...api, mapping: { ...api.mapping, inStock: { from: 'item.stock', onMissing: 'default' } } })).toEqual([])
+  })
+
   it('rejects browser steps in api mode outside the bootstrap, and a form body in api mode; takes request in web mode', () => {
     const badApi: InputRecipe = { ...api, steps: [{ type: 'goto', url: 'x' }, ...api.steps] }
     expect(messages(badApi)[0]).toMatch(/steps\.0: "goto" needs a browser/)

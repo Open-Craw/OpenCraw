@@ -36,7 +36,8 @@ mode produced the session.
 `hook` transform, and so stay declarative and shareable. The cli (`--plugins <module>`, alias `--hooks`) and the
 MCP server (`OPENCRAW_PLUGINS` or `OPENCRAW_HOOKS` in its environment) load them from a JavaScript module
 exporting `hooks`, `accessPlugins` and `captchaSolvers`, or, as a bare hooks module, a default name -> function
-map or named functions.
+map or named functions. A run checks every hook its recipes name against the registered ones before its first
+request, and rejects with `UnknownHookError` (the recipe, the path, the name) when one is missing.
 
 ## 2. Input recipe (`InputRecipe`)
 
@@ -285,7 +286,18 @@ every use, so a page that re-renders after each interaction (a configurator) sti
 
 An `object` keeps only its declared `fields`; a `json` field keeps any JSON value verbatim and takes no
 `fields` or `items`. A `currency` value is stored as `{ amount: number, currency: string }`. A `date` is `YYYY-MM-DD`, a
-`datetime` an ISO 8601 instant.
+`datetime` an ISO 8601 instant; text that names no zone is read as UTC (or in the `date` transform's
+`timezone`), never in the host's zone.
+
+A `default` is coerced and validated like a mapped value when the recipes are bound, so a default that can't be
+its field's type, or `onMissing: 'default'` on a field without one, is a binding error.
+
+A `number` (and `integer`, and a `currency` amount) is read from text holding exactly one number, with a sign,
+currency, words and thousands separators around it; text holding two numbers or more is an error that names the
+text and suggests a `regex` transform. Without a `locale` the decimal separator is guessed: of two kinds the
+last; a single one groups thousands only when three digits follow it and one to three digits other than a
+lone `0` precede it (`1.299` is 1299, `0.125` is 0.125). A `currency` code is an ISO 4217 code (one next to the
+amount first) or a symbol.
 
 ## 4. Mapping and transformation
 
@@ -300,7 +312,9 @@ type MappingRule =
   array of resolved values (`["price_int", "price_cents"]` -> `join`).
 - `each` builds an array of objects from a list id; the nested `from` paths are relative to each list item
   (`.` is the item itself). A `lookup`'s `in` and a `template`'s paths inside those rules look in the item
-  first, then in the record.
+  first, then in the record. The `fields` keys must name fields of the items (checked at binding), and each
+  member of each item gets the missing-value policy, `default` and validation, reported at its index
+  (`variants[1].size`).
 - Transforms run in order. Built-ins: `trim`, `lowercase`, `uppercase`, `replace`, `regex` (capture group),
   `split`, `join`, `first`, `last`, `nth`, `slice`, `concat`, `coalesce`, `default`, `number` (locale aware),
   `integer`, `boolean` (`truthy` list), `currency` (locale aware; currency from the op, else the field),
@@ -311,13 +325,16 @@ type MappingRule =
 - A transform applied to a list applies to each element, except the collection ops (`first`, `last`, `nth`,
   `slice`, `join`, `concat`, `coalesce`, `flatten`, `unique`, `sum`, `count`, `group`) and `default`, `template`,
   `jsonpath`, `hook`, which act on the value as a whole.
-- After the chain, the value is coerced and validated against the `FieldSpec`.
+- After the chain, the value is coerced and validated against the `FieldSpec`. Blank text (`""`, or only
+  spaces in a field that is not `string` or `json`) is missing, not a failed coercion, so the missing-value
+  policy applies to it in every field type. A coercion error names the field and its type
+  (`price: number field: …`), never a transform the rule doesn't have.
 
 ### 4.1 Precedence of policies
 
 1. A step failure resolves step `onError` -> recipe `onError` -> `fail`. `skip` leaves the id unset and
    continues; `retry` re-runs the step; `fail` aborts the recipe.
-2. A missing mapped value resolves mapping rule `onMissing` -> field `onMissing` -> `default` when the field has
+2. A missing mapped value (`undefined`, `null`, `""`) resolves mapping rule `onMissing` -> field `onMissing` -> `default` when the field has
    a `default` -> recipe `onMissing` -> built-in default (`fail` if required, else `null`). `fail` aborts the recipe; `skip-record` rejects the record and continues; `null` and
    `default` fill the value.
 3. Whether a failed recipe stops the run is a run option (`onRecipeError: 'continue' | 'stop'`, default

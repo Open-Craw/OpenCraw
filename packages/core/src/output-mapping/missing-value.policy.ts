@@ -6,8 +6,8 @@ export function isMissing (value: unknown): boolean {
 }
 
 /**
- * The policy for a missing value: mapping rule, then field, then recipe, then
- * `default` when the field has one, `fail` when it is required, `null` otherwise.
+ * The policy for a missing value: mapping rule, then field, then `default` when
+ * the field has one, then recipe, then `fail` when it is required, `null` otherwise.
  *
  * @param field - The output field.
  * @param recipe - The output recipe.

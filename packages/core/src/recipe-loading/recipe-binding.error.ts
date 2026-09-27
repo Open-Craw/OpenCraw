@@ -1,7 +1,10 @@
 /** One problem in how an input recipe binds to its output recipe. */
 export interface BindingIssue {
   recipeId: string
-  /** Where in the input recipe: `mapping.price`, `steps.1.steps.0`, `session.bootstrap.steps.2`. */
+  /**
+   * Where in the recipe `recipeId` names: `mapping.price`, `steps.1.steps.0`, `session.bootstrap.steps.2` in an
+   * input recipe, `fields.price.default` in the output recipe.
+   */
   path:     string
   message:  string
 }

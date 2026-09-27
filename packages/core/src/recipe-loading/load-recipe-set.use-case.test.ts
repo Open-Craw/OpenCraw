@@ -88,4 +88,15 @@ describe('bindRecipeSet', () => {
     const input = { kind: 'input' as const, id: 'i', output: 'o', mode: 'api' as const, start: [{ url: 'x' }], steps: [{ type: 'emit' as const }], mapping: { b: { from: 'nothing' } } }
     expect(() => bindRecipeSet(output, [input])).toThrow(RecipeBindingError)
   })
+
+  it('fails the load on a default that cannot fill its field, or a default policy without one (#78)', () => {
+    const output = { kind: 'output' as const, id: 'o', version: 1, fields: { n: { type: 'number' as const, default: 'none' }, m: { type: 'number' as const, onMissing: 'default' as const } } }
+    const input = { kind: 'input' as const, id: 'i', output: 'o', mode: 'api' as const, start: [{ url: 'x' }], steps: [{ type: 'emit' as const }], mapping: {} }
+    expect(() => bindRecipeSet(output, [input])).toThrow([
+      'recipes do not bind',
+      '  o fields.n.default: "none" is not a valid default: number field: no number in "none"',
+      '  o fields.m.onMissing: "m" has onMissing "default" but no default',
+    ].join('\n'))
+    expect(() => bindRecipeSet({ ...output, fields: { n: { type: 'number', default: '0' } } }, [input])).not.toThrow()
+  })
 })
