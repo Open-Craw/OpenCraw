@@ -17,7 +17,8 @@ const recipes = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'recip
 function resumedSink () {
   let sink
   const opened = async (output) => {
-    const copy = join(await mkdtemp(join(tmpdir(), 'opencraw-resume-')), 'books.jsonl')
+    const folder = await mkdtemp(join(tmpdir(), 'opencraw-resume-'))
+    const copy = join(folder, 'books.jsonl')
     await copyFile(join(recipes, 'run-resume', 'earlier-run.jsonl'), copy)
     sink = jsonLinesSink(copy, { append: true })
     await sink.open(output)
@@ -40,7 +41,7 @@ export const SCENES = [
     keep:    6,
     crawler: { parallel: 2, throttle: { domains: { 'books.toscrape.com': { delayMs: 1000, concurrency: 1 } } } },
   },
-  // forEach with limits.concurrency 3: three tabs at a time, records in completion order.
+  // forEach with limits.concurrency 3 in api mode: three requests at a time, under delayMs 300.
   { name: 'run-concurrency', keep: 6 },
   // resume against the file of an earlier run that stopped after five records.
   { name: 'run-resume', keep: 11, crawler: { resume: true, sink: resumedSink() } },
@@ -48,6 +49,8 @@ export const SCENES = [
   { name: 'run-session', keep: 2 },
   // allowedHosts: a web and an api recipe each follow a link off the list.
   { name: 'run-allowed-hosts', keep: 2, crawler: { allowedHosts: ['quotes.toscrape.com'] } },
-  // A 404 with the default block rule, and with blockedWhen, transport retries, rotation and a step retry.
-  { name: 'run-blocked', keep: 2 },
+  // A 404 in a browser under the default block rule: the page loads, the next step finds nothing.
+  { name: 'run-not-found', keep: 1 },
+  // The same 404 over HTTP with blockedWhen, transport retries, a rotation and a step retry.
+  { name: 'run-blocked', keep: 1 },
 ]

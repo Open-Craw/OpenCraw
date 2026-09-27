@@ -3,36 +3,204 @@
   "summary": [
     {
       "recipeId": "travel-details",
-      "emitted": 1,
+      "emitted": 6,
       "rejected": 0,
       "duplicates": 0,
-      "pages": 2,
-      "error": "step steps.2.steps.0 (goto) failed: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\", waiting until \"load\"\u001b[22m\n"
+      "pages": 9
     }
   ],
   "trace": [
-    "▶ travel-details (web)",
+    "▶ travel-details (api)",
     "  ⇄ access direct (direct)",
-    "  ↺ https://books.toscrape.com/catalogue/category/books/travel_2/index.html: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
     "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
-    "  · steps.0  goto  … ms",
+    "  · steps.0  request listing  … ms",
     "  · steps.1  extract links  … ms",
-    "  ↺ https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html: Timeout 30000ms exceeded, try 2 in … ms",
-    "  ↺ https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html: Timeout 30000ms exceeded, try 2 in … ms",
-    "  ↺ https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html: Timeout 30000ms exceeded, try 2 in … ms",
-    "  ↺ https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html: net::ERR_TOO_MANY_RETRIES, try 3 in … ms",
-    "  ↺ https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html: net::ERR_TOO_MANY_RETRIES, try 3 in … ms",
-    "  ↺ https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html: Timeout 30000ms exceeded, try 3 in … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
+    "    · steps.2.steps.0  request detail  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+    "    · steps.2.steps.0  request detail  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"]",
     "  ⇢ page 1  https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
-    "    · steps.2.steps.0  goto  … ms",
+    "    · steps.2.steps.0  request detail  … ms",
     "    · steps.2.steps.1  extract title  … ms",
     "    · steps.2.steps.2  extract price  … ms",
     "    · steps.2.steps.3  extract upc  … ms",
     "  ✚ record [\"https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"]",
-    "  ✖ step steps.2.steps.0 (goto) failed: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\", waiting until \"load\"\u001b[22m\n",
-    "■ travel-details: 1 emitted, 0 rejected, 0 duplicates, 2 pages, … ms\n  ✖ stopped: step steps.2.steps.0 (goto) failed: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\", waiting until \"load\"\u001b[22m\n"
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+    "    · steps.2.steps.0  request detail  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html",
+    "    · steps.2.steps.0  request detail  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html",
+    "    · steps.2.steps.0  request detail  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html",
+    "    · steps.2.steps.0  request detail  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html",
+    "    · steps.2.steps.0  request detail  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  · steps.2  forEach  … ms",
+    "■ travel-details: 6 emitted, 0 rejected, 0 duplicates, 9 pages, … ms"
   ],
   "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
+        "title": "It's Only the Himalayas",
+        "price": {
+          "amount": 45.17,
+          "currency": "GBP"
+        },
+        "upc": "a22124811bfa8350"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "links": [
+          "../../../its-only-the-himalayas_981/index.html",
+          "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "../../../under-the-tuscan-sun_504/index.html",
+          "../../../a-summer-in-europe_458/index.html",
+          "../../../the-great-railway-bazaar_446/index.html",
+          "../../../a-year-in-provence-provence-1_421/index.html",
+          "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+          "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
+          "number": 1
+        },
+        "link": "../../../its-only-the-himalayas_981/index.html",
+        "detail": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    It&#39;s Only the Himalayas | Books to Scrape - Sandbox\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name…",
+        "title": "It's Only the Himalayas",
+        "price": "£45.17",
+        "upc": "a22124811bfa8350"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "It's Only the Himalayas",
+          "steps": []
+        },
+        "price": {
+          "from": "£45.17",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 45.17,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "upc": {
+          "from": "a22124811bfa8350",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+        "title": "Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond",
+        "price": {
+          "amount": 49.43,
+          "currency": "GBP"
+        },
+        "upc": "ce60436f52c5ee68"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "links": [
+          "../../../its-only-the-himalayas_981/index.html",
+          "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "../../../under-the-tuscan-sun_504/index.html",
+          "../../../a-summer-in-europe_458/index.html",
+          "../../../the-great-railway-bazaar_446/index.html",
+          "../../../a-year-in-provence-provence-1_421/index.html",
+          "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+          "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "number": 1
+        },
+        "link": "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+        "detail": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond | Books to Scrape - Sandbox\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th …",
+        "title": "Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond",
+        "price": "£49.43",
+        "upc": "ce60436f52c5ee68"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond",
+          "steps": []
+        },
+        "price": {
+          "from": "£49.43",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 49.43,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "upc": {
+          "from": "ce60436f52c5ee68",
+          "steps": []
+        }
+      }
+    },
     {
       "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
       "key": "[\"https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"]",
@@ -50,6 +218,7 @@
         "start": {
           "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
         },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
         "links": [
           "../../../its-only-the-himalayas_981/index.html",
           "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
@@ -61,13 +230,14 @@
           "../../../a-year-in-provence-provence-1_421/index.html",
           "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
           "../../../neither-here-nor-there-travels-in-europe_198/index.html",
-          "../../../1000-places-to-see-before-you-die_1/index.html"
+          "… 1 more"
         ],
         "page": {
           "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
           "number": 1
         },
         "link": "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+        "detail": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    See America: A Celebration of Our National Parks &amp; Treasured Sites | Books to Scrape - Sandbox\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=…",
         "title": "See America: A Celebration of Our National Parks & Treasured Sites",
         "price": "£48.87",
         "upc": "f9705c362f070608"
@@ -95,6 +265,210 @@
         },
         "upc": {
           "from": "f9705c362f070608",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+        "title": "Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel",
+        "price": {
+          "amount": 36.94,
+          "currency": "GBP"
+        },
+        "upc": "1809259a5a5f1d8d"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "links": [
+          "../../../its-only-the-himalayas_981/index.html",
+          "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "../../../under-the-tuscan-sun_504/index.html",
+          "../../../a-summer-in-europe_458/index.html",
+          "../../../the-great-railway-bazaar_446/index.html",
+          "../../../a-year-in-provence-provence-1_421/index.html",
+          "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+          "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "number": 1
+        },
+        "link": "../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+        "detail": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel | Books to Scrape - Sandbox\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24…",
+        "title": "Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel",
+        "price": "£36.94",
+        "upc": "1809259a5a5f1d8d"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel",
+          "steps": []
+        },
+        "price": {
+          "from": "£36.94",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 36.94,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "upc": {
+          "from": "1809259a5a5f1d8d",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html",
+        "title": "Under the Tuscan Sun",
+        "price": {
+          "amount": 37.33,
+          "currency": "GBP"
+        },
+        "upc": "a94350ee74deaa07"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "links": [
+          "../../../its-only-the-himalayas_981/index.html",
+          "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "../../../under-the-tuscan-sun_504/index.html",
+          "../../../a-summer-in-europe_458/index.html",
+          "../../../the-great-railway-bazaar_446/index.html",
+          "../../../a-year-in-provence-provence-1_421/index.html",
+          "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+          "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html",
+          "number": 1
+        },
+        "link": "../../../under-the-tuscan-sun_504/index.html",
+        "detail": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Under the Tuscan Sun | Books to Scrape - Sandbox\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"descr…",
+        "title": "Under the Tuscan Sun",
+        "price": "£37.33",
+        "upc": "a94350ee74deaa07"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "Under the Tuscan Sun",
+          "steps": []
+        },
+        "price": {
+          "from": "£37.33",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 37.33,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "upc": {
+          "from": "a94350ee74deaa07",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html",
+        "title": "A Summer In Europe",
+        "price": {
+          "amount": 44.34,
+          "currency": "GBP"
+        },
+        "upc": "cc1936a9f4e93477"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "links": [
+          "../../../its-only-the-himalayas_981/index.html",
+          "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "../../../under-the-tuscan-sun_504/index.html",
+          "../../../a-summer-in-europe_458/index.html",
+          "../../../the-great-railway-bazaar_446/index.html",
+          "../../../a-year-in-provence-provence-1_421/index.html",
+          "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+          "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html",
+          "number": 1
+        },
+        "link": "../../../a-summer-in-europe_458/index.html",
+        "detail": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    A Summer In Europe | Books to Scrape - Sandbox\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"descrip…",
+        "title": "A Summer In Europe",
+        "price": "£44.34",
+        "upc": "cc1936a9f4e93477"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "A Summer In Europe",
+          "steps": []
+        },
+        "price": {
+          "from": "£44.34",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 44.34,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "upc": {
+          "from": "cc1936a9f4e93477",
           "steps": []
         }
       }

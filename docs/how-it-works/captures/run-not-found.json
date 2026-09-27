@@ -1,0 +1,22 @@
+{
+  "scene": "run-not-found",
+  "summary": [
+    {
+      "recipeId": "missing-plain",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.1 (extract) failed: no match for div.product_main h1"
+    }
+  ],
+  "trace": [
+    "▶ missing-plain (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/no-such-book_0/index.html  [404]",
+    "  · steps.0  goto  … ms",
+    "  ✖ step steps.1 (extract) failed: no match for div.product_main h1",
+    "■ missing-plain: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.1 (extract) failed: no match for div.product_main h1"
+  ],
+  "records": []
+}

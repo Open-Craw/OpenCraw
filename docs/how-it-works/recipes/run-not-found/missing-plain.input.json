@@ -8,7 +8,7 @@
   "start": [{ "url": "https://books.toscrape.com/catalogue/no-such-book_0/index.html" }],
   "limits": { "delayMs": 300 },
   "steps": [
-    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "goto", "url": "{{start.url}}", "waitUntil": "domcontentloaded" },
     { "type": "extract", "id": "title", "selector": "div.product_main h1", "kind": "css", "take": "text" },
     { "type": "emit" }
   ],

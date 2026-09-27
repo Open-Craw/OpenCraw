@@ -3,8 +3,8 @@
   "kind": "input",
   "id": "missing-blocked",
   "output": "book",
-  "mode": "web",
-  "description": "The same page with every layer on: 404 retried as a transport error, then counted as a block, one rotation, and a step retry.",
+  "mode": "api",
+  "description": "The same page over HTTP, with every layer on: the 404 retried as a passing failure, then counted as a block, one rotation, then a step retry.",
   "start": [{ "url": "https://books.toscrape.com/catalogue/no-such-book_0/index.html" }],
   "session": {
     "blockedWhen": { "status": [404] },
@@ -12,7 +12,7 @@
   },
   "limits": { "delayMs": 300, "retry": { "attempts": 2, "backoffMs": 500, "statuses": [404] } },
   "steps": [
-    { "type": "goto", "url": "{{start.url}}", "onError": { "policy": "retry", "attempts": 2, "backoffMs": 1000 } },
+    { "type": "request", "id": "book", "url": "{{start.url}}", "as": "html", "onError": { "policy": "retry", "attempts": 2, "backoffMs": 1000 } },
     { "type": "extract", "id": "title", "selector": "div.product_main h1", "kind": "css", "take": "text" },
     { "type": "emit" }
   ],
