@@ -19,6 +19,10 @@ Several input recipes can feed one output; a run processes them one after anothe
 | [`@opencraw/captcha-tesseract`](./packages/captcha-tesseract) | Reads image captchas with Tesseract for form captchas: refreshes the image instead of submitting a doubtful read, fills the answer field, and audits every read with the site's verdict. |
 | [`@opencraw/azure-durable`](./packages/azure-durable) | OpenCraw as an HTTP service on Azure Durable Functions: run recipes with one call, or send items one at a time to warm worker pools that keep their windows. Hooks, solvers and secrets stay in the host; recipes can only reach the hosts it allows. |
 
+| App | What it is |
+|---|---|
+| [`apps/azure-host`](./apps/azure-host) | A complete Azure Functions app on `@opencraw/azure-durable`, ready to build, run in Docker and deploy with one script: `/crawl`, `/jobs`, `/mcp`, and two recipe sets that work the moment it is up. |
+
 ## Quick start
 
 ```sh

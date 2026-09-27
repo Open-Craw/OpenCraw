@@ -1,0 +1,144 @@
+{
+  "kind": "input",
+  "id": "books-by-category",
+  "output": "book",
+  "mode": "api",
+  "vars": {
+    "category": "travel_2"
+  },
+  "start": [
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/"
+    }
+  ],
+  "limits": {
+    "delayMs": 250,
+    "timeoutMs": 20000
+  },
+  "steps": [
+    {
+      "type": "paginate",
+      "next": {
+        "url": "{{ default(nextPage, '') }}"
+      },
+      "maxPages": 50,
+      "steps": [
+        {
+          "type": "set",
+          "id": "listingUrl",
+          "value": "{{ page.number == 1 ? start.url + vars.category + '/index.html' : page.url }}"
+        },
+        {
+          "type": "request",
+          "id": "listing",
+          "url": "{{ listingUrl }}",
+          "as": "html"
+        },
+        {
+          "type": "extract",
+          "id": "books",
+          "from": "listing",
+          "selector": "article.product_pod",
+          "kind": "css",
+          "take": "html",
+          "many": true
+        },
+        {
+          "type": "extract",
+          "id": "nextHref",
+          "from": "listing",
+          "selector": "li.next a",
+          "kind": "css",
+          "take": "attr:href",
+          "onError": {
+            "policy": "skip"
+          }
+        },
+        {
+          "type": "set",
+          "id": "nextPage",
+          "value": "{{ nextHref ? replace(listingUrl, '/[^/]+$', '/' + nextHref) : '' }}"
+        },
+        {
+          "type": "forEach",
+          "over": "books",
+          "as": "book",
+          "emit": true,
+          "steps": []
+        }
+      ]
+    }
+  ],
+  "mapping": {
+    "url": {
+      "from": "book",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "<h3><a href=\"(?:\\.\\./)*([^\"]+)\""
+        },
+        {
+          "op": "replace",
+          "pattern": "^",
+          "replacement": "https://books.toscrape.com/catalogue/"
+        }
+      ]
+    },
+    "title": {
+      "from": "book",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "<h3><a [^>]*title=\"([^\"]+)\""
+        },
+        {
+          "op": "hook",
+          "name": "decodeHtml"
+        }
+      ]
+    },
+    "price": {
+      "from": "book",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "class=\"price_color\">\u00a3?([\\d.]+)"
+        },
+        {
+          "op": "number"
+        }
+      ]
+    },
+    "inStock": {
+      "from": "book",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "class=\"instock availability\">[\\s\\S]*?(In stock|Out of stock)"
+        },
+        {
+          "op": "boolean",
+          "truthy": [
+            "in stock"
+          ]
+        }
+      ]
+    },
+    "rating": {
+      "from": "book",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "star-rating (\\w+)"
+        },
+        {
+          "op": "hook",
+          "name": "stars"
+        }
+      ]
+    },
+    "category": {
+      "from": "vars.category"
+    }
+  }
+}

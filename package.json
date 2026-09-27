@@ -31,17 +31,22 @@
     "captcha-tesseract:e2e": "nx run captcha-tesseract:e2e",
     "azure-durable:qa": "nx run azure-durable:lint && nx run azure-durable:test",
     "azure-durable:build": "nx run azure-durable:build",
-    "azure-durable:e2e": "nx run azure-durable:e2e"
+    "azure-durable:e2e": "nx run azure-durable:e2e",
+    "azure-host:qa": "nx run azure-host:lint && nx run azure-host:test",
+    "azure-host:build": "nx run azure-host:build",
+    "azure-host:start": "nx run azure-host:start"
   },
   "private": true,
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@mnci/eslint-config": ">=0.1.0 <1.0.0",
+    "@nx/esbuild": "23.2.0",
     "@nx/eslint": "23.2.0",
     "@nx/eslint-plugin": "23.2.0",
     "@nx/jest": "23.2.0",
     "@nx/js": "23.2.0",
+    "@nx/node": "^23.2.0",
     "@nx/rollup": "23.2.0",
     "@swc-node/register": "1.11.1",
     "@swc/cli": "~0.8.1",
@@ -52,7 +57,9 @@
     "@types/node": "^24.0.0",
     "@types/pngjs": "^6.0.5",
     "@typescript/native": "npm:typescript@^7.0.2",
+    "adm-zip": "^0.6.1",
     "azurite": "^3.37.0",
+    "esbuild": "^0.27.0",
     "eslint": "^10.8.0",
     "husky": "^9.1.7",
     "jest": "~30.3.0",
@@ -67,7 +74,8 @@
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "overrides": {
     "eslint-plugin-jsx-a11y": {

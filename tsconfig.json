@@ -20,6 +20,9 @@
     },
     {
       "path": "./packages/azure-durable"
+    },
+    {
+      "path": "./apps/azure-host"
     }
   ],
   "compilerOptions": {}

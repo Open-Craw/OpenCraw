@@ -151,6 +151,27 @@
         "script": "azure-durable:build",
         "problemMatcher": [],
         "group": "build"
+      },
+      {
+        "label": "azure-host: qa",
+        "type": "npm",
+        "script": "azure-host:qa",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "azure-host: build",
+        "type": "npm",
+        "script": "azure-host:build",
+        "problemMatcher": [],
+        "group": "build"
+      },
+      {
+        "label": "azure-host: start",
+        "type": "npm",
+        "script": "azure-host:start",
+        "problemMatcher": [],
+        "isBackground": true
       }
     ]
   },

@@ -1,0 +1,14 @@
+{
+  "kind": "output",
+  "id": "book",
+  "version": 1,
+  "fields": {
+    "url":      { "type": "url", "key": true, "required": true },
+    "title":    { "type": "string", "required": true },
+    "price":    { "type": "number", "required": true },
+    "currency": { "type": "string", "default": "GBP" },
+    "inStock":  { "type": "boolean" },
+    "rating":   { "type": "integer" },
+    "category": { "type": "string" }
+  }
+}
