@@ -10,7 +10,6 @@
   "steps": [
     { "type": "goto", "url": "{{start.url}}tag/{{vars.tag}}/" },
     { "type": "set", "id": "label", "value": "outside the loop" },
-    { "type": "set", "id": "quote", "value": "no quote yet" },
     { "type": "set", "id": "authors", "value": [] },
     { "type": "paginate", "next": { "selector": "li.next a" }, "maxPages": 3, "steps": [
       { "type": "extract", "id": "quotes", "selector": "div.quote", "kind": "css", "take": "html", "many": true },

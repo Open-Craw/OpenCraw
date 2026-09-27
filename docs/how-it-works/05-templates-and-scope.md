@@ -42,7 +42,6 @@ then one more at the very end, outside every loop:
 "steps": [
   { "type": "goto", "url": "{{start.url}}tag/{{vars.tag}}/" },
   { "type": "set", "id": "label", "value": "outside the loop" },
-  { "type": "set", "id": "quote", "value": "no quote yet" },
   { "type": "set", "id": "authors", "value": [] },
   { "type": "paginate", "next": { "selector": "li.next a" }, "maxPages": 3, "steps": [
     { "type": "extract", "id": "quotes", "selector": "div.quote", "kind": "css", "take": "html", "many": true },
@@ -62,7 +61,7 @@ While the first quote's iteration runs, the chain has three scopes:
 ```mermaid
 flowchart BT
   I["iteration scope (forEach)<br/>quote = the quote's HTML<br/>text, author, where"] --> P["page scope (paginate)<br/>quotes<br/>page number 1"]
-  P --> R["root scope (start point)<br/>vars, start, label,<br/>quote = 'no quote yet', authors<br/>page url and number"]
+  P --> R["root scope (start point)<br/>vars, start, label, authors<br/>page url and number"]
 ```
 
 The emit hands the mapping a **snapshot** of the chain: every name visible from the iteration, the nearest
@@ -94,9 +93,8 @@ binding of each, plus `page` as `{ url, number }`. For the first quote:
 <!-- /capture -->
 
 `text`, `author` and `where` come from the iteration scope, `label` and `authors` from the root, two levels up.
-`quote` is the loop's item, the HTML fragment, not the root's `"no quote yet"` (more on that
-[below](#shadowing)). `page.url` is the tag page the `goto` opened: `start.url` stays the URL the start point
-gave.
+`quote` is the loop's item, the HTML fragment. `page.url` is the tag page the `goto` opened: `start.url` stays
+the URL the start point gave.
 
 The first quote on page 2, the run's 11th record:
 
@@ -128,7 +126,6 @@ And the last record, emitted by the top-level `emit` after `paginate` finished:
 <!-- capture:scope-chain scope ids=text,author,where,quote,label,authors,page record=11 -->
 ```json
 {
-  "quote": "no quote yet",
   "label": "outside the loop",
   "authors": [
     "Jane Austen",
@@ -145,33 +142,34 @@ And the last record, emitted by the top-level `emit` after `paginate` finished:
 <!-- /capture -->
 
 `text`, `author` and `where` aren't in it at all: they died with their iterations. The mapping reads them as
-missing, so the record has `null` for them. `quote` is the root's value again. And `page` is page 2: when
+missing, so the record has `null` for them, and so is `quote`, the loop's name, bound in each iteration only. And
+`page` is page 2: when
 `paginate` moves to the next page it records the new URL and number on the scope it runs in (here the root), so
 after the loop the root's page state is the last page, and steps after a `paginate` run against it.
 
 ### Shadowing
 
-A child binding with the same name as a parent's hides the parent's value, for the child's lifetime only. You
-can't do it with a step `id`: binding checks refuse a second step that binds a name already bound on the same
-path. Renaming the loop's `where` to `label` in the recipe above gives, from `loadRecipeSet` in a small Node
-script:
+A child binding with the same name as a parent's would hide the parent's value for the child's lifetime. Binding
+refuses it for every name a recipe chooses: a step `id` and a `forEach`'s `as` can't reuse a name already bound on
+the same path, nor `page`, `start` or `vars`. Renaming the loop's `where` to `label` in the recipe above gives, from
+`loadRecipeSet` in a small Node script:
 
 ```text
 RecipeBindingError: recipes do not bind
-  books-tag steps.4.steps.1.steps.2: id "label" is already bound on this path
+  books-tag steps.3.steps.1.steps.2: id "label" is already bound on this path
 ```
 
-So in a valid recipe, shadowing comes from three places:
+and `"as": "label"` on the loop gives the same error at `steps.3.steps.1.as`. So a `forEach` over tags inside a
+`forEach` over products can't both use `as: "item"`: the inner one would hide the product, and the record would see
+only the tag. Name them `product` and `tag`. Loops that aren't nested (two loops one after the other, or one in
+each branch of an `if`) can reuse a name, since neither is on the other's path.
 
-- a `forEach`'s `as`, which binding doesn't check against outer names: here `as: "quote"` hides the root's
-  `quote` in every iteration, and the root's value is back after the loop (the two snapshots above);
+Two things still shadow, by design:
+
 - a pagination cursor (`next: { jsonpath, as }`), bound in each next page's scope;
 - page state: a `goto` or a `request` inside a loop records its URL (and document) in the iteration's scope, so
   the iteration sees the new page while the listing's page state, one level up, stays as it was for the next
   page's click.
-
-Loop names deserve care for the same reason: a `forEach` over tags with `as: "item"` inside a `forEach` over
-products with `as: "item"` hides the product. The record sees only the tag.
 
 ### What `emit` takes
 
