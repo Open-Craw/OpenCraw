@@ -8,6 +8,7 @@
 |---|---|
 | [authoring.md](./authoring.md) | You are writing a recipe and need every field, step, transform and rule, with the reasoning behind each. The reference. |
 | [quick-guide.md](./quick-guide.md) | You want the short version: one page, the common shapes. |
+| [How OpenCraw works](../how-it-works/README.md) | You want to see what the engine does with each part of a recipe: every step, template, transform and policy run on real sites, APIs and documents, with screenshots, traces and the records they gave, and the engineering of the PDF, spreadsheet, PowerPoint and Word readers. |
 | [examples/](../../examples/README.md) | You want recipes that run: every example, what it shows and how to start it. |
 | [examples/movies](../../examples/movies/README.md), [examples/filmography](../../examples/filmography/README.md) | You want to see real recipes end to end: five movies from Netflix and IMDb, then movie → lead actor → filmography on TMDB and Letterboxd, with the decisions, the traces and the bugs met on the way. |
 | [examples/vehicles](../../examples/vehicles/README.md) | You want the harder case: configurator data behind an inline `carPath`, three pages per model, nested loops emitting one record per priced combination, and the two engine features it forced (`regex` extracts, templated selectors). |

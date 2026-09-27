@@ -17,6 +17,9 @@ Point `$schema` at `packages/core/schemas/output-recipe.schema.json` or `input-r
 editor validates and completes as you type. Every recipe is validated on load; unknown keys are errors, so a
 typo never silently does nothing.
 
+This page says what each key means. [How OpenCraw works](../how-it-works/README.md) runs each of them on real
+sites, APIs and documents and shows what the engine did: the scope, the mapping steps, the trace and the record.
+
 ---
 
 ## 1. The output recipe

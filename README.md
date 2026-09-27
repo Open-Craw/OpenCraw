@@ -53,6 +53,7 @@ await crawler.close()
 ```
 
 Start from the [examples](./examples/README.md) (each one runs with `npm start`; [`examples/shop`](./examples/shop) runs offline) and the guide in [`docs/recipes/authoring.md`](./docs/recipes/authoring.md).
+[How OpenCraw works](./docs/how-it-works/README.md) shows what the engine does with every part of a recipe, on real sites, APIs and documents.
 The specification is [`docs/requirements.md`](./docs/requirements.md).
 
 ## Working on this repository
