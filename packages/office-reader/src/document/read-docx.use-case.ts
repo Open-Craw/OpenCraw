@@ -45,21 +45,28 @@ export async function readDocx (source: OfficeSource, options: ReadDocxOptions =
   }
   const styles = readStyles(part('styles'))
   const ordered = readNumbering(part('numbering'))
-  const context = (partName: string): BodyContext => ({ styles, ordered, links: hyperlinksOf(pkg, partName) })
-  const { blocks: body } = readBlocks(xml, context(main))
-  const headers: DocumentBlock[][] = []
-  const footers: DocumentBlock[][] = []
-  const notes: DocumentNote[] = []
-  if (options.extras !== false) {
-    for (const relationship of relationships.values()) {
-      if (relationship.type === 'header' || relationship.type === 'footer') {
-        const { blocks } = readBlocks(pkg.text(relationship.target), context(relationship.target))
-        if (blocks.length > 0) (relationship.type === 'header' ? headers : footers).push(blocks)
-      } else if (relationship.type === 'footnotes' || relationship.type === 'endnotes') {
-        notes.push(...readBlocks(pkg.text(relationship.target), context(relationship.target)).notes)
-      }
-    }
+  // Tables are named in the order the HTML puts them: headers, body, footers, notes.
+  let tables = 0
+  const tableName = (): string => {
+    tables += 1
+
+    return `table ${tables}`
   }
+  const context = (partName: string): BodyContext => ({ styles, ordered, links: hyperlinksOf(pkg, partName), tableName })
+  const partsOf = (...types: string[]): string[] => {
+    const targets: string[] = []
+    if (options.extras === false) return targets
+    for (const relationship of relationships.values()) {
+      if (types.includes(relationship.type)) targets.push(relationship.target)
+    }
+
+    return targets
+  }
+  const blocksOf = (type: string): DocumentBlock[][] => partsOf(type).map(target => readBlocks(pkg.text(target), context(target)).blocks).filter(blocks => blocks.length > 0)
+  const headers = blocksOf('header')
+  const { blocks: body } = readBlocks(xml, context(main))
+  const footers = blocksOf('footer')
+  const notes: DocumentNote[] = partsOf('footnotes', 'endnotes').flatMap(target => readBlocks(pkg.text(target), context(target)).notes)
   const title = titleOf(pkg.text(relationshipOfType(packageRelationships, 'core-properties')?.target ?? 'docProps/core.xml'))
 
   return { ...(title !== undefined && { title }), body, headers, footers, notes }

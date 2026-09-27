@@ -1,16 +1,18 @@
-import { strFromU8, unzipSync } from 'fflate'
+import { inflateSync, strFromU8 } from 'fflate'
 import { OfficeReadError } from '../read-error'
+import { readZipDirectory } from './zip-directory.algorithm'
+import type { ZipEntry } from './zip-directory.algorithm'
 
 /**
- * How much a package may inflate to. fflate sizes each entry by the size its
- * zip header declares, and never inflates past it: a header that lies about a
+ * How much a package may inflate to. Each entry inflates into a buffer of the
+ * size its zip header declares, never past it: a header that lies about a
  * bomb gets a truncated entry, not gigabytes. Capping the declared sizes is
  * therefore enough.
  */
 export interface PackageLimits {
   /** Bytes one entry may declare. Default 256 MiB. */
   entryBytes?: number
-  /** Bytes the entries read from one file may declare together. Default 512 MiB. */
+  /** Bytes the entries read from one file may declare together, each counted once. Default 512 MiB. */
   totalBytes?: number
 }
 
@@ -35,15 +37,9 @@ export class OoxmlPackage {
       if (holdsEncryptionInfo(bytes)) throw new OfficeReadError('encrypted', 'a password-protected Office file: remove the password and save it again')
       throw new OfficeReadError('legacy-format', 'a legacy binary Office file (.xls, .ppt, .doc): save it as .xlsx, .pptx or .docx, or export it as PDF')
     }
-    const entries = new Map<string, { name: string, size: number }>()
+    const entries = new Map<string, ZipEntry>()
     try {
-      unzipSync(bytes, {
-        filter: (file) => {
-          entries.set(partKey(file.name), { name: file.name, size: file.originalSize })
-
-          return false
-        },
-      })
+      for (const entry of readZipDirectory(bytes)) entries.set(partKey(entry.name), entry)
     } catch (error) {
       throw new OfficeReadError('not-zip', `not an Office file: not a readable zip (${(error as Error).message})`, { cause: error })
     }
@@ -55,12 +51,16 @@ export class OoxmlPackage {
   }
 
   private declared = 0
+  /** The parts counted against the total limit: a part read twice counts once. */
+  private readonly counted = new Set<string>()
 
   /**
    * Entries by part key: part names are case-insensitive (OPC), and some
    * generators store `xl\\sharedstrings.xml` for `xl/sharedStrings.xml`.
+   * Each entry is located when the package opens, so reading a part never
+   * walks the zip's directory again.
    */
-  private constructor (private readonly bytes: Uint8Array, private readonly entries: ReadonlyMap<string, { name: string, size: number }>, private readonly limits: Required<PackageLimits>) {}
+  private constructor (private readonly bytes: Uint8Array, private readonly entries: ReadonlyMap<string, ZipEntry>, private readonly limits: Required<PackageLimits>) {}
 
   /** The names of every part, as stored. */
   get names (): string[] {
@@ -79,19 +79,29 @@ export class OoxmlPackage {
    * @throws OfficeReadError: `too-large` past the limits, `malformed` when the part does not inflate.
    */
   text (name: string): string {
-    const entry = this.entries.get(partKey(name))
+    const key = partKey(name)
+    const entry = this.entries.get(key)
     if (entry === undefined) return ''
-    if (entry.size > this.limits.entryBytes) throw new OfficeReadError('too-large', `${name} declares ${entry.size} bytes, over the ${this.limits.entryBytes}-byte entry limit`)
-    this.declared += entry.size
-    if (this.declared > this.limits.totalBytes) throw new OfficeReadError('too-large', `the parts read declare over ${this.limits.totalBytes} bytes together`)
-    let inflated: Uint8Array | undefined
-    try {
-      inflated = unzipSync(this.bytes, { filter: file => file.name === entry.name })[entry.name]
-    } catch (error) {
-      throw new OfficeReadError('malformed', `${name} does not inflate (${(error as Error).message}): the file is damaged`, { cause: error })
+    if (entry.originalSize > this.limits.entryBytes) throw new OfficeReadError('too-large', `${name} declares ${entry.originalSize} bytes, over the ${this.limits.entryBytes}-byte entry limit`)
+    if (!this.counted.has(key)) {
+      if (this.declared + entry.originalSize > this.limits.totalBytes) throw new OfficeReadError('too-large', `the parts read declare over ${this.limits.totalBytes} bytes together`)
+      this.counted.add(key)
+      this.declared += entry.originalSize
     }
 
-    return inflated === undefined ? '' : strFromU8(inflated)
+    return strFromU8(inflate(this.bytes, name, entry))
+  }
+}
+
+/** A part's bytes: stored as they are, or deflated into a buffer of the size it declares, never past it. */
+function inflate (bytes: Uint8Array, name: string, entry: ZipEntry): Uint8Array {
+  const data = bytes.subarray(entry.start, entry.start + entry.size)
+  if (entry.method === 0) return data
+  if (entry.method !== 8) throw new OfficeReadError('malformed', `${name} uses compression method ${entry.method}, which Office files do not use: the file is damaged`)
+  try {
+    return inflateSync(data, { out: new Uint8Array(entry.originalSize) })
+  } catch (error) {
+    throw new OfficeReadError('malformed', `${name} does not inflate (${(error as Error).message}): the file is damaged`, { cause: error })
   }
 }
 

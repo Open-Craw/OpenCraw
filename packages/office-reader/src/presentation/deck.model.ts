@@ -22,8 +22,13 @@ export interface ChartSeries<Value = number | null> {
 
 /** A chart on a slide. */
 export interface SlideChart<Value = number | null> {
-  /** `bar`, `line`, `pie`, `area`, `scatter`, `doughnut`… (the chart element's name without `Chart`). */
+  /**
+   * `bar`, `line`, `pie`, `area`, `scatter`, `doughnut`… (the chart element's name without `Chart`); for the
+   * chart types Office added in 2016, the series' layout: `waterfall`, `treemap`, `sunburst`, `clusteredColumn`
+   * (a histogram or a Pareto chart), `boxWhisker`, `funnel`, `regionMap`.
+   */
   type:   string
+  /** Its title's text, once; a title linked to a cell gives the cell's cached text. */
   title?: string
   series: ChartSeries<Value>[]
 }
