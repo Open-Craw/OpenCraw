@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "recaptcha-demo",
+  "version": 1,
+  "fields": {
+    "message": { "type": "string", "required": true },
+    "url": { "type": "url", "generated": "sourceUrl", "key": true },
+    "solvedAt": { "type": "datetime", "generated": "now" }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "opencraw-example-stellantis-it-discounts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenCraw example: monthly dealer discount tables read from PDFs, with the opencraw cli.",
+  "type": "module",
+  "scripts": {
+    "start": "opencraw run dealer-discount.output.json stellantis-it.input.json --out out/discounts.jsonl",
+    "trace": "opencraw run dealer-discount.output.json stellantis-it.input.json --out out/discounts.jsonl --trace",
+    "validate": "opencraw validate dealer-discount.output.json stellantis-it.input.json",
+    "probe": "opencraw probe"
+  },
+  "dependencies": {
+    "@opencraw/cli": "^0.1.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

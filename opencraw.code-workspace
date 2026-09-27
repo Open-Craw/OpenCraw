@@ -172,6 +172,20 @@
         "script": "azure-host:start",
         "problemMatcher": [],
         "isBackground": true
+      },
+      {
+        "label": "examples: check",
+        "type": "npm",
+        "script": "examples:check",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "examples: test",
+        "type": "npm",
+        "script": "examples:test",
+        "problemMatcher": [],
+        "group": "qa"
       }
     ]
   },
@@ -220,6 +234,116 @@
         "presentation": {
           "group": "mnci",
           "order": 4
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "examples: check recipes",
+        "command": "npm run examples:check",
+        "cwd": "${workspaceFolder:OpenCraw}",
+        "presentation": {
+          "group": "examples",
+          "order": 1
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "examples: test (offline ones)",
+        "command": "npm run examples:test",
+        "cwd": "${workspaceFolder:OpenCraw}",
+        "presentation": {
+          "group": "examples",
+          "order": 2
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example captcha-solver: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/captcha-solver",
+        "presentation": {
+          "group": "examples",
+          "order": 3
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example captcha-solver: test",
+        "command": "npm test",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/captcha-solver",
+        "presentation": {
+          "group": "examples",
+          "order": 4
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example filmography: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/filmography",
+        "presentation": {
+          "group": "examples",
+          "order": 5
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example movies: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/movies",
+        "presentation": {
+          "group": "examples",
+          "order": 6
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example shop: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/shop",
+        "presentation": {
+          "group": "examples",
+          "order": 7
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example shop: test",
+        "command": "npm test",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/shop",
+        "presentation": {
+          "group": "examples",
+          "order": 8
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example stellantis-it-discounts: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/stellantis-it-discounts",
+        "presentation": {
+          "group": "examples",
+          "order": 9
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example vehicles: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/vehicles",
+        "presentation": {
+          "group": "examples",
+          "order": 10
         }
       }
     ]

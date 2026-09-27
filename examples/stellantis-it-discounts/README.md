@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../../docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # Monthly discount sheets from PDFs: Stellantis Italy
@@ -15,10 +15,18 @@ Every row is a model with its percentage off list price, the versions it exclude
 | `dealer-discount.output.json` | `month`, `brand`, `channel` (online / offline, when a brand's table splits by it), `model`, `discountPercent`, `excludedVersions`, `extraIncentive`, plus the generated `sheet` URL. Key: month + brand + channel + model. |
 | `stellantis-it.input.json` | Fetches each month's PDF (`request` with `as: "pdf"`), reads every table whose header row starts with `MODELLI` (`extract` with `kind: "table"`), and emits one record per row. |
 
+## Run it
+
 ```sh
-npm run cli:build   # or: npx nx run-many -t build
-OPENCRAW_INSECURE_TLS=1 node packages/cli/bin/opencraw.mjs run examples/stellantis-it-discounts --out out/discounts.jsonl
+npm install
+npm start                      # every month's sheet into out/discounts.jsonl
+npm run trace                  # also print the route: sheets, tables, records
+npm run validate               # check the recipes load and bind, without fetching anything
+npm run probe -- <a sheet URL> # list a PDF's tables and headers, with ready selectors
 ```
+
+In the OpenCraw repository, skip `npm install`: build the packages once at the root (`npm run cli:build`) and
+the example uses them. The example uses the `opencraw` cli rather than code: the recipes are the whole program.
 
 January to September 2026 (no March was published) give 1,059 records:
 

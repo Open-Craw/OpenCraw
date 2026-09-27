@@ -1,0 +1,16 @@
+{
+  "name": "opencraw-example-filmography",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenCraw example: from one movie to its lead actor to that actor's films, on TMDB and Letterboxd.",
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs"
+  },
+  "dependencies": {
+    "@opencraw/core": "^0.1.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

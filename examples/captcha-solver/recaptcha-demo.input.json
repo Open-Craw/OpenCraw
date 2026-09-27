@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "google-recaptcha-demo",
+  "output": "recaptcha-demo",
+  "mode": "web",
+  "start": [{ "url": "https://www.google.com/recaptcha/api2/demo" }],
+  "session": { "captcha": { "solver": "capsolver", "verify": { "selector": ".recaptcha-success" }, "attempts": 2, "maxSolves": 2 } },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "extract", "id": "message", "selector": ".recaptcha-success", "kind": "css", "take": "text" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "message": { "from": "message", "transform": [{ "op": "trim" }] }
+  }
+}

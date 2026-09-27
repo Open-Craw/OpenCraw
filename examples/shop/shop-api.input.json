@@ -1,13 +1,13 @@
 {
-  "$schema": "../../packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "shop-api",
   "output": "product",
   "mode": "api",
   "vars": { "user": "demo", "pass": "demo" },
-  "start": [{ "url": "http://127.0.0.1:4545/api/products?page=1" }],
+  "start": [{ "url": "http://127.0.0.1:4580/api/products?page=1" }],
   "session": { "bootstrap": { "keep": ["cookies"], "steps": [
-    { "type": "goto", "url": "http://127.0.0.1:4545/login" },
+    { "type": "goto", "url": "http://127.0.0.1:4580/login" },
     { "type": "fill", "selector": "#user", "value": "{{vars.user}}" },
     { "type": "fill", "selector": "#pass", "value": "{{vars.pass}}" },
     { "type": "click", "selector": "button[type=submit]" },
