@@ -61,6 +61,16 @@ const specSteps = [
 const specMapping = { model: { from: 'row.model' }, version: { from: 'row.version' }, urban: { from: 'row.urban', transform: [{ op: 'number', locale: 'it-IT' }] } }
 const specsFetched = { kind: 'input', id: 'specs-api', output: 'spec', mode: 'api', start: [{ url: `${FIXTURE_BASE}/specs` }], steps: [{ type: 'request', url: '{{start.url}}' }, ...specSteps], mapping: specMapping }
 const specsLive = { kind: 'input', id: 'specs-web', output: 'spec', mode: 'web', start: [{ url: `${FIXTURE_BASE}/specs` }], steps: [{ type: 'goto', url: '{{start.url}}' }, ...specSteps], mapping: specMapping }
+/** A web recipe that fetches the page with `request` and reads its table with `from`, the live page left alone. */
+const specsRequested = {
+  kind:    'input',
+  id:      'specs-web-request',
+  output:  'spec',
+  mode:    'web',
+  start:   [{ url: `${FIXTURE_BASE}/listino.md` }],
+  steps:   [{ type: 'goto', url: '{{start.url}}' }, { type: 'request', id: 'specs', url: '/specs' }, { ...specSteps[0], from: 'specs' }, ...specSteps.slice(1)],
+  mapping: specMapping,
+}
 
 describe('markdown and HTML tables', () => {
   it('reads Markdown served as text/plain: front matter, a section, and its table', async () => {
@@ -75,14 +85,14 @@ describe('markdown and HTML tables', () => {
     }
   })
 
-  it('reads an HTML table with rowspan and colspan, fetched and live alike', async () => {
+  it('reads an HTML table with rowspan and colspan, fetched, live, and fetched by a web recipe alike', async () => {
     const sink = memorySink()
     const crawler = createCrawler({ sink, dedupe: 'recipe', browser: browserConfig() })
     try {
-      const report = await crawler.run(await loadRecipes([specOutput, specsFetched, specsLive]))
-      expect(report.recipes.map(recipe => [recipe.recipeId, recipe.emitted, recipe.rejected])).toEqual([['specs-api', 3, 0], ['specs-web', 3, 0]])
+      const report = await crawler.run(await loadRecipes([specOutput, specsFetched, specsLive, specsRequested]))
+      expect(report.recipes.map(recipe => [recipe.recipeId, recipe.emitted, recipe.rejected])).toEqual([['specs-api', 3, 0], ['specs-web', 3, 0], ['specs-web-request', 3, 0]])
       const expected = [['Pandina', '1.0 Hybrid', 5.2], ['Pandina', '1.0 Hybrid Cross', 5.4], ['600e', 'La Prima', 0]]
-      expect(sink.records.map(({ data }) => [data.model, data.version, data.urban])).toEqual([...expected, ...expected])
+      expect(sink.records.map(({ data }) => [data.model, data.version, data.urban])).toEqual([...expected, ...expected, ...expected])
     } finally {
       await crawler.close()
     }

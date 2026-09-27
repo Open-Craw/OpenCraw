@@ -1,6 +1,7 @@
 import type { Page } from 'playwright'
 import type { EventBus } from '../crawl-events'
 import type { ExtractionScope } from '../extraction-scope'
+import { resolveRequestUrl } from '../http-session'
 import type { GotoStep, InputRecipe } from '../recipe-schema'
 import { detectBlock, resolveRetryRule, transientError, withTransportRetry } from '../step-flow'
 import type { RunGate } from '../step-flow'
@@ -24,7 +25,7 @@ const DEFAULT_READY_TIMEOUT_MS = 30_000
  */
 export async function navigate (step: GotoStep, page: Page, scope: ExtractionScope, recipe: InputRecipe, gate: RunGate, events: EventBus): Promise<void> {
   const target = renderText(step.url, path => scope.lookup(path))
-  const url = new URL(target, scope.pageState?.url ?? page.url()).href
+  const url = resolveRequestUrl(target, scope.pageState?.url ?? page.url(), process.cwd())
   await load(step, url, page, scope, recipe, gate, events)
   const ready = step.ready
   if (ready === undefined) return

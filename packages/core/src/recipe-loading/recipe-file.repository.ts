@@ -1,5 +1,6 @@
 import { readdir, readFile, stat } from 'node:fs/promises'
-import { extname, join, resolve } from 'node:path'
+import { dirname, extname, join, resolve } from 'node:path'
+import { resolveRecipeFileUrls } from './recipe-file-urls.mapper'
 import type { RecipeDocument } from './recipe-source.contract'
 import { parseRecipeText } from './recipe-text.mapper'
 
@@ -7,7 +8,8 @@ const RECIPE_EXTENSIONS = new Set(['.json', '.jsonl'])
 
 /**
  * Reads one recipe file, or every `.json` and `.jsonl` file directly inside a
- * directory. A file holds one recipe, an array of them, or JSON Lines.
+ * directory. A file holds one recipe, an array of them, or JSON Lines. An
+ * input recipe's relative `file:` URLs resolve against the file's folder.
  *
  * @param location - A file or directory path.
  * @returns The decoded recipes, files sorted by path.
@@ -17,7 +19,11 @@ export async function readRecipeFiles (location: string): Promise<RecipeDocument
   const absolute = resolve(location)
   const info = await stat(absolute)
   const paths = info.isDirectory() ? await recipeFilesIn(absolute) : [absolute]
-  const files = await Promise.all(paths.map(async path => parseRecipeText(await readFile(path, 'utf8'), path)))
+  const files = await Promise.all(paths.map(async (path) => {
+    const documents = parseRecipeText(await readFile(path, 'utf8'), path)
+
+    return documents.map(document => ({ ...document, content: resolveRecipeFileUrls(document.content, dirname(path)) }))
+  }))
 
   return files.flat()
 }

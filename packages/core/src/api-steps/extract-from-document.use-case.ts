@@ -176,6 +176,19 @@ function markupDocument (markup: string): ScopeDocument {
   }
 }
 
+/**
+ * What a `table` extract with `from` reads when the bound value is not a read
+ * PDF, workbook or deck: HTML text (a Word or Markdown document, a page a
+ * `request` fetched, a fragment taken with `take: "html"`), or a list of such
+ * fragments, read through the HTML table reader.
+ */
+function tableSource (source: unknown, from: string): ScopeDocument {
+  if (typeof source === 'string') return { kind: 'html', html: source }
+  if (Array.isArray(source) && source.every(entry => typeof entry === 'string')) return { kind: 'html', html: source.join('\n') }
+
+  throw new Error(`"${from}" is not a PDF, a workbook, a deck or HTML; table reads those (request a document with "as": "pdf", "csv", "xlsx", "pptx" or "html")`)
+}
+
 /** The text a regex extract reads: markup, text, a PDF's or a workbook's rows, or JSON re-serialised (a list of texts joined by newlines). */
 function textOf (document: ScopeDocument): string {
   if (document.kind === 'html') return document.html
@@ -204,7 +217,7 @@ function documentFor (step: ExtractStep, scope: ExtractionScope): ScopeDocument 
 
     return markupDocument(source)
   }
-  if (step.kind === 'table') throw new Error(`"${step.from}" is not a PDF, a workbook or a deck; request it with "as": "pdf", "csv", "xlsx" or "pptx"`)
+  if (step.kind === 'table') return tableSource(source, step.from)
   if (step.kind === 'regex') {
     if (typeof source === 'string') return { kind: 'text', text: source }
 

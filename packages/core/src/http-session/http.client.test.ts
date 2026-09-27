@@ -12,6 +12,10 @@ import { HttpError } from './http-response.contract'
 let server: Server
 let base: string
 
+function officeFixture (folder: string, name: string): Buffer {
+  return readFileSync(join(__dirname, '..', '..', '..', 'office-reader', 'src', folder, 'fixtures', name))
+}
+
 beforeAll(async () => {
   server = createServer((incoming, outgoing) => {
     const url = new URL(incoming.url ?? '/', 'http://localhost')
@@ -98,6 +102,43 @@ beforeAll(async () => {
       case '/latin': {
         outgoing.setHeader('content-type', 'text/plain; charset=ISO-8859-1')
         outgoing.end(Buffer.from([0x43, 0xE9]))
+
+        break
+      }
+      case '/bucket/report': {
+        outgoing.setHeader('content-type', 'application/octet-stream')
+        outgoing.end(readFileSync(join(__dirname, '..', 'pdf-document', 'fixtures', 'discounts.pdf')))
+
+        break
+      }
+      case '/bucket/incentivi': {
+        outgoing.setHeader('content-type', 'binary/octet-stream')
+        outgoing.end(officeFixture('spreadsheet', 'incentivi.xlsx'))
+
+        break
+      }
+      case '/bucket/circolare': {
+        outgoing.setHeader('content-type', 'application/zip')
+        outgoing.end(officeFixture('document', 'incentivi.docx'))
+
+        break
+      }
+      case '/bucket/deck': {
+        // No content type at all.
+        outgoing.end(officeFixture('presentation', 'incentivi.pptx'))
+
+        break
+      }
+      case '/raw/listino.csv': {
+        outgoing.setHeader('content-type', 'text/plain; charset=windows-1252')
+        outgoing.end(readFileSync(join(__dirname, '..', 'workbook-document', 'fixtures', 'listino.csv')))
+
+        break
+      }
+      case '/raw/gone.json': {
+        outgoing.statusCode = 404
+        outgoing.setHeader('content-type', 'text/plain')
+        outgoing.end('404: Not Found')
 
         break
       }
@@ -286,6 +327,36 @@ describe('HttpClient', () => {
       expect(text.body).toEqual({ kind: 'text', text: '{"a":1}' })
       const missing = pathToFileURL(join(directory, 'missing.pdf')).href
       await expect(client.send({ url: missing })).rejects.toThrow(/ENOENT/)
+    } finally {
+      await client.dispose()
+    }
+  })
+
+  it('reads a PDF or an Office file served as a generic type by its bytes, then by the URL extension', async () => {
+    const client = await HttpClient.open()
+    try {
+      const pdf = await client.send({ url: `${base}/bucket/report` })
+      expect([pdf.format, pdf.body.kind]).toEqual(['pdf', 'pdf'])
+      const xlsx = await client.send({ url: `${base}/bucket/incentivi` })
+      expect(xlsx.format).toBe('xlsx')
+      expect(xlsx.body).toMatchObject({ kind: 'workbook', sheets: [{ name: 'Incentivi giugno' }, { name: 'Archivio' }, { name: 'Maggio' }] })
+      const docx = await client.send({ url: `${base}/bucket/circolare` })
+      expect([docx.format, docx.body.kind]).toEqual(['docx', 'html'])
+      const pptx = await client.send({ url: `${base}/bucket/deck` })
+      expect([pptx.format, pptx.body.kind]).toEqual(['pptx', 'deck'])
+      const csv = await client.send({ url: `${base}/raw/listino.csv` })
+      expect(csv.body).toMatchObject({ kind: 'workbook', csv: { encoding: 'windows-1252', delimiter: ';' } })
+      // `as` still wins, and an error page is not what its URL names.
+      const text = await client.send({ url: `${base}/bucket/report`, as: 'text' })
+      expect(text.body.kind).toBe('text')
+      await expect(client.send({ url: `${base}/raw/gone.json` })).rejects.toThrow(HttpError)
+      const latin = await client.send({ url: `${base}/latin` })
+      expect(latin.body).toEqual({ kind: 'text', text: 'Cé' })
+      // A local file with no known extension is read by its bytes too.
+      const directory = await mkdtemp(join(tmpdir(), 'http-client-'))
+      await writeFile(join(directory, 'download'), officeFixture('spreadsheet', 'incentivi.xlsx'))
+      const local = await client.send({ url: pathToFileURL(join(directory, 'download')).href })
+      expect(local.format).toBe('xlsx')
     } finally {
       await client.dispose()
     }

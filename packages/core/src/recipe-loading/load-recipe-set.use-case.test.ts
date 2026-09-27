@@ -1,6 +1,7 @@
-import { mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { RecipeValidationError } from '../recipe-schema'
 import { bindRecipeSet, loadRecipeSet, loadRecipes } from './load-recipe-set.use-case'
 import { RecipeBindingError } from './recipe-binding.error'
@@ -41,6 +42,43 @@ describe('loadRecipeSet', () => {
     const path = join(directory, 'broken.json')
     await writeFile(path, '{ not json')
     await expect(loadRecipeSet({ output: path, inputs: [] })).rejects.toThrow(/broken\.json: not valid JSON/)
+  })
+
+  it('resolves the relative file: URLs of a recipe file against its folder, and leaves a recipe object\'s alone', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'recipes-'))
+    const folder = join(directory, 'listini')
+    await mkdir(folder)
+    const output = { kind: 'output', id: 'o', version: 1, fields: { a: { type: 'string' } } }
+    const recipe = {
+      kind:    'input',
+      id:      'i',
+      output:  'o',
+      mode:    'api',
+      vars:    { archive: 'file:../archive/' },
+      start:   [{ url: 'file:data/listino.csv', vars: { note: 'file:./note.md' } }, { url: 'file:///srv/listino.csv' }],
+      steps:   [{ type: 'request', id: 'r', url: '{{start.url}}' }, { type: 'request', url: 'file:data/{{ vars.month }}.csv' }, { type: 'paginate', next: { url: 'file:next.csv' }, steps: [{ type: 'emit' }] }],
+      mapping: { a: { from: 'r' } },
+    }
+    await writeFile(join(folder, 'i.input.json'), JSON.stringify(recipe))
+    await writeFile(join(directory, 'o.output.json'), JSON.stringify(output))
+    const set = await loadRecipeSet({ output: join(directory, 'o.output.json'), inputs: [folder] })
+    const inFolder = (path: string): string => pathToFileURL(join(folder, path)).href
+    const [loaded] = set.inputs
+    expect(loaded.start).toEqual([{ url: inFolder('data/listino.csv'), vars: { note: inFolder('note.md') } }, { url: 'file:///srv/listino.csv' }])
+    expect(loaded.vars).toEqual({ archive: pathToFileURL(join(directory, 'archive')).href + '/' })
+    expect(loaded.steps).toMatchObject([{ url: '{{start.url}}' }, { url: `${inFolder('data')}/{{ vars.month }}.csv` }, { next: { url: inFolder('next.csv') } }])
+    const fromObject = await loadRecipeSet({ output, inputs: [recipe] })
+    expect(fromObject.inputs[0].start[0].url).toBe('file:data/listino.csv')
+  })
+
+  it('refuses a start URL that is not absolute, naming the file', async () => {
+    const output = { kind: 'output', id: 'o', version: 1, fields: { a: { type: 'string' } } }
+    const directory = await mkdtemp(join(tmpdir(), 'recipes-'))
+    const path = join(directory, 'i.input.json')
+    await writeFile(path, JSON.stringify({ ...input('i'), start: [{ url: './listino.csv' }] }))
+    const loading = loadRecipeSet({ output, inputs: [path] })
+    await expect(loading).rejects.toThrow(RecipeValidationError)
+    await expect(loading).rejects.toThrow(`${path}: invalid recipe\n  start.0.url: "./listino.csv" is not an absolute URL, and a start point has no page to resolve it against`)
   })
 
   it('fails validation before binding', async () => {

@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { EventBus } from '../crawl-events'
 import { ExtractionScope } from '../extraction-scope'
 import { HookRegistry } from '../hooks'
-import { HttpError } from '../http-session'
+import { HttpClient, HttpError } from '../http-session'
 import type { HttpRequest, HttpResponse, HttpSender } from '../http-session'
 import { readPdf } from '../pdf-document'
 import { csvWorkbook } from '../workbook-document'
@@ -163,6 +164,16 @@ describe('ApiStepRunner', () => {
     expect(sender.sent.map(request => request.url)).toEqual(['http://shop/api/products?page=1', 'http://shop/api/products?page=2'])
   })
 
+  it('reads a relative file: URL from the working directory, and says why a URL that is not one has nowhere to resolve', async () => {
+    const sender = fakeSender()
+    const local: InputRecipe = { ...recipe, steps: [{ type: 'set', id: 'name', value: 'listino' }, { type: 'request', url: 'file:./data/{{name}}.csv', as: 'json' }] }
+    await expect(crawl(local, sender)).rejects.toThrow(/HTTP 404/)
+    const resolved = pathToFileURL(join(process.cwd(), 'data', 'listino.csv')).href
+    expect(sender.sent[0].url).toBe(resolved)
+    const nowhere: InputRecipe = { ...recipe, start: [{ url: './listino.csv' }], steps: [{ type: 'request', url: '{{start.url}}' }] }
+    await expect(crawl(nowhere, sender)).rejects.toThrow('"./listino.csv" is not an absolute URL, and there is no page to resolve it against')
+  })
+
   it('parses JSON-LD text for jsonpath extracts, one block or many', async () => {
     const ld = '{"@type":"Movie","name":"Heat","actors":[{"name":"Al Pacino"},{"name":"Robert De Niro"}]}'
     const recipeWithText: InputRecipe = {
@@ -310,6 +321,34 @@ describe('ApiStepRunner', () => {
       { brand: 'Peugeot', model: '208', version: 'Allure', price: '21.450,00' },
     ])
     expect(emitted[0]).toMatchObject({ month: 'settembre 2026', title: 'Listino prezzi autoveicoli – settembre 2026', table: { sheet: 'listino', title: 'Marca' } })
+  })
+
+  it('reads the tables of a bound Word document with from, after another request replaced the current document', async () => {
+    const client = await HttpClient.open()
+    const docx = pathToFileURL(join(__dirname, '..', '..', '..', 'office-reader', 'src', 'document', 'fixtures', 'incentivi.docx')).href
+    const sender: HttpSender = { send: request => (request.url.startsWith('file:') ? client.send(request) : fakeSender().send(request)) }
+    const word: InputRecipe = {
+      ...recipe,
+      start: [{ url: docx }],
+      steps: [
+        { type: 'request', id: 'doc', url: '{{start.url}}' },
+        { type: 'request', url: 'http://shop/p/1' },
+        { type: 'extract', id: 'prices', from: 'doc', selector: '^modello', kind: 'table', headerRows: 2 },
+        { type: 'extract', id: 'fragments', from: 'links', selector: '^a$', kind: 'table', many: true },
+        { type: 'emit' },
+      ],
+    }
+    try {
+      const [snapshot] = await crawl({ ...word, steps: [{ type: 'set', id: 'links', value: ['<table><tr><th>a</th></tr><tr><td>1</td></tr></table>', '<table><tr><th>a</th></tr><tr><td>2</td></tr></table>'] }, ...word.steps] }, sender)
+      expect(snapshot).toMatchObject({
+        prices:    { rows: [{ 'Modello': 'Pandina', 'Prezzo Listino': '15.950', 'Prezzo Netto': '13.955', 'Sconto': '12,5%' }, { Modello: '600e' }] },
+        fragments: [{ rows: [{ a: '1' }] }, { rows: [{ a: '2' }] }],
+      })
+    } finally {
+      await client.dispose()
+    }
+    const json: InputRecipe = { ...recipe, steps: [{ type: 'request', id: 'list', url: '{{start.url}}', as: 'json' }, { type: 'extract', id: 't', from: 'list', selector: 'x', kind: 'table' }] }
+    await expect(crawl(json, fakeSender())).rejects.toThrow('"list" is not a PDF, a workbook, a deck or HTML')
   })
 
   it('refuses a table extract on a document that is not a PDF or a workbook, and workbook options on a PDF', async () => {
