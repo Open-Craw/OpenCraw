@@ -581,8 +581,8 @@ repeating element (`table.credit_group tr`, not `tr`) and check the first record
 
 `request` with `as: "pdf"` (or a response served as `application/pdf`, or a local `file:…pdf`) reads the
 PDF's text layer with pdf.js into pages of **rows**: text that sits side by side becomes a cell, cells whose
-vertical extents overlap become a row. A scan has no text layer and fails the step (no OCR). Three extract
-kinds read it:
+vertical extents overlap become a row. A scanned page has no text layer and gives no rows; a PDF where no page
+has one fails the step (no OCR). Three extract kinds read it:
 
 | `kind` | Reads | Use for |
 |---|---|---|
