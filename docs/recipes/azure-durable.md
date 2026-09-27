@@ -82,7 +82,29 @@ not out. The per-site `throttle` is per process too, for the same reason.
 - **Code stays in the host.** Hooks, captcha solvers and access profiles are registered in `registerOpenCraw`.
   A caller can only use them by name.
 
-## 6. A caller that keeps the pool busy
+## 6. Writing recipes on the host
+
+With `mcp: true`, the host also serves `/api/mcp`: probe, validate, sample runs, full runs and `publish`, over MCP.
+Recipes written there are written where they will run. A recipe that works in the MCP session works in
+production, because it is the same IP, proxies and browser.
+
+Keep published versions in Blob storage so they survive restarts:
+
+```ts
+registerOpenCraw({
+  // ...
+  recipes:    blobRecipes({ connectionString: process.env.AzureWebJobsStorage ?? '', shipped: [/* the sets in the repo */] }),
+  mcp:        { sampleRecords: 20, sampleMs: 60_000 },
+  identify:   request => request.headers.get('x-ms-client-principal-name') ?? undefined,
+  canPromote: caller => caller === 'lead@example.com',
+})
+```
+
+`publish` stores a draft, which production refuses. Someone `canPromote` allows promotes it with
+`POST /api/recipes/{name}/{version}/promote`. A version never changes once written; the next change is the next
+version. A pool running version 3 keeps running it until it closes.
+
+## 7. A caller that keeps the pool busy
 
 ```ts
 const inFlight = new Set<Promise<void>>()

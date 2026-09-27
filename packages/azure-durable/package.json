@@ -20,11 +20,14 @@
     "!**/*.js.map"
   ],
   "dependencies": {
-    "@opencraw/core": "^0.0.1",
-    "@azure/functions": "^4.16.5",
+    "@azure/functions": ">=4.0.0 <5",
     "@azure/storage-blob": "^12.34.0",
     "@mnci/az-durable": "^0.1.12",
-    "durable-functions": "^3.5.0",
+    "@modelcontextprotocol/sdk": "^1.30.1",
+    "@opencraw/cli": "^0.0.1",
+    "@opencraw/core": "^0.0.1",
+    "@opencraw/mcp": "^0.0.1",
+    "durable-functions": ">=3.0.0 <4",
     "zod": "^4.6.5"
   },
   "peerDependencies": {

@@ -116,7 +116,7 @@ export function inProcessDurable (orchestrations: Orchestration[], activities: R
       const instance = instances.get(instanceId)
       if (instance === undefined) throw new Error(`DurableClient error: Durable Functions extension replied with HTTP 404 response for "${instanceId}"`)
 
-      return { instanceId, runtimeStatus: instance.runtimeStatus, output: instance.output, customStatus: instance.customStatus }
+      return { instanceId, name: instance.name, input: instance.input, runtimeStatus: instance.runtimeStatus, output: instance.output, customStatus: instance.customStatus }
     },
     createCheckStatusResponse: (_request: HttpRequest | undefined, instanceId: string) => ({ status: 202, jsonBody: { id: instanceId, statusQueryGetUri: `http://host/runtime/webhooks/durabletask/instances/${instanceId}` } }) as unknown as HttpResponse,
   }

@@ -32,10 +32,24 @@ export interface OpenCrawHostOptions {
   browser?:          BrowserSessionConfig
   /** Worker pools: one per caller and crawl id. */
   pools?:            PoolSettings
+  /**
+   * The recipe-authoring MCP endpoint, `/mcp`: `true`, or its sample limits.
+   * Off by default. It refuses to start without authentication.
+   */
+  mcp?:              boolean | McpSettings
+  /** Who may promote a draft to production (`POST /recipes/{name}/{version}/promote`). Default: nobody. */
+  canPromote?:       (caller: string | undefined) => boolean
   /** Default `function`: a function key is needed. `anonymous` only behind something that authenticates. */
   authLevel?:        'anonymous' | 'function' | 'admin'
   /** Prepended to every route: `'opencraw'` gives `/api/opencraw/crawl`. Default none. */
   routePrefix?:      string
+}
+
+export interface McpSettings {
+  /** A sample run (`run` without `full`) stops after this many records per input recipe. Default 20. */
+  sampleRecords?: number
+  /** And after this long, whatever it has by then. Default 60 seconds: MCP clients time out tool calls. */
+  sampleMs?:      number
 }
 
 export interface PoolSettings {
@@ -48,11 +62,14 @@ export interface PoolSettings {
 }
 
 /** The options with their defaults. */
-export interface HostSettings extends Omit<OpenCrawHostOptions, 'pools' | 'inlineLimitBytes' | 'routePrefix' | 'authLevel'> {
+export interface HostSettings extends Omit<OpenCrawHostOptions, 'pools' | 'inlineLimitBytes' | 'routePrefix' | 'authLevel' | 'mcp' | 'canPromote'> {
   inlineLimitBytes: number
   routePrefix:      string
   authLevel:        'anonymous' | 'function' | 'admin'
   pools:            Required<PoolSettings>
+  /** `undefined` when the endpoint is off. */
+  mcp?:             Required<McpSettings>
+  canPromote:       (caller: string | undefined) => boolean
 }
 
 const KIB = 1024
@@ -61,16 +78,22 @@ const MINUTE_MS = 60_000
 /**
  * @param options - As given.
  * @returns The options with their defaults.
- * @throws Error when `allowedHosts` is an empty list: a host that may reach nothing runs nothing.
+ * @throws Error when `allowedHosts` is an empty list (a host that may reach nothing runs nothing), or the MCP endpoint would be open to anyone.
  */
 export function resolveHostOptions (options: OpenCrawHostOptions): HostSettings {
   if (Array.isArray(options.allowedHosts) && options.allowedHosts.length === 0) throw new Error('allowedHosts is empty: list the hosts recipes may reach, or "*" for any')
+  const authLevel = options.authLevel ?? 'function'
+  const mcp = options.mcp === undefined || options.mcp === false ? undefined : { sampleRecords: 20, sampleMs: MINUTE_MS, ...(options.mcp !== true && options.mcp) }
+  if (mcp !== undefined && authLevel === 'anonymous' && options.identify === undefined) throw new Error('the MCP endpoint needs authentication: keep authLevel "function", or put the app behind App Service authentication and set identify')
+  const { mcp: _mcp, canPromote, ...rest } = options
 
   return {
-    ...options,
+    ...rest,
+    ...(mcp !== undefined && { mcp }),
+    canPromote:       canPromote ?? ((): boolean => false),
     inlineLimitBytes: options.inlineLimitBytes ?? 256 * KIB,
     routePrefix:      (options.routePrefix ?? '').replaceAll(/^\/+|\/+$/g, ''),
-    authLevel:        options.authLevel ?? 'function',
+    authLevel,
     pools:            {
       idleTtlMs:  options.pools?.idleTtlMs ?? 10 * MINUTE_MS,
       windows:    options.pools?.windows ?? { min: 1, max: 4, grow: { after: 5 }, idle: { afterMs: MINUTE_MS } },

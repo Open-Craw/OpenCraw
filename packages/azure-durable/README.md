@@ -43,7 +43,8 @@ Everything that is code or a secret stays in the host: hooks, captcha solvers, a
 |---|---|
 | `allowedHosts` | The hosts recipes may reach (`example.com`, `*.example.com`, `host:port`, `*`), enforced on every request, redirect and web socket. A function `(caller) => hosts` decides per caller; a caller it returns nothing for gets 403. |
 | `identify` | Who is calling, from the request: an Entra ID principal (`x-ms-client-principal-name`, set by App Service authentication), or a header your gateway sets. Trust only headers callers cannot set themselves. |
-| `recipes` | Named, versioned recipe sets (`memoryRecipes([...])`, or your own `RecipeStore`). A draft is refused by production routes. |
+| `recipes` | Named, versioned recipe sets: `memoryRecipes([...])` (what the deployment ships), `blobRecipes({ connectionString, shipped })` (those plus versions published over MCP, kept in Blob storage), or your own `RecipeStore`. A draft is refused by production routes. |
+| `mcp`, `canPromote` | The recipe-authoring MCP endpoint, `/mcp` (off by default; `true` or `{ sampleRecords, sampleMs }`), and who may promote a draft (default: nobody). |
 | `results`, `inlineLimitBytes` | Where results larger than the limit (default 256 KiB) go: `blobResults({ connectionString })` returns read-only links that expire. Without a store, everything is inline. |
 | `hooks`, `captchaSolvers`, `access`, `accessPlugins`, `browser` | As in `createCrawler`. `captchaSolvers` is a factory: each crawler gets its own set. |
 | `pools` | `windows` (the default policy), `maxWindows` (the cap per pool, default 8), `idleTtlMs` (a pool with no item this long closes, default 10 minutes). |
@@ -94,6 +95,29 @@ runs once. When done, `output` is:
 - **`refused`** means the pool would not take the item: the crawl id runs another recipe version, or the version
   is a draft or missing. The starter already answers 409 or 404 in those cases when it can tell.
 - `GET /api/jobs/{crawlId}` returns the pool's state; `DELETE` closes it once its queued items finish.
+
+## Write recipes over MCP
+
+With `mcp: true`, `/api/mcp` serves an MCP server (Streamable HTTP, stateless) for an agent writing recipes. It
+runs where the recipes will run: same browser, same outbound IP, same proxies, hooks and captcha readers. So a
+recipe that works while you write it works in production too. Add the URL as a connector in your MCP client; there
+is nothing to install.
+
+| Tool | What it does |
+|---|---|
+| `probe` | Fetches a page from the host and reports where its data lives. Only the caller's allowed hosts. |
+| `validate` | Loads and binds inline recipes: every issue with its JSON path. |
+| `run` | A sample by default (`sampleRecords` per input recipe, within `sampleMs`), returned inline. With `full: true`, a complete crawl in the background. |
+| `status` | A full run's state and result, for the caller who started it only. |
+| `list_recipes`, `get_recipes` | The stored sets, drafts included: where to start a new version from. |
+| `publish` | Saves recipes that load as a new version, as a **draft**. A version, once published, never changes. |
+
+No tool takes a file path: recipes travel inline, and nothing on the host's disk can be read. Production (`/crawl`
+by name, `/jobs`) refuses a draft until someone `canPromote` allows calls
+`POST /api/recipes/{name}/{version}/promote`. So an agent publishes, and a person decides what runs.
+
+The endpoint refuses to start without authentication: keep `authLevel: 'function'`, or put the app behind App
+Service authentication and set `identify`.
 
 ## Deploy it
 

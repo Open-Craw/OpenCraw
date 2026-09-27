@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { AccessBroker, BrowserClient, HttpClient, parseXml } from '@opencraw/core'
-import type { AccessLease } from '@opencraw/core'
+import { AccessBroker, BrowserClient, HostAllowlist, HttpClient, parseXml } from '@opencraw/core'
+import type { AccessConfig, AccessLease, AccessPlugin } from '@opencraw/core'
 import { resolveAccess } from '../access'
 import { loadPlugins } from '../hooks-module'
 import type { CommonOptions } from '../arguments'
@@ -45,6 +45,18 @@ export interface ProbeResult {
   xml?:      XmlFindings
 }
 
+/** How to probe: the cli's options, plus what a service probing for others sets. */
+export interface ProbeOptions extends CommonOptions {
+  /** Also render the page and list the JSON it fetches. */
+  browser:        boolean
+  /** The only hosts the probe may reach, as `CrawlOptions.allowedHosts`; local paths and `file:` are refused. */
+  allowedHosts?:  string[]
+  /** An access config already loaded, instead of `access` (a file). `accessProfile` still picks the default. */
+  accessConfig?:  AccessConfig
+  /** Access plugins already loaded, instead of those in `plugins` (a module). */
+  accessPlugins?: AccessPlugin[]
+}
+
 /**
  * Fetches a page and finds where its data lives, through the access profile the
  * options name (direct without one). With `browser: true` it also
@@ -61,15 +73,18 @@ export interface ProbeResult {
  * @returns What was found.
  * @throws Error when the fetch itself fails.
  */
-export async function probeUrl (url: string, options: { browser: boolean } & CommonOptions): Promise<ProbeResult> {
-  const plugins = options.plugins === undefined ? undefined : await loadPlugins(options.plugins)
-  const lease = await new AccessBroker(await resolveAccess(options), plugins?.accessPlugins).lease({ recipeId: 'probe' })
+export async function probeUrl (url: string, options: ProbeOptions): Promise<ProbeResult> {
+  const allowedHosts = HostAllowlist.of(options.allowedHosts)
+  const plugins = options.accessPlugins === undefined && options.plugins !== undefined ? await loadPlugins(options.plugins) : undefined
+  const access = options.accessConfig === undefined ? await resolveAccess(options) : withDefault(options.accessConfig, options.accessProfile)
+  const lease = await new AccessBroker(access, options.accessPlugins ?? plugins?.accessPlugins).lease({ recipeId: 'probe' })
   if (lease.cdp !== undefined) throw new Error(`access profile "${lease.profile}" is a remote browser; probe fetches over HTTP and needs a proxy profile`)
   const client = await HttpClient.open({
     userAgent:         options.userAgent ?? BROWSER_USER_AGENT,
     ignoreHTTPSErrors: options.insecureTls || lease.ignoreHTTPSErrors === true,
     proxy:             lease.proxy,
     headers:           lease.headers,
+    allowedHosts,
   })
   try {
     const target = /^[a-z][\w+.-]+:/i.test(url) ? url : pathToFileURL(resolve(url)).href
@@ -83,7 +98,7 @@ export async function probeUrl (url: string, options: { browser: boolean } & Com
     if (body.kind === 'json') return { url: response.url, status: response.status, findings: findData(''), observed: [], json: describeJson(body.data, response.format ?? 'json') }
     if (body.kind === 'xml') return { url: response.url, status: response.status, findings: findData(''), observed: [], xml: describeXml(parseXml(body.xml, response.url)) }
     const text = body.kind === 'html' ? body.html : body.text
-    const observed = options.browser && !target.startsWith('file:') ? await observeBrowserJson(url, options, lease) : []
+    const observed = options.browser && !target.startsWith('file:') ? await observeBrowserJson(url, options, lease, allowedHosts) : []
 
     const html = body.kind === 'html' ? { html: describeHtml(body.html, response.format === 'markdown' || response.format === 'docx') } : {}
 
@@ -114,10 +129,10 @@ export async function probePage (url: string, options: { browser: boolean } & Co
   }
 }
 
-async function observeBrowserJson (url: string, options: CommonOptions, lease: AccessLease): Promise<string[]> {
+async function observeBrowserJson (url: string, options: CommonOptions, lease: AccessLease, allowedHosts: HostAllowlist | undefined): Promise<string[]> {
   const browser = await BrowserClient.launch({ executablePath: options.browserPath, ignoreHTTPSErrors: options.insecureTls })
   try {
-    const session = await browser.newSession({ userAgent: options.userAgent, proxy: lease.proxy, headers: lease.headers, ignoreHTTPSErrors: lease.ignoreHTTPSErrors })
+    const session = await browser.newSession({ userAgent: options.userAgent, proxy: lease.proxy, headers: lease.headers, ignoreHTTPSErrors: lease.ignoreHTTPSErrors, allowedHosts })
     const seen: string[] = []
     session.page.on('response', (response) => {
       if ((response.headers()['content-type'] ?? '').includes('json')) seen.push(`${response.status()} ${response.url()}`)
@@ -134,6 +149,14 @@ async function observeBrowserJson (url: string, options: CommonOptions, lease: A
   } finally {
     await browser.close()
   }
+}
+
+/** An access config with its default profile overridden, when one is named. */
+function withDefault (config: AccessConfig, profile: string | undefined): AccessConfig {
+  if (profile === undefined) return config
+  if (!Object.hasOwn(config.profiles, profile)) throw new Error(`access profile "${profile}" is not in the access config (profiles: ${Object.keys(config.profiles).join(', ') || 'none'})`)
+
+  return { ...config, default: profile }
 }
 
 function reportOf (result: ProbeResult): string {

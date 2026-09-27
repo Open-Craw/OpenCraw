@@ -17,6 +17,12 @@
   ],
   "references": [
     {
+      "path": "../mcp/tsconfig.lib.json"
+    },
+    {
+      "path": "../cli/tsconfig.lib.json"
+    },
+    {
       "path": "../core/tsconfig.lib.json"
     }
   ],
