@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Recipe-based, data-driven crawler engine: requirements
 
 This is the specification `@opencraw/core` is built and checked against. The user guide is

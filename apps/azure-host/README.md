@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # OpenCraw host for Azure
 
 A complete Azure Functions app that serves [OpenCraw](../../README.md) over HTTP with
@@ -26,7 +30,7 @@ everything works the moment it is deployed:
 ```text
 apps/azure-host/
   src/
-    main.ts                    imports each function file (esbuild follows these imports)
+    main.ts                    imports each function file (the Functions runtime loads only `dist/main.js`)
     functions/opencraw.ts      registerOpenCraw(...): every route above
     host-settings.ts           app settings → host options (hosts, auth, storage, pools, MCP)
     book-hooks.ts              the hooks the recipes call (stars, decodeHtml)
@@ -171,8 +175,8 @@ curl -X POST "$HOST/api/recipes/my-recipes/1/promote" -H "x-functions-key: $KEY"
 - **Hosts.** Add the sites to `OPENCRAW_ALLOWED_HOSTS`. Nothing outside the list is reachable.
 - **Hooks.** Add them to `book-hooks.ts` (or a file of your own) and to `hooks` in `host-settings.ts`. Recipes
   call them by name; callers can never send code.
-- **Captchas.** `tesseractReader()` is registered already: name it in a recipe's `captcha` step. Set `charset`
-  and `length` for the site ([captcha-tesseract](../../packages/captcha-tesseract/README.md)).
+- **Captchas.** `tesseractReader()` is registered already: name it in a recipe's `captcha` step. Set its `charset`
+  and `length` for the site in `host-settings.ts` ([captcha-tesseract](../../packages/captcha-tesseract/README.md)).
 - **Callers.** Turn on App Service authentication (the app's *Authentication* page: add the Microsoft
   identity provider, require authentication). App Service then sets `WEBSITE_AUTH_ENABLED`, and the host tells
   callers apart by their principal: each gets its own pools, and `OPENCRAW_PROMOTERS` can name people.

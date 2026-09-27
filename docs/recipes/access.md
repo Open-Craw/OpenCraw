@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Access: proxies and where traffic goes
 
 Some sites block the network a crawl runs from before any recipe logic matters. IMDb answered this

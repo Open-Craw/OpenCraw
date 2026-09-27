@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Worker mode: a pool of windows working through a queue
 
 `crawler.run` crawls a recipe set and stops. **Worker mode** is for long crawls of one site with thousands of

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Writing recipes
 
 A crawl is two kinds of JSON file: **one output recipe** that says what a record looks like, and **input

@@ -23,6 +23,6 @@ RUN npm ci --omit=dev --ignore-scripts \
  && npm cache clean --force
 
 COPY host.json ./
-COPY dist/main.js dist/book-hooks.js dist/host-settings.js dist/shipped-recipes.js ./dist/
+COPY dist/*.js ./dist/
 COPY dist/functions ./dist/functions
 COPY dist/assets ./dist/assets

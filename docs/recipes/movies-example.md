@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Worked example: movies
 
 Two rounds of real recipes, kept under `examples/`, with the decisions behind them. Read

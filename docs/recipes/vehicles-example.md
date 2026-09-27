@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Worked example: vehicle configurations
 
 Goal: for one model per manufacturer, every version and every priced configuration, with make, model,

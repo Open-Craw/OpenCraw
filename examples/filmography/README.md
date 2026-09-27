@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # From a movie to its lead actor's films
 
 A navigation test: the entry point is one movie (Heat, 1995), the recipe finds the lead actor, follows

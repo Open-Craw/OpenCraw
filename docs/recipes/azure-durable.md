@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Running OpenCraw as an Azure Durable Functions app
 
 `@opencraw/azure-durable` turns a Function App into an OpenCraw service: callers send recipes (or the name of a

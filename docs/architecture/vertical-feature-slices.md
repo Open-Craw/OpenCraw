@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # ADR: Vertical feature slices and file naming
 
 - **Status:** Accepted

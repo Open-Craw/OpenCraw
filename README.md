@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # OpenCraw
 
 A recipe-driven crawler for Node.js. The engine is generic; everything site-specific is JSON:

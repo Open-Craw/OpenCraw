@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Monthly discount sheets from PDFs: Stellantis Italy
 
 Stellantis Italy publishes a monthly sheet of discounts for members of Italian professional associations

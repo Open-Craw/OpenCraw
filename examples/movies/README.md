@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Movies from Netflix and IMDb
 
 One output, two sources, five records each. The point is to see the recipe model hold up on real sites.

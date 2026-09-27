@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Captchas
 
 A captcha is the site asking whether a human is there. OpenCraw can hand the question to a **solver** you
