@@ -1,26 +1,10 @@
-// The scenes the how-it-works guide shows. Each runs the recipes in ../recipes/<name>/ (or `recipes`),
-// keeps `keep` records, and takes each of its `screenshots`: open `url`, run `steps`, outline each
-// `highlight` selector with its label, save the viewport or the `clip` element.
+// Every scene of the guide: one module per page in ./scenes, each exporting SCENES.
+import { readdir } from 'node:fs/promises'
+import { dirname, join } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-export const SCENES = [
-  {
-    name:        'books-list',
-    keep:        3,
-    screenshots: [{
-      url:       'https://books.toscrape.com/catalogue/category/books/mystery_3/index.html',
-      clip:      'ol.row',
-      maxHeight: 520,
-      highlight: [
-        { selector: 'article.product_pod', label: 'books: article.product_pod (many)' },
-        { selector: 'article.product_pod h3 a', label: 'title / link: h3 a' },
-        { selector: 'article.product_pod .price_color', label: 'price' },
-        { selector: 'article.product_pod p.star-rating', label: 'rating: class' },
-      ],
-    }],
-  },
-  {
-    name:        'pdf-discounts',
-    keep:        4,
-    screenshots: [{ pdf: 'https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf', page: 1, header: '^MODELLI' }],
-  },
-]
+const folder = join(dirname(fileURLToPath(import.meta.url)), 'scenes')
+const files = await readdir(folder)
+const modules = await Promise.all(files.filter(file => file.endsWith('.mjs')).toSorted((a, b) => a.localeCompare(b)).map(file => import(pathToFileURL(join(folder, file)).href)))
+
+export const SCENES = modules.flatMap(module => module.SCENES)

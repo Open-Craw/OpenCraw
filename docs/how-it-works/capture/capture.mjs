@@ -6,6 +6,7 @@
 //   npm run docs:capture                      every scene, then the pages
 //   npm run docs:capture -- --only books-list one scene, then the pages
 //   npm run docs:capture -- --render          the pages from the saved captures, no network
+//   … --page 06-documents.md                  only these pages (comma-separated), with any mode
 //   npm run docs:capture -- --check           load and bind every scene's recipes, nothing else (CI)
 //
 // OPENCRAW_CHROMIUM picks a Chromium binary; OPENCRAW_INSECURE_TLS=1 accepts an intercepting proxy.
@@ -209,7 +210,8 @@ async function pdfFigure (browser, shot, path) {
 /** Fills every `<!-- capture:scene part options -->…<!-- /capture -->` region of the guide's pages. */
 async function render () {
   const files = await readdir(guide)
-  const pages = files.filter(file => file.endsWith('.md'))
+  const wanted = argument('--page')?.split(',')
+  const pages = files.filter(file => file.endsWith('.md') && (wanted === undefined || wanted.includes(file)))
   const cache = new Map()
   const load = async (name) => {
     if (!cache.has(name)) {
