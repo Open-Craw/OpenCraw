@@ -209,7 +209,7 @@ missing, so the cli stays light.
 Each phase is one issue, one branch, one release. The deliverable line says what you can do at the end of
 it that you could not before. Sizes: S (days), M (a week or two), L (more).
 
-### Phase 0: the walking skeleton (M)
+### Phase 0: the walking skeleton (M, [#89](https://github.com/russoedu/open.craw/issues/89))
 
 - Scaffold `packages/studio` and `apps/studio`; the server serves the UI; the token; the WebSocket.
 - `recipe-workspace`: open a folder, list its recipes, validate them with core's loader, show issues.
@@ -220,7 +220,7 @@ it that you could not before. Sizes: S (days), M (a week or two), L (more).
 - **Deliverable:** open a recipe folder in the browser, run a sample, read the records and the trace next to
   the page. A visual runner, already useful for debugging.
 
-### Phase 1: the Steps outline (M)
+### Phase 1: the Steps outline (M, [#90](https://github.com/russoedu/open.craw/issues/90))
 
 - `scope-outline`: recipe → cards and brackets; ids in scope at a path; unknown steps → custom cards.
 - UI: the outline, sentence cards, pills, expand to the schema form, `＋` menus, drag to reorder within a
@@ -228,7 +228,7 @@ it that you could not before. Sizes: S (days), M (a week or two), L (more).
 - **Deliverable:** write and change a web or api recipe without touching JSON, with binding errors shown on
   the card that causes them.
 
-### Phase 2: picking on web pages (L)
+### Phase 2: picking on web pages (L, [#91](https://github.com/russoedu/open.craw/issues/91))
 
 - `page-snapshot`: capture after the selected step; rewrite; hidden marks; node ids.
 - `selector-inference`: candidates, ranking, two-click list inference, verification with match counts.
@@ -237,7 +237,7 @@ it that you could not before. Sizes: S (days), M (a week or two), L (more).
 - **Deliverable:** click a price and a title on books.toscrape.com and get a recipe that runs and emits 20
   records. This is the riskiest part, so it comes right after the skeleton.
 
-### Phase 3: the Record tab (M)
+### Phase 3: the Record tab (M, [#92](https://github.com/russoedu/open.craw/issues/92))
 
 - UI: the fields table, types from the schema, key and required, missing-value policy; drag a pill to map;
   the transform chain with the values from the last sample's mapping trace; errors in place.
@@ -245,26 +245,26 @@ it that you could not before. Sizes: S (days), M (a week or two), L (more).
 - **Deliverable:** define the output and the mapping visually, and see every transform's effect on real
   values.
 
-### Phase 4: the Inspect panel (S)
+### Phase 4: the Inspect panel (S, [#93](https://github.com/russoedu/open.craw/issues/93))
 
 - `page-inspector`: DOM tree, data in the page, responses seen (the cli's `probe` findings).
 - UI: the tree beside the view; hidden nodes greyed; pick from the tree; switch to api mode from a response.
 - **Deliverable:** find and pick values that are not visible on the page.
 
-### Phase 5: documents (M, one sub-phase per canvas)
+### Phase 5: documents (M, one sub-phase per canvas, [#94](https://github.com/russoedu/open.craw/issues/94))
 
 - 5a JSON, YAML, XML tree; 5b PDF canvas (port `pdfFigure`); 5c workbook grid; 5d deck.
 - `document-view` builds each view model from core's documents; each pick writes the matching `extract`.
 - **Deliverable:** point at a table in a PDF, a sheet or a deck and get the `table` extract that reads it.
 
-### Phase 6: recording flows (L)
+### Phase 6: recording flows (L, [#95](https://github.com/russoedu/open.craw/issues/95))
 
 - `flow-recording`: a headed Playwright window the studio controls; clicks, typing, selects and key presses
   become steps; "make this the login" moves them to `session.bootstrap`; a recorded click on a next link
   offers `paginate`; the snapshot is retaken after each step.
 - **Deliverable:** record a login and a search, then pick the results, all without writing a step by hand.
 
-### Phase 7: the desktop app (M)
+### Phase 7: the desktop app (M, [#96](https://github.com/russoedu/open.craw/issues/96))
 
 - Electron shell around the same UI and server; the content pane becomes a live embedded browser where a
   snapshot is not enough; logins in place with cookies saved to `storageState`; signed builds.
@@ -314,9 +314,9 @@ Small, and each one useful on its own:
 
 ## 10. Decisions still open
 
-1. The design: colours, icons, whether the preview strip stays at the bottom. The rough layout is
-   [`studio-steps.svg`](../assets/research/studio-steps.svg) and
-   [`studio-record.svg`](../assets/research/studio-record.svg); the design pass replaces them.
+1. The design: colours, icons, whether the preview strip stays at the bottom. The rough sketches, one per
+   phase, are under [`docs/assets/research/`](../assets/research/): `studio-skeleton`, `studio-steps`,
+   `studio-record`, `studio-inspect`, `studio-pdf`, `studio-recorder`; the design pass replaces them.
 2. The name: `@opencraw/studio` and `opencraw studio`.
 3. Whether the recorder (phase 6) should come before documents (phase 5): documents are cheaper and safer;
    the recorder unlocks logins.
