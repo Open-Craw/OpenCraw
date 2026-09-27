@@ -235,7 +235,13 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
       })
       if (outcome === 'stop') break
     }
-    await chain
+    // Every emit's failure has reached the step that emitted it, whose onError decided; the last one
+    // must not fail the run a second time here.
+    try {
+      await chain
+    } catch {
+      // already handled by the emitting step
+    }
     for (const entry of held) await write(entry.record, entry.url, entry.snapshot, entry.trace)
   } catch (error) {
     report.error = error instanceof Error ? error.message : String(error)
