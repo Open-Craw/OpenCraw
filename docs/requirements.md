@@ -140,7 +140,8 @@ counts them under `captchas`. See `docs/recipes/captcha.md`.
 
 ### 2.2 Steps
 
-Every step has `type`, an optional `id` (the name of the value it produces), an optional `onError`, an
+Every step has `type`, an optional `id` (the name of the value it produces: a word, letters of either case,
+digits and underscores, not starting with a digit), an optional `onError`, an
 optional `when` template that must render truthy for the step to run and, in worker mode, `keep` (top-level
 steps; section 5).
 
@@ -258,6 +259,10 @@ every use, so a page that re-renders after each interaction (a configurator) sti
   ids bound in a branch are visible after it. The engine reports the branch taken as a `step:branch` event.
 - **One emitting construct per path**: an emitting `forEach` may not contain another emitting `forEach` or
   an `emit`. The two branches of an `if` are separate paths. `emit` snapshots the whole scope chain, child values shadowing parents.
+- **One binding per name per path**: a step `id` and a `forEach`'s `as` are bound once along any path, and
+  never as `page`, `start` or `vars`. Binding rejects a second one with `id "<name>" is already bound on this
+  path`: a loop variable can't hide an outer id or a loop variable of an enclosing loop. Sibling loops, and
+  the two branches of an `if`, are separate paths and may reuse a name.
 - `limits.maxRecords` stops the walk cleanly once reached. Emits are serialised, so the count is exact under
   concurrency; iterations in flight finish without emitting.
 - **Concurrency** is one gate per recipe run: `concurrency` permits shared by every `forEach` in it (the
@@ -273,7 +278,7 @@ every use, so a page that re-renders after each interaction (a configurator) sti
 | Field | Meaning |
 |---|---|
 | `id`, `version`, `description?` | Identity. |
-| `fields` | Name -> `FieldSpec`. Names have no dots. |
+| `fields` | Name -> `FieldSpec`. A name is letters (either case), digits, `_` and `-`, not starting with a digit, and has no dots; the same rule holds for the member names of an `object` field. A dotted name is reported as `fields["stock.count"]: a field name has no dots`. |
 | `onMissing?` | Recipe default: `fail`, `skip-record` or `null`. Built-in default is `fail` for required fields, `null` otherwise. |
 
 `FieldSpec`: `type` (`string`, `number`, `integer`, `boolean`, `date`, `datetime`, `currency`, `url`, `enum`,

@@ -16,7 +16,7 @@ const API_ONLY = new Set<string>(API_ONLY_STEPS)
  *   `start`, `vars` (`emit` snapshots the whole scope chain, so any id can feed
  *   the mapping);
  * - every required output field is mapped, defaulted, or generated;
- * - step ids are unique along any path;
+ * - step ids and `forEach` variables are unique along any path, and never `page`, `start` or `vars`;
  * - web-only steps appear only in web recipes or inside a bootstrap (a `request`
  *   form body only in web mode), api-only
  *   steps only in api recipes, and `next.selector` only in web mode;
@@ -107,6 +107,8 @@ function walkStep (step: Step, at: string, mode: 'web' | 'api', known: Set<strin
       const emits = step.emit !== undefined
       if (emits && state.emitting) report(at, 'nested inside another emitting construct; only one emit per path')
       const inner = { ...nested(), emitting: state.emitting || emits }
+      // The loop variable is an id of the loop's body: it may not shadow a reserved name or an id bound on this path.
+      if (inner.ids.has(step.as) || RESERVED.has(step.as)) report(`${at}.as`, `id "${step.as}" is already bound on this path`)
       known.add(step.as)
       inner.ids.add(step.as)
 

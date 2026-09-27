@@ -249,10 +249,10 @@ const takeKindSchema = z.union([z.enum(TAKE_KINDS), z.string().regex(/^attr:[\w:
 export const paginateNextSchema: z.ZodType<PaginateNext> = z.union([
   z.strictObject({ selector: z.string().min(1) }),
   z.strictObject({ url: z.string().min(1) }),
-  z.strictObject({ jsonpath: z.string().min(1), as: z.string().regex(/^[A-Z_]\w*$/i).optional() }),
+  z.strictObject({ jsonpath: z.string().min(1), as: z.string().regex(/^[A-Za-z_]\w*$/).optional() }),
 ])
 
-const stepId = z.string().regex(/^[A-Z_]\w*$/i, 'an id is a word: letters, digits and underscores, not starting with a digit')
+const stepId = z.string().regex(/^[A-Za-z_]\w*$/, 'an id is a word: letters, digits and underscores, not starting with a digit')
 const base = { id: stepId.optional(), onError: errorPolicySchema.optional(), when: z.string().optional(), keep: z.boolean().optional() }
 const stringMap = z.record(z.string(), z.string())
 
@@ -327,7 +327,7 @@ const extractStep = z.strictObject({
   includeHidden:    z.boolean().optional(),
   slide:            z.string().min(1).optional(),
   shapes:           z.boolean().optional(),
-  namespaces:       z.record(z.string().regex(/^[A-Z_][\w.-]*$/i, 'a namespace prefix such as atom'), z.string().min(1)).optional(),
+  namespaces:       z.record(z.string().regex(/^[A-Za-z_][\w.-]*$/, 'a namespace prefix such as atom'), z.string().min(1)).optional(),
   ignoreNamespaces: z.boolean().optional(),
 }).check((context) => {
   if (context.value.kind !== 'xpath') {

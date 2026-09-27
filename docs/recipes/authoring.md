@@ -48,7 +48,7 @@ sites, APIs and documents and shows what the engine did: the scope, the mapping 
 |---|---|
 | `id` | Lowercase letters, digits, hyphens. Input recipes name it in their `output`. |
 | `version` | A positive integer you bump when the shape changes. |
-| `fields` | Name → field spec. Names have no dots; nesting is expressed with `type: "object"`. |
+| `fields` | Name → field spec. A name is letters (either case), digits, `_` and `-`, not starting with a digit. Names have no dots; nesting is expressed with `type: "object"`, whose member names follow the same rule. A dotted name fails loading with `fields["stock.count"]: a field name has no dots`. |
 | `onMissing` | Recipe-wide default for a missing value: `fail`, `skip-record` or `null`. See §7. |
 
 ### 1.1 Field spec
@@ -66,7 +66,7 @@ sites, APIs and documents and shows what the engine did: the scope, the mapping 
 | `currency` | ISO 4217 code for `currency` fields. When set, it overrides any code or symbol in the value. |
 | `values` | Allowed values for `enum`. |
 | `items` | Element spec for `array`. |
-| `fields` | Member specs for `object`. A `json` field takes none. |
+| `fields` | Member specs for `object`, named like the top-level fields (no dots). A `json` field takes none. |
 | `min`, `max` | Numeric bounds. |
 | `minLength`, `maxLength` | String length or array length bounds. |
 | `pattern` | A regular expression the string must match. |
@@ -203,7 +203,7 @@ Every step has `type`, and may have:
 
 | Key | Meaning |
 |---|---|
-| `id` | The name of the value the step produces. A word: letters, digits and underscores, not starting with a digit. Unique along any path. |
+| `id` | The name of the value the step produces. A word: letters (either case), digits and underscores, not starting with a digit. Unique along any path, together with the `as` of the enclosing `forEach` loops; never `page`, `start` or `vars`. |
 | `onError` | `{ "policy": "fail" }`, `{ "policy": "skip" }` or `{ "policy": "retry", "attempts": 3, "backoffMs": 500 }`. §7. |
 | `when` | A template; the step runs only when it renders truthy (§3.4). |
 | `keep` | Worker mode only ([worker-mode.md](./worker-mode.md)): the window remembers the step as it last ran it and skips it on the next item while it would do the same. A kept step that runs again makes the window forget the kept steps after it. Top-level page actions (`goto`, `click`, `fill`, `press`, `select`, `scroll`, `wait`, `evaluate`) without an `id`. |
@@ -281,7 +281,7 @@ body is sent as JSON:
 | `extract` | `selector`, `kind` (`css`, `xpath`, `jsonpath`, `regex`, `table`), `take?`, `many?`, `from?`; `namespaces?`, `ignoreNamespaces?` (`xpath` on XML) | §4. |
 | `set` | `value` | A literal, or a template when it is a string. In an object or list every string, at any depth, is a template (a lone placeholder keeps its type), as in a request `body`. |
 | `collect` | `into` (an id), `value` | Appends `value` (a literal, or a template when it is a string, rendered all the way down like `set`) to the list `into` holds, in whichever enclosing scope binds it; a list value is appended item by item, a missing one adds nothing. `into` must be bound first, usually `{ "type": "set", "id": "all", "value": [] }` before the loop: the binding validator checks. The way to carry values out of `forEach` iterations or `paginate` pages (§3.6). |
-| `forEach` | `over` (a list id) **or** `selector` (web), `as` (variable), `steps`, `emit?` (`true`, or `{ output }` naming this recipe's output) | Runs `steps` once per item in a fresh child scope with the item bound as `as`. `emit: true` produces one record per iteration. `over` may name a single value; it is treated as a one-item list. `selector` iterates the live elements it matches (§3.7). |
+| `forEach` | `over` (a list id) **or** `selector` (web), `as` (variable), `steps`, `emit?` (`true`, or `{ output }` naming this recipe's output) | Runs `steps` once per item in a fresh child scope with the item bound as `as`. `as` follows the rules of a step `id`: it may not name `page`, `start`, `vars` or an id already bound on the path (§3.5). `emit: true` produces one record per iteration. `over` may name a single value; it is treated as a one-item list. `selector` iterates the live elements it matches (§3.7). |
 | `if` | `test` (template), `steps`, `else?` | Runs `steps` when `test` renders truthy, otherwise `else`, **in the current scope**: ids bound in a branch are visible after it. §3.8. |
 | `paginate` | `next`, `until?` (template), `maxPages?`, `steps` | Runs `steps` per page in a fresh child scope, then follows `next`. §3.6. |
 | `emit` | `output?` (must be this recipe's output id) | Produces a record from everything in scope. |
@@ -333,6 +333,11 @@ is true.
   value cannot inherit the previous row's.
 - `emit` snapshots the whole chain, child values shadowing parents. That is why a record produced inside a
   `forEach` sees its own row's values *and* the actor name extracted outside the loop.
+- A name is bound once along a path: a step `id` or a `forEach`'s `as` that repeats `page`, `start`, `vars` or
+  an id bound earlier on the path (an outer step, an enclosing loop's `as`) fails binding with
+  `id "item" is already bound on this path`. So a loop over tags inside a loop over products needs its own
+  name (`as: "tag"`, not a second `as: "item"`). Sibling loops, and the two branches of an `if`, are separate
+  paths and may reuse a name.
 - `page.url` / `page.number` and the current document are scope state, bound in the innermost scope that
   navigated. In `web` mode `page.url` is the real page URL; in `api` mode it is the final URL of the nearest
   `request`, and `start.url` before any request.
@@ -1166,7 +1171,8 @@ only.
 `loadRecipeSet` parses every file against its schema (`RecipeValidationError` lists every problem with its
 JSON path) and then **binds** the inputs to the output (`RecipeBindingError`): every mapping key names an
 output field, every `from` starts with a known id, required fields are covered, web steps stay in web
-recipes, `next.selector` only in web mode, one emitting construct per path.
+recipes, `next.selector` only in web mode, one emitting construct per path, and no step `id` or `forEach` `as`
+rebinds a name already bound on its path.
 
 The report gives, per recipe: `emitted`, `rejected`, `duplicates`, `skipped` (records a resumed run already
 had), `stepsSkipped` (steps whose `onError: skip` swallowed a failure: a check that found nothing), `pages`,

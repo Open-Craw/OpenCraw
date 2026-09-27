@@ -100,6 +100,45 @@ describe('validateBinding', () => {
     ]))
   })
 
+  it('refuses a forEach variable that shadows a reserved name or an id bound on its path', () => {
+    const loop = (as: string, steps: InputRecipe['steps'] = []): InputRecipe['steps'][number] => ({ type: 'forEach', over: 'links', as, steps })
+    const bad: InputRecipe = {
+      ...web,
+      steps: [
+        { type: 'extract', id: 'links', selector: 'a', kind: 'css', many: true },
+        loop('page'),
+        loop('vars'),
+        loop('links'),
+        loop('link', [loop('link')]),
+        loop('row', [{ type: 'extract', id: 'cell', selector: 'td', kind: 'css' }, loop('cell')]),
+        { type: 'forEach', id: 'rows', over: 'links', as: 'rows', steps: [] },
+      ],
+    }
+    expect(messages(bad).filter(text => text.includes('already bound'))).toEqual([
+      'steps.1.as: id "page" is already bound on this path',
+      'steps.2.as: id "vars" is already bound on this path',
+      'steps.3.as: id "links" is already bound on this path',
+      'steps.4.steps.0.as: id "link" is already bound on this path',
+      'steps.5.steps.1.as: id "cell" is already bound on this path',
+      'steps.6.as: id "rows" is already bound on this path',
+    ])
+  })
+
+  it('lets sibling loops, and the branches of an if, reuse a forEach variable', () => {
+    const loop = (as: string): InputRecipe['steps'][number] => ({ type: 'forEach', over: 'links', as, steps: [] })
+    const ok: InputRecipe = {
+      ...web,
+      steps: [
+        { type: 'extract', id: 'links', selector: 'a', kind: 'css', many: true },
+        loop('link'),
+        loop('link'),
+        { type: 'if', test: '{{links}}', steps: [loop('item')], else: [loop('item')] },
+        { type: 'forEach', over: 'links', as: 'item', emit: true, steps: [{ type: 'extract', id: 'title', selector: 'h1', kind: 'css' }] },
+      ],
+    }
+    expect(messages(ok).filter(text => text.includes('already bound'))).toEqual([])
+  })
+
   it('knows paginate "as" bindings and forEach variables', () => {
     const ok: InputRecipe = {
       ...api,

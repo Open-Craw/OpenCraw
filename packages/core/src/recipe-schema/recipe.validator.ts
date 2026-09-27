@@ -15,8 +15,9 @@ import type { RecipeIssue } from './recipe-validation.error'
 function toRecipeIssues (issues: readonly z.core.$ZodIssue[]): RecipeIssue[] {
   const seen = new Set<string>()
   const result: RecipeIssue[] = []
-  for (const issue of flattenUnions(issues)) {
-    const path = issue.path.map(String).join('.')
+  const flat = unwrapKeys(flattenUnions(issues))
+  for (const issue of flat) {
+    const path = pathText(issue.path)
     const key = `${path}|${issue.message}`
     if (seen.has(key)) continue
     seen.add(key)
@@ -42,6 +43,41 @@ function flattenUnions (issues: readonly z.core.$ZodIssue[]): z.core.$ZodIssue[]
 
     return deepest.map(inner => ({ ...inner, path: [...issue.path, ...inner.path] }))
   })
+}
+
+/**
+ * A record key that fails its own schema is reported as zod's generic
+ * "Invalid key in record", with the key schema's message nested inside. The
+ * nested issues say what is wrong with the key, so they replace it.
+ *
+ * @param issues - Issues as zod reports them, unions already flattened.
+ * @returns Issues with key failures replaced by their own messages, at the key's path.
+ */
+function unwrapKeys (issues: readonly z.core.$ZodIssue[]): z.core.$ZodIssue[] {
+  return issues.flatMap((issue) => {
+    if (issue.code !== 'invalid_key' || issue.issues.length === 0) return [issue]
+
+    return unwrapKeys(issue.issues).map(inner => ({ ...inner, path: [...issue.path, ...inner.path] }))
+  })
+}
+
+/**
+ * Writes a JSON path the way an author reads it: `steps.0.id`, and a key that
+ * is not a plain word in brackets, `fields["stock.count"]`, so a dot inside a
+ * key never reads as nesting.
+ *
+ * @param path - The path segments zod reported.
+ * @returns The path as text, `''` for the root.
+ */
+function pathText (path: readonly PropertyKey[]): string {
+  let text = ''
+  for (const segment of path) {
+    const name = String(segment)
+    if (typeof segment === 'string' && !/^[\w$-]+$/.test(name)) text += `[${JSON.stringify(name)}]`
+    else text += text === '' ? name : `.${name}`
+  }
+
+  return text
 }
 
 function depthOf (issues: readonly z.core.$ZodIssue[]): number {

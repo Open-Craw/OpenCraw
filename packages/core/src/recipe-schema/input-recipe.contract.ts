@@ -192,7 +192,7 @@ export interface WindowSpec {
 
 const scalar = z.union([z.string(), z.number(), z.boolean()])
 const windowSchema: z.ZodType<WindowSpec> = z.strictObject({ check: z.string().min(1).optional(), maxItems: z.int().min(1).optional() })
-const varName = z.string().regex(/^[A-Z_]\w*$/i)
+const varName = z.string().regex(/^[A-Za-z_]\w*$/)
 const vars = z.record(varName, scalar)
 const matrixSchema: z.ZodType<RecipeMatrix> = z.union([z.record(varName, z.array(scalar).min(1)), z.array(vars).min(1)])
 
@@ -217,7 +217,7 @@ const bootstrapSchema: z.ZodType<SessionBootstrap> = z.strictObject({
 
 const sessionAccessSchema: z.ZodType<SessionAccess> = z.strictObject({
   profile: z.string().regex(/^[\w-]+$/, 'a profile name is letters, digits, hyphens and underscores').optional(),
-  country: z.string().regex(/^[A-Z]{2}$/i, 'a country is a two-letter ISO code').optional(),
+  country: z.string().regex(/^[A-Za-z]{2}$/, 'a country is a two-letter ISO code').optional(),
   sticky:  z.boolean().optional(),
 })
 

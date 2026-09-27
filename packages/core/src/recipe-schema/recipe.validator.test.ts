@@ -15,6 +15,11 @@ function fixture (name: string): unknown {
   return JSON.parse(readFileSync(join(__dirname, 'fixtures', name), 'utf8'))
 }
 
+/** An output recipe whose one `object` field has a member called `name`. */
+function nested (name: string): unknown {
+  return { kind: 'output', id: 'x', version: 1, fields: { stock: { type: 'object', fields: { [name]: { type: 'integer' } } } } }
+}
+
 describe('parseOutputRecipe', () => {
   it('accepts the product output recipe', () => {
     const recipe = parseOutputRecipe(fixture('product.output.json'))
@@ -43,6 +48,26 @@ describe('parseOutputRecipe', () => {
   it('takes a json field with no shape, and refuses one given a shape', () => {
     expect(parseOutputRecipe({ kind: 'output', id: 'raw', version: 1, fields: { payload: { type: 'json', required: true } } }).fields.payload.type).toBe('json')
     expect(() => parseOutputRecipe({ kind: 'output', id: 'raw', version: 1, fields: { payload: { type: 'json', fields: { a: { type: 'string' } } } } })).toThrow(/takes no "fields" or "items"/)
+  })
+
+  it('says a field name has no dots, at a path that keeps the name whole', () => {
+    const bad = { kind: 'output', id: 'x', version: 1, fields: { 'stock.count': { type: 'integer' }, 'price': { type: 'number' } } }
+    expect(() => parseOutputRecipe(bad)).toThrow('fields["stock.count"]: a field name has no dots')
+    try {
+      parseOutputRecipe(bad)
+    } catch (error) {
+      expect((error as RecipeValidationError).issues).toEqual([{ path: 'fields["stock.count"]', message: 'a field name has no dots' }])
+    }
+  })
+
+  it('holds the members of an object field to the same name rule', () => {
+    expect(() => parseOutputRecipe(nested('a.b'))).toThrow('fields.stock.fields["a.b"]: a field name has no dots')
+    expect(parseOutputRecipe(nested('in_stock')).fields.stock.fields?.in_stock.type).toBe('integer')
+  })
+
+  it('takes lowercase and uppercase field names alike', () => {
+    const recipe = parseOutputRecipe({ kind: 'output', id: 'x', version: 1, fields: { url: { type: 'url' }, SKU: { type: 'string' }, _raw: { type: 'json' } } })
+    expect(Object.keys(recipe.fields)).toEqual(['url', 'SKU', '_raw'])
   })
 })
 

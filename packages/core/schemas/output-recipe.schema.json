@@ -25,7 +25,7 @@
       "type": "object",
       "propertyNames": {
         "type": "string",
-        "pattern": "^[A-Z_][\\w-]*$"
+        "pattern": "^[A-Za-z_][\\w-]*$"
       },
       "additionalProperties": {
         "$ref": "#/$defs/__schema0"
@@ -139,7 +139,8 @@
         "fields": {
           "type": "object",
           "propertyNames": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[A-Za-z_][\\w-]*$"
           },
           "additionalProperties": {
             "$ref": "#/$defs/__schema0"
