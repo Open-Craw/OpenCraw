@@ -1,0 +1,25 @@
+{
+  "scene": "flow-onerror-retry",
+  "summary": [
+    {
+      "recipeId": "pokeapi-missing",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3,
+      "error": "step steps.0 (request) failed: HTTP 404 for https://pokeapi.co/api/v2/pokemon/missingno"
+    }
+  ],
+  "trace": [
+    "▶ pokeapi-missing (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/missingno  [404]",
+    "  ↻ steps.0  request mon  retry 2: HTTP 404 for https://pokeapi.co/api/v2/pokemon/missingno",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/missingno  [404]",
+    "  ↻ steps.0  request mon  retry 3: HTTP 404 for https://pokeapi.co/api/v2/pokemon/missingno",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/missingno  [404]",
+    "  ✖ step steps.0 (request) failed: HTTP 404 for https://pokeapi.co/api/v2/pokemon/missingno",
+    "■ pokeapi-missing: 0 emitted, 0 rejected, 0 duplicates, 3 pages, … ms\n  ✖ stopped: step steps.0 (request) failed: HTTP 404 for https://pokeapi.co/api/v2/pokemon/missingno"
+  ],
+  "records": []
+}
