@@ -68,4 +68,12 @@ describe('WindowCount', () => {
   it('refuses an idle wait that is not a positive number', () => {
     expect(() => resolveWindowsPolicy({ idle: { afterMs: 0 } })).toThrow('windows.idle.afterMs')
   })
+
+  it('counts a success towards growing only while every window is busy', () => {
+    const count = new WindowCount(resolveWindowsPolicy({ min: 1, max: 4, grow: { after: 2 } }))
+    expect(count.record('success', 0, false)).toBeUndefined()
+    expect(count.record('success', 0, false)).toBeUndefined()
+    expect(count.record('success', 0)).toBeUndefined()
+    expect(count.record('success', 0)).toMatchObject({ kind: 'grow', to: 2 })
+  })
 })

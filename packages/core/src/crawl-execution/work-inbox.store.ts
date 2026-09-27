@@ -50,10 +50,12 @@ interface Pending {
 
 /**
  * Creates a push-fed work source. Several windows may wait for an item at
- * once; items and waiting windows are both served first come, first served.
+ * once. Items are served first come, first served; waiting windows last come,
+ * first served: the window that just finished has its page ready, while one
+ * that has waited long may be about to retire (`windows.idle`).
  *
- * Like a restaurant pass: the waiters stand at it until a plate comes up, and
- * each guest gets the plate they ordered, not the next one out.
+ * Like a restaurant pass: each guest gets the plate they ordered, and the
+ * waiter who just came back takes the next one while it is hot.
  *
  * @returns The inbox.
  */
@@ -127,7 +129,7 @@ export function createWorkInbox (): WorkInbox {
       const { promise: result, resolve, reject } = Promise.withResolvers<WorkItemResult>()
       const entry: Pending = { item, result, resolve, reject }
       byId.set(item.id, entry)
-      const wake = waiters.shift()
+      const wake = waiters.pop()
       if (wake === undefined) {
         queue.push(entry)
         const signal = options.signal

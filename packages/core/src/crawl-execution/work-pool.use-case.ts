@@ -73,6 +73,8 @@ export class WorkPool {
   private readonly recipeId: string
   private active = 0
   private busy = 0
+  /** Lanes waiting for an item: while any is, the pool has windows to spare. */
+  private waiting = 0
   private lanesOpened = 0
   private peak = 0
   private epoch = 0
@@ -162,6 +164,15 @@ export class WorkPool {
    * the source still sends one, goes to a new lane.
    */
   private async take (lane: Lane): Promise<WorkItem | undefined | typeof IDLE> {
+    this.waiting += 1
+    try {
+      return await this.wait(lane)
+    } finally {
+      this.waiting -= 1
+    }
+  }
+
+  private async wait (lane: Lane): Promise<WorkItem | undefined | typeof IDLE> {
     if (this.drained) return undefined
     const idleAfterMs = this.count.idleAfterMs
     const waiting = idleAfterMs === undefined ? undefined : new AbortController()
@@ -294,7 +305,7 @@ export class WorkPool {
     lane.bus.emit({ type: 'item:finish', recipeId: recipe.id, outcome, durationMs: Date.now() - started, ...(report.error !== undefined && { error: report.error }) })
     await this.settle(item, report, records, outcome, lane.bus)
     lane.current = undefined
-    this.apply(this.count.record(outcome, generation), lane.bus, recipe.id)
+    this.apply(this.count.record(outcome, generation, this.waiting === 0), lane.bus, recipe.id)
     if (report.errorKind === 'browser' && !this.deps.browserAlive()) this.beginRestart('the browser went away', lane.bus, recipe.id)
     if (outcome !== 'success') {
       // A failed item leaves its page in a state nobody knows: the next item gets a fresh window.

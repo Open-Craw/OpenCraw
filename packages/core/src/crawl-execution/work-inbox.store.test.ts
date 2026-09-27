@@ -21,13 +21,13 @@ describe('createWorkInbox', () => {
     expect(inbox.running).toBe(0)
   })
 
-  it('serves items and waiting windows first come, first served, and each submitter gets its own result', async () => {
+  it('serves items first come, first served, and the window that waited least first, each submitter getting its own result', async () => {
     const inbox = createWorkInbox()
-    const first = inbox.source.next()
-    const second = inbox.source.next()
+    const longest = inbox.source.next()
+    const latest = inbox.source.next()
     const results = ['a', 'b', 'c'].map(id => inbox.submit(item(id)))
-    await expect(first).resolves.toMatchObject({ id: 'a' })
-    await expect(second).resolves.toMatchObject({ id: 'b' })
+    await expect(latest).resolves.toMatchObject({ id: 'a' })
+    await expect(longest).resolves.toMatchObject({ id: 'b' })
     expect(inbox.queued).toBe(1)
     await expect(inbox.source.next()).resolves.toMatchObject({ id: 'c' })
     await inbox.source.failed?.(item('b'), report('b', 'boom'), 'failure')

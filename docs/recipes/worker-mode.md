@@ -100,7 +100,8 @@ inbox.close()                                  // no new items; queued and runni
 const report = await working                   // then work() ends with its report
 ```
 
-- **First come, first served**, for items and for windows waiting on `next()` alike.
+- **Items first come, first served; windows last come, first served.** The window that just finished takes
+  the next item while its page is warm. One that has waited long stays idle and, with `windows.idle`, retires.
 - **One result per item.** `submit` resolves when that item ends, with its own records only. `neutral` is
   returned, not retried: the caller decides whether to submit it again.
 - **No double runs.** Submitting an id that is queued or running returns that run's result. Once it has
@@ -148,7 +149,7 @@ One `run` or `work` at a time per crawler: they share its sink.
 | `windows: 4` | 1 | A fixed pool of four. |
 | `min`, `max` | 1, `min` | The bounds. |
 | `start` | `min` | Where the pool starts. |
-| `grow.after` | 10 | One more window after this many successes in a row. |
+| `grow.after` | 10 | One more window after this many successes in a row, counted only while every window is busy: with a window waiting for work, another would only wait too. |
 | `shrink` | `half` | On a failure: half the windows (`half`) or one fewer (`one`). |
 | `restart.after` | never | After this many failures in a row, the browser is relaunched and the pool goes back to `min`. |
 | `idle.afterMs` | never | A window that has waited this long for an item retires, never below `min`. For push-fed sources (the inbox), whose callers slow down. |

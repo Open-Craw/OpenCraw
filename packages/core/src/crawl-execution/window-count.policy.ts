@@ -92,8 +92,10 @@ export class WindowCount {
     this.count = policy.start
   }
 
-  private succeeded (): WindowCountChange | undefined {
+  private succeeded (saturated: boolean): WindowCountChange | undefined {
     this.failures = 0
+    // A window already waiting for work says more windows would only wait too.
+    if (!saturated) return undefined
     this.successes += 1
     if (this.successes < this.policy.growAfter) return undefined
     this.successes = 0
@@ -138,11 +140,12 @@ export class WindowCount {
    *
    * @param outcome - How it ended.
    * @param generation - `generation` when the item started.
+   * @param saturated - Whether every window was busy: a success counts towards growing only then.
    * @returns The change to carry out, if any.
    */
-  record (outcome: WorkOutcome, generation: number): WindowCountChange | undefined {
+  record (outcome: WorkOutcome, generation: number, saturated = true): WindowCountChange | undefined {
     if (outcome === 'neutral') return undefined
-    if (outcome === 'success') return this.succeeded()
+    if (outcome === 'success') return this.succeeded(saturated)
     this.successes = 0
     this.failures += 1
     const { restartAfter, min } = this.policy
