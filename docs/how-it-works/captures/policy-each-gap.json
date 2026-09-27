@@ -1,0 +1,74 @@
+{
+  "scene": "policy-each-gap",
+  "summary": [
+    {
+      "recipeId": "pokeapi-past-skip",
+      "emitted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "pokeapi-past",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing"
+    }
+  ],
+  "trace": [
+    "▶ pokeapi-past-skip (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/bulbasaur",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract name  … ms",
+    "  · steps.2  extract past  … ms",
+    "  ✖ record rejected: pastAbilities[0].name: missing",
+    "  · steps.3  emit  … ms",
+    "■ pokeapi-past-skip: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ pokeapi-past (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/bulbasaur",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract name  … ms",
+    "  · steps.2  extract past  … ms",
+    "  ✖ step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing",
+    "■ pokeapi-past: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing"
+  ],
+  "records": [
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur",
+      "rejected": {
+        "field": "pastAbilities[0].name",
+        "reason": "missing"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur"
+        },
+        "name": "bulbasaur",
+        "past": [
+          {
+            "generation": {
+              "name": "generation-iv",
+              "url": "https://pokeapi.co/api/v2/generation/4/"
+            },
+            "abilities": [
+              {
+                "is_hidden": true,
+                "slot": 3,
+                "ability": null
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur",
+          "number": 1
+        }
+      }
+    }
+  ]
+}

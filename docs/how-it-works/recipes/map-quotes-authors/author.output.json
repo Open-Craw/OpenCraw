@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "author",
+  "version": 1,
+  "fields": {
+    "url": { "type": "url", "required": true, "key": true },
+    "name": { "type": "string", "required": true },
+    "born": { "type": "date" },
+    "bornAsNumber": { "type": "number" },
+    "bornYear": { "type": "integer" },
+    "birthplace": { "type": "string" },
+    "country": { "type": "string" }
+  }
+}

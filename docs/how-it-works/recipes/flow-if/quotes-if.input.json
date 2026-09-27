@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-if",
+  "output": "tagged-quote",
+  "mode": "api",
+  "start": [{ "url": "https://quotes.toscrape.com/api/quotes?page=3" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "id": "list", "url": "{{start.url}}" },
+    { "type": "extract", "id": "quotes", "selector": "$.quotes[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "steps": [
+      { "type": "if", "test": "{{ len(quote.tags) == 0 }}", "steps": [
+        { "type": "set", "id": "label", "value": "untagged" }
+      ], "else": [
+        { "type": "set", "id": "label", "value": "{{ join(quote.tags, ', ') }}" }
+      ]},
+      { "type": "emit", "when": "{{ quote.author.name != 'Albert Einstein' }}" }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "quote.text" },
+    "author": { "from": "quote.author.name" },
+    "label": { "from": "label" }
+  }
+}

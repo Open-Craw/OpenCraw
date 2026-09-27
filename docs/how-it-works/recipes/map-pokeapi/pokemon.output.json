@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "pokemon",
+  "version": 1,
+  "fields": {
+    "name": { "type": "string", "required": true, "key": true },
+    "types": { "type": "string" },
+    "statTotal": { "type": "integer" },
+    "hiddenAbility": { "type": "string" },
+    "abilitiesByHidden": { "type": "json" },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "learnMethods": { "type": "array", "items": { "type": "string" } },
+    "moveCount": { "type": "integer" },
+    "heldItem": { "type": "string" },
+    "heldItems": { "type": "array", "items": { "type": "string" } },
+    "sprite": { "type": "url" }
+  }
+}

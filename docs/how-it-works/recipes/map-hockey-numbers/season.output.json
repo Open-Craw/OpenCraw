@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "season",
+  "version": 1,
+  "fields": {
+    "team": { "type": "string", "required": true },
+    "year": { "type": "integer", "required": true },
+    "winPct": { "type": "number" },
+    "winPctEnglish": { "type": "number" },
+    "goalDiff": { "type": "integer" },
+    "winning": { "type": "boolean" }
+  }
+}

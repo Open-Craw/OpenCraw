@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "js-data",
+  "output": "quote",
+  "mode": "web",
+  "description": "quotes.toscrape.com/js keeps its quotes in a script variable, data, and writes the page from it: read the variable instead of the markup.",
+  "start": [
+    {
+      "url": "https://quotes.toscrape.com/js/"
+    }
+  ],
+  "vars": {
+    "count": 3
+  },
+  "limits": {
+    "delayMs": 300
+  },
+  "steps": [
+    {
+      "type": "goto",
+      "url": "{{start.url}}"
+    },
+    {
+      "type": "evaluate",
+      "id": "total",
+      "script": "data.length"
+    },
+    {
+      "type": "evaluate",
+      "id": "quotes",
+      "script": "(options) => data.slice(0, options.count)",
+      "args": {
+        "count": "{{vars.count}}"
+      }
+    },
+    {
+      "type": "forEach",
+      "over": "quotes",
+      "as": "quote",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "text": {
+      "from": "quote.text"
+    },
+    "author": {
+      "from": "quote.author.name"
+    },
+    "tags": {
+      "from": "quote.tags"
+    }
+  }
+}

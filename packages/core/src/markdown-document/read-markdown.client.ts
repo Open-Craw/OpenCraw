@@ -88,13 +88,23 @@ export function sectioned (html: string): string {
   return out + '</section>'.repeat(open.length)
 }
 
-/** GitHub's heading ids: lower case, spaces to hyphens, punctuation dropped, a counter for repeats. */
+/**
+ * GitHub's heading ids (github-slugger's rule): lower case, spaces to hyphens,
+ * punctuation dropped, and a repeat takes the first free `-1`, `-2`… suffix,
+ * skipping ids already taken, an explicit `a-1` heading's included. So `a`,
+ * `a`, `a-1` give `a`, `a-1`, `a-1-1`, and `a-1`, `a`, `a` give `a-1`, `a`, `a-2`.
+ */
 function uniqueSlug (text: string, used: Map<string, number>): string {
   const slug = text.toLowerCase().replaceAll(/[^\p{L}\p{N}\s-]/gu, '').trim().replaceAll(/\s/g, '-')
-  const count = used.get(slug) ?? 0
-  used.set(slug, count + 1)
+  let id = slug
+  while (used.has(id)) {
+    const count = (used.get(slug) ?? 0) + 1
+    used.set(slug, count)
+    id = `${slug}-${count}`
+  }
+  used.set(id, 0)
 
-  return count === 0 ? slug : `${slug}-${count}`
+  return id
 }
 
 function escapeAttribute (text: string): string {

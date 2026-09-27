@@ -1,0 +1,1499 @@
+{
+  "scene": "data-request",
+  "summary": [
+    {
+      "recipeId": "pokeapi-species",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 4
+    }
+  ],
+  "trace": [
+    "▶ pokeapi-species (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon?limit=3&offset=0",
+    "  · steps.0  request list  … ms",
+    "  · steps.1  extract results  … ms",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon-species/bulbasaur/",
+    "    · steps.2.steps.0  request species  … ms",
+    "    · steps.2.steps.1  extract genus  … ms",
+    "    · steps.2.steps.2  extract color  … ms",
+    "    · steps.2.steps.3  extract captureRate  … ms",
+    "  ✚ record [\"bulbasaur\"]",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon-species/ivysaur/",
+    "    · steps.2.steps.0  request species  … ms",
+    "    · steps.2.steps.1  extract genus  … ms",
+    "    · steps.2.steps.2  extract color  … ms",
+    "    · steps.2.steps.3  extract captureRate  … ms",
+    "  ✚ record [\"ivysaur\"]",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon-species/venusaur/",
+    "    · steps.2.steps.0  request species  … ms",
+    "    · steps.2.steps.1  extract genus  … ms",
+    "    · steps.2.steps.2  extract color  … ms",
+    "    · steps.2.steps.3  extract captureRate  … ms",
+    "  ✚ record [\"venusaur\"]",
+    "  · steps.2  forEach  … ms",
+    "■ pokeapi-species: 3 emitted, 0 rejected, 0 duplicates, 4 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon-species/bulbasaur/",
+      "key": "[\"bulbasaur\"]",
+      "data": {
+        "name": "bulbasaur",
+        "genus": "Seed Pokémon",
+        "color": "green",
+        "captureRate": 45,
+        "source": "https://pokeapi.co/api/v2/pokemon-species/bulbasaur/"
+      },
+      "scope": {
+        "vars": {
+          "limit": 3
+        },
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon"
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=3&limit=3",
+          "previous": null,
+          "results": [
+            {
+              "name": "bulbasaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/1/"
+            },
+            {
+              "name": "ivysaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/2/"
+            },
+            {
+              "name": "venusaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/3/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/1/"
+          },
+          {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/2/"
+          },
+          {
+            "name": "venusaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/3/"
+          }
+        ],
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon-species/bulbasaur/",
+          "number": 1
+        },
+        "mon": {
+          "name": "bulbasaur",
+          "url": "https://pokeapi.co/api/v2/pokemon/1/"
+        },
+        "species": {
+          "id": 1,
+          "name": "bulbasaur",
+          "order": 1,
+          "gender_rate": 1,
+          "capture_rate": 45,
+          "base_happiness": 70,
+          "is_baby": false,
+          "is_legendary": false,
+          "is_mythical": false,
+          "hatch_counter": 20,
+          "has_gender_differences": false,
+          "forms_switchable": false,
+          "growth_rate": {
+            "name": "medium-slow",
+            "url": "https://pokeapi.co/api/v2/growth-rate/4/"
+          },
+          "pokedex_numbers": [
+            {
+              "entry_number": 1,
+              "pokedex": {
+                "name": "national",
+                "url": "https://pokeapi.co/api/v2/pokedex/1/"
+              }
+            },
+            {
+              "entry_number": 1,
+              "pokedex": {
+                "name": "kanto",
+                "url": "https://pokeapi.co/api/v2/pokedex/2/"
+              }
+            },
+            {
+              "entry_number": 226,
+              "pokedex": {
+                "name": "original-johto",
+                "url": "https://pokeapi.co/api/v2/pokedex/3/"
+              }
+            },
+            {
+              "entry_number": 231,
+              "pokedex": {
+                "name": "updated-johto",
+                "url": "https://pokeapi.co/api/v2/pokedex/7/"
+              }
+            },
+            {
+              "entry_number": 80,
+              "pokedex": {
+                "name": "kalos-central",
+                "url": "https://pokeapi.co/api/v2/pokedex/12/"
+              }
+            },
+            {
+              "entry_number": 1,
+              "pokedex": {
+                "name": "letsgo-kanto",
+                "url": "https://pokeapi.co/api/v2/pokedex/26/"
+              }
+            },
+            {
+              "entry_number": 68,
+              "pokedex": {
+                "name": "isle-of-armor",
+                "url": "https://pokeapi.co/api/v2/pokedex/28/"
+              }
+            },
+            {
+              "entry_number": 164,
+              "pokedex": {
+                "name": "blueberry",
+                "url": "https://pokeapi.co/api/v2/pokedex/33/"
+              }
+            },
+            {
+              "entry_number": 148,
+              "pokedex": {
+                "name": "lumiose-city",
+                "url": "https://pokeapi.co/api/v2/pokedex/34/"
+              }
+            }
+          ],
+          "egg_groups": [
+            {
+              "name": "monster",
+              "url": "https://pokeapi.co/api/v2/egg-group/1/"
+            },
+            {
+              "name": "plant",
+              "url": "https://pokeapi.co/api/v2/egg-group/7/"
+            }
+          ],
+          "color": {
+            "name": "green",
+            "url": "https://pokeapi.co/api/v2/pokemon-color/5/"
+          },
+          "shape": {
+            "name": "quadruped",
+            "url": "https://pokeapi.co/api/v2/pokemon-shape/8/"
+          },
+          "evolves_from_species": null,
+          "evolution_chain": {
+            "url": "https://pokeapi.co/api/v2/evolution-chain/1/"
+          },
+          "habitat": {
+            "name": "grassland",
+            "url": "https://pokeapi.co/api/v2/pokemon-habitat/3/"
+          },
+          "generation": {
+            "name": "generation-i",
+            "url": "https://pokeapi.co/api/v2/generation/1/"
+          },
+          "names": [
+            {
+              "name": "フシギダネ",
+              "language": {
+                "name": "ja-hrkt",
+                "url": "https://pokeapi.co/api/v2/language/1/"
+              }
+            },
+            {
+              "name": "Fushigidane",
+              "language": {
+                "name": "ja-roma",
+                "url": "https://pokeapi.co/api/v2/language/2/"
+              }
+            },
+            {
+              "name": "이상해씨",
+              "language": {
+                "name": "ko",
+                "url": "https://pokeapi.co/api/v2/language/3/"
+              }
+            },
+            {
+              "name": "妙蛙種子",
+              "language": {
+                "name": "zh-hant",
+                "url": "https://pokeapi.co/api/v2/language/4/"
+              }
+            },
+            {
+              "name": "Bulbizarre",
+              "language": {
+                "name": "fr",
+                "url": "https://pokeapi.co/api/v2/language/5/"
+              }
+            },
+            {
+              "name": "Bisasam",
+              "language": {
+                "name": "de",
+                "url": "https://pokeapi.co/api/v2/language/6/"
+              }
+            },
+            {
+              "name": "Bulbasaur",
+              "language": {
+                "name": "es",
+                "url": "https://pokeapi.co/api/v2/language/7/"
+              }
+            },
+            {
+              "name": "Bulbasaur",
+              "language": {
+                "name": "it",
+                "url": "https://pokeapi.co/api/v2/language/8/"
+              }
+            },
+            {
+              "name": "Bulbasaur",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              }
+            },
+            {
+              "name": "フシギダネ",
+              "language": {
+                "name": "ja",
+                "url": "https://pokeapi.co/api/v2/language/11/"
+              }
+            },
+            "… 2 more"
+          ],
+          "pal_park_encounters": [
+            {
+              "base_score": 50,
+              "rate": 30,
+              "area": {
+                "name": "field",
+                "url": "https://pokeapi.co/api/v2/pal-park-area/2/"
+              }
+            }
+          ],
+          "form_descriptions": [],
+          "flavor_text_entries": [
+            {
+              "flavor_text": "A strange seed was\nplanted on its\nback at birth.\fThe plant sprouts\nand grows with\nthis POKéMON.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "red",
+                "url": "https://pokeapi.co/api/v2/version/1/"
+              }
+            },
+            {
+              "flavor_text": "A strange seed was\nplanted on its\nback at birth.\fThe plant sprouts\nand grows with\nthis POKéMON.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "blue",
+                "url": "https://pokeapi.co/api/v2/version/2/"
+              }
+            },
+            {
+              "flavor_text": "It can go for days\nwithout eating a\nsingle morsel.\fIn the bulb on\nits back, it\nstores energy.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "yellow",
+                "url": "https://pokeapi.co/api/v2/version/3/"
+              }
+            },
+            {
+              "flavor_text": "The seed on its\nback is filled\nwith nutrients.\fThe seed grows\nsteadily larger as\nits body grows.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "gold",
+                "url": "https://pokeapi.co/api/v2/version/4/"
+              }
+            },
+            {
+              "flavor_text": "It carries a seed\non its back right\nfrom birth. As it\fgrows older, the\nseed also grows\nlarger.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "silver",
+                "url": "https://pokeapi.co/api/v2/version/5/"
+              }
+            },
+            {
+              "flavor_text": "While it is young,\nit uses the\nnutrients that are\fstored in the\nseeds on its back\nin order to grow.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "crystal",
+                "url": "https://pokeapi.co/api/v2/version/6/"
+              }
+            },
+            {
+              "flavor_text": "BULBASAUR can be seen napping in\nbright sunlight.\nThere is a seed on its back.\fBy soaking up the sun’s rays, the seed\ngrows progressively larger.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "ruby",
+                "url": "https://pokeapi.co/api/v2/version/7/"
+              }
+            },
+            {
+              "flavor_text": "BULBASAUR can be seen napping in\nbright sunlight.\nThere is a seed on its back.\fBy soaking up the sun’s rays, the seed\ngrows progressively larger.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "sapphire",
+                "url": "https://pokeapi.co/api/v2/version/8/"
+              }
+            },
+            {
+              "flavor_text": "BULBASAUR can be seen napping in bright\nsunlight. There is a seed on its back.\nBy soaking up the sun’s rays, the seed\ngrows progressively larger.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "emerald",
+                "url": "https://pokeapi.co/api/v2/version/9/"
+              }
+            },
+            {
+              "flavor_text": "There is a plant seed on its back right\nfrom the day this POKéMON is born.\nThe seed slowly grows larger.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "firered",
+                "url": "https://pokeapi.co/api/v2/version/10/"
+              }
+            },
+            "… 92 more"
+          ],
+          "genera": [
+            {
+              "genus": "たねポケモン",
+              "language": {
+                "name": "ja-hrkt",
+                "url": "https://pokeapi.co/api/v2/language/1/"
+              }
+            },
+            {
+              "genus": "씨앗포켓몬",
+              "language": {
+                "name": "ko",
+                "url": "https://pokeapi.co/api/v2/language/3/"
+              }
+            },
+            {
+              "genus": "種子寶可夢",
+              "language": {
+                "name": "zh-hant",
+                "url": "https://pokeapi.co/api/v2/language/4/"
+              }
+            },
+            {
+              "genus": "Pokémon Graine",
+              "language": {
+                "name": "fr",
+                "url": "https://pokeapi.co/api/v2/language/5/"
+              }
+            },
+            {
+              "genus": "Samen-Pokémon",
+              "language": {
+                "name": "de",
+                "url": "https://pokeapi.co/api/v2/language/6/"
+              }
+            },
+            {
+              "genus": "Pokémon Semilla",
+              "language": {
+                "name": "es",
+                "url": "https://pokeapi.co/api/v2/language/7/"
+              }
+            },
+            {
+              "genus": "Pokémon Seme",
+              "language": {
+                "name": "it",
+                "url": "https://pokeapi.co/api/v2/language/8/"
+              }
+            },
+            {
+              "genus": "Seed Pokémon",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              }
+            },
+            {
+              "genus": "たねポケモン",
+              "language": {
+                "name": "ja",
+                "url": "https://pokeapi.co/api/v2/language/11/"
+              }
+            },
+            {
+              "genus": "种子宝可梦",
+              "language": {
+                "name": "zh-hans",
+                "url": "https://pokeapi.co/api/v2/language/12/"
+              }
+            },
+            "… 1 more"
+          ],
+          "varieties": [
+            {
+              "is_default": true,
+              "pokemon": {
+                "name": "bulbasaur",
+                "url": "https://pokeapi.co/api/v2/pokemon/1/"
+              }
+            }
+          ]
+        },
+        "genus": "Seed Pokémon",
+        "color": "green",
+        "captureRate": 45
+      },
+      "mapping": {
+        "name": {
+          "from": "bulbasaur",
+          "steps": []
+        },
+        "genus": {
+          "from": "Seed Pokémon",
+          "steps": []
+        },
+        "color": {
+          "from": "green",
+          "steps": []
+        },
+        "captureRate": {
+          "from": 45,
+          "steps": []
+        },
+        "source": {
+          "from": "https://pokeapi.co/api/v2/pokemon-species/bulbasaur/",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon-species/ivysaur/",
+      "key": "[\"ivysaur\"]",
+      "data": {
+        "name": "ivysaur",
+        "genus": "Seed Pokémon",
+        "color": "green",
+        "captureRate": 45,
+        "source": "https://pokeapi.co/api/v2/pokemon-species/ivysaur/"
+      },
+      "scope": {
+        "vars": {
+          "limit": 3
+        },
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon"
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=3&limit=3",
+          "previous": null,
+          "results": [
+            {
+              "name": "bulbasaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/1/"
+            },
+            {
+              "name": "ivysaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/2/"
+            },
+            {
+              "name": "venusaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/3/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/1/"
+          },
+          {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/2/"
+          },
+          {
+            "name": "venusaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/3/"
+          }
+        ],
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon-species/ivysaur/",
+          "number": 1
+        },
+        "mon": {
+          "name": "ivysaur",
+          "url": "https://pokeapi.co/api/v2/pokemon/2/"
+        },
+        "species": {
+          "id": 2,
+          "name": "ivysaur",
+          "order": 2,
+          "gender_rate": 1,
+          "capture_rate": 45,
+          "base_happiness": 70,
+          "is_baby": false,
+          "is_legendary": false,
+          "is_mythical": false,
+          "hatch_counter": 20,
+          "has_gender_differences": false,
+          "forms_switchable": false,
+          "growth_rate": {
+            "name": "medium-slow",
+            "url": "https://pokeapi.co/api/v2/growth-rate/4/"
+          },
+          "pokedex_numbers": [
+            {
+              "entry_number": 2,
+              "pokedex": {
+                "name": "national",
+                "url": "https://pokeapi.co/api/v2/pokedex/1/"
+              }
+            },
+            {
+              "entry_number": 2,
+              "pokedex": {
+                "name": "kanto",
+                "url": "https://pokeapi.co/api/v2/pokedex/2/"
+              }
+            },
+            {
+              "entry_number": 227,
+              "pokedex": {
+                "name": "original-johto",
+                "url": "https://pokeapi.co/api/v2/pokedex/3/"
+              }
+            },
+            {
+              "entry_number": 232,
+              "pokedex": {
+                "name": "updated-johto",
+                "url": "https://pokeapi.co/api/v2/pokedex/7/"
+              }
+            },
+            {
+              "entry_number": 81,
+              "pokedex": {
+                "name": "kalos-central",
+                "url": "https://pokeapi.co/api/v2/pokedex/12/"
+              }
+            },
+            {
+              "entry_number": 2,
+              "pokedex": {
+                "name": "letsgo-kanto",
+                "url": "https://pokeapi.co/api/v2/pokedex/26/"
+              }
+            },
+            {
+              "entry_number": 69,
+              "pokedex": {
+                "name": "isle-of-armor",
+                "url": "https://pokeapi.co/api/v2/pokedex/28/"
+              }
+            },
+            {
+              "entry_number": 165,
+              "pokedex": {
+                "name": "blueberry",
+                "url": "https://pokeapi.co/api/v2/pokedex/33/"
+              }
+            },
+            {
+              "entry_number": 149,
+              "pokedex": {
+                "name": "lumiose-city",
+                "url": "https://pokeapi.co/api/v2/pokedex/34/"
+              }
+            }
+          ],
+          "egg_groups": [
+            {
+              "name": "monster",
+              "url": "https://pokeapi.co/api/v2/egg-group/1/"
+            },
+            {
+              "name": "plant",
+              "url": "https://pokeapi.co/api/v2/egg-group/7/"
+            }
+          ],
+          "color": {
+            "name": "green",
+            "url": "https://pokeapi.co/api/v2/pokemon-color/5/"
+          },
+          "shape": {
+            "name": "quadruped",
+            "url": "https://pokeapi.co/api/v2/pokemon-shape/8/"
+          },
+          "evolves_from_species": {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon-species/1/"
+          },
+          "evolution_chain": {
+            "url": "https://pokeapi.co/api/v2/evolution-chain/1/"
+          },
+          "habitat": {
+            "name": "grassland",
+            "url": "https://pokeapi.co/api/v2/pokemon-habitat/3/"
+          },
+          "generation": {
+            "name": "generation-i",
+            "url": "https://pokeapi.co/api/v2/generation/1/"
+          },
+          "names": [
+            {
+              "name": "フシギソウ",
+              "language": {
+                "name": "ja-hrkt",
+                "url": "https://pokeapi.co/api/v2/language/1/"
+              }
+            },
+            {
+              "name": "Fushigisou",
+              "language": {
+                "name": "ja-roma",
+                "url": "https://pokeapi.co/api/v2/language/2/"
+              }
+            },
+            {
+              "name": "이상해풀",
+              "language": {
+                "name": "ko",
+                "url": "https://pokeapi.co/api/v2/language/3/"
+              }
+            },
+            {
+              "name": "妙蛙草",
+              "language": {
+                "name": "zh-hant",
+                "url": "https://pokeapi.co/api/v2/language/4/"
+              }
+            },
+            {
+              "name": "Herbizarre",
+              "language": {
+                "name": "fr",
+                "url": "https://pokeapi.co/api/v2/language/5/"
+              }
+            },
+            {
+              "name": "Bisaknosp",
+              "language": {
+                "name": "de",
+                "url": "https://pokeapi.co/api/v2/language/6/"
+              }
+            },
+            {
+              "name": "Ivysaur",
+              "language": {
+                "name": "es",
+                "url": "https://pokeapi.co/api/v2/language/7/"
+              }
+            },
+            {
+              "name": "Ivysaur",
+              "language": {
+                "name": "it",
+                "url": "https://pokeapi.co/api/v2/language/8/"
+              }
+            },
+            {
+              "name": "Ivysaur",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              }
+            },
+            {
+              "name": "フシギソウ",
+              "language": {
+                "name": "ja",
+                "url": "https://pokeapi.co/api/v2/language/11/"
+              }
+            },
+            "… 2 more"
+          ],
+          "pal_park_encounters": [
+            {
+              "base_score": 80,
+              "rate": 10,
+              "area": {
+                "name": "field",
+                "url": "https://pokeapi.co/api/v2/pal-park-area/2/"
+              }
+            }
+          ],
+          "form_descriptions": [],
+          "flavor_text_entries": [
+            {
+              "flavor_text": "When the bulb on\nits back grows\nlarge, it appears\fto lose the\nability to stand\non its hind legs.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "red",
+                "url": "https://pokeapi.co/api/v2/version/1/"
+              }
+            },
+            {
+              "flavor_text": "When the bulb on\nits back grows\nlarge, it appears\fto lose the\nability to stand\non its hind legs.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "blue",
+                "url": "https://pokeapi.co/api/v2/version/2/"
+              }
+            },
+            {
+              "flavor_text": "The bulb on its\nback grows by\ndrawing energy.\fIt gives off an\naroma when it is\nready to bloom.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "yellow",
+                "url": "https://pokeapi.co/api/v2/version/3/"
+              }
+            },
+            {
+              "flavor_text": "Exposure to sun­\nlight adds to its\nstrength. Sunlight\falso makes the bud\non its back grow\nlarger.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "gold",
+                "url": "https://pokeapi.co/api/v2/version/4/"
+              }
+            },
+            {
+              "flavor_text": "If the bud on its\nback starts to\nsmell sweet, it\fis evidence that\nthe large flower\nwill soon bloom.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "silver",
+                "url": "https://pokeapi.co/api/v2/version/5/"
+              }
+            },
+            {
+              "flavor_text": "The bulb on its\nback grows as it\nabsorbs nutrients.\fThe bulb gives off\na pleasant aroma\nwhen it blooms.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "crystal",
+                "url": "https://pokeapi.co/api/v2/version/6/"
+              }
+            },
+            {
+              "flavor_text": "There is a bud on this POKéMON’s back.\nTo support its weight, IVYSAUR’s legs\nand trunk grow thick and strong.\fIf it starts spending more time lying\nin the sunlight, it’s a sign that the\nbud will bloom into a large flower soon.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "ruby",
+                "url": "https://pokeapi.co/api/v2/version/7/"
+              }
+            },
+            {
+              "flavor_text": "There is a bud on this POKéMON’s back.\nTo support its weight, IVYSAUR’s legs\nand trunk grow thick and strong.\fIf it starts spending more time lying\nin the sunlight, it’s a sign that the\nbud will bloom into a large flower soon.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "sapphire",
+                "url": "https://pokeapi.co/api/v2/version/8/"
+              }
+            },
+            {
+              "flavor_text": "To support its bulb, IVYSAUR’s legs\ngrow sturdy. If it spends more time lying in\nthe sunlight, the bud will soon bloom into\na large flower.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "emerald",
+                "url": "https://pokeapi.co/api/v2/version/9/"
+              }
+            },
+            {
+              "flavor_text": "There is a plant bulb on its back.\nWhen it absorbs nutrients, the bulb is said\nto blossom into a large flower.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "firered",
+                "url": "https://pokeapi.co/api/v2/version/10/"
+              }
+            },
+            "… 92 more"
+          ],
+          "genera": [
+            {
+              "genus": "たねポケモン",
+              "language": {
+                "name": "ja-hrkt",
+                "url": "https://pokeapi.co/api/v2/language/1/"
+              }
+            },
+            {
+              "genus": "씨앗포켓몬",
+              "language": {
+                "name": "ko",
+                "url": "https://pokeapi.co/api/v2/language/3/"
+              }
+            },
+            {
+              "genus": "種子寶可夢",
+              "language": {
+                "name": "zh-hant",
+                "url": "https://pokeapi.co/api/v2/language/4/"
+              }
+            },
+            {
+              "genus": "Pokémon Graine",
+              "language": {
+                "name": "fr",
+                "url": "https://pokeapi.co/api/v2/language/5/"
+              }
+            },
+            {
+              "genus": "Samen-Pokémon",
+              "language": {
+                "name": "de",
+                "url": "https://pokeapi.co/api/v2/language/6/"
+              }
+            },
+            {
+              "genus": "Pokémon Semilla",
+              "language": {
+                "name": "es",
+                "url": "https://pokeapi.co/api/v2/language/7/"
+              }
+            },
+            {
+              "genus": "Pokémon Seme",
+              "language": {
+                "name": "it",
+                "url": "https://pokeapi.co/api/v2/language/8/"
+              }
+            },
+            {
+              "genus": "Seed Pokémon",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              }
+            },
+            {
+              "genus": "たねポケモン",
+              "language": {
+                "name": "ja",
+                "url": "https://pokeapi.co/api/v2/language/11/"
+              }
+            },
+            {
+              "genus": "种子宝可梦",
+              "language": {
+                "name": "zh-hans",
+                "url": "https://pokeapi.co/api/v2/language/12/"
+              }
+            },
+            "… 1 more"
+          ],
+          "varieties": [
+            {
+              "is_default": true,
+              "pokemon": {
+                "name": "ivysaur",
+                "url": "https://pokeapi.co/api/v2/pokemon/2/"
+              }
+            }
+          ]
+        },
+        "genus": "Seed Pokémon",
+        "color": "green",
+        "captureRate": 45
+      },
+      "mapping": {
+        "name": {
+          "from": "ivysaur",
+          "steps": []
+        },
+        "genus": {
+          "from": "Seed Pokémon",
+          "steps": []
+        },
+        "color": {
+          "from": "green",
+          "steps": []
+        },
+        "captureRate": {
+          "from": 45,
+          "steps": []
+        },
+        "source": {
+          "from": "https://pokeapi.co/api/v2/pokemon-species/ivysaur/",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon-species/venusaur/",
+      "key": "[\"venusaur\"]",
+      "data": {
+        "name": "venusaur",
+        "genus": "Seed Pokémon",
+        "color": "green",
+        "captureRate": 45,
+        "source": "https://pokeapi.co/api/v2/pokemon-species/venusaur/"
+      },
+      "scope": {
+        "vars": {
+          "limit": 3
+        },
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon"
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=3&limit=3",
+          "previous": null,
+          "results": [
+            {
+              "name": "bulbasaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/1/"
+            },
+            {
+              "name": "ivysaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/2/"
+            },
+            {
+              "name": "venusaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/3/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/1/"
+          },
+          {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/2/"
+          },
+          {
+            "name": "venusaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/3/"
+          }
+        ],
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon-species/venusaur/",
+          "number": 1
+        },
+        "mon": {
+          "name": "venusaur",
+          "url": "https://pokeapi.co/api/v2/pokemon/3/"
+        },
+        "species": {
+          "id": 3,
+          "name": "venusaur",
+          "order": 3,
+          "gender_rate": 1,
+          "capture_rate": 45,
+          "base_happiness": 70,
+          "is_baby": false,
+          "is_legendary": false,
+          "is_mythical": false,
+          "hatch_counter": 20,
+          "has_gender_differences": true,
+          "forms_switchable": true,
+          "growth_rate": {
+            "name": "medium-slow",
+            "url": "https://pokeapi.co/api/v2/growth-rate/4/"
+          },
+          "pokedex_numbers": [
+            {
+              "entry_number": 3,
+              "pokedex": {
+                "name": "national",
+                "url": "https://pokeapi.co/api/v2/pokedex/1/"
+              }
+            },
+            {
+              "entry_number": 3,
+              "pokedex": {
+                "name": "kanto",
+                "url": "https://pokeapi.co/api/v2/pokedex/2/"
+              }
+            },
+            {
+              "entry_number": 228,
+              "pokedex": {
+                "name": "original-johto",
+                "url": "https://pokeapi.co/api/v2/pokedex/3/"
+              }
+            },
+            {
+              "entry_number": 233,
+              "pokedex": {
+                "name": "updated-johto",
+                "url": "https://pokeapi.co/api/v2/pokedex/7/"
+              }
+            },
+            {
+              "entry_number": 82,
+              "pokedex": {
+                "name": "kalos-central",
+                "url": "https://pokeapi.co/api/v2/pokedex/12/"
+              }
+            },
+            {
+              "entry_number": 3,
+              "pokedex": {
+                "name": "letsgo-kanto",
+                "url": "https://pokeapi.co/api/v2/pokedex/26/"
+              }
+            },
+            {
+              "entry_number": 70,
+              "pokedex": {
+                "name": "isle-of-armor",
+                "url": "https://pokeapi.co/api/v2/pokedex/28/"
+              }
+            },
+            {
+              "entry_number": 166,
+              "pokedex": {
+                "name": "blueberry",
+                "url": "https://pokeapi.co/api/v2/pokedex/33/"
+              }
+            },
+            {
+              "entry_number": 150,
+              "pokedex": {
+                "name": "lumiose-city",
+                "url": "https://pokeapi.co/api/v2/pokedex/34/"
+              }
+            },
+            {
+              "entry_number": 3,
+              "pokedex": {
+                "name": "champions",
+                "url": "https://pokeapi.co/api/v2/pokedex/36/"
+              }
+            }
+          ],
+          "egg_groups": [
+            {
+              "name": "monster",
+              "url": "https://pokeapi.co/api/v2/egg-group/1/"
+            },
+            {
+              "name": "plant",
+              "url": "https://pokeapi.co/api/v2/egg-group/7/"
+            }
+          ],
+          "color": {
+            "name": "green",
+            "url": "https://pokeapi.co/api/v2/pokemon-color/5/"
+          },
+          "shape": {
+            "name": "quadruped",
+            "url": "https://pokeapi.co/api/v2/pokemon-shape/8/"
+          },
+          "evolves_from_species": {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon-species/2/"
+          },
+          "evolution_chain": {
+            "url": "https://pokeapi.co/api/v2/evolution-chain/1/"
+          },
+          "habitat": {
+            "name": "grassland",
+            "url": "https://pokeapi.co/api/v2/pokemon-habitat/3/"
+          },
+          "generation": {
+            "name": "generation-i",
+            "url": "https://pokeapi.co/api/v2/generation/1/"
+          },
+          "names": [
+            {
+              "name": "フシギバナ",
+              "language": {
+                "name": "ja-hrkt",
+                "url": "https://pokeapi.co/api/v2/language/1/"
+              }
+            },
+            {
+              "name": "Fushigibana",
+              "language": {
+                "name": "ja-roma",
+                "url": "https://pokeapi.co/api/v2/language/2/"
+              }
+            },
+            {
+              "name": "이상해꽃",
+              "language": {
+                "name": "ko",
+                "url": "https://pokeapi.co/api/v2/language/3/"
+              }
+            },
+            {
+              "name": "妙蛙花",
+              "language": {
+                "name": "zh-hant",
+                "url": "https://pokeapi.co/api/v2/language/4/"
+              }
+            },
+            {
+              "name": "Florizarre",
+              "language": {
+                "name": "fr",
+                "url": "https://pokeapi.co/api/v2/language/5/"
+              }
+            },
+            {
+              "name": "Bisaflor",
+              "language": {
+                "name": "de",
+                "url": "https://pokeapi.co/api/v2/language/6/"
+              }
+            },
+            {
+              "name": "Venusaur",
+              "language": {
+                "name": "es",
+                "url": "https://pokeapi.co/api/v2/language/7/"
+              }
+            },
+            {
+              "name": "Venusaur",
+              "language": {
+                "name": "it",
+                "url": "https://pokeapi.co/api/v2/language/8/"
+              }
+            },
+            {
+              "name": "Venusaur",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              }
+            },
+            {
+              "name": "フシギバナ",
+              "language": {
+                "name": "ja",
+                "url": "https://pokeapi.co/api/v2/language/11/"
+              }
+            },
+            "… 2 more"
+          ],
+          "pal_park_encounters": [
+            {
+              "base_score": 90,
+              "rate": 3,
+              "area": {
+                "name": "field",
+                "url": "https://pokeapi.co/api/v2/pal-park-area/2/"
+              }
+            }
+          ],
+          "form_descriptions": [],
+          "flavor_text_entries": [
+            {
+              "flavor_text": "The plant blooms\nwhen it is\nabsorbing solar\fenergy. It stays\non the move to\nseek sunlight.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "red",
+                "url": "https://pokeapi.co/api/v2/version/1/"
+              }
+            },
+            {
+              "flavor_text": "The plant blooms\nwhen it is\nabsorbing solar\fenergy. It stays\non the move to\nseek sunlight.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "blue",
+                "url": "https://pokeapi.co/api/v2/version/2/"
+              }
+            },
+            {
+              "flavor_text": "The flower on its\nback catches the\nsun's rays.\fThe sunlight is\nthen absorbed and\nused for energy.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "yellow",
+                "url": "https://pokeapi.co/api/v2/version/3/"
+              }
+            },
+            {
+              "flavor_text": "By spreading the\nbroad petals of\nits flower and\fcatching the sun's\nrays, it fills its\nbody with power.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "gold",
+                "url": "https://pokeapi.co/api/v2/version/4/"
+              }
+            },
+            {
+              "flavor_text": "It is able to con­\nvert sunlight into\nenergy. As a\fresult, it is more\npowerful in the\nsummertime.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "silver",
+                "url": "https://pokeapi.co/api/v2/version/5/"
+              }
+            },
+            {
+              "flavor_text": "As it warms it­\nself and absorbs\nthe sunlight, its\fflower petals\nrelease a pleasant\nfragrance.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "crystal",
+                "url": "https://pokeapi.co/api/v2/version/6/"
+              }
+            },
+            {
+              "flavor_text": "There is a large flower on VENUSAUR’s\nback. The flower is said to take on vivid\ncolors if it gets plenty of nutrition\fand sunlight. The flower’s aroma\nsoothes the emotions of people.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "ruby",
+                "url": "https://pokeapi.co/api/v2/version/7/"
+              }
+            },
+            {
+              "flavor_text": "There is a large flower on VENUSAUR’s\nback. The flower is said to take on vivid\ncolors if it gets plenty of nutrition\fand sunlight. The flower’s aroma\nsoothes the emotions of people.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "sapphire",
+                "url": "https://pokeapi.co/api/v2/version/8/"
+              }
+            },
+            {
+              "flavor_text": "VENUSAUR’s flower is said to take on vivid\ncolors if it gets plenty of nutrition and\nsunlight. The flower’s aroma soothes the\nemotions of people.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "emerald",
+                "url": "https://pokeapi.co/api/v2/version/9/"
+              }
+            },
+            {
+              "flavor_text": "A bewitching aroma wafts from its flower.\nThe fragrance becalms those engaged in\na battle.",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              },
+              "version": {
+                "name": "firered",
+                "url": "https://pokeapi.co/api/v2/version/10/"
+              }
+            },
+            "… 92 more"
+          ],
+          "genera": [
+            {
+              "genus": "たねポケモン",
+              "language": {
+                "name": "ja-hrkt",
+                "url": "https://pokeapi.co/api/v2/language/1/"
+              }
+            },
+            {
+              "genus": "씨앗포켓몬",
+              "language": {
+                "name": "ko",
+                "url": "https://pokeapi.co/api/v2/language/3/"
+              }
+            },
+            {
+              "genus": "種子寶可夢",
+              "language": {
+                "name": "zh-hant",
+                "url": "https://pokeapi.co/api/v2/language/4/"
+              }
+            },
+            {
+              "genus": "Pokémon Graine",
+              "language": {
+                "name": "fr",
+                "url": "https://pokeapi.co/api/v2/language/5/"
+              }
+            },
+            {
+              "genus": "Samen-Pokémon",
+              "language": {
+                "name": "de",
+                "url": "https://pokeapi.co/api/v2/language/6/"
+              }
+            },
+            {
+              "genus": "Pokémon Semilla",
+              "language": {
+                "name": "es",
+                "url": "https://pokeapi.co/api/v2/language/7/"
+              }
+            },
+            {
+              "genus": "Pokémon Seme",
+              "language": {
+                "name": "it",
+                "url": "https://pokeapi.co/api/v2/language/8/"
+              }
+            },
+            {
+              "genus": "Seed Pokémon",
+              "language": {
+                "name": "en",
+                "url": "https://pokeapi.co/api/v2/language/9/"
+              }
+            },
+            {
+              "genus": "たねポケモン",
+              "language": {
+                "name": "ja",
+                "url": "https://pokeapi.co/api/v2/language/11/"
+              }
+            },
+            {
+              "genus": "种子宝可梦",
+              "language": {
+                "name": "zh-hans",
+                "url": "https://pokeapi.co/api/v2/language/12/"
+              }
+            },
+            "… 1 more"
+          ],
+          "varieties": [
+            {
+              "is_default": true,
+              "pokemon": {
+                "name": "venusaur",
+                "url": "https://pokeapi.co/api/v2/pokemon/3/"
+              }
+            },
+            {
+              "is_default": false,
+              "pokemon": {
+                "name": "venusaur-mega",
+                "url": "https://pokeapi.co/api/v2/pokemon/10033/"
+              }
+            },
+            {
+              "is_default": false,
+              "pokemon": {
+                "name": "venusaur-gmax",
+                "url": "https://pokeapi.co/api/v2/pokemon/10195/"
+              }
+            }
+          ]
+        },
+        "genus": "Seed Pokémon",
+        "color": "green",
+        "captureRate": 45
+      },
+      "mapping": {
+        "name": {
+          "from": "venusaur",
+          "steps": []
+        },
+        "genus": {
+          "from": "Seed Pokémon",
+          "steps": []
+        },
+        "color": {
+          "from": "green",
+          "steps": []
+        },
+        "captureRate": {
+          "from": 45,
+          "steps": []
+        },
+        "source": {
+          "from": "https://pokeapi.co/api/v2/pokemon-species/venusaur/",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

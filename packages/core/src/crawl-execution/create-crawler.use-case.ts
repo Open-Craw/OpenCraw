@@ -3,8 +3,9 @@ import { resolve } from 'node:path'
 import { BrowserClient, BrowserProfiles } from '../browser-session'
 import { CaptchaSolverRegistry } from '../captcha'
 import { EventBus } from '../crawl-events'
-import { HookRegistry } from '../hooks'
+import { HookRegistry, UnknownHookError } from '../hooks'
 import { HostAllowlist } from '../host-allowlist'
+import { hookUses } from '../recipe-loading'
 import type { RecipeSet } from '../recipe-loading'
 import { DedupePolicy, memorySink } from '../record-sink'
 import type { DedupeScope } from '../record-sink'
@@ -18,6 +19,7 @@ import { WorkPool } from './work-pool.use-case'
 
 /** A configured engine: run recipe sets, then close it to release the browser. */
 export interface Crawler {
+  /** Runs a recipe set. Rejects with `UnknownHookError`, before any request, when a recipe names a hook nobody registered. */
   run:   (set: RecipeSet) => Promise<CrawlReport>
   /**
    * Worker mode: runs the source's items (a recipe with an item's vars each) on
@@ -105,8 +107,15 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
     ignoreHTTPSErrors: options.browser?.ignoreHTTPSErrors,
   })
 
+  // A hook the recipes name but nobody registered fails the run before its first request, not hours into it.
+  const checkHooks = (set: RecipeSet): void => {
+    const unknown = set.inputs.flatMap(input => hookUses(input)).find(use => !hooks.has(use.name))
+    if (unknown !== undefined) throw new UnknownHookError(unknown.name, hooks.names(), `${unknown.recipeId} ${unknown.path}`)
+  }
+
   return {
     async work (set, source, workOptions = {}) {
+      checkHooks(set)
       await sink.open(set.output)
       // Each item is a run of its recipe, so the `recipe` scope de-duplicates within one item.
       const pool = new WorkPool(set, source, workOptions, { ...deps('recipe'), restartBrowser, browserAlive: () => launched?.isConnected() ?? true })
@@ -120,7 +129,11 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
 
       return { ...result, sink: await sink.close() }
     },
-    run: set => runCrawl(set, deps(), options.onRecipeError ?? 'continue', options.parallel ?? 1),
+    async run (set) {
+      checkHooks(set)
+
+      return runCrawl(set, deps(), options.onRecipeError ?? 'continue', options.parallel ?? 1)
+    },
     async close () {
       const unclosed = await captchaSolvers.close()
       for (const message of unclosed) events.emit({ type: 'warning', recipeId: '', message })

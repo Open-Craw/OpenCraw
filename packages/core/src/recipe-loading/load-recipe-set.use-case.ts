@@ -1,3 +1,4 @@
+import { validateDefaults } from '../output-mapping'
 import { parseInputRecipe, parseOutputRecipe, recipeKindOf } from '../recipe-schema'
 import type { InputRecipe, OutputRecipe } from '../recipe-schema'
 import { readRecipeSource } from './read-recipe-source.use-case'
@@ -59,16 +60,18 @@ export async function loadRecipes (source: RecipeSource): Promise<RecipeSet> {
 }
 
 /**
- * Binds already-parsed recipes into a set.
+ * Binds already-parsed recipes into a set. The output recipe's defaults are checked here too, coerced and
+ * validated like mapped values, so a bad one fails the load rather than the record that first needs it.
  *
  * @param output - The output recipe.
  * @param inputs - The input recipes.
  * @returns A bound set.
- * @throws RecipeBindingError when an input cannot feed the output.
+ * @throws RecipeBindingError when an input cannot feed the output, or a default cannot fill its field.
  */
 export function bindRecipeSet (output: OutputRecipe, inputs: readonly InputRecipe[]): RecipeSet {
   const set = new RecipeSet(output, inputs)
-  const issues = inputs.flatMap(input => validateBinding(input, output))
+  const defaults = validateDefaults(output.fields).map(issue => ({ recipeId: output.id, ...issue }))
+  const issues = [...defaults, ...inputs.flatMap(input => validateBinding(input, output))]
   if (issues.length > 0) throw new RecipeBindingError(issues)
 
   return set

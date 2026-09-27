@@ -1,0 +1,161 @@
+{
+  "scene": "run-session",
+  "summary": [
+    {
+      "recipeId": "quotes-anonymous",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.1 (extract) failed: no match for a[href='/logout']"
+    },
+    {
+      "recipeId": "quotes-signed-in",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3
+    }
+  ],
+  "trace": [
+    "▶ quotes-anonymous (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  request home  … ms",
+    "  ✖ step steps.1 (extract) failed: no match for a[href='/logout']",
+    "■ quotes-anonymous: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.1 (extract) failed: no match for a[href='/logout']",
+    "▶ quotes-signed-in (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/login",
+    "  · session.bootstrap.steps.0  goto  … ms",
+    "  · session.bootstrap.steps.1  fill  … ms",
+    "  · session.bootstrap.steps.2  fill  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · session.bootstrap.steps.3  click  … ms",
+    "  · session.bootstrap.steps.4  wait  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  request home  … ms",
+    "  · steps.1  extract logout  … ms",
+    "  · steps.2  extract quotes  … ms",
+    "    · steps.3.steps.0  extract text  … ms",
+    "    · steps.3.steps.1  extract author  … ms",
+    "    · steps.3.steps.2  extract goodreads  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "    · steps.3.steps.0  extract text  … ms",
+    "    · steps.3.steps.1  extract author  … ms",
+    "    · steps.3.steps.2  extract goodreads  … ms",
+    "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+    "  · steps.3  forEach  … ms",
+    "■ quotes-signed-in: 2 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "goodreads": "http://goodreads.com/author/show/9810.Albert_Einstein"
+      },
+      "scope": {
+        "vars": {
+          "user": "reader",
+          "password": "any-password-works"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "home": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<title>Quotes to Scrape</title>\n    <link rel=\"stylesheet\" href=\"/static/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/static/main.css\">\n    \n    \n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"row header-box\">\n            <div class=\"col-md-8\">\n                <h1>\n                    <a href=\"/\" style=\"text-decoration: none\">Quotes to Scrape</a>\n                </h1>\n            </div>\n            <div class=\"col-md-4\">\n                <p>\n                \n                    <a href=\"/logout\">Logout</a…",
+        "logout": "Logout",
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Albert Einstein</small>\n        <a href=\"/author/Albert-Einstein\">(about)</a> - <a href=\"http://goodreads.com/author/show/9810.Albert_Einstein\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"change,deep-thoughts,thinking,world\"> \n            \n            <a class=\"tag\" href=\"…",
+          "\n        <span class=\"text\" itemprop=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.K. Rowling</small>\n        <a href=\"/author/J-K-Rowling\">(about)</a> - <a href=\"http://goodreads.com/author/show/1077326.J_K_Rowling\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"abilities,choices\"> \n            \n            <a class=\"tag\" href=\"/tag/abilities/page/1/\">abilities</a>\n            \n     …",
+          "\n        <span class=\"text\" itemprop=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Albert Einstein</small>\n        <a href=\"/author/Albert-Einstein\">(about)</a> - <a href=\"http://goodreads.com/author/show/9810.Albert_Einstein\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"inspirational,life,live,miracle,miracles\"> \n            \n            …",
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a> - <a href=\"http://goodreads.com/author/show/1265.Jane_Austen\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">alite…",
+          "\n        <span class=\"text\" itemprop=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Marilyn Monroe</small>\n        <a href=\"/author/Marilyn-Monroe\">(about)</a> - <a href=\"http://goodreads.com/author/show/82952.Marilyn_Monroe\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"be-yourself,inspirational\"> \n            \n            <a class=\"tag\" href=\"/tag/be-yourself…",
+          "\n        <span class=\"text\" itemprop=\"text\">“Try not to become a man of success. Rather become a man of value.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Albert Einstein</small>\n        <a href=\"/author/Albert-Einstein\">(about)</a> - <a href=\"http://goodreads.com/author/show/9810.Albert_Einstein\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"adulthood,success,value\"> \n            \n            <a class=\"tag\" href=\"/tag/adulthood/page/1/\">adulthood</a>\n            \n         …",
+          "\n        <span class=\"text\" itemprop=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">André Gide</small>\n        <a href=\"/author/Andre-Gide\">(about)</a> - <a href=\"http://goodreads.com/author/show/7617.Andr_Gide\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"life,love\"> \n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n            <a class=\"tag\" href=\"/…",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Thomas A. Edison</small>\n        <a href=\"/author/Thomas-A-Edison\">(about)</a> - <a href=\"http://goodreads.com/author/show/3091287.Thomas_A_Edison\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"edison,failure,inspirational,paraphrased\"> \n            \n            <a class=\"tag\" href=\"/tag/edison/page/1/\">edison</a>\n         …",
+          "\n        <span class=\"text\" itemprop=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Eleanor Roosevelt</small>\n        <a href=\"/author/Eleanor-Roosevelt\">(about)</a> - <a href=\"http://goodreads.com/author/show/44566.Eleanor_Roosevelt\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"misattributed-eleanor-roosevelt\"> \n            \n            <a class=\"tag\" href=\"/tag/misattributed-eleanor-…",
+          "\n        <span class=\"text\" itemprop=\"text\">“A day without sunshine is like, you know, night.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Steve Martin</small>\n        <a href=\"/author/Steve-Martin\">(about)</a> - <a href=\"http://goodreads.com/author/show/7103.Steve_Martin\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"humor,obvious,simile\"> \n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n            <a class=\"tag\" href=\"/tag/obvious/…"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/",
+          "number": 1
+        },
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Albert Einstein</small>\n        <a href=\"/author/Albert-Einstein\">(about)</a> - <a href=\"http://goodreads.com/author/show/9810.Albert_Einstein\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"change,deep-thoughts,thinking,world\"> \n            \n            <a class=\"tag\" href=\"…",
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "goodreads": "http://goodreads.com/author/show/9810.Albert_Einstein"
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "goodreads": {
+          "from": "http://goodreads.com/author/show/9810.Albert_Einstein",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/",
+      "key": "[\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
+      "data": {
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling",
+        "goodreads": "http://goodreads.com/author/show/1077326.J_K_Rowling"
+      },
+      "scope": {
+        "vars": {
+          "user": "reader",
+          "password": "any-password-works"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "home": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<title>Quotes to Scrape</title>\n    <link rel=\"stylesheet\" href=\"/static/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/static/main.css\">\n    \n    \n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"row header-box\">\n            <div class=\"col-md-8\">\n                <h1>\n                    <a href=\"/\" style=\"text-decoration: none\">Quotes to Scrape</a>\n                </h1>\n            </div>\n            <div class=\"col-md-4\">\n                <p>\n                \n                    <a href=\"/logout\">Logout</a…",
+        "logout": "Logout",
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Albert Einstein</small>\n        <a href=\"/author/Albert-Einstein\">(about)</a> - <a href=\"http://goodreads.com/author/show/9810.Albert_Einstein\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"change,deep-thoughts,thinking,world\"> \n            \n            <a class=\"tag\" href=\"…",
+          "\n        <span class=\"text\" itemprop=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.K. Rowling</small>\n        <a href=\"/author/J-K-Rowling\">(about)</a> - <a href=\"http://goodreads.com/author/show/1077326.J_K_Rowling\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"abilities,choices\"> \n            \n            <a class=\"tag\" href=\"/tag/abilities/page/1/\">abilities</a>\n            \n     …",
+          "\n        <span class=\"text\" itemprop=\"text\">“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Albert Einstein</small>\n        <a href=\"/author/Albert-Einstein\">(about)</a> - <a href=\"http://goodreads.com/author/show/9810.Albert_Einstein\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"inspirational,life,live,miracle,miracles\"> \n            \n            …",
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a> - <a href=\"http://goodreads.com/author/show/1265.Jane_Austen\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">alite…",
+          "\n        <span class=\"text\" itemprop=\"text\">“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Marilyn Monroe</small>\n        <a href=\"/author/Marilyn-Monroe\">(about)</a> - <a href=\"http://goodreads.com/author/show/82952.Marilyn_Monroe\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"be-yourself,inspirational\"> \n            \n            <a class=\"tag\" href=\"/tag/be-yourself…",
+          "\n        <span class=\"text\" itemprop=\"text\">“Try not to become a man of success. Rather become a man of value.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Albert Einstein</small>\n        <a href=\"/author/Albert-Einstein\">(about)</a> - <a href=\"http://goodreads.com/author/show/9810.Albert_Einstein\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"adulthood,success,value\"> \n            \n            <a class=\"tag\" href=\"/tag/adulthood/page/1/\">adulthood</a>\n            \n         …",
+          "\n        <span class=\"text\" itemprop=\"text\">“It is better to be hated for what you are than to be loved for what you are not.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">André Gide</small>\n        <a href=\"/author/Andre-Gide\">(about)</a> - <a href=\"http://goodreads.com/author/show/7617.Andr_Gide\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"life,love\"> \n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n            <a class=\"tag\" href=\"/…",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have not failed. I've just found 10,000 ways that won't work.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Thomas A. Edison</small>\n        <a href=\"/author/Thomas-A-Edison\">(about)</a> - <a href=\"http://goodreads.com/author/show/3091287.Thomas_A_Edison\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"edison,failure,inspirational,paraphrased\"> \n            \n            <a class=\"tag\" href=\"/tag/edison/page/1/\">edison</a>\n         …",
+          "\n        <span class=\"text\" itemprop=\"text\">“A woman is like a tea bag; you never know how strong it is until it's in hot water.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Eleanor Roosevelt</small>\n        <a href=\"/author/Eleanor-Roosevelt\">(about)</a> - <a href=\"http://goodreads.com/author/show/44566.Eleanor_Roosevelt\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"misattributed-eleanor-roosevelt\"> \n            \n            <a class=\"tag\" href=\"/tag/misattributed-eleanor-…",
+          "\n        <span class=\"text\" itemprop=\"text\">“A day without sunshine is like, you know, night.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Steve Martin</small>\n        <a href=\"/author/Steve-Martin\">(about)</a> - <a href=\"http://goodreads.com/author/show/7103.Steve_Martin\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"humor,obvious,simile\"> \n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n            <a class=\"tag\" href=\"/tag/obvious/…"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/",
+          "number": 1
+        },
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“It is our choices, Harry, that show what we truly are, far more than our abilities.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.K. Rowling</small>\n        <a href=\"/author/J-K-Rowling\">(about)</a> - <a href=\"http://goodreads.com/author/show/1077326.J_K_Rowling\">(Goodreads page)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"abilities,choices\"> \n            \n            <a class=\"tag\" href=\"/tag/abilities/page/1/\">abilities</a>\n            \n     …",
+        "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+        "author": "J.K. Rowling",
+        "goodreads": "http://goodreads.com/author/show/1077326.J_K_Rowling"
+      },
+      "mapping": {
+        "text": {
+          "from": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "steps": []
+        },
+        "author": {
+          "from": "J.K. Rowling",
+          "steps": []
+        },
+        "goodreads": {
+          "from": "http://goodreads.com/author/show/1077326.J_K_Rowling",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

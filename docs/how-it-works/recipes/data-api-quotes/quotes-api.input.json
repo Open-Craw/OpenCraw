@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-api",
+  "output": "quote-data",
+  "mode": "api",
+  "start": [{ "url": "https://quotes.toscrape.com/api/quotes?page=1" }],
+  "limits": { "delayMs": 300, "maxRecords": 2 },
+  "steps": [
+    { "type": "request", "id": "list", "url": "{{start.url}}" },
+    { "type": "extract", "id": "hasNext", "selector": "$.has_next", "kind": "jsonpath" },
+    { "type": "extract", "id": "hasNextData", "selector": "$.has_next", "kind": "jsonpath", "take": "json" },
+    { "type": "extract", "id": "authorTexts", "selector": "$.quotes[*].author", "kind": "jsonpath", "many": true },
+    { "type": "extract", "id": "authorNames", "from": "authorTexts", "selector": "$[*].name", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "set", "id": "summary", "value": { "page": "{{list.page}}", "quotes": "{{ len(list.quotes) }}", "label": "page {{list.page}}, {{ len(list.quotes) }} quotes", "more": "{{list.has_next}}", "firstTwo": ["{{authorNames[0]}}", "{{authorNames[1]}}"] } },
+    { "type": "extract", "id": "quotes", "selector": "$.quotes[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": "$.text", "kind": "jsonpath" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": "$.author", "kind": "jsonpath" },
+      { "type": "extract", "id": "authorData", "from": "quote", "selector": "$.author", "kind": "jsonpath", "take": "json" },
+      { "type": "extract", "id": "tags", "from": "quote", "selector": "$.tags[*]", "kind": "jsonpath", "many": true },
+      { "type": "hook", "id": "words", "name": "wordCount", "args": { "text": "{{text}}" } }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "authorData.name" },
+    "tags": { "from": "tags" },
+    "words": { "from": "words" },
+    "page": { "from": "list.page" }
+  }
+}

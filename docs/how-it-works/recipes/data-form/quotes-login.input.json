@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-login",
+  "output": "login-check",
+  "mode": "web",
+  "vars": { "user": "reader", "password": "practice" },
+  "start": [{ "url": "https://quotes.toscrape.com/login" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "request", "id": "home", "url": "/login", "method": "POST", "as": "html",
+      "form": { "selector": "form", "set": { "username": "{{vars.user}}", "password": "{{vars.password}}" } } },
+    { "type": "extract", "id": "liveLink", "selector": "div.header-box p a", "kind": "css" },
+    { "type": "extract", "id": "fetchedLink", "from": "home", "selector": "div.header-box p a", "kind": "css" },
+    { "type": "extract", "id": "firstQuote", "from": "home", "selector": "span.text", "kind": "css" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "livePage": { "from": "liveLink" },
+    "fetchedPage": { "from": "fetchedLink" },
+    "firstQuote": { "from": "firstQuote" }
+  }
+}

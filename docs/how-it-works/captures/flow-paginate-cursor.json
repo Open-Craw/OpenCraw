@@ -1,0 +1,660 @@
+{
+  "scene": "flow-paginate-cursor",
+  "summary": [
+    {
+      "recipeId": "pokeapi-next",
+      "emitted": 8,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2
+    }
+  ],
+  "trace": [
+    "▶ pokeapi-next (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon?limit=4",
+    "    · steps.0.steps.0  request list  … ms",
+    "    · steps.0.steps.1  extract results  … ms",
+    "  ✚ record [\"bulbasaur\"]",
+    "  ✚ record [\"ivysaur\"]",
+    "  ✚ record [\"venusaur\"]",
+    "  ✚ record [\"charmander\"]",
+    "    · steps.0.steps.2  forEach  … ms",
+    "  ⇢ page 2  https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+    "    · steps.0.steps.0  request list  … ms",
+    "    · steps.0.steps.1  extract results  … ms",
+    "  ✚ record [\"charmeleon\"]",
+    "  ✚ record [\"charizard\"]",
+    "  ✚ record [\"squirtle\"]",
+    "  ✚ record [\"wartortle\"]",
+    "    · steps.0.steps.2  forEach  … ms",
+    "  · steps.0  paginate  … ms",
+    "■ pokeapi-next: 8 emitted, 0 rejected, 0 duplicates, 2 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+      "key": "[\"bulbasaur\"]",
+      "data": {
+        "name": "bulbasaur",
+        "url": "https://pokeapi.co/api/v2/pokemon/1/",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+          "number": 1
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "previous": null,
+          "results": [
+            {
+              "name": "bulbasaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/1/"
+            },
+            {
+              "name": "ivysaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/2/"
+            },
+            {
+              "name": "venusaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/3/"
+            },
+            {
+              "name": "charmander",
+              "url": "https://pokeapi.co/api/v2/pokemon/4/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/1/"
+          },
+          {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/2/"
+          },
+          {
+            "name": "venusaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/3/"
+          },
+          {
+            "name": "charmander",
+            "url": "https://pokeapi.co/api/v2/pokemon/4/"
+          }
+        ],
+        "mon": {
+          "name": "bulbasaur",
+          "url": "https://pokeapi.co/api/v2/pokemon/1/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "bulbasaur",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/1/",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+      "key": "[\"ivysaur\"]",
+      "data": {
+        "name": "ivysaur",
+        "url": "https://pokeapi.co/api/v2/pokemon/2/",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+          "number": 1
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "previous": null,
+          "results": [
+            {
+              "name": "bulbasaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/1/"
+            },
+            {
+              "name": "ivysaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/2/"
+            },
+            {
+              "name": "venusaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/3/"
+            },
+            {
+              "name": "charmander",
+              "url": "https://pokeapi.co/api/v2/pokemon/4/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/1/"
+          },
+          {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/2/"
+          },
+          {
+            "name": "venusaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/3/"
+          },
+          {
+            "name": "charmander",
+            "url": "https://pokeapi.co/api/v2/pokemon/4/"
+          }
+        ],
+        "mon": {
+          "name": "ivysaur",
+          "url": "https://pokeapi.co/api/v2/pokemon/2/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "ivysaur",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/2/",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+      "key": "[\"venusaur\"]",
+      "data": {
+        "name": "venusaur",
+        "url": "https://pokeapi.co/api/v2/pokemon/3/",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+          "number": 1
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "previous": null,
+          "results": [
+            {
+              "name": "bulbasaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/1/"
+            },
+            {
+              "name": "ivysaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/2/"
+            },
+            {
+              "name": "venusaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/3/"
+            },
+            {
+              "name": "charmander",
+              "url": "https://pokeapi.co/api/v2/pokemon/4/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/1/"
+          },
+          {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/2/"
+          },
+          {
+            "name": "venusaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/3/"
+          },
+          {
+            "name": "charmander",
+            "url": "https://pokeapi.co/api/v2/pokemon/4/"
+          }
+        ],
+        "mon": {
+          "name": "venusaur",
+          "url": "https://pokeapi.co/api/v2/pokemon/3/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "venusaur",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/3/",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+      "key": "[\"charmander\"]",
+      "data": {
+        "name": "charmander",
+        "url": "https://pokeapi.co/api/v2/pokemon/4/",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4",
+          "number": 1
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "previous": null,
+          "results": [
+            {
+              "name": "bulbasaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/1/"
+            },
+            {
+              "name": "ivysaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/2/"
+            },
+            {
+              "name": "venusaur",
+              "url": "https://pokeapi.co/api/v2/pokemon/3/"
+            },
+            {
+              "name": "charmander",
+              "url": "https://pokeapi.co/api/v2/pokemon/4/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "bulbasaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/1/"
+          },
+          {
+            "name": "ivysaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/2/"
+          },
+          {
+            "name": "venusaur",
+            "url": "https://pokeapi.co/api/v2/pokemon/3/"
+          },
+          {
+            "name": "charmander",
+            "url": "https://pokeapi.co/api/v2/pokemon/4/"
+          }
+        ],
+        "mon": {
+          "name": "charmander",
+          "url": "https://pokeapi.co/api/v2/pokemon/4/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "charmander",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/4/",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+      "key": "[\"charmeleon\"]",
+      "data": {
+        "name": "charmeleon",
+        "url": "https://pokeapi.co/api/v2/pokemon/5/",
+        "page": 2
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "number": 2
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=8&limit=4",
+          "previous": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=4",
+          "results": [
+            {
+              "name": "charmeleon",
+              "url": "https://pokeapi.co/api/v2/pokemon/5/"
+            },
+            {
+              "name": "charizard",
+              "url": "https://pokeapi.co/api/v2/pokemon/6/"
+            },
+            {
+              "name": "squirtle",
+              "url": "https://pokeapi.co/api/v2/pokemon/7/"
+            },
+            {
+              "name": "wartortle",
+              "url": "https://pokeapi.co/api/v2/pokemon/8/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "charmeleon",
+            "url": "https://pokeapi.co/api/v2/pokemon/5/"
+          },
+          {
+            "name": "charizard",
+            "url": "https://pokeapi.co/api/v2/pokemon/6/"
+          },
+          {
+            "name": "squirtle",
+            "url": "https://pokeapi.co/api/v2/pokemon/7/"
+          },
+          {
+            "name": "wartortle",
+            "url": "https://pokeapi.co/api/v2/pokemon/8/"
+          }
+        ],
+        "mon": {
+          "name": "charmeleon",
+          "url": "https://pokeapi.co/api/v2/pokemon/5/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "charmeleon",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/5/",
+          "steps": []
+        },
+        "page": {
+          "from": 2,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+      "key": "[\"charizard\"]",
+      "data": {
+        "name": "charizard",
+        "url": "https://pokeapi.co/api/v2/pokemon/6/",
+        "page": 2
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "number": 2
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=8&limit=4",
+          "previous": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=4",
+          "results": [
+            {
+              "name": "charmeleon",
+              "url": "https://pokeapi.co/api/v2/pokemon/5/"
+            },
+            {
+              "name": "charizard",
+              "url": "https://pokeapi.co/api/v2/pokemon/6/"
+            },
+            {
+              "name": "squirtle",
+              "url": "https://pokeapi.co/api/v2/pokemon/7/"
+            },
+            {
+              "name": "wartortle",
+              "url": "https://pokeapi.co/api/v2/pokemon/8/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "charmeleon",
+            "url": "https://pokeapi.co/api/v2/pokemon/5/"
+          },
+          {
+            "name": "charizard",
+            "url": "https://pokeapi.co/api/v2/pokemon/6/"
+          },
+          {
+            "name": "squirtle",
+            "url": "https://pokeapi.co/api/v2/pokemon/7/"
+          },
+          {
+            "name": "wartortle",
+            "url": "https://pokeapi.co/api/v2/pokemon/8/"
+          }
+        ],
+        "mon": {
+          "name": "charizard",
+          "url": "https://pokeapi.co/api/v2/pokemon/6/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "charizard",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/6/",
+          "steps": []
+        },
+        "page": {
+          "from": 2,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+      "key": "[\"squirtle\"]",
+      "data": {
+        "name": "squirtle",
+        "url": "https://pokeapi.co/api/v2/pokemon/7/",
+        "page": 2
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "number": 2
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=8&limit=4",
+          "previous": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=4",
+          "results": [
+            {
+              "name": "charmeleon",
+              "url": "https://pokeapi.co/api/v2/pokemon/5/"
+            },
+            {
+              "name": "charizard",
+              "url": "https://pokeapi.co/api/v2/pokemon/6/"
+            },
+            {
+              "name": "squirtle",
+              "url": "https://pokeapi.co/api/v2/pokemon/7/"
+            },
+            {
+              "name": "wartortle",
+              "url": "https://pokeapi.co/api/v2/pokemon/8/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "charmeleon",
+            "url": "https://pokeapi.co/api/v2/pokemon/5/"
+          },
+          {
+            "name": "charizard",
+            "url": "https://pokeapi.co/api/v2/pokemon/6/"
+          },
+          {
+            "name": "squirtle",
+            "url": "https://pokeapi.co/api/v2/pokemon/7/"
+          },
+          {
+            "name": "wartortle",
+            "url": "https://pokeapi.co/api/v2/pokemon/8/"
+          }
+        ],
+        "mon": {
+          "name": "squirtle",
+          "url": "https://pokeapi.co/api/v2/pokemon/7/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "squirtle",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/7/",
+          "steps": []
+        },
+        "page": {
+          "from": 2,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+      "key": "[\"wartortle\"]",
+      "data": {
+        "name": "wartortle",
+        "url": "https://pokeapi.co/api/v2/pokemon/8/",
+        "page": 2
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?limit=4"
+        },
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?offset=4&limit=4",
+          "number": 2
+        },
+        "list": {
+          "count": 1351,
+          "next": "https://pokeapi.co/api/v2/pokemon?offset=8&limit=4",
+          "previous": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=4",
+          "results": [
+            {
+              "name": "charmeleon",
+              "url": "https://pokeapi.co/api/v2/pokemon/5/"
+            },
+            {
+              "name": "charizard",
+              "url": "https://pokeapi.co/api/v2/pokemon/6/"
+            },
+            {
+              "name": "squirtle",
+              "url": "https://pokeapi.co/api/v2/pokemon/7/"
+            },
+            {
+              "name": "wartortle",
+              "url": "https://pokeapi.co/api/v2/pokemon/8/"
+            }
+          ]
+        },
+        "results": [
+          {
+            "name": "charmeleon",
+            "url": "https://pokeapi.co/api/v2/pokemon/5/"
+          },
+          {
+            "name": "charizard",
+            "url": "https://pokeapi.co/api/v2/pokemon/6/"
+          },
+          {
+            "name": "squirtle",
+            "url": "https://pokeapi.co/api/v2/pokemon/7/"
+          },
+          {
+            "name": "wartortle",
+            "url": "https://pokeapi.co/api/v2/pokemon/8/"
+          }
+        ],
+        "mon": {
+          "name": "wartortle",
+          "url": "https://pokeapi.co/api/v2/pokemon/8/"
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "wartortle",
+          "steps": []
+        },
+        "url": {
+          "from": "https://pokeapi.co/api/v2/pokemon/8/",
+          "steps": []
+        },
+        "page": {
+          "from": 2,
+          "steps": []
+        }
+      }
+    }
+  ]
+}

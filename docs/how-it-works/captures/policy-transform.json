@@ -1,0 +1,486 @@
+{
+  "scene": "policy-transform",
+  "summary": [
+    {
+      "recipeId": "ot-integer-skip",
+      "emitted": 3,
+      "rejected": 2,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "ot-integer",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.2 (forEach) failed: mapping failed: otLosses: transform \"integer\": no number in \"\""
+    },
+    {
+      "recipeId": "ot-plain",
+      "emitted": 3,
+      "rejected": 2,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ ot-integer-skip (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract rows  … ms",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✖ record rejected: otLosses: transform \"integer\": no number in \"\"",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✖ record rejected: otLosses: transform \"integer\": no number in \"\"",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "  · steps.2  forEach  … ms",
+    "■ ot-integer-skip: 3 emitted, 2 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ ot-integer (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract rows  … ms",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✖ step steps.2 (forEach) failed: mapping failed: otLosses: transform \"integer\": no number in \"\"",
+    "■ ot-integer: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: otLosses: transform \"integer\": no number in \"\"",
+    "▶ ot-plain (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract rows  … ms",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✖ record rejected: otLosses: missing",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✖ record rejected: otLosses: missing",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "  · steps.2  forEach  … ms",
+    "■ ot-plain: 3 emitted, 2 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "rejected": {
+        "field": "otLosses",
+        "reason": "transform \"integer\": no number in \"\""
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+        "name": "Boston Bruins",
+        "year": "1997",
+        "ot": ""
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "rejected": {
+        "field": "otLosses",
+        "reason": "transform \"integer\": no number in \"\""
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+        "name": "Boston Bruins",
+        "year": "1998",
+        "ot": ""
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 1999,
+        "otLosses": 6
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+        "name": "Boston Bruins",
+        "year": "1999",
+        "ot": "6"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "1999",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "6",
+          "steps": [
+            {
+              "op": "integer",
+              "value": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 2000,
+        "otLosses": 8
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+        "name": "Boston Bruins",
+        "year": "2000",
+        "ot": "8"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "2000",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "8",
+          "steps": [
+            {
+              "op": "integer",
+              "value": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 2001,
+        "otLosses": 9
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …",
+        "name": "Boston Bruins",
+        "year": "2001",
+        "ot": "9"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "2001",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "9",
+          "steps": [
+            {
+              "op": "integer",
+              "value": 9
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "rejected": {
+        "field": "otLosses",
+        "reason": "missing"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+        "name": "Boston Bruins",
+        "year": "1997",
+        "ot": ""
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "rejected": {
+        "field": "otLosses",
+        "reason": "missing"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+        "name": "Boston Bruins",
+        "year": "1998",
+        "ot": ""
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 1999,
+        "otLosses": 6
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+        "name": "Boston Bruins",
+        "year": "1999",
+        "ot": "6"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "1999",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "6",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 2000,
+        "otLosses": 8
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+        "name": "Boston Bruins",
+        "year": "2000",
+        "ot": "8"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "2000",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "8",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 2001,
+        "otLosses": 9
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n               …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n              …",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …"
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n              …",
+        "name": "Boston Bruins",
+        "year": "2001",
+        "ot": "9"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "2001",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "9",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,511 @@
+{
+  "scene": "run-resume",
+  "summary": [
+    {
+      "recipeId": "travel-list",
+      "emitted": 6,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ travel-list (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+    "  · steps.0  request listing  … ms",
+    "  · steps.1  extract books  … ms",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ⤼ skipped [\"https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ⤼ skipped [\"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ⤼ skipped [\"https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ⤼ skipped [\"https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ⤼ skipped [\"https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html\"]",
+    "  · steps.2  forEach  … ms",
+    "■ travel-list: 6 emitted, 0 rejected, 0 duplicates, 5 skipped, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html",
+        "title": "A Summer In Europe",
+        "price": {
+          "amount": 44.34,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+        "title": "A Summer In Europe",
+        "link": "../../../a-summer-in-europe_458/index.html",
+        "price": "£44.34"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../a-summer-in-europe_458/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "A Summer In Europe",
+          "steps": []
+        },
+        "price": {
+          "from": "£44.34",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 44.34,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html",
+        "title": "The Great Railway Bazaar",
+        "price": {
+          "amount": 30.54,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+        "title": "The Great Railway Bazaar",
+        "link": "../../../the-great-railway-bazaar_446/index.html",
+        "price": "£30.54"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../the-great-railway-bazaar_446/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "The Great Railway Bazaar",
+          "steps": []
+        },
+        "price": {
+          "from": "£30.54",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 30.54,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html",
+        "title": "A Year in Provence (Provence #1)",
+        "price": {
+          "amount": 56.88,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+        "title": "A Year in Provence (Provence #1)",
+        "link": "../../../a-year-in-provence-provence-1_421/index.html",
+        "price": "£56.88"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../a-year-in-provence-provence-1_421/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "A Year in Provence (Provence #1)",
+          "steps": []
+        },
+        "price": {
+          "from": "£56.88",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 56.88,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+        "title": "The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)",
+        "price": {
+          "amount": 23.21,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+        "title": "The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)",
+        "link": "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+        "price": "£23.21"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)",
+          "steps": []
+        },
+        "price": {
+          "from": "£23.21",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 23.21,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html",
+        "title": "Neither Here nor There: Travels in Europe",
+        "price": {
+          "amount": 38.95,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+        "title": "Neither Here nor There: Travels in Europe",
+        "link": "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+        "price": "£38.95"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Neither Here nor There: Travels in Europe",
+          "steps": []
+        },
+        "price": {
+          "from": "£38.95",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 38.95,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html",
+        "title": "1,000 Places to See Before You Die",
+        "price": {
+          "amount": 26.08,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../1000-places-to-see-before-you-die_1/index.html\"><img src=\"../../../../media/cache/d7/0f/d70f7edd92705c45a82118c3ff6c299d.jpg\" alt=\"1,000 Places to See Before You Die\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n         …",
+        "title": "1,000 Places to See Before You Die",
+        "link": "../../../1000-places-to-see-before-you-die_1/index.html",
+        "price": "£26.08"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../1000-places-to-see-before-you-die_1/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "1,000 Places to See Before You Die",
+          "steps": []
+        },
+        "price": {
+          "from": "£26.08",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 26.08,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "scene": "run-blocked",
+  "summary": [
+    {
+      "recipeId": "missing-blocked",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3,
+      "error": "step steps.0 (request) failed: blocked at https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404"
+    }
+  ],
+  "trace": [
+    "▶ missing-blocked (api)",
+    "  ⇄ access direct (direct)",
+    "  ↺ https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404, try 2 in … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/no-such-book_0/index.html  [404]",
+    "  ⛔ blocked https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404",
+    "  ↻ new access lease (attempt 2)",
+    "  ⇄ access direct (direct)",
+    "  ↺ https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404, try 2 in … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/no-such-book_0/index.html  [404]",
+    "  ⛔ blocked https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404",
+    "  ↻ steps.0  request book  retry 2: blocked at https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404",
+    "  ↺ https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404, try 2 in … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/no-such-book_0/index.html  [404]",
+    "  ⛔ blocked https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404",
+    "  ✖ step steps.0 (request) failed: blocked at https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404",
+    "■ missing-blocked: 0 emitted, 0 rejected, 0 duplicates, 3 pages, … ms\n  ✖ stopped: step steps.0 (request) failed: blocked at https://books.toscrape.com/catalogue/no-such-book_0/index.html: HTTP 404"
+  ],
+  "records": []
+}

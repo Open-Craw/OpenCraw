@@ -13,9 +13,24 @@ import mnci from '@mnci/eslint-config'
 //                     deleted playwright, cheerio and jsonpath-plus from @opencraw/core and
 //                     pinned zod. Missing-dependency detection stays on (its fix only adds);
 //                     the two fixes that remove or re-pin declared dependencies are off.
+//   contract regexes  a contract's zod schemas become the published JSON Schemas, whose
+//                     `pattern` has no flags: an `i` flag was silently dropped and editors
+//                     refused lowercase names (#75). In contracts a regex literal carries no
+//                     flag, so `[A-Za-z]` is written out and use-ignore-case is off.
 export default [
   ...mnci({ workspaceRoot: import.meta.dirname, verticalSlices: ['packages/*/src/**/*.ts'] }),
   { name: 'local/test-fixtures-are-data', ignores: ['packages/*/src/**/fixtures/**/*.{html,json,txt}'] },
+  {
+    name:  'local/contract-regexes-are-flag-free',
+    files: ['packages/*/src/**/*.contract.ts'],
+    rules: {
+      'regexp/use-ignore-case': 'off',
+      'no-restricted-syntax':   ['error', {
+        selector: 'Literal[regex.flags=/./]',
+        message:  'A contract regex becomes a JSON Schema pattern, which keeps no flags: write it without one (for example [A-Za-z] instead of the i flag).',
+      }],
+    },
+  },
   {
     name:  'local/dependency-checks-never-remove',
     files: ['packages/*/package.json', 'libs/*/package.json'],

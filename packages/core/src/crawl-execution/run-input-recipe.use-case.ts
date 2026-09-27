@@ -10,7 +10,7 @@ import { ExtractionScope } from '../extraction-scope'
 import type { HookRegistry } from '../hooks'
 import { HttpClient } from '../http-session'
 import { mapRecord, RecordRejectedError } from '../output-mapping'
-import type { OutputRecord } from '../output-mapping'
+import type { MappingTrace, OutputRecord } from '../output-mapping'
 import type { InputRecipe, OutputRecipe, RetryRule, VarValue } from '../recipe-schema'
 import type { DedupePolicy, RecordSink } from '../record-sink'
 import { resolveRetryRule, RunGate, runSteps, StepMemory } from '../step-flow'
@@ -180,7 +180,7 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
   const report: RecipeReport = { recipeId: input.id, ...(variant !== undefined && { variant }), ...(item !== undefined && { item }), mode: input.mode, emitted: 0, rejected: 0, duplicates: 0, skipped: 0, stepsSkipped: 0, pages: 0, durationMs: 0 }
   const captchas = { detected: 0, solved: 0, failed: 0 }
   const limits = input.limits ?? {}
-  const held: { record: OutputRecord, url: string, snapshot: Record<string, unknown> }[] = []
+  const held: { record: OutputRecord, url: string, snapshot: Record<string, unknown>, trace?: MappingTrace }[] = []
   const written: OutputRecord[] = []
   let stopped = false
   let chain: Promise<unknown> = Promise.resolve()
@@ -235,8 +235,14 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
       })
       if (outcome === 'stop') break
     }
-    await chain
-    for (const entry of held) await write(entry.record, entry.url, entry.snapshot)
+    // Every emit's failure has reached the step that emitted it, whose onError decided; the last one
+    // must not fail the run a second time here.
+    try {
+      await chain
+    } catch {
+      // already handled by the emitting step
+    }
+    for (const entry of held) await write(entry.record, entry.url, entry.snapshot, entry.trace)
   } catch (error) {
     report.error = error instanceof Error ? error.message : String(error)
     report.errorKind = errorKindOf(error)
@@ -273,10 +279,11 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
   async function emitOne (snapshot: Record<string, unknown>, url: string): Promise<EmitOutcome> {
     if (stopped) return 'stop'
     try {
-      const record = await mapRecord({ snapshot, input, output, hooks: deps.hooks, url, log: (level, message, meta) => { deps.events.emit({ type: level === 'error' ? 'error' : 'warning', recipeId: input.id, message: `[${level}] ${message}`, meta }) } })
+      const trace: MappingTrace | undefined = deps.debug === true ? {} : undefined
+      const record = await mapRecord({ snapshot, input, output, hooks: deps.hooks, url, trace, log: (level, message, meta) => { deps.events.emit({ type: level === 'error' ? 'error' : 'warning', recipeId: input.id, message: `[${level}] ${message}`, meta }) } })
       if (item !== undefined) record.source.item = item
-      if (options.hold === true) held.push({ record, url, snapshot })
-      else await write(record, url, snapshot)
+      if (options.hold === true) held.push({ record, url, snapshot, trace })
+      else await write(record, url, snapshot, trace)
     } catch (error) {
       if (!(error instanceof RecordRejectedError)) throw error
       report.rejected += 1
@@ -287,7 +294,7 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
     return stopped ? 'stop' : 'continue'
   }
 
-  async function write (record: OutputRecord, url: string, snapshot: Record<string, unknown>): Promise<void> {
+  async function write (record: OutputRecord, url: string, snapshot: Record<string, unknown>, trace?: MappingTrace): Promise<void> {
     if (deps.resume === true && record.key !== null && await deps.sink.has?.(record.key) === true) {
       report.skipped += 1
       deps.events.emit({ type: 'record:skipped', recipeId: input.id, url, key: record.key })
@@ -298,7 +305,7 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
       await deps.sink.write(record)
       report.emitted += 1
       if (options.hold === true) written.push(record)
-      deps.events.emit({ type: 'record:emit', recipeId: input.id, url, key: record.key, data: record.data, scope: deps.debug === true ? snapshot : undefined })
+      deps.events.emit({ type: 'record:emit', recipeId: input.id, url, key: record.key, data: record.data, scope: deps.debug === true ? snapshot : undefined, mapping: trace })
     }
   }
 }

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "fixture-row",
+  "version": 1,
+  "description": "One row of a table in the repository's discounts.pdf fixture, its cells as the table reader joined them.",
+  "onMissing": "null",
+  "fields": {
+    "table": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "model": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "discount": {
+      "type": "string"
+    },
+    "excluded": {
+      "type": "string"
+    },
+    "extra": {
+      "type": "string"
+    }
+  }
+}

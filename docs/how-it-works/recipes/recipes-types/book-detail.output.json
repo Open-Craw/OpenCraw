@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "book-detail",
+  "version": 1,
+  "fields": {
+    "upc": { "type": "string", "required": true, "key": true },
+    "title": { "type": "string", "required": true },
+    "price": { "type": "currency", "required": true },
+    "priceValue": { "type": "number" },
+    "prices": { "type": "object", "fields": {
+      "excl": { "type": "currency" },
+      "incl": { "type": "currency" },
+      "tax": { "type": "currency" }
+    }},
+    "inStock": { "type": "boolean" },
+    "available": { "type": "integer", "min": 0 },
+    "reviews": { "type": "integer" },
+    "productType": { "type": "enum", "values": ["Books", "E-books"] },
+    "image": { "type": "url" },
+    "breadcrumb": { "type": "array", "items": { "type": "string" } },
+    "rows": { "type": "json" },
+    "oldPrice": { "type": "currency", "currency": "GBP" },
+    "onSale": { "type": "boolean", "default": false },
+    "subtitle": { "type": "string", "required": true, "nullable": true, "onMissing": "null" },
+    "scrapedAt": { "type": "datetime", "generated": "now" },
+    "scrapedOn": { "type": "date", "generated": "now" },
+    "sourceUrl": { "type": "url", "generated": "sourceUrl" },
+    "recipe": { "type": "string", "generated": "recipeId" }
+  }
+}

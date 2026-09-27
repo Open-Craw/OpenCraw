@@ -1,0 +1,112 @@
+{
+  "scene": "flow-accumulate",
+  "summary": [
+    {
+      "recipeId": "pokeapi-cursor",
+      "emitted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3
+    }
+  ],
+  "trace": [
+    "▶ pokeapi-cursor (api)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  set names  … ms",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon?offset=20&limit=5",
+    "    · steps.1.steps.0  request list  … ms",
+    "    · steps.1.steps.1  extract batch  … ms",
+    "    · steps.1.steps.2  collect  … ms",
+    "  ⇢ page 2  https://pokeapi.co/api/v2/pokemon?offset=25&limit=5",
+    "    · steps.1.steps.0  request list  … ms",
+    "    · steps.1.steps.1  extract batch  … ms",
+    "    · steps.1.steps.2  collect  … ms",
+    "  ⇢ page 3  https://pokeapi.co/api/v2/pokemon?offset=30&limit=5",
+    "    · steps.1.steps.0  request list  … ms",
+    "    · steps.1.steps.1  extract batch  … ms",
+    "    · steps.1.steps.2  collect  … ms",
+    "  · steps.1  paginate  … ms",
+    "  · steps.2  set count  … ms",
+    "  ✚ record (no key)",
+    "  · steps.3  emit  … ms",
+    "■ pokeapi-cursor: 1 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=5",
+      "key": null,
+      "data": {
+        "count": 15,
+        "names": [
+          "spearow",
+          "fearow",
+          "ekans",
+          "arbok",
+          "pikachu",
+          "raichu",
+          "sandshrew",
+          "sandslash",
+          "nidoran-f",
+          "nidorina",
+          "… 5 more"
+        ],
+        "pagesRead": 3,
+        "pageUrl": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=5"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=5"
+        },
+        "names": [
+          "spearow",
+          "fearow",
+          "ekans",
+          "arbok",
+          "pikachu",
+          "raichu",
+          "sandshrew",
+          "sandslash",
+          "nidoran-f",
+          "nidorina",
+          "… 5 more"
+        ],
+        "count": 15,
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=5",
+          "number": 3
+        }
+      },
+      "mapping": {
+        "count": {
+          "from": 15,
+          "steps": []
+        },
+        "names": {
+          "from": [
+            "spearow",
+            "fearow",
+            "ekans",
+            "arbok",
+            "pikachu",
+            "raichu",
+            "sandshrew",
+            "sandslash",
+            "nidoran-f",
+            "nidorina",
+            "… 5 more"
+          ],
+          "steps": []
+        },
+        "pagesRead": {
+          "from": 3,
+          "steps": []
+        },
+        "pageUrl": {
+          "from": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=5",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

@@ -7,7 +7,8 @@
 A crawl is two kinds of JSON file: **one output recipe** that says what a record looks like, and **input
 recipes** that say how to get there from a site or an API. The engine runs the inputs one after another and
 every record, whatever its source, matches the output. The formal specification is
-[requirements.md](../requirements.md); this is the working guide.
+[requirements.md](../requirements.md); this is the working guide. To see what the engine does with each part, on
+real sites with the traces and records it produced, read [How OpenCraw works](../how-it-works/README.md).
 
 Point `$schema` at `packages/core/schemas/output-recipe.schema.json` or `input-recipe.schema.json` and your
 editor validates and completes the file as you type.

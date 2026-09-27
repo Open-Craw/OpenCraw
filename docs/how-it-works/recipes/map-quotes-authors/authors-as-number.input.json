@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "authors-as-number",
+  "output": "author",
+  "mode": "api",
+  "description": "The first author's birth date, \"March 14, 1879\", through the number transform: it holds two numbers, so the transform throws and, with no skip-record on the rule, the recipe stops.",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300, "maxRecords": 1 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "authorLinks", "selector": ".quote span a", "kind": "css", "take": "attr:href", "many": true },
+    { "type": "forEach", "over": "authorLinks", "as": "link", "emit": true, "steps": [
+      { "type": "request", "url": "{{link}}" },
+      { "type": "extract", "id": "name", "selector": ".author-title", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "bornDate", "selector": ".author-born-date", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "bornLocation", "selector": ".author-born-location", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "url": { "from": "page.url" },
+    "name": { "from": "name" },
+    "bornAsNumber": { "from": "bornDate", "transform": [{ "op": "number" }] }
+  }
+}

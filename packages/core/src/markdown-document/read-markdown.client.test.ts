@@ -5,6 +5,13 @@ import { readMarkdown } from './read-markdown.client'
 
 const listino = readFileSync(join(__dirname, 'fixtures', 'listino.md'), 'utf8')
 
+async function headingIds (markdown: string): Promise<string[]> {
+  const { html } = await readMarkdown(markdown, 'ids.md')
+  const $ = load(html)
+
+  return $('h1, h2').map((_index, heading) => $(heading).attr('id')).get()
+}
+
 describe('readMarkdown', () => {
   it('wraps each heading and its content in a section, sections nesting by level, headings slugged', async () => {
     const { html } = await readMarkdown(listino, 'listino.md')
@@ -14,6 +21,12 @@ describe('readMarkdown', () => {
     expect($('section[data-heading="Prezzi"] section[data-heading="Accessori"] li').length).toBe(2)
     expect($('section[data-heading="Note"] section').length).toBe(0)
     expect($('h2').map((_index, heading) => $(heading).attr('id')).get()).toEqual(['prezzi', 'note'])
+  })
+
+  it('gives every heading a unique id, GitHub-style, skipping ids already taken', async () => {
+    expect(await headingIds('# a\n\n# a\n\n# a')).toEqual(['a', 'a-1', 'a-2'])
+    expect(await headingIds('# a\n\n# a\n\n# a-1')).toEqual(['a', 'a-1', 'a-1-1'])
+    expect(await headingIds('# a-1\n\n## a\n\n## a\n\n# A!')).toEqual(['a-1', 'a', 'a-2', 'a-3'])
   })
 
   it('renders GitHub tables: an escaped pipe stays in its cell, a short row is padded', async () => {

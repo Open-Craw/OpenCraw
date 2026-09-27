@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { HookRegistry } from '../hooks'
 import { parseInputRecipe, parseOutputRecipe } from '../recipe-schema'
-import type { InputRecipe, OutputRecipe } from '../recipe-schema'
+import type { FieldSpec, FromRule, InputRecipe, OutputRecipe } from '../recipe-schema'
 import { mapRecord } from './map-record.use-case'
 import { MappingFailedError, RecordRejectedError } from './mapping.error'
 
@@ -150,9 +150,146 @@ describe('mapRecord', () => {
     const record = await mapRecord({ snapshot, input, output: options, hooks, url: 'http://x' })
     expect(record.data.options).toEqual([
       { code: 'P31', content: 'Night package', label: 'C-Class P31', own: 'the item\'s own' },
-      // U62 has no table of its own, so `own` looks in the record's table, which has no U62.
-      { code: 'U62', content: 'Heated seats', label: 'C-Class U62' },
-      { code: 'X00', label: 'C-Class X00' },
+      // U62 has no table of its own, so `own` looks in the record's table, which has no U62: missing, so null.
+      { code: 'U62', content: 'Heated seats', label: 'C-Class U62', own: null },
+      { code: 'X00', content: null, label: 'C-Class X00', own: null },
     ])
+  })
+
+  it('traces each field: what it read, then its value after each transform', async () => {
+    const trace = {}
+    await mapRecord({ snapshot: webSnapshot, input: web, output, hooks, url: 'https://shop.example/p/1', trace })
+    expect(trace).toMatchObject({
+      title:  { from: '  Blue Shoe ', steps: [{ op: 'trim', value: 'Blue Shoe' }] },
+      price:  { from: 'Price: 1.299,00 €', steps: [{ op: 'regex', value: '1.299,00' }, { op: 'currency', value: { amount: 1299 } }] },
+      images: { from: ['/img/1.jpg', '/img/1.jpg', 'https://cdn.example/2.jpg'], steps: [{ op: 'absoluteUrl', value: ['https://shop.example/img/1.jpg', 'https://shop.example/img/1.jpg', 'https://cdn.example/2.jpg'] }, { op: 'unique', value: ['https://shop.example/img/1.jpg', 'https://cdn.example/2.jpg'] }] },
+    })
+    expect(trace).toHaveProperty(['variants[1].size'], { from: '<td class="size">L</td><td class="price">12,50 €</td>', steps: [{ op: 'regex', value: 'L' }] })
+  })
+})
+
+/** One output field `f` of the given spec, mapped from the snapshot's `v`. */
+function single (field: FieldSpec, rule: Partial<FromRule> = {}): { output: OutputRecipe, input: InputRecipe } {
+  return {
+    output: { kind: 'output', id: 'o', version: 1, fields: { f: field } },
+    input:  { kind: 'input', id: 'i', output: 'o', mode: 'api', start: [{ url: 'x' }], steps: [{ type: 'emit' }], mapping: { f: { from: 'v', ...rule } } },
+  }
+}
+
+async function mapOne (field: FieldSpec, value: unknown, rule: Partial<FromRule> = {}): Promise<unknown> {
+  const record = await mapRecord({ snapshot: { v: value }, ...single(field, rule), hooks, url: 'x' })
+
+  return record.data.f
+}
+
+describe('mapRecord: an empty string is missing in every typed field (#80)', () => {
+  const types: FieldSpec[] = [
+    { type: 'string' }, { type: 'number' }, { type: 'integer' }, { type: 'boolean' }, { type: 'date' }, { type: 'datetime' },
+    { type: 'currency', currency: 'EUR' }, { type: 'url' }, { type: 'enum', values: ['a'] }, { type: 'json' },
+  ]
+
+  it.each(types)('$type: "" is null when optional', async (field) => {
+    await expect(mapOne(field, '')).resolves.toBeNull()
+  })
+
+  it.each(types)('$type: "" fails as missing, not as a coercion, when required', async (field) => {
+    await expect(mapOne({ ...field, required: true }, '')).rejects.toThrow('mapping failed: f: missing')
+  })
+
+  it.each(types)('$type: "" drops the record under skip-record', async (field) => {
+    await expect(mapOne({ ...field, onMissing: 'skip-record' }, '')).rejects.toThrow(RecordRejectedError)
+  })
+
+  it('takes the default, coerced, for ""', async () => {
+    await expect(mapOne({ type: 'integer', default: '0' }, '')).resolves.toBe(0)
+    await expect(mapOne({ type: 'boolean', default: false }, '')).resolves.toBe(false)
+    await expect(mapOne({ type: 'string', default: 'n/a' }, '')).resolves.toBe('n/a')
+  })
+
+  it('reads blank text as missing in a field that is not text, and keeps it in a string field', async () => {
+    await expect(mapOne({ type: 'number' }, '  ')).resolves.toBeNull()
+    await expect(mapOne({ type: 'string' }, '  ')).resolves.toBe('  ')
+  })
+})
+
+describe('mapRecord: coercion errors (#78, #80)', () => {
+  it('names the field type, not a transform the rule does not have', async () => {
+    await expect(mapOne({ type: 'integer' }, 'n/a')).rejects.toThrow('mapping failed: f: integer field: no number in "n/a"')
+    await expect(mapOne({ type: 'number' }, '2 for 10,00')).rejects.toThrow('mapping failed: f: number field: "2 for 10,00" holds 2 numbers (2, 10,00): pick one with a "regex" transform first')
+  })
+
+  it('keeps the transform\'s name when the rule has that transform', async () => {
+    await expect(mapOne({ type: 'number' }, 'n/a', { transform: [{ op: 'integer' }] })).rejects.toThrow('mapping failed: f: transform "integer": no number in "n/a"')
+  })
+
+  it('says the path once', async () => {
+    await expect(mapOne({ type: 'url' }, 'nope')).rejects.toMatchObject({ message: 'mapping failed: f: "nope" is not an absolute URL (use the absoluteUrl transform)', field: 'f' })
+    await expect(mapOne({ type: 'url', onMissing: 'skip-record' }, 'nope')).rejects.toThrow('record rejected: f: "nope" is not')
+  })
+})
+
+describe('mapRecord: defaults (#78)', () => {
+  it('coerces a default like a mapped value', async () => {
+    await expect(mapOne({ type: 'number', default: '0' }, undefined)).resolves.toBe(0)
+    await expect(mapOne({ type: 'currency', default: '0 €' }, undefined)).resolves.toEqual({ amount: 0, currency: 'EUR' })
+  })
+
+  it('fails a field whose policy is default when it has none, instead of leaving it out', async () => {
+    await expect(mapOne({ type: 'number' }, undefined, { onMissing: 'default' })).rejects.toThrow('mapping failed: f: missing, and the policy is "default" but the field has no default')
+  })
+
+  it('fails on a default that cannot be the field\'s type', async () => {
+    await expect(mapOne({ type: 'number', default: 'none' }, undefined)).rejects.toThrow('mapping failed: f: default: number field: no number in "none"')
+    await expect(mapOne({ type: 'integer', default: 0, min: 1 }, undefined)).rejects.toThrow('mapping failed: f: default: 0 is below the minimum 1')
+  })
+})
+
+/** An input mapping `rows` into `variants` with `each`, `size` under the given policy. */
+function eachInput (onMissing?: 'skip-record'): InputRecipe {
+  return {
+    kind:    'input',
+    id:      'i',
+    output:  'o',
+    mode:    'api',
+    start:   [{ url: 'x' }],
+    steps:   [{ type: 'emit' }],
+    mapping: { variants: { each: 'rows', fields: { size: { from: 'size', ...(onMissing !== undefined && { onMissing }) }, stock: { from: 'stock' } } } },
+  }
+}
+
+describe('mapRecord: the items of an each rule (#78)', () => {
+  const sized: OutputRecipe = parseOutputRecipe({
+    kind:    'output',
+    id:      'o',
+    version: 1,
+    fields:  { variants: { type: 'array', items: { type: 'object', fields: { size: { type: 'string', required: true, pattern: '^[SML]$' }, stock: { type: 'integer', default: 0 } } } } },
+  })
+  const run = async (rows: unknown[], onMissing?: 'skip-record'): Promise<unknown> => {
+    const record = await mapRecord({ snapshot: { rows }, input: eachInput(onMissing), output: sized, hooks, url: 'x' })
+
+    return record.data.variants
+  }
+
+  it('coerces each member and applies its default', async () => {
+    await expect(run([{ size: 'M', stock: '3' }, { size: 'L', stock: '' }])).resolves.toEqual([{ size: 'M', stock: 3 }, { size: 'L', stock: 0 }])
+  })
+
+  it('fails a missing required member, at its index', async () => {
+    await expect(run([{ size: 'M' }, { stock: '1' }])).rejects.toThrow('mapping failed: variants[1].size: missing')
+  })
+
+  it('validates each member, at its index', async () => {
+    await expect(run([{ size: 'XL' }])).rejects.toThrow('mapping failed: variants[0].size: "XL" does not match ^[SML]$')
+  })
+
+  it('follows the member rule\'s policy', async () => {
+    await expect(run([{ size: 'M' }, {}], 'skip-record')).rejects.toThrow(new RecordRejectedError('variants[1].size', 'missing'))
+  })
+
+  it('validates the scalar items of a list', async () => {
+    const tags = single({ type: 'array', items: { type: 'integer', max: 5 } })
+    await expect(mapRecord({ snapshot: { v: ['1', '', '9'] }, ...tags, hooks, url: 'x' })).rejects.toThrow('mapping failed: f[2]: 9 is above the maximum 5')
+    const record = await mapRecord({ snapshot: { v: ['1', ''] }, ...tags, hooks, url: 'x' })
+    expect(record.data.f).toEqual([1, null])
   })
 })

@@ -1,0 +1,239 @@
+{
+  "scene": "flow-maxrecords",
+  "summary": [
+    {
+      "recipeId": "catalogue-first-five",
+      "emitted": 5,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ catalogue-first-five (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/page-1.html",
+    "    · steps.0.steps.0  request  … ms",
+    "    · steps.0.steps.1  extract titles  … ms",
+    "  ✚ record [\"A Light in the Attic\"]",
+    "  ✚ record [\"Tipping the Velvet\"]",
+    "  ✚ record [\"Soumission\"]",
+    "  ✚ record [\"Sharp Objects\"]",
+    "  ✚ record [\"Sapiens: A Brief History of Humankind\"]",
+    "    · steps.0.steps.2  forEach  … ms",
+    "  · steps.0  paginate  … ms",
+    "■ catalogue-first-five: 5 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/page-1.html",
+      "key": "[\"A Light in the Attic\"]",
+      "data": {
+        "title": "A Light in the Attic",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html",
+          "number": 1
+        },
+        "titles": [
+          "A Light in the Attic",
+          "Tipping the Velvet",
+          "Soumission",
+          "Sharp Objects",
+          "Sapiens: A Brief History of Humankind",
+          "The Requiem Red",
+          "The Dirty Little Secrets of Getting Your Dream Job",
+          "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+          "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+          "The Black Maria",
+          "… 10 more"
+        ],
+        "title": "A Light in the Attic"
+      },
+      "mapping": {
+        "title": {
+          "from": "A Light in the Attic",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/page-1.html",
+      "key": "[\"Tipping the Velvet\"]",
+      "data": {
+        "title": "Tipping the Velvet",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html",
+          "number": 1
+        },
+        "titles": [
+          "A Light in the Attic",
+          "Tipping the Velvet",
+          "Soumission",
+          "Sharp Objects",
+          "Sapiens: A Brief History of Humankind",
+          "The Requiem Red",
+          "The Dirty Little Secrets of Getting Your Dream Job",
+          "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+          "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+          "The Black Maria",
+          "… 10 more"
+        ],
+        "title": "Tipping the Velvet"
+      },
+      "mapping": {
+        "title": {
+          "from": "Tipping the Velvet",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/page-1.html",
+      "key": "[\"Soumission\"]",
+      "data": {
+        "title": "Soumission",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html",
+          "number": 1
+        },
+        "titles": [
+          "A Light in the Attic",
+          "Tipping the Velvet",
+          "Soumission",
+          "Sharp Objects",
+          "Sapiens: A Brief History of Humankind",
+          "The Requiem Red",
+          "The Dirty Little Secrets of Getting Your Dream Job",
+          "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+          "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+          "The Black Maria",
+          "… 10 more"
+        ],
+        "title": "Soumission"
+      },
+      "mapping": {
+        "title": {
+          "from": "Soumission",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/page-1.html",
+      "key": "[\"Sharp Objects\"]",
+      "data": {
+        "title": "Sharp Objects",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html",
+          "number": 1
+        },
+        "titles": [
+          "A Light in the Attic",
+          "Tipping the Velvet",
+          "Soumission",
+          "Sharp Objects",
+          "Sapiens: A Brief History of Humankind",
+          "The Requiem Red",
+          "The Dirty Little Secrets of Getting Your Dream Job",
+          "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+          "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+          "The Black Maria",
+          "… 10 more"
+        ],
+        "title": "Sharp Objects"
+      },
+      "mapping": {
+        "title": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/page-1.html",
+      "key": "[\"Sapiens: A Brief History of Humankind\"]",
+      "data": {
+        "title": "Sapiens: A Brief History of Humankind",
+        "page": 1
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html",
+          "number": 1
+        },
+        "titles": [
+          "A Light in the Attic",
+          "Tipping the Velvet",
+          "Soumission",
+          "Sharp Objects",
+          "Sapiens: A Brief History of Humankind",
+          "The Requiem Red",
+          "The Dirty Little Secrets of Getting Your Dream Job",
+          "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+          "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+          "The Black Maria",
+          "… 10 more"
+        ],
+        "title": "Sapiens: A Brief History of Humankind"
+      },
+      "mapping": {
+        "title": {
+          "from": "Sapiens: A Brief History of Humankind",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        }
+      }
+    }
+  ]
+}

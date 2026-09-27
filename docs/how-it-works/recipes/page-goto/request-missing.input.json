@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "request-missing",
+  "output": "visit",
+  "mode": "web",
+  "description": "The same missing page, fetched with a request instead of opened with a goto: a 404 fails the step.",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "request", "id": "missing", "url": "does-not-exist", "as": "html" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "asked": { "from": "start.url" },
+    "url": { "from": "page.url" },
+    "heading": { "from": "missing" }
+  }
+}

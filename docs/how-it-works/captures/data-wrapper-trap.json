@@ -1,0 +1,191 @@
+{
+  "scene": "data-wrapper-trap",
+  "summary": [
+    {
+      "recipeId": "countries-by-row",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ countries-by-row (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://www.scrapethissite.com/pages/simple/",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract countries  … ms",
+    "  · steps.2  extract rows  … ms",
+    "  · steps.3  set counts  … ms",
+    "    · steps.4.steps.0  extract name  … ms",
+    "    · steps.4.steps.1  extract capital  … ms",
+    "    · steps.4.steps.2  extract population  … ms",
+    "  ✚ record [\"Andorra\"]",
+    "    · steps.4.steps.0  extract name  … ms",
+    "    · steps.4.steps.1  extract capital  … ms",
+    "    · steps.4.steps.2  extract population  … ms",
+    "  ✚ record [\"Antigua and Barbuda\"]",
+    "  · steps.4  forEach  … ms",
+    "■ countries-by-row: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://www.scrapethissite.com/pages/simple/",
+      "key": "[\"Andorra\"]",
+      "data": {
+        "name": "Andorra",
+        "capital": "Andorra la Vella",
+        "population": [
+          "84000",
+          "4975593",
+          "29121286"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/simple/"
+        },
+        "countries": [
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ad\"></i>\n                            Andorra\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Andorra la Vella</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">84000</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">468.0</span><br>\n                        </div>\n  …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ae\"></i>\n                            United Arab Emirates\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Abu Dhabi</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">4975593</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">82880.0</span><br>\n                       …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-af\"></i>\n                            Afghanistan\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Kabul</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">29121286</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">647500.0</span><br>\n                        </div>\n   …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ag\"></i>\n                            Antigua and Barbuda\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">St. John's</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">86754</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">443.0</span><br>\n                        </d…",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ai\"></i>\n                            Anguilla\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">The Valley</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">13254</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">102.0</span><br>\n                        </div>\n       …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-al\"></i>\n                            Albania\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Tirana</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">2986952</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">28748.0</span><br>\n                        </div>\n        …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-am\"></i>\n                            Armenia\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Yerevan</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">2968000</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">29800.0</span><br>\n                        </div>\n       …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ao\"></i>\n                            Angola\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Luanda</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">13068161</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">1246700.0</span><br>\n                        </div>\n      …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-aq\"></i>\n                            Antarctica\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">None</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">0</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">1.4E7</span><br>\n                        </div>\n               …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ar\"></i>\n                            Argentina\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Buenos Aires</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">41343201</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">2766890.0</span><br>\n                        </di…",
+          "… 240 more"
+        ],
+        "rows": [
+          "\n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ad\"></i>\n                            Andorra\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Andorra la Vella</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">84000</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ag\"></i>\n                            Antigua and Barbuda\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">St. John's</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">86754</span><br>\n                         …",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-am\"></i>\n                            Armenia\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Yerevan</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">2968000</span><br>\n                            <strong>Ar…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ar\"></i>\n                            Argentina\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Buenos Aires</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">41343201</span><br>\n                            <s…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-au\"></i>\n                            Australia\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Canberra</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">21515754</span><br>\n                            <stron…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-az\"></i>\n                            Azerbaijan\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Baku</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">8303512</span><br>\n                            <strong>Ar…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bd\"></i>\n                            Bangladesh\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Dhaka</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">156118464</span><br>\n                            <strong…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bg\"></i>\n                            Bulgaria\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Sofia</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">7148785</span><br>\n                            <strong>Are…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bj\"></i>\n                            Benin\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Porto-Novo</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">9056010</span><br>\n                            <strong>A…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bn\"></i>\n                            Brunei\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Bandar Seri Begawan</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">395027</span><br>\n                            …",
+          "… 74 more"
+        ],
+        "counts": {
+          "rows": 84,
+          "countries": 250
+        },
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/simple/",
+          "number": 1
+        },
+        "row": "\n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ad\"></i>\n                            Andorra\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Andorra la Vella</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">84000</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span…",
+        "name": "Andorra",
+        "capital": "Andorra la Vella",
+        "population": [
+          "84000",
+          "4975593",
+          "29121286"
+        ]
+      },
+      "mapping": {
+        "name": {
+          "from": "Andorra",
+          "steps": []
+        },
+        "capital": {
+          "from": "Andorra la Vella",
+          "steps": []
+        },
+        "population": {
+          "from": [
+            "84000",
+            "4975593",
+            "29121286"
+          ],
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/simple/",
+      "key": "[\"Antigua and Barbuda\"]",
+      "data": {
+        "name": "Antigua and Barbuda",
+        "capital": "St. John's",
+        "population": [
+          "86754",
+          "13254",
+          "2986952"
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/simple/"
+        },
+        "countries": [
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ad\"></i>\n                            Andorra\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Andorra la Vella</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">84000</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">468.0</span><br>\n                        </div>\n  …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ae\"></i>\n                            United Arab Emirates\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Abu Dhabi</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">4975593</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">82880.0</span><br>\n                       …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-af\"></i>\n                            Afghanistan\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Kabul</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">29121286</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">647500.0</span><br>\n                        </div>\n   …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ag\"></i>\n                            Antigua and Barbuda\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">St. John's</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">86754</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">443.0</span><br>\n                        </d…",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ai\"></i>\n                            Anguilla\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">The Valley</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">13254</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">102.0</span><br>\n                        </div>\n       …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-al\"></i>\n                            Albania\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Tirana</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">2986952</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">28748.0</span><br>\n                        </div>\n        …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-am\"></i>\n                            Armenia\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Yerevan</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">2968000</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">29800.0</span><br>\n                        </div>\n       …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ao\"></i>\n                            Angola\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Luanda</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">13068161</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">1246700.0</span><br>\n                        </div>\n      …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-aq\"></i>\n                            Antarctica\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">None</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">0</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">1.4E7</span><br>\n                        </div>\n               …",
+          "\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ar\"></i>\n                            Argentina\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Buenos Aires</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">41343201</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span class=\"country-area\">2766890.0</span><br>\n                        </di…",
+          "… 240 more"
+        ],
+        "rows": [
+          "\n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ad\"></i>\n                            Andorra\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Andorra la Vella</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">84000</span><br>\n                            <strong>Area (km<sup>2</sup>):</strong> <span…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ag\"></i>\n                            Antigua and Barbuda\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">St. John's</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">86754</span><br>\n                         …",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-am\"></i>\n                            Armenia\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Yerevan</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">2968000</span><br>\n                            <strong>Ar…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ar\"></i>\n                            Argentina\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Buenos Aires</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">41343201</span><br>\n                            <s…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-au\"></i>\n                            Australia\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Canberra</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">21515754</span><br>\n                            <stron…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-az\"></i>\n                            Azerbaijan\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Baku</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">8303512</span><br>\n                            <strong>Ar…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bd\"></i>\n                            Bangladesh\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Dhaka</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">156118464</span><br>\n                            <strong…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bg\"></i>\n                            Bulgaria\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Sofia</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">7148785</span><br>\n                            <strong>Are…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bj\"></i>\n                            Benin\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Porto-Novo</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">9056010</span><br>\n                            <strong>A…",
+          "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-bn\"></i>\n                            Brunei\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">Bandar Seri Begawan</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">395027</span><br>\n                            …",
+          "… 74 more"
+        ],
+        "counts": {
+          "rows": 84,
+          "countries": 250
+        },
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/simple/",
+          "number": 1
+        },
+        "row": "\n                    \n                    \n                    \n                    <div class=\"col-md-4 country\">\n                        <h3 class=\"country-name\">\n                            <i class=\"flag-icon flag-icon-ag\"></i>\n                            Antigua and Barbuda\n                        </h3>\n                        <div class=\"country-info\">\n                            <strong>Capital:</strong> <span class=\"country-capital\">St. John's</span><br>\n                            <strong>Population:</strong> <span class=\"country-population\">86754</span><br>\n                         …",
+        "name": "Antigua and Barbuda",
+        "capital": "St. John's",
+        "population": [
+          "86754",
+          "13254",
+          "2986952"
+        ]
+      },
+      "mapping": {
+        "name": {
+          "from": "Antigua and Barbuda",
+          "steps": []
+        },
+        "capital": {
+          "from": "St. John's",
+          "steps": []
+        },
+        "population": {
+          "from": [
+            "86754",
+            "13254",
+            "2986952"
+          ],
+          "steps": []
+        }
+      }
+    }
+  ]
+}

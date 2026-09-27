@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "pokeapi-past-skip",
+  "output": "past-abilities",
+  "mode": "api",
+  "description": "As pokeapi-past, with onMissing skip-record on the rule for the items' required name: the record is rejected instead of stopping the recipe.",
+  "start": [{ "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}", "as": "json" },
+    { "type": "extract", "id": "name", "selector": "$.name", "kind": "jsonpath", "take": "text" },
+    { "type": "extract", "id": "past", "selector": "$.past_abilities[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "name": { "from": "name" },
+    "pastAbilities": { "each": "past", "fields": {
+      "name": { "from": "abilities[0].ability.name", "onMissing": "skip-record" },
+      "slot": { "from": "abilities[0].slot" },
+      "until": { "from": "generation.name" }
+    }}
+  }
+}

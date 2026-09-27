@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "pokemon",
+  "version": 1,
+  "fields": {
+    "name": { "type": "string", "required": true, "key": true },
+    "url": { "type": "url" },
+    "page": { "type": "integer" }
+  }
+}

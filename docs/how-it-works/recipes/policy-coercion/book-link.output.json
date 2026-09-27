@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "book-link",
+  "version": 1,
+  "onMissing": "skip-record",
+  "fields": {
+    "title": { "type": "string", "required": true },
+    "url": { "type": "url" }
+  }
+}

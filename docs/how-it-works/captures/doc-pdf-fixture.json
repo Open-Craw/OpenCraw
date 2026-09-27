@@ -1,0 +1,3603 @@
+{
+  "scene": "doc-pdf-fixture",
+  "summary": [
+    {
+      "recipeId": "fixture-tables",
+      "emitted": 14,
+      "rejected": 0,
+      "duplicates": 10,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ fixture-tables (api)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  hook file  … ms",
+    "  ⇢ page 1  file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+    "  · steps.1  request  … ms",
+    "  · steps.2  extract tables  … ms",
+    "    · steps.3.steps.0  set rows  … ms",
+    "  ✚ record [\"MODELS ALPHA\",\"CITY (model 101)\"]",
+    "  ✚ record [\"MODELS ALPHA\",\"CITY EV (model 102)\"]",
+    "  ✚ record [\"MODELS ALPHA\",\"MINI (model 103)\"]",
+    "  ✚ record [\"MODELS ALPHA\",\"SEDAN (model 104)\"]",
+    "  ✚ record [\"MODELS ALPHA\",\"WAGON base series 1 (104.E23 without OPT JFS-JFR)\"]",
+    "  ✚ record [\"MODELS ALPHA\",\"COUPE (model 105)\"]",
+    "    · steps.3.steps.1  forEach  … ms",
+    "    · steps.3.steps.0  set rows  … ms",
+    "  ✚ record [\"MODELS BETA\",\"ROADSTER\"]",
+    "  ✚ record [\"MODELS BETA\",\"VAN\"]",
+    "    · steps.3.steps.1  forEach  … ms",
+    "    · steps.3.steps.0  set rows  … ms",
+    "  ✚ record [\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 290\"]",
+    "  ✚ record [\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 505\"]",
+    "    · steps.3.steps.1  forEach  … ms",
+    "    · steps.3.steps.0  set rows  … ms",
+    "  ✚ record [\"MODELS GAMMA\",\"G3 MHEV\"]",
+    "  ✚ record [\"MODELS GAMMA\",\"G3 BEV\"]",
+    "    · steps.3.steps.1  forEach  … ms",
+    "  · steps.3  forEach  … ms",
+    "  · steps.4  extract without_until  … ms",
+    "    · steps.5.steps.0  set rows  … ms",
+    "  ≡ duplicate [\"MODELS ALPHA\",\"CITY (model 101)\"]",
+    "  ≡ duplicate [\"MODELS ALPHA\",\"CITY EV (model 102)\"]",
+    "  ≡ duplicate [\"MODELS ALPHA\",\"MINI (model 103)\"]",
+    "  ≡ duplicate [\"MODELS ALPHA\",\"SEDAN (model 104)\"]",
+    "  ≡ duplicate [\"MODELS ALPHA\",\"WAGON base series 1 (104.E23 without OPT JFS-JFR)\"]",
+    "  ✚ record [\"MODELS ALPHA\",\"COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded\"]",
+    "    · steps.5.steps.1  forEach  … ms",
+    "    · steps.5.steps.0  set rows  … ms",
+    "  ≡ duplicate [\"MODELS BETA\",\"ROADSTER\"]",
+    "  ≡ duplicate [\"MODELS BETA\",\"VAN\"]",
+    "    · steps.5.steps.1  forEach  … ms",
+    "    · steps.5.steps.0  set rows  … ms",
+    "  ≡ duplicate [\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 290\"]",
+    "  ≡ duplicate [\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 505\"]",
+    "    · steps.5.steps.1  forEach  … ms",
+    "    · steps.5.steps.0  set rows  … ms",
+    "  ≡ duplicate [\"MODELS GAMMA\",\"G3 MHEV\"]",
+    "  ✚ record [\"MODELS GAMMA\",\"G3 BEV *Discounts apply to the base list price\"]",
+    "    · steps.5.steps.1  forEach  … ms",
+    "  · steps.5  forEach  … ms",
+    "■ fixture-tables: 14 emitted, 0 rejected, 10 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS ALPHA\",\"CITY (model 101)\"]",
+      "data": {
+        "table": "MODELS ALPHA",
+        "model": "CITY (model 101)",
+        "discount": "19,0%",
+        "excluded": null,
+        "extra": "+3% registration bonus"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS ALPHA",
+          "header": [
+            "MODELS ALPHA",
+            "Discount %*",
+            "Excluded versions",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "CITY (model 101)",
+              "discount": "19,0%",
+              "excluded": "",
+              "extra": "+3% registration bonus"
+            },
+            {
+              "model": "CITY EV (model 102)",
+              "discount": "3,0%",
+              "excluded": "",
+              "extra": ""
+            },
+            {
+              "model": "MINI (model 103)",
+              "discount": "0,0%",
+              "excluded": "",
+              "extra": "1000 euro scrappage bonus"
+            },
+            {
+              "model": "SEDAN (model 104)",
+              "discount": "16,0%",
+              "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+              "extra": ""
+            },
+            {
+              "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+              "discount": "12,0%",
+              "excluded": "",
+              "extra": "3% stock bonus"
+            },
+            {
+              "model": "COUPE (model 105)",
+              "discount": "11,0%",
+              "excluded": "",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "CITY (model 101)",
+            "discount": "19,0%",
+            "excluded": "",
+            "extra": "+3% registration bonus"
+          },
+          {
+            "model": "CITY EV (model 102)",
+            "discount": "3,0%",
+            "excluded": "",
+            "extra": ""
+          },
+          {
+            "model": "MINI (model 103)",
+            "discount": "0,0%",
+            "excluded": "",
+            "extra": "1000 euro scrappage bonus"
+          },
+          {
+            "model": "SEDAN (model 104)",
+            "discount": "16,0%",
+            "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+            "extra": ""
+          },
+          {
+            "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+            "discount": "12,0%",
+            "excluded": "",
+            "extra": "3% stock bonus"
+          },
+          {
+            "model": "COUPE (model 105)",
+            "discount": "11,0%",
+            "excluded": "",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "CITY (model 101)",
+          "discount": "19,0%",
+          "excluded": "",
+          "extra": "+3% registration bonus"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS ALPHA",
+          "steps": []
+        },
+        "model": {
+          "from": "CITY (model 101)",
+          "steps": []
+        },
+        "discount": {
+          "from": "19,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "19,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "+3% registration bonus",
+          "steps": [
+            {
+              "op": "default",
+              "value": "+3% registration bonus"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS ALPHA\",\"CITY EV (model 102)\"]",
+      "data": {
+        "table": "MODELS ALPHA",
+        "model": "CITY EV (model 102)",
+        "discount": "3,0%",
+        "excluded": null,
+        "extra": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS ALPHA",
+          "header": [
+            "MODELS ALPHA",
+            "Discount %*",
+            "Excluded versions",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "CITY (model 101)",
+              "discount": "19,0%",
+              "excluded": "",
+              "extra": "+3% registration bonus"
+            },
+            {
+              "model": "CITY EV (model 102)",
+              "discount": "3,0%",
+              "excluded": "",
+              "extra": ""
+            },
+            {
+              "model": "MINI (model 103)",
+              "discount": "0,0%",
+              "excluded": "",
+              "extra": "1000 euro scrappage bonus"
+            },
+            {
+              "model": "SEDAN (model 104)",
+              "discount": "16,0%",
+              "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+              "extra": ""
+            },
+            {
+              "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+              "discount": "12,0%",
+              "excluded": "",
+              "extra": "3% stock bonus"
+            },
+            {
+              "model": "COUPE (model 105)",
+              "discount": "11,0%",
+              "excluded": "",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "CITY (model 101)",
+            "discount": "19,0%",
+            "excluded": "",
+            "extra": "+3% registration bonus"
+          },
+          {
+            "model": "CITY EV (model 102)",
+            "discount": "3,0%",
+            "excluded": "",
+            "extra": ""
+          },
+          {
+            "model": "MINI (model 103)",
+            "discount": "0,0%",
+            "excluded": "",
+            "extra": "1000 euro scrappage bonus"
+          },
+          {
+            "model": "SEDAN (model 104)",
+            "discount": "16,0%",
+            "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+            "extra": ""
+          },
+          {
+            "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+            "discount": "12,0%",
+            "excluded": "",
+            "extra": "3% stock bonus"
+          },
+          {
+            "model": "COUPE (model 105)",
+            "discount": "11,0%",
+            "excluded": "",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "CITY EV (model 102)",
+          "discount": "3,0%",
+          "excluded": "",
+          "extra": ""
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS ALPHA",
+          "steps": []
+        },
+        "model": {
+          "from": "CITY EV (model 102)",
+          "steps": []
+        },
+        "discount": {
+          "from": "3,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "3,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS ALPHA\",\"MINI (model 103)\"]",
+      "data": {
+        "table": "MODELS ALPHA",
+        "model": "MINI (model 103)",
+        "discount": "0,0%",
+        "excluded": null,
+        "extra": "1000 euro scrappage bonus"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS ALPHA",
+          "header": [
+            "MODELS ALPHA",
+            "Discount %*",
+            "Excluded versions",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "CITY (model 101)",
+              "discount": "19,0%",
+              "excluded": "",
+              "extra": "+3% registration bonus"
+            },
+            {
+              "model": "CITY EV (model 102)",
+              "discount": "3,0%",
+              "excluded": "",
+              "extra": ""
+            },
+            {
+              "model": "MINI (model 103)",
+              "discount": "0,0%",
+              "excluded": "",
+              "extra": "1000 euro scrappage bonus"
+            },
+            {
+              "model": "SEDAN (model 104)",
+              "discount": "16,0%",
+              "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+              "extra": ""
+            },
+            {
+              "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+              "discount": "12,0%",
+              "excluded": "",
+              "extra": "3% stock bonus"
+            },
+            {
+              "model": "COUPE (model 105)",
+              "discount": "11,0%",
+              "excluded": "",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "CITY (model 101)",
+            "discount": "19,0%",
+            "excluded": "",
+            "extra": "+3% registration bonus"
+          },
+          {
+            "model": "CITY EV (model 102)",
+            "discount": "3,0%",
+            "excluded": "",
+            "extra": ""
+          },
+          {
+            "model": "MINI (model 103)",
+            "discount": "0,0%",
+            "excluded": "",
+            "extra": "1000 euro scrappage bonus"
+          },
+          {
+            "model": "SEDAN (model 104)",
+            "discount": "16,0%",
+            "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+            "extra": ""
+          },
+          {
+            "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+            "discount": "12,0%",
+            "excluded": "",
+            "extra": "3% stock bonus"
+          },
+          {
+            "model": "COUPE (model 105)",
+            "discount": "11,0%",
+            "excluded": "",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "MINI (model 103)",
+          "discount": "0,0%",
+          "excluded": "",
+          "extra": "1000 euro scrappage bonus"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS ALPHA",
+          "steps": []
+        },
+        "model": {
+          "from": "MINI (model 103)",
+          "steps": []
+        },
+        "discount": {
+          "from": "0,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "0,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "1000 euro scrappage bonus",
+          "steps": [
+            {
+              "op": "default",
+              "value": "1000 euro scrappage bonus"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS ALPHA\",\"SEDAN (model 104)\"]",
+      "data": {
+        "table": "MODELS ALPHA",
+        "model": "SEDAN (model 104)",
+        "discount": "16,0%",
+        "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+        "extra": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS ALPHA",
+          "header": [
+            "MODELS ALPHA",
+            "Discount %*",
+            "Excluded versions",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "CITY (model 101)",
+              "discount": "19,0%",
+              "excluded": "",
+              "extra": "+3% registration bonus"
+            },
+            {
+              "model": "CITY EV (model 102)",
+              "discount": "3,0%",
+              "excluded": "",
+              "extra": ""
+            },
+            {
+              "model": "MINI (model 103)",
+              "discount": "0,0%",
+              "excluded": "",
+              "extra": "1000 euro scrappage bonus"
+            },
+            {
+              "model": "SEDAN (model 104)",
+              "discount": "16,0%",
+              "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+              "extra": ""
+            },
+            {
+              "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+              "discount": "12,0%",
+              "excluded": "",
+              "extra": "3% stock bonus"
+            },
+            {
+              "model": "COUPE (model 105)",
+              "discount": "11,0%",
+              "excluded": "",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "CITY (model 101)",
+            "discount": "19,0%",
+            "excluded": "",
+            "extra": "+3% registration bonus"
+          },
+          {
+            "model": "CITY EV (model 102)",
+            "discount": "3,0%",
+            "excluded": "",
+            "extra": ""
+          },
+          {
+            "model": "MINI (model 103)",
+            "discount": "0,0%",
+            "excluded": "",
+            "extra": "1000 euro scrappage bonus"
+          },
+          {
+            "model": "SEDAN (model 104)",
+            "discount": "16,0%",
+            "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+            "extra": ""
+          },
+          {
+            "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+            "discount": "12,0%",
+            "excluded": "",
+            "extra": "3% stock bonus"
+          },
+          {
+            "model": "COUPE (model 105)",
+            "discount": "11,0%",
+            "excluded": "",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "SEDAN (model 104)",
+          "discount": "16,0%",
+          "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+          "extra": ""
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS ALPHA",
+          "steps": []
+        },
+        "model": {
+          "from": "SEDAN (model 104)",
+          "steps": []
+        },
+        "discount": {
+          "from": "16,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "16,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "from": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+          "steps": [
+            {
+              "op": "default",
+              "value": "Special 100 edition 104.8RU-Top Sport 104.LRU"
+            }
+          ]
+        },
+        "extra": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS ALPHA\",\"WAGON base series 1 (104.E23 without OPT JFS-JFR)\"]",
+      "data": {
+        "table": "MODELS ALPHA",
+        "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+        "discount": "12,0%",
+        "excluded": null,
+        "extra": "3% stock bonus"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS ALPHA",
+          "header": [
+            "MODELS ALPHA",
+            "Discount %*",
+            "Excluded versions",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "CITY (model 101)",
+              "discount": "19,0%",
+              "excluded": "",
+              "extra": "+3% registration bonus"
+            },
+            {
+              "model": "CITY EV (model 102)",
+              "discount": "3,0%",
+              "excluded": "",
+              "extra": ""
+            },
+            {
+              "model": "MINI (model 103)",
+              "discount": "0,0%",
+              "excluded": "",
+              "extra": "1000 euro scrappage bonus"
+            },
+            {
+              "model": "SEDAN (model 104)",
+              "discount": "16,0%",
+              "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+              "extra": ""
+            },
+            {
+              "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+              "discount": "12,0%",
+              "excluded": "",
+              "extra": "3% stock bonus"
+            },
+            {
+              "model": "COUPE (model 105)",
+              "discount": "11,0%",
+              "excluded": "",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "CITY (model 101)",
+            "discount": "19,0%",
+            "excluded": "",
+            "extra": "+3% registration bonus"
+          },
+          {
+            "model": "CITY EV (model 102)",
+            "discount": "3,0%",
+            "excluded": "",
+            "extra": ""
+          },
+          {
+            "model": "MINI (model 103)",
+            "discount": "0,0%",
+            "excluded": "",
+            "extra": "1000 euro scrappage bonus"
+          },
+          {
+            "model": "SEDAN (model 104)",
+            "discount": "16,0%",
+            "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+            "extra": ""
+          },
+          {
+            "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+            "discount": "12,0%",
+            "excluded": "",
+            "extra": "3% stock bonus"
+          },
+          {
+            "model": "COUPE (model 105)",
+            "discount": "11,0%",
+            "excluded": "",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+          "discount": "12,0%",
+          "excluded": "",
+          "extra": "3% stock bonus"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS ALPHA",
+          "steps": []
+        },
+        "model": {
+          "from": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+          "steps": []
+        },
+        "discount": {
+          "from": "12,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "12,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "3% stock bonus",
+          "steps": [
+            {
+              "op": "default",
+              "value": "3% stock bonus"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS ALPHA\",\"COUPE (model 105)\"]",
+      "data": {
+        "table": "MODELS ALPHA",
+        "model": "COUPE (model 105)",
+        "discount": "11,0%",
+        "excluded": null,
+        "extra": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS ALPHA",
+          "header": [
+            "MODELS ALPHA",
+            "Discount %*",
+            "Excluded versions",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "CITY (model 101)",
+              "discount": "19,0%",
+              "excluded": "",
+              "extra": "+3% registration bonus"
+            },
+            {
+              "model": "CITY EV (model 102)",
+              "discount": "3,0%",
+              "excluded": "",
+              "extra": ""
+            },
+            {
+              "model": "MINI (model 103)",
+              "discount": "0,0%",
+              "excluded": "",
+              "extra": "1000 euro scrappage bonus"
+            },
+            {
+              "model": "SEDAN (model 104)",
+              "discount": "16,0%",
+              "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+              "extra": ""
+            },
+            {
+              "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+              "discount": "12,0%",
+              "excluded": "",
+              "extra": "3% stock bonus"
+            },
+            {
+              "model": "COUPE (model 105)",
+              "discount": "11,0%",
+              "excluded": "",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "CITY (model 101)",
+            "discount": "19,0%",
+            "excluded": "",
+            "extra": "+3% registration bonus"
+          },
+          {
+            "model": "CITY EV (model 102)",
+            "discount": "3,0%",
+            "excluded": "",
+            "extra": ""
+          },
+          {
+            "model": "MINI (model 103)",
+            "discount": "0,0%",
+            "excluded": "",
+            "extra": "1000 euro scrappage bonus"
+          },
+          {
+            "model": "SEDAN (model 104)",
+            "discount": "16,0%",
+            "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+            "extra": ""
+          },
+          {
+            "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+            "discount": "12,0%",
+            "excluded": "",
+            "extra": "3% stock bonus"
+          },
+          {
+            "model": "COUPE (model 105)",
+            "discount": "11,0%",
+            "excluded": "",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "COUPE (model 105)",
+          "discount": "11,0%",
+          "excluded": "",
+          "extra": ""
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS ALPHA",
+          "steps": []
+        },
+        "model": {
+          "from": "COUPE (model 105)",
+          "steps": []
+        },
+        "discount": {
+          "from": "11,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "11,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS BETA\",\"ROADSTER\"]",
+      "data": {
+        "table": "MODELS BETA",
+        "model": "ROADSTER",
+        "discount": "20,0%",
+        "excluded": null,
+        "extra": "+ 3% trade-in"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS BETA",
+          "header": [
+            "MODELS BETA",
+            "Discount %*",
+            "Extras*"
+          ],
+          "rows": [
+            {
+              "model": "ROADSTER",
+              "discount": "20,0%",
+              "extra": "+ 3% trade-in"
+            },
+            {
+              "model": "VAN",
+              "discount": "18,5%",
+              "extra": "+ 2% trade-in"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "ROADSTER",
+            "discount": "20,0%",
+            "extra": "+ 3% trade-in"
+          },
+          {
+            "model": "VAN",
+            "discount": "18,5%",
+            "extra": "+ 2% trade-in"
+          }
+        ],
+        "row": {
+          "model": "ROADSTER",
+          "discount": "20,0%",
+          "extra": "+ 3% trade-in"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS BETA",
+          "steps": []
+        },
+        "model": {
+          "from": "ROADSTER",
+          "steps": []
+        },
+        "discount": {
+          "from": "20,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "20,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "+ 3% trade-in",
+          "steps": [
+            {
+              "op": "default",
+              "value": "+ 3% trade-in"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS BETA\",\"VAN\"]",
+      "data": {
+        "table": "MODELS BETA",
+        "model": "VAN",
+        "discount": "18,5%",
+        "excluded": null,
+        "extra": "+ 2% trade-in"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS BETA",
+          "header": [
+            "MODELS BETA",
+            "Discount %*",
+            "Extras*"
+          ],
+          "rows": [
+            {
+              "model": "ROADSTER",
+              "discount": "20,0%",
+              "extra": "+ 3% trade-in"
+            },
+            {
+              "model": "VAN",
+              "discount": "18,5%",
+              "extra": "+ 2% trade-in"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "ROADSTER",
+            "discount": "20,0%",
+            "extra": "+ 3% trade-in"
+          },
+          {
+            "model": "VAN",
+            "discount": "18,5%",
+            "extra": "+ 2% trade-in"
+          }
+        ],
+        "row": {
+          "model": "VAN",
+          "discount": "18,5%",
+          "extra": "+ 2% trade-in"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS BETA",
+          "steps": []
+        },
+        "model": {
+          "from": "VAN",
+          "steps": []
+        },
+        "discount": {
+          "from": "18,5%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "18,5%"
+            }
+          ]
+        },
+        "excluded": {
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "+ 2% trade-in",
+          "steps": [
+            {
+              "op": "default",
+              "value": "+ 2% trade-in"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 290\"]",
+      "data": {
+        "table": "MODELS DELTA (DEALERS ONLY)",
+        "model": "TRUCK 290",
+        "discount": "18,0% M1/M2",
+        "excluded": null,
+        "extra": "Extra 2% trade-in"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS DELTA (DEALERS ONLY)",
+          "header": [
+            "MODELS DELTA (DEALERS ONLY)",
+            "(PROMO ONLY AT DEALERS)",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "TRUCK 290",
+              "discount": "18,0% M1/M2",
+              "extra": "Extra 2% trade-in"
+            },
+            {
+              "model": "TRUCK 505",
+              "discount": "14,0%",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "TRUCK 290",
+            "discount": "18,0% M1/M2",
+            "extra": "Extra 2% trade-in"
+          },
+          {
+            "model": "TRUCK 505",
+            "discount": "14,0%",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "TRUCK 290",
+          "discount": "18,0% M1/M2",
+          "extra": "Extra 2% trade-in"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS DELTA (DEALERS ONLY)",
+          "steps": []
+        },
+        "model": {
+          "from": "TRUCK 290",
+          "steps": []
+        },
+        "discount": {
+          "from": "18,0% M1/M2",
+          "steps": [
+            {
+              "op": "default",
+              "value": "18,0% M1/M2"
+            }
+          ]
+        },
+        "excluded": {
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "Extra 2% trade-in",
+          "steps": [
+            {
+              "op": "default",
+              "value": "Extra 2% trade-in"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 505\"]",
+      "data": {
+        "table": "MODELS DELTA (DEALERS ONLY)",
+        "model": "TRUCK 505",
+        "discount": "14,0%",
+        "excluded": null,
+        "extra": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS DELTA (DEALERS ONLY)",
+          "header": [
+            "MODELS DELTA (DEALERS ONLY)",
+            "(PROMO ONLY AT DEALERS)",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "TRUCK 290",
+              "discount": "18,0% M1/M2",
+              "extra": "Extra 2% trade-in"
+            },
+            {
+              "model": "TRUCK 505",
+              "discount": "14,0%",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "TRUCK 290",
+            "discount": "18,0% M1/M2",
+            "extra": "Extra 2% trade-in"
+          },
+          {
+            "model": "TRUCK 505",
+            "discount": "14,0%",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "TRUCK 505",
+          "discount": "14,0%",
+          "extra": ""
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS DELTA (DEALERS ONLY)",
+          "steps": []
+        },
+        "model": {
+          "from": "TRUCK 505",
+          "steps": []
+        },
+        "discount": {
+          "from": "14,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "14,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS GAMMA\",\"G3 MHEV\"]",
+      "data": {
+        "table": "MODELS GAMMA",
+        "model": "G3 MHEV",
+        "discount": "7,0%",
+        "excluded": null,
+        "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 2,
+          "title": "MODELS GAMMA",
+          "header": [
+            "MODELS GAMMA",
+            "Discount %*",
+            "Extras*"
+          ],
+          "rows": [
+            {
+              "model": "G3 MHEV",
+              "discount": "7,0%",
+              "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+            },
+            {
+              "model": "G3 BEV",
+              "discount": "5,0%",
+              "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "G3 MHEV",
+            "discount": "7,0%",
+            "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+          },
+          {
+            "model": "G3 BEV",
+            "discount": "5,0%",
+            "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+          }
+        ],
+        "row": {
+          "model": "G3 MHEV",
+          "discount": "7,0%",
+          "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS GAMMA",
+          "steps": []
+        },
+        "model": {
+          "from": "G3 MHEV",
+          "steps": []
+        },
+        "discount": {
+          "from": "7,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "7,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26",
+          "steps": [
+            {
+              "op": "default",
+              "value": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS GAMMA\",\"G3 BEV\"]",
+      "data": {
+        "table": "MODELS GAMMA",
+        "model": "G3 BEV",
+        "discount": "5,0%",
+        "excluded": null,
+        "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 2,
+          "title": "MODELS GAMMA",
+          "header": [
+            "MODELS GAMMA",
+            "Discount %*",
+            "Extras*"
+          ],
+          "rows": [
+            {
+              "model": "G3 MHEV",
+              "discount": "7,0%",
+              "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+            },
+            {
+              "model": "G3 BEV",
+              "discount": "5,0%",
+              "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "G3 MHEV",
+            "discount": "7,0%",
+            "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+          },
+          {
+            "model": "G3 BEV",
+            "discount": "5,0%",
+            "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+          }
+        ],
+        "row": {
+          "model": "G3 BEV",
+          "discount": "5,0%",
+          "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS GAMMA",
+          "steps": []
+        },
+        "model": {
+          "from": "G3 BEV",
+          "steps": []
+        },
+        "discount": {
+          "from": "5,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "5,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26",
+          "steps": [
+            {
+              "op": "default",
+              "value": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS ALPHA\",\"COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded\"]",
+      "data": {
+        "table": "MODELS ALPHA",
+        "model": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+        "discount": "11,0%",
+        "excluded": null,
+        "extra": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "without_until": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV *Discounts apply to the base list price",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 1,
+          "title": "MODELS ALPHA",
+          "header": [
+            "MODELS ALPHA",
+            "Discount %*",
+            "Excluded versions",
+            "Extra *"
+          ],
+          "rows": [
+            {
+              "model": "CITY (model 101)",
+              "discount": "19,0%",
+              "excluded": "",
+              "extra": "+3% registration bonus"
+            },
+            {
+              "model": "CITY EV (model 102)",
+              "discount": "3,0%",
+              "excluded": "",
+              "extra": ""
+            },
+            {
+              "model": "MINI (model 103)",
+              "discount": "0,0%",
+              "excluded": "",
+              "extra": "1000 euro scrappage bonus"
+            },
+            {
+              "model": "SEDAN (model 104)",
+              "discount": "16,0%",
+              "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+              "extra": ""
+            },
+            {
+              "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+              "discount": "12,0%",
+              "excluded": "",
+              "extra": "3% stock bonus"
+            },
+            {
+              "model": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+              "discount": "11,0%",
+              "excluded": "",
+              "extra": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "CITY (model 101)",
+            "discount": "19,0%",
+            "excluded": "",
+            "extra": "+3% registration bonus"
+          },
+          {
+            "model": "CITY EV (model 102)",
+            "discount": "3,0%",
+            "excluded": "",
+            "extra": ""
+          },
+          {
+            "model": "MINI (model 103)",
+            "discount": "0,0%",
+            "excluded": "",
+            "extra": "1000 euro scrappage bonus"
+          },
+          {
+            "model": "SEDAN (model 104)",
+            "discount": "16,0%",
+            "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+            "extra": ""
+          },
+          {
+            "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+            "discount": "12,0%",
+            "excluded": "",
+            "extra": "3% stock bonus"
+          },
+          {
+            "model": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+            "discount": "11,0%",
+            "excluded": "",
+            "extra": ""
+          }
+        ],
+        "row": {
+          "model": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+          "discount": "11,0%",
+          "excluded": "",
+          "extra": ""
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS ALPHA",
+          "steps": []
+        },
+        "model": {
+          "from": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+          "steps": []
+        },
+        "discount": {
+          "from": "11,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "11,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "key": "[\"MODELS GAMMA\",\"G3 BEV *Discounts apply to the base list price\"]",
+      "data": {
+        "table": "MODELS GAMMA",
+        "model": "G3 BEV *Discounts apply to the base list price",
+        "discount": "5,0%",
+        "excluded": null,
+        "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+        },
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "tables": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105)",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "without_until": [
+          {
+            "page": 1,
+            "title": "MODELS ALPHA",
+            "header": [
+              "MODELS ALPHA",
+              "Discount %*",
+              "Excluded versions",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "CITY (model 101)",
+                "discount": "19,0%",
+                "excluded": "",
+                "extra": "+3% registration bonus"
+              },
+              {
+                "model": "CITY EV (model 102)",
+                "discount": "3,0%",
+                "excluded": "",
+                "extra": ""
+              },
+              {
+                "model": "MINI (model 103)",
+                "discount": "0,0%",
+                "excluded": "",
+                "extra": "1000 euro scrappage bonus"
+              },
+              {
+                "model": "SEDAN (model 104)",
+                "discount": "16,0%",
+                "excluded": "Special 100 edition 104.8RU-Top Sport 104.LRU",
+                "extra": ""
+              },
+              {
+                "model": "WAGON base series 1 (104.E23 without OPT JFS-JFR)",
+                "discount": "12,0%",
+                "excluded": "",
+                "extra": "3% stock bonus"
+              },
+              {
+                "model": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+                "discount": "11,0%",
+                "excluded": "",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS BETA",
+            "header": [
+              "MODELS BETA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "ROADSTER",
+                "discount": "20,0%",
+                "extra": "+ 3% trade-in"
+              },
+              {
+                "model": "VAN",
+                "discount": "18,5%",
+                "extra": "+ 2% trade-in"
+              }
+            ]
+          },
+          {
+            "page": 1,
+            "title": "MODELS DELTA (DEALERS ONLY)",
+            "header": [
+              "MODELS DELTA (DEALERS ONLY)",
+              "(PROMO ONLY AT DEALERS)",
+              "Extra *"
+            ],
+            "rows": [
+              {
+                "model": "TRUCK 290",
+                "discount": "18,0% M1/M2",
+                "extra": "Extra 2% trade-in"
+              },
+              {
+                "model": "TRUCK 505",
+                "discount": "14,0%",
+                "extra": ""
+              }
+            ]
+          },
+          {
+            "page": 2,
+            "title": "MODELS GAMMA",
+            "header": [
+              "MODELS GAMMA",
+              "Discount %*",
+              "Extras*"
+            ],
+            "rows": [
+              {
+                "model": "G3 MHEV",
+                "discount": "7,0%",
+                "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+              },
+              {
+                "model": "G3 BEV *Discounts apply to the base list price",
+                "discount": "5,0%",
+                "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "number": 1
+        },
+        "table": {
+          "page": 2,
+          "title": "MODELS GAMMA",
+          "header": [
+            "MODELS GAMMA",
+            "Discount %*",
+            "Extras*"
+          ],
+          "rows": [
+            {
+              "model": "G3 MHEV",
+              "discount": "7,0%",
+              "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+            },
+            {
+              "model": "G3 BEV *Discounts apply to the base list price",
+              "discount": "5,0%",
+              "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "G3 MHEV",
+            "discount": "7,0%",
+            "extra": "+ Eu 800 trade-in _ Eu 1500 stock until 30/09/26"
+          },
+          {
+            "model": "G3 BEV *Discounts apply to the base list price",
+            "discount": "5,0%",
+            "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+          }
+        ],
+        "row": {
+          "model": "G3 BEV *Discounts apply to the base list price",
+          "discount": "5,0%",
+          "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+        }
+      },
+      "mapping": {
+        "table": {
+          "from": "MODELS GAMMA",
+          "steps": []
+        },
+        "model": {
+          "from": "G3 BEV *Discounts apply to the base list price",
+          "steps": []
+        },
+        "discount": {
+          "from": "5,0%",
+          "steps": [
+            {
+              "op": "default",
+              "value": "5,0%"
+            }
+          ]
+        },
+        "excluded": {
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "extra": {
+          "from": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26",
+          "steps": [
+            {
+              "op": "default",
+              "value": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

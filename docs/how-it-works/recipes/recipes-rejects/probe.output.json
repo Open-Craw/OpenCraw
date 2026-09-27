@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "probe",
+  "version": 1,
+  "fields": {
+    "amount": { "type": "currency" },
+    "availableOn": { "type": "date" },
+    "kind": { "type": "enum", "values": ["book", "ebook"] },
+    "section": { "type": "string" },
+    "image": { "type": "url" }
+  }
+}

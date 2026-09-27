@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "mystery-detail",
+  "output": "book-detail",
+  "mode": "api",
+  "description": "The Mystery category lists the books; each book's own page has the product table (UPC, prices, tax, availability, reviews).",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html" }],
+  "limits": { "delayMs": 300, "maxRecords": 3 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "set", "id": "starWords", "value": [{ "word": "One", "n": 1 }, { "word": "Two", "n": 2 }, { "word": "Three", "n": 3 }, { "word": "Four", "n": 4 }, { "word": "Five", "n": 5 }] },
+    { "type": "extract", "id": "links", "selector": "article.product_pod h3 a", "kind": "css", "take": "attr:href", "many": true },
+    { "type": "forEach", "over": "links", "as": "link", "emit": true, "steps": [
+      { "type": "request", "url": "{{link}}" },
+      { "type": "extract", "id": "title", "selector": ".product_main h1", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "price", "selector": ".product_main .price_color", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "availability", "selector": ".product_main .availability", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "rating", "selector": ".product_main p.star-rating", "kind": "css", "take": "attr:class" },
+      { "type": "extract", "id": "info", "selector": "table.table td", "kind": "css", "take": "text", "many": true },
+      { "type": "extract", "id": "crumbs", "selector": "ul.breadcrumb li", "kind": "css", "take": "text", "many": true },
+      { "type": "extract", "id": "image", "selector": "#product_gallery img", "kind": "css", "take": "attr:src" }
+    ]}
+  ],
+  "mapping": {
+    "url": { "from": "page.url" },
+    "title": { "from": "title" },
+    "slug": { "from": "title", "transform": [{ "op": "lowercase" }, { "op": "replace", "pattern": "[^a-z0-9]+", "replacement": "-" }] },
+    "upc": { "from": "info", "transform": [{ "op": "first" }, { "op": "uppercase" }] },
+    "category": { "from": "crumbs", "transform": [{ "op": "nth", "index": 2 }] },
+    "path": { "from": "crumbs", "transform": [{ "op": "slice", "start": 1, "end": -1 }, { "op": "join", "separator": " / " }] },
+    "price": { "from": "price", "transform": [{ "op": "currency" }] },
+    "tax": { "from": "info", "transform": [{ "op": "nth", "index": 4 }, { "op": "regex", "pattern": "([\\d.]+)" }, { "op": "currency" }] },
+    "stock.inStock": { "from": "availability", "transform": [{ "op": "boolean" }] },
+    "stock.available": { "from": "info", "transform": [{ "op": "nth", "index": -2 }, { "op": "regex", "pattern": "(\\d+) available" }, { "op": "integer" }] },
+    "stars": { "from": "rating", "transform": [{ "op": "regex", "pattern": "star-rating (\\w+)" }, { "op": "lookup", "in": "starWords", "key": "word", "pick": "n" }] },
+    "reviews": { "from": "info", "transform": [{ "op": "last" }, { "op": "integer" }] },
+    "hasReviews": { "from": "info", "transform": [{ "op": "last" }, { "op": "boolean" }] },
+    "image": { "from": "image", "transform": [{ "op": "absoluteUrl" }] }
+  }
+}

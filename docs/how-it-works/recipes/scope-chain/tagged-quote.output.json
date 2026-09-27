@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "tagged-quote",
+  "version": 1,
+  "fields": {
+    "text": { "type": "string" },
+    "author": { "type": "string" },
+    "where": { "type": "string" },
+    "label": { "type": "string" },
+    "page": { "type": "integer" },
+    "seen": { "type": "integer" }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "grid-price",
+  "version": 1,
+  "description": "One model of a price grid laid out as text boxes on a slide.",
+  "onMissing": "null",
+  "fields": {
+    "model": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "price": {
+      "type": "string"
+    },
+    "discount": {
+      "type": "string"
+    },
+    "slide": {
+      "type": "integer"
+    }
+  }
+}

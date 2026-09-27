@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "markdown-price",
+  "version": 1,
+  "description": "One model of a Markdown price list, with the date its front matter gives.",
+  "onMissing": "null",
+  "fields": {
+    "model": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "version": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    },
+    "updated": {
+      "type": "string"
+    }
+  }
+}

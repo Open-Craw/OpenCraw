@@ -101,13 +101,13 @@ writeFileSync(join(spreadsheet, 'incentivi.xlsx'), zip({
   'xl/chartsheets/sheet1.xml':  xml('<chartsheet/>'),
 }))
 
-// The 1904 date system (old Mac Excel), prefixed element names, no styles part but for the date, and backslashed lower-case entry names.
+// The 1904 date system (old Mac Excel), prefixed element names, backslashed lower-case entry names, a date and a time of day (built-in 20, h:mm).
 writeFileSync(join(spreadsheet, 'date1904.xlsx'), zip({
   '_rels\\.rels':                 rootRels('xl/workbook.xml'),
   'xl\\workbook.xml':             xml(`<x:workbook xmlns:x="${NS}" xmlns:r="${REL}"><x:workbookPr date1904="1"/><x:sheets><x:sheet name="d" sheetId="1" r:id="rId1"/></x:sheets></x:workbook>`),
   'xl\\_rels\\workbook.xml.rels': rels([['rId1', 'worksheet', 'worksheets/sheet1.xml'], ['rId2', 'styles', 'styles.xml']]),
-  'xl\\styles.xml':               xml(`<styleSheet xmlns="${NS}"><cellXfs count="2"><xf numFmtId="0"/><xf numFmtId="14"/></cellXfs></styleSheet>`),
-  'xl\\worksheets\\sheet1.xml':   xml(`<x:worksheet xmlns:x="${NS}"><x:sheetData><x:row r="1"><x:c r="A1" s="1"><x:v>44712</x:v></x:c></x:row></x:sheetData></x:worksheet>`),
+  'xl\\styles.xml':               xml(`<styleSheet xmlns="${NS}"><cellXfs count="3"><xf numFmtId="0"/><xf numFmtId="14"/><xf numFmtId="20"/></cellXfs></styleSheet>`),
+  'xl\\worksheets\\sheet1.xml':   xml(`<x:worksheet xmlns:x="${NS}"><x:sheetData><x:row r="1"><x:c r="A1" s="1"><x:v>44712</x:v></x:c><x:c r="B1" s="2"><x:v>0.5</x:v></x:c></x:row></x:sheetData></x:worksheet>`),
 }))
 
 // A presentation, to be refused by readXlsx.

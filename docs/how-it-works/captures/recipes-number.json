@@ -1,0 +1,377 @@
+{
+  "scene": "recipes-number",
+  "summary": [
+    {
+      "recipeId": "attic-rows",
+      "emitted": 5,
+      "rejected": 2,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ attic-rows (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract rows  … ms",
+    "    · steps.2.steps.0  extract label  … ms",
+    "    · steps.2.steps.1  extract value  … ms",
+    "  ✖ record rejected: number: number field: \"a897fe39b1053632\" holds 3 numbers (897, 39, 1053632): pick one with a \"regex\" transform first",
+    "    · steps.2.steps.0  extract label  … ms",
+    "    · steps.2.steps.1  extract value  … ms",
+    "  ✖ record rejected: number: number field: no number in \"Books\"",
+    "    · steps.2.steps.0  extract label  … ms",
+    "    · steps.2.steps.1  extract value  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract label  … ms",
+    "    · steps.2.steps.1  extract value  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract label  … ms",
+    "    · steps.2.steps.1  extract value  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract label  … ms",
+    "    · steps.2.steps.1  extract value  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract label  … ms",
+    "    · steps.2.steps.1  extract value  … ms",
+    "  ✚ record (no key)",
+    "  · steps.2  forEach  … ms",
+    "■ attic-rows: 5 emitted, 2 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "rejected": {
+        "field": "number",
+        "reason": "number field: \"a897fe39b1053632\" holds 3 numbers (897, 39, 1053632): pick one with a \"regex\" transform first"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "rows": [
+          "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        },
+        "row": "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+        "label": "UPC",
+        "value": "a897fe39b1053632"
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "rejected": {
+        "field": "number",
+        "reason": "number field: no number in \"Books\""
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "rows": [
+          "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        },
+        "row": "\n            <th>Product Type</th><td>Books</td>\n        ",
+        "label": "Product Type",
+        "value": "Books"
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "key": null,
+      "data": {
+        "row": "Price (excl. tax)",
+        "text": "£51.77",
+        "number": 51.77,
+        "integer": 51,
+        "boolean": false
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "rows": [
+          "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        },
+        "row": "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+        "label": "Price (excl. tax)",
+        "value": "£51.77"
+      },
+      "mapping": {
+        "row": {
+          "from": "Price (excl. tax)",
+          "steps": []
+        },
+        "text": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "number": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "integer": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "boolean": {
+          "from": "£51.77",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "key": null,
+      "data": {
+        "row": "Price (incl. tax)",
+        "text": "£51.77",
+        "number": 51.77,
+        "integer": 51,
+        "boolean": false
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "rows": [
+          "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        },
+        "row": "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+        "label": "Price (incl. tax)",
+        "value": "£51.77"
+      },
+      "mapping": {
+        "row": {
+          "from": "Price (incl. tax)",
+          "steps": []
+        },
+        "text": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "number": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "integer": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "boolean": {
+          "from": "£51.77",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "key": null,
+      "data": {
+        "row": "Tax",
+        "text": "£0.00",
+        "number": 0,
+        "integer": 0,
+        "boolean": false
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "rows": [
+          "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        },
+        "row": "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+        "label": "Tax",
+        "value": "£0.00"
+      },
+      "mapping": {
+        "row": {
+          "from": "Tax",
+          "steps": []
+        },
+        "text": {
+          "from": "£0.00",
+          "steps": []
+        },
+        "number": {
+          "from": "£0.00",
+          "steps": []
+        },
+        "integer": {
+          "from": "£0.00",
+          "steps": []
+        },
+        "boolean": {
+          "from": "£0.00",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "key": null,
+      "data": {
+        "row": "Availability",
+        "text": "In stock (22 available)",
+        "number": 22,
+        "integer": 22,
+        "boolean": true
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "rows": [
+          "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        },
+        "row": "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+        "label": "Availability",
+        "value": "In stock (22 available)"
+      },
+      "mapping": {
+        "row": {
+          "from": "Availability",
+          "steps": []
+        },
+        "text": {
+          "from": "In stock (22 available)",
+          "steps": []
+        },
+        "number": {
+          "from": "In stock (22 available)",
+          "steps": []
+        },
+        "integer": {
+          "from": "In stock (22 available)",
+          "steps": []
+        },
+        "boolean": {
+          "from": "In stock (22 available)",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "key": null,
+      "data": {
+        "row": "Number of reviews",
+        "text": "0",
+        "number": 0,
+        "integer": 0,
+        "boolean": false
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "rows": [
+          "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£51.77</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£51.77</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (22 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        },
+        "row": "\n                <th>Number of reviews</th>\n                <td>0</td>\n            ",
+        "label": "Number of reviews",
+        "value": "0"
+      },
+      "mapping": {
+        "row": {
+          "from": "Number of reviews",
+          "steps": []
+        },
+        "text": {
+          "from": "0",
+          "steps": []
+        },
+        "number": {
+          "from": "0",
+          "steps": []
+        },
+        "integer": {
+          "from": "0",
+          "steps": []
+        },
+        "boolean": {
+          "from": "0",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-web",
+  "output": "quote",
+  "mode": "web",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300, "maxRecords": 2 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "extract", "id": "topTags", "selector": "//div[contains(@class, 'tags-box')]//a[@class='tag']", "kind": "xpath", "many": true },
+    { "type": "extract", "id": "einstein", "selector": "div.quote:has-text(\"Albert Einstein\") span.text", "kind": "css", "many": true },
+    { "type": "extract", "id": "quotes", "selector": "div.quote", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": "span.text", "kind": "css" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": "//small[@class='author']", "kind": "xpath" },
+      { "type": "extract", "id": "about", "from": "quote", "selector": "a[href^='/author/']", "kind": "css", "take": "attr:href" },
+      { "type": "extract", "id": "tags", "from": "quote", "selector": "a.tag", "kind": "css", "many": true },
+      { "type": "extract", "id": "tagText", "from": "quote", "selector": "a.tag", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "tagHtml", "from": "quote", "selector": "a.tag", "kind": "css", "take": "html" },
+      { "type": "extract", "id": "tagOuter", "from": "quote", "selector": "a.tag", "kind": "css", "take": "json" },
+      { "type": "extract", "id": "tagHref", "from": "quote", "selector": "a.tag", "kind": "css", "take": "attr:href" },
+      { "type": "extract", "id": "tagTitle", "from": "quote", "selector": "a.tag", "kind": "css", "take": "attr:title" }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "authorUrl": { "from": "about", "transform": [{ "op": "absoluteUrl" }] },
+    "tags": { "from": "tags" }
+  }
+}

@@ -1,0 +1,485 @@
+{
+  "scene": "run-throttle",
+  "summary": [
+    {
+      "recipeId": "fantasy-pages",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3
+    },
+    {
+      "recipeId": "sequential-art-pages",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3
+    }
+  ],
+  "trace": [
+    "▶ fantasy-pages (api)",
+    "▶ sequential-art-pages (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html",
+    "    · steps.0.steps.0  request listing  … ms",
+    "    · steps.0.steps.1  extract next  … ms",
+    "    · steps.0.steps.2  extract books  … ms",
+    "      · steps.0.steps.3.steps.0  extract title  … ms",
+    "      · steps.0.steps.3.steps.1  extract link  … ms",
+    "      · steps.0.steps.3.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/unicorn-tracks_951/index.html\"]",
+    "    · steps.0.steps.3  forEach  … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html",
+    "    · steps.0.steps.0  request listing  … ms",
+    "    · steps.0.steps.1  extract next  … ms",
+    "    · steps.0.steps.2  extract books  … ms",
+    "      · steps.0.steps.3.steps.0  extract title  … ms",
+    "      · steps.0.steps.3.steps.1  extract link  … ms",
+    "      · steps.0.steps.3.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html\"]",
+    "    · steps.0.steps.3  forEach  … ms",
+    "  ⇢ page 2  https://books.toscrape.com/catalogue/category/books/fantasy_19/page-2.html",
+    "    · steps.0.steps.0  request listing  … ms",
+    "    · steps.0.steps.1  extract next  … ms",
+    "    · steps.0.steps.2  extract books  … ms",
+    "      · steps.0.steps.3.steps.0  extract title  … ms",
+    "      · steps.0.steps.3.steps.1  extract link  … ms",
+    "      · steps.0.steps.3.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/every-heart-a-doorway-every-heart-a-doorway-1_465/index.html\"]",
+    "    · steps.0.steps.3  forEach  … ms",
+    "  ⇢ page 2  https://books.toscrape.com/catalogue/category/books/sequential-art_5/page-2.html",
+    "    · steps.0.steps.0  request listing  … ms",
+    "    · steps.0.steps.1  extract next  … ms",
+    "    · steps.0.steps.2  extract books  … ms",
+    "      · steps.0.steps.3.steps.0  extract title  … ms",
+    "      · steps.0.steps.3.steps.1  extract link  … ms",
+    "      · steps.0.steps.3.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html\"]",
+    "    · steps.0.steps.3  forEach  … ms",
+    "  ⇢ page 3  https://books.toscrape.com/catalogue/category/books/fantasy_19/page-3.html",
+    "    · steps.0.steps.0  request listing  … ms",
+    "    · steps.0.steps.1  extract next  … ms",
+    "    · steps.0.steps.2  extract books  … ms",
+    "      · steps.0.steps.3.steps.0  extract title  … ms",
+    "      · steps.0.steps.3.steps.1  extract link  … ms",
+    "      · steps.0.steps.3.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/vampire-girl-vampire-girl-1_92/index.html\"]",
+    "    · steps.0.steps.3  forEach  … ms",
+    "  · steps.0  paginate  … ms",
+    "■ fantasy-pages: 3 emitted, 0 rejected, 0 duplicates, 3 pages, … ms",
+    "  ⇢ page 3  https://books.toscrape.com/catalogue/category/books/sequential-art_5/page-3.html",
+    "    · steps.0.steps.0  request listing  … ms",
+    "    · steps.0.steps.1  extract next  … ms",
+    "    · steps.0.steps.2  extract books  … ms",
+    "      · steps.0.steps.3.steps.0  extract title  … ms",
+    "      · steps.0.steps.3.steps.1  extract link  … ms",
+    "      · steps.0.steps.3.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/fruits-basket-vol-7-fruits-basket-7_468/index.html\"]",
+    "    · steps.0.steps.3  forEach  … ms",
+    "  · steps.0  paginate  … ms",
+    "■ sequential-art-pages: 3 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/unicorn-tracks_951/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/unicorn-tracks_951/index.html",
+        "title": "Unicorn Tracks",
+        "price": {
+          "amount": 18.78,
+          "currency": "GBP"
+        },
+        "category": "Fantasy"
+      },
+      "scope": {
+        "vars": {
+          "category": "Fantasy"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html",
+          "number": 1
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Fantasy | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description…",
+        "next": [
+          "page-2.html"
+        ],
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../unicorn-tracks_951/index.html\"><img src=\"../../../../media/cache/76/8e/768ea5924ac1ef6297c2be9959c796c2.jpg\" alt=\"Unicorn Tracks\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>…"
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../unicorn-tracks_951/index.html\"><img src=\"../../../../media/cache/76/8e/768ea5924ac1ef6297c2be9959c796c2.jpg\" alt=\"Unicorn Tracks\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>…",
+        "title": "Unicorn Tracks",
+        "link": "../../../unicorn-tracks_951/index.html",
+        "price": "£18.78"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../unicorn-tracks_951/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/unicorn-tracks_951/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Unicorn Tracks",
+          "steps": []
+        },
+        "price": {
+          "from": "£18.78",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 18.78,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Fantasy",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html",
+        "title": "Scott Pilgrim's Precious Little Life (Scott Pilgrim #1)",
+        "price": {
+          "amount": 52.29,
+          "currency": "GBP"
+        },
+        "category": "Sequential Art"
+      },
+      "scope": {
+        "vars": {
+          "category": "Sequential Art"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html",
+          "number": 1
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Sequential Art | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"desc…",
+        "next": [
+          "page-2.html"
+        ],
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html\"><img src=\"../../../../media/cache/94/b1/94b1b8b244bce9677c2f29ccc890d4d2.jpg\" alt=\"Scott Pilgrim's Precious Little Life (Scott Pilgrim #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n              …"
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html\"><img src=\"../../../../media/cache/94/b1/94b1b8b244bce9677c2f29ccc890d4d2.jpg\" alt=\"Scott Pilgrim's Precious Little Life (Scott Pilgrim #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n              …",
+        "title": "Scott Pilgrim's Precious Little Life (Scott Pilgrim #1)",
+        "link": "../../../scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html",
+        "price": "£52.29"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Scott Pilgrim's Precious Little Life (Scott Pilgrim #1)",
+          "steps": []
+        },
+        "price": {
+          "from": "£52.29",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 52.29,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Sequential Art",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/page-2.html",
+      "key": "[\"https://books.toscrape.com/catalogue/every-heart-a-doorway-every-heart-a-doorway-1_465/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/every-heart-a-doorway-every-heart-a-doorway-1_465/index.html",
+        "title": "Every Heart a Doorway (Every Heart A Doorway #1)",
+        "price": {
+          "amount": 12.16,
+          "currency": "GBP"
+        },
+        "category": "Fantasy"
+      },
+      "scope": {
+        "vars": {
+          "category": "Fantasy"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/page-2.html",
+          "number": 2
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Fantasy | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:30\" />\n        <meta name=\"description…",
+        "next": [
+          "page-3.html"
+        ],
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../every-heart-a-doorway-every-heart-a-doorway-1_465/index.html\"><img src=\"../../../../media/cache/50/d4/50d41a24990208deb72c9802a6c1e540.jpg\" alt=\"Every Heart a Doorway (Every Heart A Doorway #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…"
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../every-heart-a-doorway-every-heart-a-doorway-1_465/index.html\"><img src=\"../../../../media/cache/50/d4/50d41a24990208deb72c9802a6c1e540.jpg\" alt=\"Every Heart a Doorway (Every Heart A Doorway #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Five\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+        "title": "Every Heart a Doorway (Every Heart A Doorway #1)",
+        "link": "../../../every-heart-a-doorway-every-heart-a-doorway-1_465/index.html",
+        "price": "£12.16"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../every-heart-a-doorway-every-heart-a-doorway-1_465/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/every-heart-a-doorway-every-heart-a-doorway-1_465/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Every Heart a Doorway (Every Heart A Doorway #1)",
+          "steps": []
+        },
+        "price": {
+          "from": "£12.16",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 12.16,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Fantasy",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/page-2.html",
+      "key": "[\"https://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html",
+        "title": "Bitch Planet, Vol. 1: Extraordinary Machine (Bitch Planet (Collected Editions))",
+        "price": {
+          "amount": 37.92,
+          "currency": "GBP"
+        },
+        "category": "Sequential Art"
+      },
+      "scope": {
+        "vars": {
+          "category": "Sequential Art"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/page-2.html",
+          "number": 2
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Sequential Art | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"desc…",
+        "next": [
+          "page-3.html"
+        ],
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html\"><img src=\"../../../../media/cache/e4/1d/e41d34204a1fffbf825d8beb3dbf4cbc.jpg\" alt=\"Bitch Planet, Vol. 1: Extraordinary Machine (Bitch Planet (Collected Editions))\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                …"
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html\"><img src=\"../../../../media/cache/e4/1d/e41d34204a1fffbf825d8beb3dbf4cbc.jpg\" alt=\"Bitch Planet, Vol. 1: Extraordinary Machine (Bitch Planet (Collected Editions))\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                …",
+        "title": "Bitch Planet, Vol. 1: Extraordinary Machine (Bitch Planet (Collected Editions))",
+        "link": "../../../bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html",
+        "price": "£37.92"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Bitch Planet, Vol. 1: Extraordinary Machine (Bitch Planet (Collected Editions))",
+          "steps": []
+        },
+        "price": {
+          "from": "£37.92",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 37.92,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Sequential Art",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/page-3.html",
+      "key": "[\"https://books.toscrape.com/catalogue/vampire-girl-vampire-girl-1_92/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/vampire-girl-vampire-girl-1_92/index.html",
+        "title": "Vampire Girl (Vampire Girl #1)",
+        "price": {
+          "amount": 53.82,
+          "currency": "GBP"
+        },
+        "category": "Fantasy"
+      },
+      "scope": {
+        "vars": {
+          "category": "Fantasy"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/fantasy_19/page-3.html",
+          "number": 3
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Fantasy | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:31\" />\n        <meta name=\"description…",
+        "next": [],
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vampire-girl-vampire-girl-1_92/index.html\"><img src=\"../../../../media/cache/ea/55/ea5547a00ad163902faba6929369bc77.jpg\" alt=\"Vampire Girl (Vampire Girl #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                   …"
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vampire-girl-vampire-girl-1_92/index.html\"><img src=\"../../../../media/cache/ea/55/ea5547a00ad163902faba6929369bc77.jpg\" alt=\"Vampire Girl (Vampire Girl #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                   …",
+        "title": "Vampire Girl (Vampire Girl #1)",
+        "link": "../../../vampire-girl-vampire-girl-1_92/index.html",
+        "price": "£53.82"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../vampire-girl-vampire-girl-1_92/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/vampire-girl-vampire-girl-1_92/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Vampire Girl (Vampire Girl #1)",
+          "steps": []
+        },
+        "price": {
+          "from": "£53.82",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 53.82,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Fantasy",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/page-3.html",
+      "key": "[\"https://books.toscrape.com/catalogue/fruits-basket-vol-7-fruits-basket-7_468/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/fruits-basket-vol-7-fruits-basket-7_468/index.html",
+        "title": "Fruits Basket, Vol. 7 (Fruits Basket #7)",
+        "price": {
+          "amount": 19.57,
+          "currency": "GBP"
+        },
+        "category": "Sequential Art"
+      },
+      "scope": {
+        "vars": {
+          "category": "Sequential Art"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/page-3.html",
+          "number": 3
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Sequential Art | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:31\" />\n        <meta name=\"desc…",
+        "next": [
+          "page-4.html"
+        ],
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../fruits-basket-vol-7-fruits-basket-7_468/index.html\"><img src=\"../../../../media/cache/b4/36/b43672509477baa090e57ebeacbb28fb.jpg\" alt=\"Fruits Basket, Vol. 7 (Fruits Basket #7)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n…"
+        ],
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../fruits-basket-vol-7-fruits-basket-7_468/index.html\"><img src=\"../../../../media/cache/b4/36/b43672509477baa090e57ebeacbb28fb.jpg\" alt=\"Fruits Basket, Vol. 7 (Fruits Basket #7)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n…",
+        "title": "Fruits Basket, Vol. 7 (Fruits Basket #7)",
+        "link": "../../../fruits-basket-vol-7-fruits-basket-7_468/index.html",
+        "price": "£19.57"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../fruits-basket-vol-7-fruits-basket-7_468/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/fruits-basket-vol-7-fruits-basket-7_468/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Fruits Basket, Vol. 7 (Fruits Basket #7)",
+          "steps": []
+        },
+        "price": {
+          "from": "£19.57",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 19.57,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Sequential Art",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

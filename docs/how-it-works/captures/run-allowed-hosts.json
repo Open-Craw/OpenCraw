@@ -1,0 +1,79 @@
+{
+  "scene": "run-allowed-hosts",
+  "summary": [
+    {
+      "recipeId": "quotes-api",
+      "emitted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.5 (request) failed: https://www.goodreads.com/quotes is outside the allowed hosts (quotes.toscrape.com)"
+    },
+    {
+      "recipeId": "quotes-web",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 1,
+      "pages": 1,
+      "error": "step steps.5 (goto) failed: page.goto: net::ERR_BLOCKED_BY_CLIENT at https://www.goodreads.com/quotes\nCall log:\n\u001b[2m  - navigating to \"https://www.goodreads.com/quotes\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    }
+  ],
+  "trace": [
+    "▶ quotes-api (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  request home  … ms",
+    "  · steps.1  extract text  … ms",
+    "  · steps.2  extract author  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "  · steps.3  emit  … ms",
+    "  · steps.4  extract source  … ms",
+    "  ✖ step steps.5 (request) failed: https://www.goodreads.com/quotes is outside the allowed hosts (quotes.toscrape.com)",
+    "■ quotes-api: 1 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.5 (request) failed: https://www.goodreads.com/quotes is outside the allowed hosts (quotes.toscrape.com)",
+    "▶ quotes-web (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  extract text  … ms",
+    "  · steps.2  extract author  … ms",
+    "  ≡ duplicate [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "  · steps.3  emit  … ms",
+    "  · steps.4  extract source  … ms",
+    "  ✖ step steps.5 (goto) failed: page.goto: net::ERR_BLOCKED_BY_CLIENT at https://www.goodreads.com/quotes\nCall log:\n\u001b[2m  - navigating to \"https://www.goodreads.com/quotes\", waiting until \"domcontentloaded\"\u001b[22m\n",
+    "■ quotes-web: 0 emitted, 0 rejected, 1 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.5 (goto) failed: page.goto: net::ERR_BLOCKED_BY_CLIENT at https://www.goodreads.com/quotes\nCall log:\n\u001b[2m  - navigating to \"https://www.goodreads.com/quotes\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "goodreads": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "home": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<title>Quotes to Scrape</title>\n    <link rel=\"stylesheet\" href=\"/static/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/static/main.css\">\n    \n    \n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"row header-box\">\n            <div class=\"col-md-8\">\n                <h1>\n                    <a href=\"/\" style=\"text-decoration: none\">Quotes to Scrape</a>\n                </h1>\n            </div>\n            <div class=\"col-md-4\">\n                <p>\n                \n                    <a href=\"/login\">Login</a>\n…",
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "page": {
+          "url": "https://quotes.toscrape.com/",
+          "number": 1
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

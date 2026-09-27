@@ -26,3 +26,5 @@ jobs:
       # Every example's recipes load and bind; the examples that run offline run.
       - run: npm run examples:check
       - run: npm run examples:test
+      # The how-it-works guide's scene recipes load and bind (the capture itself runs on demand).
+      - run: npm run docs:check

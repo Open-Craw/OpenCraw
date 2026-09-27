@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "boston-seasons",
+  "output": "season",
+  "mode": "api",
+  "description": "scrapethissite.com's hockey table, searched for Boston: one row per season, win percentage written as 0.55 or 0.607, the goal difference signed.",
+  "start": [{ "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25" }],
+  "limits": { "delayMs": 300, "maxRecords": 3 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "rows", "selector": "tr.team", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "rows", "as": "row", "emit": true, "steps": [
+      { "type": "extract", "id": "name", "from": "row", "selector": "td.name", "kind": "css", "take": "html" },
+      { "type": "extract", "id": "year", "from": "row", "selector": "td.year", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "pct", "from": "row", "selector": "td.pct", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "pctClass", "from": "row", "selector": "td.pct", "kind": "css", "take": "attr:class" },
+      { "type": "extract", "id": "diff", "from": "row", "selector": "td.diff", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "team": { "from": "name", "transform": [{ "op": "trim" }] },
+    "year": { "from": "year", "transform": [{ "op": "integer" }] },
+    "winPct": { "from": "pct", "transform": [{ "op": "number" }] },
+    "winPctEnglish": { "from": "pct", "transform": [{ "op": "number", "locale": "en-US" }] },
+    "goalDiff": { "from": "diff", "transform": [{ "op": "integer" }] },
+    "winning": { "from": "pctClass", "transform": [{ "op": "boolean", "truthy": ["text-success"] }] }
+  }
+}

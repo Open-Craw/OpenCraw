@@ -5,7 +5,8 @@ import type { ClickStep, FillStep, PressStep, ScreenshotStep, ScrollStep, Select
 import { render, renderText } from '../template'
 
 const OPTIONAL_TIMEOUT_MS = 2000
-const SCROLL_SETTLE_MS = 300
+const DEFAULT_SCROLL_SETTLE_MS = 300
+const DEFAULT_MAX_SCROLLS = 50
 
 /**
  * The element an interaction lands on: the first match of `selector`, or what
@@ -188,24 +189,35 @@ function chooseOptions (element: Element, values: string[]): void {
   select.dispatchEvent(new Event('change', { bubbles: true }))
 }
 
+/** How a scroll ended: how many scrolls it made, and whether `maxScrolls` stopped a page that was still growing. */
+export interface ScrollOutcome {
+  scrolls: number
+  capped:  boolean
+}
+
 /**
- * Scrolls to the bottom (or to an element) `times` times; with `untilStable`
- * it keeps going until the page stops growing, which is how infinite lists end.
+ * Scrolls to the bottom (or to an element) `times` times, waiting `settleMs`
+ * after each; with `untilStable` it keeps going until the page stops growing,
+ * which is how infinite lists end, or until `maxScrolls` (a feed that never
+ * ends stops there, without failing).
  */
-export async function scroll (step: ScrollStep, page: Page): Promise<void> {
-  const times = step.untilStable === true ? Infinity : (step.times ?? 1)
+export async function scroll (step: ScrollStep, page: Page): Promise<ScrollOutcome> {
+  const stable = step.untilStable === true
+  const times = stable ? (step.maxScrolls ?? DEFAULT_MAX_SCROLLS) : (step.times ?? 1)
   let previous = -1
-  for (let count = 0; count < times; count += 1) {
+  for (let count = 1; count <= times; count += 1) {
     if (step.to === 'bottom') {
       await page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
     } else {
       await page.locator(step.to).first().scrollIntoViewIfNeeded()
     }
-    await page.waitForTimeout(SCROLL_SETTLE_MS)
+    await page.waitForTimeout(step.settleMs ?? DEFAULT_SCROLL_SETTLE_MS)
     const height = await page.evaluate<number>('document.body.scrollHeight')
-    if (height === previous && step.untilStable === true) break
+    if (stable && height === previous) return { scrolls: count, capped: false }
     previous = height
   }
+
+  return { scrolls: times, capped: stable }
 }
 
 /**

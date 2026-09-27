@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "team-season",
+  "version": 1,
+  "fields": {
+    "team": { "type": "string", "required": true, "key": true },
+    "year": { "type": "integer", "required": true, "key": true },
+    "wins": { "type": "integer" },
+    "losses": { "type": "integer" },
+    "otLosses": { "type": "string" }
+  }
+}

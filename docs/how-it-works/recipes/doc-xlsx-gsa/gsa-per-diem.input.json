@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "gsa-per-diem-local",
+  "output": "per-diem-rate",
+  "mode": "api",
+  "start": [
+    {
+      "url": "https://github.com/russoedu/open.craw/blob/main/examples/gsa-per-diem/gsa-per-diem-fy2026.xlsx"
+    }
+  ],
+  "steps": [
+    {
+      "type": "hook",
+      "id": "file",
+      "name": "repoFile",
+      "args": {
+        "url": "{{start.url}}"
+      }
+    },
+    {
+      "type": "request",
+      "url": "{{file}}"
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "kind": "table",
+      "sheet": "^Master$",
+      "selector": "^ID STATE DESTINATION",
+      "columns": {
+        "state": "^STATE$",
+        "destination": "^DESTINATION$",
+        "counties": "^COUNTY",
+        "begin": "^SEASON BEGIN$",
+        "end": "^SEASON END$",
+        "lodging": "Lodging Rate$",
+        "meals": "M&IE$"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "state": {
+      "from": "row.state",
+      "onMissing": "skip-record"
+    },
+    "destination": {
+      "from": "row.destination"
+    },
+    "counties": {
+      "from": "row.counties"
+    },
+    "seasonBegin": {
+      "from": "row.begin",
+      "transform": [
+        {
+          "op": "default",
+          "value": "all year"
+        }
+      ]
+    },
+    "seasonEnd": {
+      "from": "row.end"
+    },
+    "lodgingUsd": {
+      "from": "row.lodging"
+    },
+    "mealsUsd": {
+      "from": "row.meals"
+    }
+  },
+  "description": "The GSA's FY2026 per diem rates workbook, the copy in examples/gsa-per-diem/: one sheet, a title row above the header, a first row with no state (the standard rate), numbers stored as numbers."
+}

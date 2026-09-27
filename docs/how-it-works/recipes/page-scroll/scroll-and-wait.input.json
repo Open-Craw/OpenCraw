@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "scroll-and-wait",
+  "output": "quote",
+  "mode": "web",
+  "description": "Scroll, then wait for the eleventh quote; scroll again, then wait for the twenty-first: each round waits for the batch it asked for.",
+  "start": [{ "url": "https://quotes.toscrape.com/scroll" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "wait", "selector": ".quote" },
+    { "type": "scroll", "to": "bottom" },
+    { "type": "wait", "selector": ".quotes > .quote:nth-child(11)" },
+    { "type": "scroll", "to": "bottom" },
+    { "type": "wait", "selector": ".quotes > .quote:nth-child(21)" },
+    { "type": "extract", "id": "quotes", "selector": ".quote", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": ".text", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": ".author", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "tags", "from": "quote", "selector": ".tag", "kind": "css", "take": "text", "many": true }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "tags": { "from": "tags" }
+  }
+}

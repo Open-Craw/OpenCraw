@@ -1,0 +1,544 @@
+{
+  "scene": "doc-xlsx-incentivi",
+  "summary": [
+    {
+      "recipeId": "incentivi-xlsx",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ incentivi-xlsx (api)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  hook file  … ms",
+    "  ⇢ page 1  file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+    "  · steps.1  request  … ms",
+    "  · steps.2  extract table  … ms",
+    "  · steps.3  set rows  … ms",
+    "  ✚ record [\"Fiat\",\"Pandina\"]",
+    "  ✚ record [\"Fiat\",\"Pandina Cross\"]",
+    "  ✚ record [\"Jeep\",\"Avenger\"]",
+    "  · steps.4  forEach  … ms",
+    "■ incentivi-xlsx: 3 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+      "key": "[\"Fiat\",\"Pandina\"]",
+      "data": {
+        "brand": "Fiat",
+        "model": "Pandina",
+        "listPrice": 15950,
+        "netPrice": 13955.625,
+        "discount": 0.125,
+        "validFrom": "2026-06-01",
+        "active": true,
+        "note": "Solo rottamazione"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
+        },
+        "file": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+        "table": {
+          "sheet": "Incentivi giugno",
+          "title": "Marca",
+          "header": [
+            "Marca",
+            "Modello",
+            "Prezzo Listino",
+            "Prezzo Netto",
+            "Sconto",
+            "Valido dal",
+            "Attivo",
+            "Nota"
+          ],
+          "rows": [
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "list": 15950,
+              "net": 13955.625,
+              "discount": 0.125,
+              "from": "2026-06-01",
+              "active": true,
+              "note": "Solo rottamazione"
+            },
+            {
+              "brand": "Fiat",
+              "model": "Pandina Cross",
+              "list": 17950,
+              "net": 15706.25,
+              "discount": 0.125,
+              "from": "2026-06-01T09:30:00",
+              "active": false,
+              "note": "#DIV/0!"
+            },
+            {
+              "brand": "Jeep",
+              "model": "Avenger",
+              "list": 24950.5,
+              "net": "",
+              "discount": "",
+              "from": "",
+              "active": "",
+              "note": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "list": 15950,
+            "net": 13955.625,
+            "discount": 0.125,
+            "from": "2026-06-01",
+            "active": true,
+            "note": "Solo rottamazione"
+          },
+          {
+            "brand": "Fiat",
+            "model": "Pandina Cross",
+            "list": 17950,
+            "net": 15706.25,
+            "discount": 0.125,
+            "from": "2026-06-01T09:30:00",
+            "active": false,
+            "note": "#DIV/0!"
+          },
+          {
+            "brand": "Jeep",
+            "model": "Avenger",
+            "list": 24950.5,
+            "net": "",
+            "discount": "",
+            "from": "",
+            "active": "",
+            "note": ""
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+          "number": 1
+        },
+        "row": {
+          "brand": "Fiat",
+          "model": "Pandina",
+          "list": 15950,
+          "net": 13955.625,
+          "discount": 0.125,
+          "from": "2026-06-01",
+          "active": true,
+          "note": "Solo rottamazione"
+        }
+      },
+      "mapping": {
+        "brand": {
+          "from": "Fiat",
+          "steps": []
+        },
+        "model": {
+          "from": "Pandina",
+          "steps": []
+        },
+        "listPrice": {
+          "from": 15950,
+          "steps": []
+        },
+        "netPrice": {
+          "from": 13955.625,
+          "steps": [
+            {
+              "op": "default",
+              "value": 13955.625
+            }
+          ]
+        },
+        "discount": {
+          "from": 0.125,
+          "steps": [
+            {
+              "op": "default",
+              "value": 0.125
+            }
+          ]
+        },
+        "validFrom": {
+          "from": "2026-06-01",
+          "steps": [
+            {
+              "op": "default",
+              "value": "2026-06-01"
+            }
+          ]
+        },
+        "active": {
+          "from": true,
+          "steps": [
+            {
+              "op": "default",
+              "value": true
+            }
+          ]
+        },
+        "note": {
+          "from": "Solo rottamazione",
+          "steps": [
+            {
+              "op": "default",
+              "value": "Solo rottamazione"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+      "key": "[\"Fiat\",\"Pandina Cross\"]",
+      "data": {
+        "brand": "Fiat",
+        "model": "Pandina Cross",
+        "listPrice": 17950,
+        "netPrice": 15706.25,
+        "discount": 0.125,
+        "validFrom": "2026-06-01T09:30:00",
+        "active": false,
+        "note": "#DIV/0!"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
+        },
+        "file": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+        "table": {
+          "sheet": "Incentivi giugno",
+          "title": "Marca",
+          "header": [
+            "Marca",
+            "Modello",
+            "Prezzo Listino",
+            "Prezzo Netto",
+            "Sconto",
+            "Valido dal",
+            "Attivo",
+            "Nota"
+          ],
+          "rows": [
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "list": 15950,
+              "net": 13955.625,
+              "discount": 0.125,
+              "from": "2026-06-01",
+              "active": true,
+              "note": "Solo rottamazione"
+            },
+            {
+              "brand": "Fiat",
+              "model": "Pandina Cross",
+              "list": 17950,
+              "net": 15706.25,
+              "discount": 0.125,
+              "from": "2026-06-01T09:30:00",
+              "active": false,
+              "note": "#DIV/0!"
+            },
+            {
+              "brand": "Jeep",
+              "model": "Avenger",
+              "list": 24950.5,
+              "net": "",
+              "discount": "",
+              "from": "",
+              "active": "",
+              "note": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "list": 15950,
+            "net": 13955.625,
+            "discount": 0.125,
+            "from": "2026-06-01",
+            "active": true,
+            "note": "Solo rottamazione"
+          },
+          {
+            "brand": "Fiat",
+            "model": "Pandina Cross",
+            "list": 17950,
+            "net": 15706.25,
+            "discount": 0.125,
+            "from": "2026-06-01T09:30:00",
+            "active": false,
+            "note": "#DIV/0!"
+          },
+          {
+            "brand": "Jeep",
+            "model": "Avenger",
+            "list": 24950.5,
+            "net": "",
+            "discount": "",
+            "from": "",
+            "active": "",
+            "note": ""
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+          "number": 1
+        },
+        "row": {
+          "brand": "Fiat",
+          "model": "Pandina Cross",
+          "list": 17950,
+          "net": 15706.25,
+          "discount": 0.125,
+          "from": "2026-06-01T09:30:00",
+          "active": false,
+          "note": "#DIV/0!"
+        }
+      },
+      "mapping": {
+        "brand": {
+          "from": "Fiat",
+          "steps": []
+        },
+        "model": {
+          "from": "Pandina Cross",
+          "steps": []
+        },
+        "listPrice": {
+          "from": 17950,
+          "steps": []
+        },
+        "netPrice": {
+          "from": 15706.25,
+          "steps": [
+            {
+              "op": "default",
+              "value": 15706.25
+            }
+          ]
+        },
+        "discount": {
+          "from": 0.125,
+          "steps": [
+            {
+              "op": "default",
+              "value": 0.125
+            }
+          ]
+        },
+        "validFrom": {
+          "from": "2026-06-01T09:30:00",
+          "steps": [
+            {
+              "op": "default",
+              "value": "2026-06-01T09:30:00"
+            }
+          ]
+        },
+        "active": {
+          "from": false,
+          "steps": [
+            {
+              "op": "default",
+              "value": false
+            }
+          ]
+        },
+        "note": {
+          "from": "#DIV/0!",
+          "steps": [
+            {
+              "op": "default",
+              "value": "#DIV/0!"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+      "key": "[\"Jeep\",\"Avenger\"]",
+      "data": {
+        "brand": "Jeep",
+        "model": "Avenger",
+        "listPrice": 24950.5,
+        "netPrice": null,
+        "discount": null,
+        "validFrom": null,
+        "active": null,
+        "note": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
+        },
+        "file": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+        "table": {
+          "sheet": "Incentivi giugno",
+          "title": "Marca",
+          "header": [
+            "Marca",
+            "Modello",
+            "Prezzo Listino",
+            "Prezzo Netto",
+            "Sconto",
+            "Valido dal",
+            "Attivo",
+            "Nota"
+          ],
+          "rows": [
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "list": 15950,
+              "net": 13955.625,
+              "discount": 0.125,
+              "from": "2026-06-01",
+              "active": true,
+              "note": "Solo rottamazione"
+            },
+            {
+              "brand": "Fiat",
+              "model": "Pandina Cross",
+              "list": 17950,
+              "net": 15706.25,
+              "discount": 0.125,
+              "from": "2026-06-01T09:30:00",
+              "active": false,
+              "note": "#DIV/0!"
+            },
+            {
+              "brand": "Jeep",
+              "model": "Avenger",
+              "list": 24950.5,
+              "net": "",
+              "discount": "",
+              "from": "",
+              "active": "",
+              "note": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "list": 15950,
+            "net": 13955.625,
+            "discount": 0.125,
+            "from": "2026-06-01",
+            "active": true,
+            "note": "Solo rottamazione"
+          },
+          {
+            "brand": "Fiat",
+            "model": "Pandina Cross",
+            "list": 17950,
+            "net": 15706.25,
+            "discount": 0.125,
+            "from": "2026-06-01T09:30:00",
+            "active": false,
+            "note": "#DIV/0!"
+          },
+          {
+            "brand": "Jeep",
+            "model": "Avenger",
+            "list": 24950.5,
+            "net": "",
+            "discount": "",
+            "from": "",
+            "active": "",
+            "note": ""
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+          "number": 1
+        },
+        "row": {
+          "brand": "Jeep",
+          "model": "Avenger",
+          "list": 24950.5,
+          "net": "",
+          "discount": "",
+          "from": "",
+          "active": "",
+          "note": ""
+        }
+      },
+      "mapping": {
+        "brand": {
+          "from": "Jeep",
+          "steps": []
+        },
+        "model": {
+          "from": "Avenger",
+          "steps": []
+        },
+        "listPrice": {
+          "from": 24950.5,
+          "steps": []
+        },
+        "netPrice": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "discount": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "validFrom": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "active": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "note": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

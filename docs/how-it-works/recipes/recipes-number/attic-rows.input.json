@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "attic-rows",
+  "output": "product-row",
+  "mode": "api",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "rows", "selector": "table.table-striped tr", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "rows", "as": "row", "emit": true, "steps": [
+      { "type": "extract", "id": "label", "from": "row", "selector": "th", "kind": "css" },
+      { "type": "extract", "id": "value", "from": "row", "selector": "td", "kind": "css" }
+    ]}
+  ],
+  "mapping": {
+    "row": { "from": "label" },
+    "text": { "from": "value" },
+    "number": { "from": "value", "onMissing": "skip-record" },
+    "integer": { "from": "value", "onMissing": "skip-record" },
+    "boolean": { "from": "value" }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "catalogue-page",
+  "version": 1,
+  "fields": {
+    "page": { "type": "integer", "required": true, "key": true },
+    "url": { "type": "url" },
+    "pager": { "type": "string" },
+    "books": { "type": "integer" },
+    "firstTitle": { "type": "string" }
+  }
+}

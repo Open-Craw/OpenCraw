@@ -1,0 +1,797 @@
+{
+  "scene": "doc-csv-listino",
+  "summary": [
+    {
+      "recipeId": "listino-csv",
+      "emitted": 4,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ listino-csv (api)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  hook file  … ms",
+    "  ⇢ page 1  file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+    "  · steps.1  request listino  … ms",
+    "  · steps.2  extract table  … ms",
+    "  · steps.3  set rows  … ms",
+    "  ✚ record [\"Fiat\",\"Pandina\",\"1.0 Hybrid \\\"Cross\\\"\"]",
+    "  ✚ record [\"Fiat\",\"Pandina\",\"1.0 Hybrid Icon\"]",
+    "  ✚ record [\"Citroën\",\"C3\",\"Plus; automatica\\nnuova\"]",
+    "  ✚ record [\"Peugeot\",\"208\",\"Allure\"]",
+    "  · steps.4  forEach  … ms",
+    "■ listino-csv: 4 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+      "key": "[\"Fiat\",\"Pandina\",\"1.0 Hybrid \\\"Cross\\\"\"]",
+      "data": {
+        "brand": "Fiat",
+        "model": "Pandina",
+        "version": "1.0 Hybrid \"Cross\"",
+        "price": "15.950,00",
+        "discount": "12,5"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+        },
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+        "listino": {
+          "kind": "workbook",
+          "sheets": [
+            {
+              "name": "listino",
+              "rows": [
+                [
+                  "Listino prezzi autoveicoli – settembre 2026"
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Marca",
+                  "Modello",
+                  "Versione",
+                  "Prezzo €",
+                  "Sconto %"
+                ],
+                [
+                  "Fiat",
+                  "Pandina",
+                  "1.0 Hybrid \"Cross\"",
+                  "15.950,00",
+                  "12,5"
+                ],
+                [
+                  "",
+                  "",
+                  "1.0 Hybrid Icon",
+                  "16.450,00",
+                  "12,5"
+                ],
+                [
+                  "Citroën",
+                  "C3",
+                  "Plus; automatica\nnuova",
+                  "19.300,00",
+                  "8"
+                ],
+                [
+                  "Peugeot",
+                  "208",
+                  "Allure",
+                  "21.450,00",
+                  ""
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Totale",
+                  "",
+                  "",
+                  "73.150,00",
+                  ""
+                ]
+              ]
+            }
+          ],
+          "csv": {
+            "encoding": "windows-1252",
+            "delimiter": ";"
+          }
+        },
+        "table": {
+          "sheet": "listino",
+          "title": "Marca",
+          "header": [
+            "Marca",
+            "Modello",
+            "Versione",
+            "Prezzo €",
+            "Sconto %"
+          ],
+          "rows": [
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid \"Cross\"",
+              "price": "15.950,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid Icon",
+              "price": "16.450,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Citroën",
+              "model": "C3",
+              "version": "Plus; automatica\nnuova",
+              "price": "19.300,00",
+              "discount": "8"
+            },
+            {
+              "brand": "Peugeot",
+              "model": "208",
+              "version": "Allure",
+              "price": "21.450,00",
+              "discount": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid \"Cross\"",
+            "price": "15.950,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid Icon",
+            "price": "16.450,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Citroën",
+            "model": "C3",
+            "version": "Plus; automatica\nnuova",
+            "price": "19.300,00",
+            "discount": "8"
+          },
+          {
+            "brand": "Peugeot",
+            "model": "208",
+            "version": "Allure",
+            "price": "21.450,00",
+            "discount": ""
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+          "number": 1
+        },
+        "row": {
+          "brand": "Fiat",
+          "model": "Pandina",
+          "version": "1.0 Hybrid \"Cross\"",
+          "price": "15.950,00",
+          "discount": "12,5"
+        }
+      },
+      "mapping": {
+        "brand": {
+          "from": "Fiat",
+          "steps": []
+        },
+        "model": {
+          "from": "Pandina",
+          "steps": []
+        },
+        "version": {
+          "from": "1.0 Hybrid \"Cross\"",
+          "steps": []
+        },
+        "price": {
+          "from": "15.950,00",
+          "steps": []
+        },
+        "discount": {
+          "from": "12,5",
+          "steps": [
+            {
+              "op": "default",
+              "value": "12,5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+      "key": "[\"Fiat\",\"Pandina\",\"1.0 Hybrid Icon\"]",
+      "data": {
+        "brand": "Fiat",
+        "model": "Pandina",
+        "version": "1.0 Hybrid Icon",
+        "price": "16.450,00",
+        "discount": "12,5"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+        },
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+        "listino": {
+          "kind": "workbook",
+          "sheets": [
+            {
+              "name": "listino",
+              "rows": [
+                [
+                  "Listino prezzi autoveicoli – settembre 2026"
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Marca",
+                  "Modello",
+                  "Versione",
+                  "Prezzo €",
+                  "Sconto %"
+                ],
+                [
+                  "Fiat",
+                  "Pandina",
+                  "1.0 Hybrid \"Cross\"",
+                  "15.950,00",
+                  "12,5"
+                ],
+                [
+                  "",
+                  "",
+                  "1.0 Hybrid Icon",
+                  "16.450,00",
+                  "12,5"
+                ],
+                [
+                  "Citroën",
+                  "C3",
+                  "Plus; automatica\nnuova",
+                  "19.300,00",
+                  "8"
+                ],
+                [
+                  "Peugeot",
+                  "208",
+                  "Allure",
+                  "21.450,00",
+                  ""
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Totale",
+                  "",
+                  "",
+                  "73.150,00",
+                  ""
+                ]
+              ]
+            }
+          ],
+          "csv": {
+            "encoding": "windows-1252",
+            "delimiter": ";"
+          }
+        },
+        "table": {
+          "sheet": "listino",
+          "title": "Marca",
+          "header": [
+            "Marca",
+            "Modello",
+            "Versione",
+            "Prezzo €",
+            "Sconto %"
+          ],
+          "rows": [
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid \"Cross\"",
+              "price": "15.950,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid Icon",
+              "price": "16.450,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Citroën",
+              "model": "C3",
+              "version": "Plus; automatica\nnuova",
+              "price": "19.300,00",
+              "discount": "8"
+            },
+            {
+              "brand": "Peugeot",
+              "model": "208",
+              "version": "Allure",
+              "price": "21.450,00",
+              "discount": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid \"Cross\"",
+            "price": "15.950,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid Icon",
+            "price": "16.450,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Citroën",
+            "model": "C3",
+            "version": "Plus; automatica\nnuova",
+            "price": "19.300,00",
+            "discount": "8"
+          },
+          {
+            "brand": "Peugeot",
+            "model": "208",
+            "version": "Allure",
+            "price": "21.450,00",
+            "discount": ""
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+          "number": 1
+        },
+        "row": {
+          "brand": "Fiat",
+          "model": "Pandina",
+          "version": "1.0 Hybrid Icon",
+          "price": "16.450,00",
+          "discount": "12,5"
+        }
+      },
+      "mapping": {
+        "brand": {
+          "from": "Fiat",
+          "steps": []
+        },
+        "model": {
+          "from": "Pandina",
+          "steps": []
+        },
+        "version": {
+          "from": "1.0 Hybrid Icon",
+          "steps": []
+        },
+        "price": {
+          "from": "16.450,00",
+          "steps": []
+        },
+        "discount": {
+          "from": "12,5",
+          "steps": [
+            {
+              "op": "default",
+              "value": "12,5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+      "key": "[\"Citroën\",\"C3\",\"Plus; automatica\\nnuova\"]",
+      "data": {
+        "brand": "Citroën",
+        "model": "C3",
+        "version": "Plus; automatica\nnuova",
+        "price": "19.300,00",
+        "discount": "8"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+        },
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+        "listino": {
+          "kind": "workbook",
+          "sheets": [
+            {
+              "name": "listino",
+              "rows": [
+                [
+                  "Listino prezzi autoveicoli – settembre 2026"
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Marca",
+                  "Modello",
+                  "Versione",
+                  "Prezzo €",
+                  "Sconto %"
+                ],
+                [
+                  "Fiat",
+                  "Pandina",
+                  "1.0 Hybrid \"Cross\"",
+                  "15.950,00",
+                  "12,5"
+                ],
+                [
+                  "",
+                  "",
+                  "1.0 Hybrid Icon",
+                  "16.450,00",
+                  "12,5"
+                ],
+                [
+                  "Citroën",
+                  "C3",
+                  "Plus; automatica\nnuova",
+                  "19.300,00",
+                  "8"
+                ],
+                [
+                  "Peugeot",
+                  "208",
+                  "Allure",
+                  "21.450,00",
+                  ""
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Totale",
+                  "",
+                  "",
+                  "73.150,00",
+                  ""
+                ]
+              ]
+            }
+          ],
+          "csv": {
+            "encoding": "windows-1252",
+            "delimiter": ";"
+          }
+        },
+        "table": {
+          "sheet": "listino",
+          "title": "Marca",
+          "header": [
+            "Marca",
+            "Modello",
+            "Versione",
+            "Prezzo €",
+            "Sconto %"
+          ],
+          "rows": [
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid \"Cross\"",
+              "price": "15.950,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid Icon",
+              "price": "16.450,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Citroën",
+              "model": "C3",
+              "version": "Plus; automatica\nnuova",
+              "price": "19.300,00",
+              "discount": "8"
+            },
+            {
+              "brand": "Peugeot",
+              "model": "208",
+              "version": "Allure",
+              "price": "21.450,00",
+              "discount": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid \"Cross\"",
+            "price": "15.950,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid Icon",
+            "price": "16.450,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Citroën",
+            "model": "C3",
+            "version": "Plus; automatica\nnuova",
+            "price": "19.300,00",
+            "discount": "8"
+          },
+          {
+            "brand": "Peugeot",
+            "model": "208",
+            "version": "Allure",
+            "price": "21.450,00",
+            "discount": ""
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+          "number": 1
+        },
+        "row": {
+          "brand": "Citroën",
+          "model": "C3",
+          "version": "Plus; automatica\nnuova",
+          "price": "19.300,00",
+          "discount": "8"
+        }
+      },
+      "mapping": {
+        "brand": {
+          "from": "Citroën",
+          "steps": []
+        },
+        "model": {
+          "from": "C3",
+          "steps": []
+        },
+        "version": {
+          "from": "Plus; automatica\nnuova",
+          "steps": []
+        },
+        "price": {
+          "from": "19.300,00",
+          "steps": []
+        },
+        "discount": {
+          "from": "8",
+          "steps": [
+            {
+              "op": "default",
+              "value": "8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+      "key": "[\"Peugeot\",\"208\",\"Allure\"]",
+      "data": {
+        "brand": "Peugeot",
+        "model": "208",
+        "version": "Allure",
+        "price": "21.450,00",
+        "discount": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+        },
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+        "listino": {
+          "kind": "workbook",
+          "sheets": [
+            {
+              "name": "listino",
+              "rows": [
+                [
+                  "Listino prezzi autoveicoli – settembre 2026"
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Marca",
+                  "Modello",
+                  "Versione",
+                  "Prezzo €",
+                  "Sconto %"
+                ],
+                [
+                  "Fiat",
+                  "Pandina",
+                  "1.0 Hybrid \"Cross\"",
+                  "15.950,00",
+                  "12,5"
+                ],
+                [
+                  "",
+                  "",
+                  "1.0 Hybrid Icon",
+                  "16.450,00",
+                  "12,5"
+                ],
+                [
+                  "Citroën",
+                  "C3",
+                  "Plus; automatica\nnuova",
+                  "19.300,00",
+                  "8"
+                ],
+                [
+                  "Peugeot",
+                  "208",
+                  "Allure",
+                  "21.450,00",
+                  ""
+                ],
+                [
+                  ""
+                ],
+                [
+                  "Totale",
+                  "",
+                  "",
+                  "73.150,00",
+                  ""
+                ]
+              ]
+            }
+          ],
+          "csv": {
+            "encoding": "windows-1252",
+            "delimiter": ";"
+          }
+        },
+        "table": {
+          "sheet": "listino",
+          "title": "Marca",
+          "header": [
+            "Marca",
+            "Modello",
+            "Versione",
+            "Prezzo €",
+            "Sconto %"
+          ],
+          "rows": [
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid \"Cross\"",
+              "price": "15.950,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Fiat",
+              "model": "Pandina",
+              "version": "1.0 Hybrid Icon",
+              "price": "16.450,00",
+              "discount": "12,5"
+            },
+            {
+              "brand": "Citroën",
+              "model": "C3",
+              "version": "Plus; automatica\nnuova",
+              "price": "19.300,00",
+              "discount": "8"
+            },
+            {
+              "brand": "Peugeot",
+              "model": "208",
+              "version": "Allure",
+              "price": "21.450,00",
+              "discount": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid \"Cross\"",
+            "price": "15.950,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Fiat",
+            "model": "Pandina",
+            "version": "1.0 Hybrid Icon",
+            "price": "16.450,00",
+            "discount": "12,5"
+          },
+          {
+            "brand": "Citroën",
+            "model": "C3",
+            "version": "Plus; automatica\nnuova",
+            "price": "19.300,00",
+            "discount": "8"
+          },
+          {
+            "brand": "Peugeot",
+            "model": "208",
+            "version": "Allure",
+            "price": "21.450,00",
+            "discount": ""
+          }
+        ],
+        "page": {
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
+          "number": 1
+        },
+        "row": {
+          "brand": "Peugeot",
+          "model": "208",
+          "version": "Allure",
+          "price": "21.450,00",
+          "discount": ""
+        }
+      },
+      "mapping": {
+        "brand": {
+          "from": "Peugeot",
+          "steps": []
+        },
+        "model": {
+          "from": "208",
+          "steps": []
+        },
+        "version": {
+          "from": "Allure",
+          "steps": []
+        },
+        "price": {
+          "from": "21.450,00",
+          "steps": []
+        },
+        "discount": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

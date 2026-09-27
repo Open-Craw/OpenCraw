@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "quotes-page",
+  "version": 1,
+  "fields": {
+    "apiPage": { "type": "integer", "required": true, "key": true },
+    "pageNumber": { "type": "integer" },
+    "url": { "type": "url" },
+    "quotes": { "type": "integer" },
+    "hasNext": { "type": "boolean" }
+  }
+}

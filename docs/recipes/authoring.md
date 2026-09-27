@@ -17,6 +17,9 @@ Point `$schema` at `packages/core/schemas/output-recipe.schema.json` or `input-r
 editor validates and completes as you type. Every recipe is validated on load; unknown keys are errors, so a
 typo never silently does nothing.
 
+This page says what each key means. [How OpenCraw works](../how-it-works/README.md) runs each of them on real
+sites, APIs and documents and shows what the engine did: the scope, the mapping steps, the trace and the record.
+
 ---
 
 ## 1. The output recipe
@@ -45,7 +48,7 @@ typo never silently does nothing.
 |---|---|
 | `id` | Lowercase letters, digits, hyphens. Input recipes name it in their `output`. |
 | `version` | A positive integer you bump when the shape changes. |
-| `fields` | Name → field spec. Names have no dots; nesting is expressed with `type: "object"`. |
+| `fields` | Name → field spec. A name is letters (either case), digits, `_` and `-`, not starting with a digit. Names have no dots; nesting is expressed with `type: "object"`, whose member names follow the same rule. A dotted name fails loading with `fields["stock.count"]: a field name has no dots`. |
 | `onMissing` | Recipe-wide default for a missing value: `fail`, `skip-record` or `null`. See §7. |
 
 ### 1.1 Field spec
@@ -55,15 +58,15 @@ typo never silently does nothing.
 | `type` | `string`, `number`, `integer`, `boolean`, `date`, `datetime`, `currency`, `url`, `enum`, `array`, `object`, `json`. |
 | `required` | Missing value fails the recipe (unless a policy says otherwise). Default `false`. |
 | `nullable` | Allows `null` on a `required` field when the resolved policy is `null` (§7). A field that is not required is `null` when missing anyway. |
-| `default` | Used when the value is missing and the resolved policy is `default` (it is, automatically, when a default exists and nothing else is said). |
-| `onMissing` | Per-field policy: `fail`, `skip-record`, `null`, `default`. |
+| `default` | Used when the value is missing and the resolved policy is `default` (it is, automatically, when a default exists and nothing else is said). Coerced and validated like a mapped value when the recipes load, so `"default": "0"` on a `number` field is `0`, and a default that can't be the field's type is a load error. |
+| `onMissing` | Per-field policy: `fail`, `skip-record`, `null`, `default`. `default` on a field without a `default` is a load error. |
 | `key` | Part of the record identity. All `key` fields together form the key; repeated keys are dropped as duplicates. |
 | `generated` | `now` (ISO instant), `uuid`, `sourceUrl` (the page the record was emitted from), `recipeId`. Engine-supplied; mapping it is a binding error. |
 | `format` | Input format for `date` / `datetime` (tokens `YYYY MM DD HH mm ss`); output is always ISO 8601. |
 | `currency` | ISO 4217 code for `currency` fields. When set, it overrides any code or symbol in the value. |
 | `values` | Allowed values for `enum`. |
 | `items` | Element spec for `array`. |
-| `fields` | Member specs for `object`. A `json` field takes none. |
+| `fields` | Member specs for `object`, named like the top-level fields (no dots). A `json` field takes none. |
 | `min`, `max` | Numeric bounds. |
 | `minLength`, `maxLength` | String length or array length bounds. |
 | `pattern` | A regular expression the string must match. |
@@ -76,17 +79,21 @@ text is predictable, strict where a wrong value would poison the data.
 | Type | Accepts | Produces |
 |---|---|---|
 | `string` | text, numbers, booleans | text. A list is an error: extract one value or `join` it. |
-| `number` | text with a number in it (`"1.299,00 €"`, `"$1,299"`), numbers | a number. Without a `locale` transform the decimal separator is guessed: the last separator followed by 1 or 2 digits. |
-| `integer` | as `number` | truncated. |
+| `number` | text holding **one** number, with a sign, a currency symbol or code, words and thousands separators around it (`"1.299,00 €"`, `"$1,299"`, `"In stock (22 available)"`), numbers | a number. Text with two numbers or more (`"2 for 10,00"`, an id like `"a897fe39b1053632"`) is an error that names the text: pick the one you want with a `regex` transform first. Without a `number` transform's `locale` the decimal separator is guessed: of two kinds of separator, the last one (`1.299,50` → 1299.5); a single separator is a thousands separator only when exactly three digits follow it and one to three digits other than a lone `0` precede it (`1.299` → 1299, but `0.125` → 0.125 and `10,00` → 10); a repeated one groups thousands (`1,234,567`). Separators that make no number (`1.2.3`) are an error. |
+| `integer` | as `number` | truncated. Errors name `integer`. |
 | `boolean` | booleans, numbers, text | `true` when the whole text is `true`, `yes`, `y`, `1` or `on`, or it contains the words `in stock` or `available` (case-insensitive). So `"none"`, `"2021"` and `"unavailable"` are `false`. Negation is not read: `"not available"` is `true`. For other phrases, use the `boolean` transform with `truthy`. |
 | `date` | ISO text, `Date.parse`-able text, epoch ms, or text matching `format` | `YYYY-MM-DD` (UTC). |
-| `datetime` | same | ISO 8601 instant. |
-| `currency` | text with amount and symbol or code, a number, or `{ amount, currency }` | `{ "amount": 1299, "currency": "EUR" }`. Needs a code from the text, the transform or the field, else an error. |
+| `datetime` | same | ISO 8601 instant. Text that names no zone (`Z`, `+02:00`, `GMT`) is read as UTC, or in the `date` transform's `timezone`: never in the zone of the machine running the crawl. |
+| `currency` | text with **one** amount and a symbol or code, a number, or `{ amount, currency }` | `{ "amount": 1299, "currency": "EUR" }`. The code comes from the field, else the transform, else an ISO 4217 code next to the amount (`USD 12.50`), else a symbol, else an ISO 4217 code anywhere in the text; three capitals that are not an ISO 4217 code (`OTR £34,000`) are ignored. No code at all is an error. |
 | `url` | an absolute URL string | normalised. A relative link is an error: use the `absoluteUrl` transform first. |
 | `enum` | text among `values` | the text. |
-| `array` | a list, or a single value (wrapped) | a list; each item coerced by `items`. |
+| `array` | a list, or a single value (wrapped) | a list; each item coerced and validated by `items`. The members of an object item (an `each` rule's) get the missing-value policy, `default` and validation like any field, reported at their index (`variants[1].size`); a missing scalar item is `null`. |
 | `object` | an object | only the declared `fields`, each coerced. **Undeclared keys are dropped.** |
 | `json` | any JSON value: an object of any shape, a list, text, a number, a boolean | the value, **verbatim**: every key kept, however nested, nothing coerced. Only what JSON cannot hold (`NaN`, `Infinity`, a `Date`, a function) is an error. |
+
+Blank text (`""`, or only spaces) in a field of any type but `string` and `json` is no value rather than a
+value that fails to convert: it follows the missing-value policy (§7), so `default` and `null` apply. In a
+`string` or `json` field, `""` is missing too.
 
 `object` is for a shape you know: it validates it and keeps nothing else. `json` is for a payload whose
 shape you don't know or don't want to fix: archival, a schema that evolves, "land it now, parse it later".
@@ -145,7 +152,7 @@ fields is never de-duplicated. Duplicates are reported (`record:duplicate`) and 
 | `id` | Lowercase letters, digits, hyphens; unique in a run. Also the value of `generated: "recipeId"`. |
 | `output` | The output recipe id this recipe feeds. Loading fails if it does not match. |
 | `mode` | `web`: a real browser page (Playwright). `api`: HTTP requests through Playwright's request context, no browser. See §2.1. |
-| `start` | One or more start points `{ url, vars? }`. Each runs the whole step list from a fresh scope with `start.url` and its `vars`. |
+| `start` | One or more start points `{ url, vars? }`. Each runs the whole step list from a fresh scope with `start.url` and its `vars`. A start `url` must be absolute (`https://…`, or a `file:` URL, §3.2): there is no page before it to resolve a relative one against, so `./listino.csv` fails loading with a message saying so. |
 | `vars` | Values templates read as `{{vars.name}}`. Start-point `vars` override recipe `vars`. |
 | `window` | Worker mode only ([worker-mode.md](./worker-mode.md)): `{ check?, maxItems? }`. `check` is an element a reused window's page must still show before an item runs on it, else the window is replaced; after `maxItems` items the window is replaced anyway. |
 | `matrix` | Runs the recipe once per set of vars, each run with its own report. An object of lists runs every combination, the first var slowest: `{ "state": ["Delhi", "Goa"], "year": [2025, 2026] }` is four runs. A list of objects runs those sets as given: `[{ "state": "Delhi" }, { "state": "Goa", "year": 2026 }]`. Each set overrides `vars`, so every name must be declared in `vars` (with the value a run without the matrix uses). The runs of one recipe go one after the other; `parallel` spreads different recipes. Reports and the trace name each run's vars (`▶ report [state=Delhi, year=2025] (web)`). |
@@ -200,7 +207,7 @@ Every step has `type`, and may have:
 
 | Key | Meaning |
 |---|---|
-| `id` | The name of the value the step produces. A word: letters, digits and underscores, not starting with a digit. Unique along any path. |
+| `id` | The name of the value the step produces. A word: letters (either case), digits and underscores, not starting with a digit. Unique along any path, together with the `as` of the enclosing `forEach` loops; never `page`, `start` or `vars`. |
 | `onError` | `{ "policy": "fail" }`, `{ "policy": "skip" }` or `{ "policy": "retry", "attempts": 3, "backoffMs": 500 }`. §7. |
 | `when` | A template; the step runs only when it renders truthy (§3.4). |
 | `keep` | Worker mode only ([worker-mode.md](./worker-mode.md)): the window remembers the step as it last ran it and skips it on the next item while it would do the same. A kept step that runs again makes the window forget the kept steps after it. Top-level page actions (`goto`, `click`, `fill`, `press`, `select`, `scroll`, `wait`, `evaluate`) without an `id`. |
@@ -210,17 +217,26 @@ Every step has `type`, and may have:
 | Step | Fields | Notes |
 |---|---|---|
 | `goto` | `url` (template), `waitUntil?` (`load`, `domcontentloaded`, `networkidle`, `commit`), `ready?` | Relative URLs resolve against the current page. Records `page.url`. `ready: { selector, timeoutMs?, reloads? }` is an element the page must show: a site that sometimes serves its shell without the content is loaded again, up to `reloads` times (default 2), each reload reported as `request:retry`. |
-| `click` | `selector` or `target`, `optional?`, `download?` | First match. With `optional: true` a missing element is skipped after a 2 s wait. With `download: { as?, saveTo?, encoding?, delimiter?, timeoutMs? }` the click downloads a file (an "Export to Excel" button): it is read like a fetched document (CSV, spreadsheet, PDF, Word, JSON…, by `as` or the file's name), becomes the current document, and the step `id` holds it; `saveTo` (a template) keeps a copy. Read it with `from: <id>` (a `table` extract without `from` reads the page's HTML). |
+| `click` | `selector` or `target`, `optional?`, `download?` | First match. With `optional: true` a missing element is skipped after a 2 s wait. With `download: { as?, saveTo?, encoding?, delimiter?, timeoutMs? }` the click downloads a file (an "Export to Excel" button): it is read like a fetched document (CSV, spreadsheet, PDF, Word, JSON…, by `as`, else the file's name, else its bytes), becomes the current document, and the step `id` holds it; `saveTo` (a template) keeps a copy. Read it with `from: <id>` (a `table` extract without `from` reads the page's HTML). |
 | `fill` | `selector` or `target`, `value` (template) | |
 | `press` | `key`, `selector?` or `target?` | A key on an element, or on the page. |
 | `select` | `selector` or `target`, one of `value`, `label`, `index`, `values`; `multiple?`, `force?`, `ignoreCase?`, `timeoutMs?` | Picks an option of a `<select>`; `value` and `label` are templates. Fires the page's `change` handlers. `values` picks several, each matched by value or label (an item rendering a list, `{{ split(vars.states) }}`, adds each); `multiple` adds to what is chosen. `force` sets the options on the element itself, visible or not, and fires `input` and `change`: a hidden `<select multiple>` behind a script-built widget, when the page listens to the select (it usually does: that is how the widget's choice reaches the form). The step waits up to `timeoutMs` (`limits.timeoutMs`, else 30 s) for options the page loads after another pick, then names what matched nothing. `values` that render to nothing (a blank filter var) leave the control alone. `clear: true` makes `values` that render to nothing clear the control instead (a worker window reused for the next item must not keep the last item's filter). `search: { input, open?, close? }` is for a widget that loads its options as you type (a maker list of thousands): each value missing from the options is typed into `input` key by key (after clicking `open` when the box is hidden), picked once the page lists it, and the picks add up; `close` is clicked at the end. A search usually replaces the widget's list, so check that earlier picks survive a later search on the site at hand. |
-| `scroll` | `to` (`bottom` or a selector), `times?`, `untilStable?` | `untilStable` keeps scrolling until the page stops growing: infinite lists. |
+| `scroll` | `to` (`bottom` or a selector), `times?`, `untilStable?`, `maxScrolls?`, `settleMs?` | Scrolls `times` times (default 1), waiting `settleMs` (default 300) after each for the page to load more. `untilStable` keeps scrolling until the page stops growing: infinite lists. It stops at `maxScrolls` scrolls (default 50) on a feed that never ends, without failing: a `warning` event (`!` in the trace) says so. Raise `settleMs` for a site whose next batch takes longer to arrive: `untilStable` measures the page, and a slow API makes it stop early. |
 | `wait` | one of `selector`, `ms`, `state: "networkidle"`; `timeoutMs?` | `selector` waits for visibility. Put a `wait` after `goto` on script-heavy pages before extracting. `timeoutMs` bounds the `selector` and `state` forms; default `limits.timeoutMs`, else 30 s. Give a long one to wait for a slow report, or for a person in a headed run. |
 | `evaluate` | `script`, `args?` | JavaScript evaluated in the page; the result is bound under `id`. `script` is a template. With `args`, `script` is a function expression called with them, each string rendered (a lone placeholder keeps its type): `{ "script": "(a) => a.states.length", "args": { "states": "{{ split(vars.state) }}" } }`. **Trusted recipes only.** |
 | `screenshot` | `path` (template) | Full page. A debugging aid. |
 | `captcha` | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; a form captcha: `image`, `refresh?`, `field?`, `submit?` | Solves the challenge on the page, if there is one (none is fine), reCAPTCHA v3 included. Missing fields come from `session.captcha`. With `image`, a captcha checked when its form is posted: the solver fills `field`, `submit` posts the form, `verify.selector` / `verify.failure` say yes or no. §6.1. |
 
-Clicks and key presses can navigate; the engine re-reads the page URL after every web step.
+Clicks and key presses can navigate; the engine re-reads the page URL after every web step. A `click`,
+`press` or `select` that navigates the page is checked like a `goto`: the engine waits for the new page to
+load, retries a load that fails in passing (`limits.retry`: it loads the URL the step navigated to again; a
+form the step posted is never sent twice), checks the answer against `session.blockedWhen`, and reports the
+page as `page:visit` with its status, so it counts in `pages`. A navigation that fails, or still answers a
+retried status (a 503) once the tries are spent, fails the step with its cause (`net::ERR_… at <url>`,
+`HTTP 503 at <url>`): the browser's error page is never taken for the page. A click that only changes the
+page in place counts nothing; one whose script changes the URL (`history.pushState`) counts a page without
+a status. A key press on the page itself and a `select` do not wait for a navigation their handlers start;
+they give it 150 ms to begin.
 
 `target` is a template instead of a selector: it renders either to a **live element** (the variable of a
 `forEach` over `selector`, §3.7) or to a selector string. Give one of `selector` and `target`, never both.
@@ -236,7 +252,24 @@ call their JSON endpoints: a report whose table the page reads from an API is re
 
 | Step | Fields | Notes |
 |---|---|---|
-| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`), `encoding?`, `delimiter?`, `scalars?` | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13). A `file:` URL reads a local file, its kind from `as` or the extension (`.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.jsonl`, `.ndjson`, `.md`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`). 4xx/5xx fail the step. |
+| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`), `encoding?`, `delimiter?`, `scalars?` | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page; one with no page to resolve against fails with a message saying so. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13); a type that says nothing (below) is sniffed. A `file:` URL reads a local file, its kind from `as`, else the extension (`.pdf`, `.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.json`, `.jsonl`, `.ndjson`, `.md`, `.html`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`), else its bytes; a relative one (`file:data/listino.csv`) is read from the recipe file's folder (below). 4xx/5xx fail the step. |
+
+**A body served as anything** (`application/octet-stream`, `binary/octet-stream`, `text/plain`, `application/zip`
+and the like, or no content type: a file behind a bucket or a CDN, a download link, a raw file) is read by what it
+is. Its first bytes decide: `%PDF-` is a PDF; a zip whose parts are under `xl/`, `ppt/` or `word/` is a workbook,
+a deck or a Word document; gzip is a sitemap when the URL ends `.xml.gz`. Otherwise the URL path's extension
+decides, as for a `file:` URL, and only then is it text. So a GitHub raw `.csv` or `.json` (served as
+`text/plain`) reads as a CSV or JSON. An error page (4xx/5xx) is not sniffed by its URL's extension. `as` wins
+over all of it; a specific content type wins over the bytes. A local file or a download with no known extension is
+sniffed the same way.
+
+**Local files.** `file:///srv/listini/listino.csv` reads that file. A relative `file:` URL
+(`file:data/listino.csv`, `file:./x.pdf`, `file:../shared/x.xlsx`) is read from **the folder of the recipe file**
+that names it, when the recipe was loaded from a file (`loadRecipeSet`, `loadRecipes`, the cli), so a recipe and
+its documents move together. That holds for start URLs, start and recipe `vars`, `matrix` values, and every step's
+`url` (a template keeps its placeholders: `file:data/{{vars.month}}.csv`). A recipe given as an object or text,
+and a URL that only a template makes relative, read from the process working directory. `allowedHosts` refuses
+every `file:` URL, relative or not (§8).
 
 Text bodies are decoded from, in order: a byte-order mark, `encoding` (any WHATWG label: `windows-1252`,
 `iso-8859-15`, `shift_jis`), the charset the server declares, UTF-8, and Windows-1252 for text that is not
@@ -278,7 +311,7 @@ body is sent as JSON:
 | `extract` | `selector`, `kind` (`css`, `xpath`, `jsonpath`, `regex`, `table`), `take?`, `many?`, `from?`; `namespaces?`, `ignoreNamespaces?` (`xpath` on XML) | §4. |
 | `set` | `value` | A literal, or a template when it is a string. In an object or list every string, at any depth, is a template (a lone placeholder keeps its type), as in a request `body`. |
 | `collect` | `into` (an id), `value` | Appends `value` (a literal, or a template when it is a string, rendered all the way down like `set`) to the list `into` holds, in whichever enclosing scope binds it; a list value is appended item by item, a missing one adds nothing. `into` must be bound first, usually `{ "type": "set", "id": "all", "value": [] }` before the loop: the binding validator checks. The way to carry values out of `forEach` iterations or `paginate` pages (§3.6). |
-| `forEach` | `over` (a list id) **or** `selector` (web), `as` (variable), `steps`, `emit?` (`true`, or `{ output }` naming this recipe's output) | Runs `steps` once per item in a fresh child scope with the item bound as `as`. `emit: true` produces one record per iteration. `over` may name a single value; it is treated as a one-item list. `selector` iterates the live elements it matches (§3.7). |
+| `forEach` | `over` (a list id) **or** `selector` (web), `as` (variable), `steps`, `emit?` (`true`, or `{ output }` naming this recipe's output) | Runs `steps` once per item in a fresh child scope with the item bound as `as`. `as` follows the rules of a step `id`: it may not name `page`, `start`, `vars` or an id already bound on the path (§3.5). `emit: true` produces one record per iteration. `over` may name a single value; it is treated as a one-item list. `selector` iterates the live elements it matches (§3.7). |
 | `if` | `test` (template), `steps`, `else?` | Runs `steps` when `test` renders truthy, otherwise `else`, **in the current scope**: ids bound in a branch are visible after it. §3.8. |
 | `paginate` | `next`, `until?` (template), `maxPages?`, `steps` | Runs `steps` per page in a fresh child scope, then follows `next`. §3.6. |
 | `emit` | `output?` (must be this recipe's output id) | Produces a record from everything in scope. |
@@ -330,6 +363,11 @@ is true.
   value cannot inherit the previous row's.
 - `emit` snapshots the whole chain, child values shadowing parents. That is why a record produced inside a
   `forEach` sees its own row's values *and* the actor name extracted outside the loop.
+- A name is bound once along a path: a step `id` or a `forEach`'s `as` that repeats `page`, `start`, `vars` or
+  an id bound earlier on the path (an outer step, an enclosing loop's `as`) fails binding with
+  `id "item" is already bound on this path`. So a loop over tags inside a loop over products needs its own
+  name (`as: "tag"`, not a second `as: "item"`). Sibling loops, and the two branches of an `if`, are separate
+  paths and may reuse a name.
 - `page.url` / `page.number` and the current document are scope state, bound in the innermost scope that
   navigated. In `web` mode `page.url` is the real page URL; in `api` mode it is the final URL of the nearest
   `request`, and `start.url` before any request.
@@ -345,7 +383,7 @@ is true.
 
 | `next` | Mode | Behaviour |
 |---|---|---|
-| `{ "selector": "a.next" }` | web | Clicks it. If the body navigated away (a `forEach` visiting every item), the engine returns to the listing page first. No visible element within 2 s means no next page. |
+| `{ "selector": "a.next" }` | web | Clicks it. If the body navigated away (a `forEach` visiting every item), the engine returns to the listing page first. No visible element within 2 s means no next page. The navigation the click causes is checked like a `goto`'s: a load that fails in passing is retried (`limits.retry`) by loading the URL the click led to again, not by clicking again; the answer is checked against the block rule; a failure fails the `paginate` step with its cause (`HTTP 503 at …`, `net::ERR_… at …`), never running the body on the browser's error page. A next that swaps the content in place (no navigation) still works: the click gets 500 ms to start one, and the page counts either way. |
 | `{ "url": "{{start.url}}?page={{ page.number + 1 }}" }` | both | The rendered value is the next `page.url` (web mode navigates to it). Empty means no next page. |
 | `{ "jsonpath": "$.nextPage" }` | api, web (on a `request`'s JSON) | Evaluated on the current document; the value is the next URL, relative allowed. `null`, `false` or empty means no next page. |
 | `{ "jsonpath": "$.cursor", "as": "cursor" }` | api, web (on a `request`'s JSON) | The value is bound under `cursor` in the next page's scope and the body builds the URL itself (`?cursor={{cursor}}`); on page 1 it is unset. |
@@ -492,8 +530,8 @@ Parallel is only faster if the site lets it be. Pair it with the per-site `throt
 | `from` | Web mode | Api mode |
 |---|---|---|
 | absent | the live page | the last `request`'s response (nearest scope that has one) |
-| an id holding **text** | with `css`: the text as HTML (a fragment such as a `<tr>` is parsed as a fragment, so cells survive); with `jsonpath`: the text parsed as JSON | same |
-| an id holding a **list of texts** | with `jsonpath`: every entry that parses as JSON becomes one element of an array and the path runs over the array | same |
+| an id holding **text** | with `css`: the text as HTML (a fragment such as a `<tr>` is parsed as a fragment, so cells survive); with `table`: the HTML's `<table>`s (a Word or Markdown document, a page a `request` fetched: §4.11); with `jsonpath`: the text parsed as JSON | same |
+| an id holding a **list of texts** | with `jsonpath`: every entry that parses as JSON becomes one element of an array and the path runs over the array; with `table`: the tables of every fragment (`take: "html"`, `many: true`) | same |
 | an id holding **data** (an object, a list of objects) | with `jsonpath` | same |
 | an id holding a **read PDF** (a `request` with `as: "pdf"`) | with `table`, `regex` or `jsonpath` (§4.6) | same |
 | an id holding a **read workbook** (a spreadsheet or a CSV) | with `table`, `regex` or `jsonpath` (§4.7) | same |
@@ -578,8 +616,8 @@ repeating element (`table.credit_group tr`, not `tr`) and check the first record
 
 `request` with `as: "pdf"` (or a response served as `application/pdf`, or a local `file:…pdf`) reads the
 PDF's text layer with pdf.js into pages of **rows**: text that sits side by side becomes a cell, cells whose
-vertical extents overlap become a row. A scan has no text layer and fails the step (no OCR). Three extract
-kinds read it:
+vertical extents overlap become a row. A scanned page has no text layer and gives no rows; a PDF where no page
+has one fails the step (no OCR). Three extract kinds read it:
 
 | `kind` | Reads | Use for |
 |---|---|---|
@@ -715,7 +753,8 @@ also reports the encoding and the delimiter it used.
     notes }] }
 ```
 
-A title placeholder that PowerPoint places through the slide's layout gets the layout's position, and boxes
+Charts are read from the data the chart caches, the 2016 kinds too (waterfall, treemap, sunburst, histogram, box
+and whisker, funnel, region map), so the embedded workbook is never opened. A title placeholder that PowerPoint places through the slide's layout gets the layout's position, and boxes
 inside a group are placed through its scaling. Slide numbers, dates and footers are left out. A legacy `.ppt`,
 a password-protected file or an `.odp` fails the step, with what to do.
 
@@ -788,12 +827,14 @@ the Markdown source instead, request it with `as: "text"`.
 
 ### 4.11 HTML tables
 
-`table` also reads an HTML document's `<table>`s: a fetched page, rendered Markdown, or, in web mode, the live
-page. Every table becomes a grid: `thead`, `tbody` and `tfoot` rows in order, `th` and `td` alike, cell text
-with whitespace collapsed (a `<br>` or a paragraph inside a cell reads as a space: `2659<br>$560` is
-`2659 $560`), and `colspan` / `rowspan` as merged ranges. From there it is the grid table of §4.7:
-the `selector` matches the header row, merged cells are filled, `headerRows` joins a header over two rows,
-`fillDown` and `columns` work the same. A table inside a table is read on its own.
+`table` also reads an HTML document's `<table>`s: a fetched page, rendered Markdown, a Word document, or, in web
+mode, the live page. With `from`, it reads the HTML an id holds: a Word or Markdown document fetched earlier, or,
+in web mode, a page a `request` returned (without `from`, a web recipe's `table` reads the live page). Every table
+becomes a grid: `thead`, `tbody` and `tfoot` rows in order, `th` and `td` alike, cell text with whitespace
+collapsed (a `<br>` or a paragraph inside a cell reads as a space: `2659<br>$560` is `2659 $560`), and `colspan` /
+`rowspan` as merged ranges. From there it is the grid table of §4.7: the `selector` matches the header row, merged
+cells are filled, `headerRows` joins a header over two rows, `fillDown` and `columns` work the same. A table
+inside a table is read on its own.
 
 ```json
 { "type": "extract", "id": "table", "kind": "table", "selector": "^Model Version", "headerRows": 2,
@@ -847,7 +888,7 @@ and handed to the recipe as **HTML**, built like rendered Markdown (§4.10), so 
 - tables become `<table>`s with merged cells as `colspan` / `rowspan`, so a `table` extract reads a two-row
   header (`headerRows: 2`) the way it reads a spreadsheet's (§4.11);
 - links become `<a href>`, a paragraph's Word style is `data-style` (`p[data-style='Prezzo']`);
-- headers, footers and notes come after the body: `header[data-part=header]`, `footer[data-part=footer]`,
+- page headers come before the body, footers and notes after it: `header[data-part=header]`, `footer[data-part=footer]`,
   `aside[data-part=notes] li#footnote-1`; the document's title is `<title>`.
 
 ```json
@@ -857,8 +898,9 @@ and handed to the recipe as **HTML**, built like rendered Markdown (§4.10), so 
 { "type": "extract", "id": "conditions", "selector": "section[data-heading='Condizioni'] li", "kind": "css", "many": true }
 ```
 
-Tracked changes read as accepted (insertions in, deletions out). A legacy `.doc` is refused with what to do: save
-it as `.docx`, or export it as PDF (§4.6). `probe` lists a document's sections and tables.
+Its `id` holds the HTML, so `table` with `from: <id>` reads its tables after another `request` has replaced the
+current document. Tracked changes read as accepted (insertions in, deletions out). A legacy `.doc` is refused with
+what to do: save it as `.docx`, or export it as PDF (§4.6). `probe` lists a document's sections and tables.
 
 ## 5. Mapping
 
@@ -878,10 +920,13 @@ it as `.docx`, or export it as PDF (§4.6). `probe` lists a document's sections 
 - `from` is an id or a path into one (`item.href`, `page.url`). Several sources give the chain a **list** of
   values (then `join`, `coalesce`, `sum`...).
 - `each` builds an `array` of `object` from a list id; inside `fields`, `from` is relative to each item and
-  `.` is the item itself.
-- `onMissing` on a rule overrides the field's policy for this recipe.
-- Generated fields are not mapped; required fields must be mapped, defaulted or generated. The binding
-  validator enforces both at load time.
+  `.` is the item itself. Each key of `fields` names a field of the items (a typo is a load error), and each
+  member gets its rule's `onMissing`, its field's policy, `default` and validation, reported at its index
+  (`mapping failed: variants[1].size: missing`).
+- `onMissing` on a rule overrides the field's policy for this recipe. `onMissing: "default"` needs a `default`
+  on the field.
+- Generated fields are not mapped; required fields, and required members of an `each` item, must be mapped,
+  defaulted or generated. The binding validator enforces these at load time.
 
 ### 5.1 Transforms
 
@@ -901,11 +946,11 @@ reaches the missing-value policy untouched.
 | `slice` | `start`, `end?` | list | a sub-list |
 | `coalesce` | – | list | the first item that is not missing or blank |
 | `default` | `value` | list | replaces `undefined`, `null` or `''` |
-| `number` | `locale?` | scalar | parse (`"1.299,00"` with `de-DE` → 1299) |
-| `integer` | – | scalar | parse and truncate |
+| `number` | `locale?` | scalar | reads the one number in the text (`"1.299,00"` with `de-DE` → 1299, `"£51.77"` → 51.77); two numbers or more is an error, so `regex` first. Separators as for the `number` type (§1.2) |
+| `integer` | – | scalar | as `number`, truncated |
 | `boolean` | `truthy?` | scalar | `truthy`: `true` when the text contains a phrase (substring, case-insensitive). Without it, the field type's default phrases (§1.2). |
-| `currency` | `locale?`, `currency?` | scalar | `{ amount, currency }`; the code from the arg, else the text's symbol or code |
-| `date` | `format?`, `timezone?` | scalar | a Date; `format` tokens `YYYY MM DD HH mm ss`; `timezone` an IANA zone for text without an offset |
+| `currency` | `locale?`, `currency?` | scalar | `{ amount, currency }`; the amount as `number` reads it; the code from the arg, else an ISO 4217 code next to the amount, else a symbol, else an ISO 4217 code anywhere in the text |
+| `date` | `format?`, `timezone?` | scalar | a Date; `format` tokens `YYYY MM DD HH mm ss`; `timezone` an IANA zone for text without an offset, UTC without one (never the host's zone); a date alone (`2026-03-04`) is midnight UTC |
 | `absoluteUrl` | `base?` | scalar | resolve against `base`, else `page.url` |
 | `urlEncode` | – | scalar | percent-encodes one URL component (`encodeURIComponent`): `#` → `%23`, space → `%20`, `&` → `%26`, `+` → `%2B`, `é` → `%C3%A9` |
 | `flatten`, `unique` | – | list | nested lists flattened; duplicates removed |
@@ -949,8 +994,9 @@ annotate every row of a nested list:
 ```
 
 An item key with the same name as a record id wins. `from` inside `fields` stays relative to the item. Applied to a list, `lookup` runs per item. `group` goes the other way: one list of
-rows becomes one item per distinct key, for an output field that is an array of objects (`each` over the
-groups).
+rows becomes one `{ key, items }` per distinct key. Map the result straight into an `array` of `object` field
+(members `key` and `items`) or a `json` field: `each` can't walk it, since `each` reads a list bound in the
+scope, not a transform's output.
 
 ---
 
@@ -967,7 +1013,9 @@ const crawler = createCrawler({ hooks: {
 
 `(input, args, context) => value`, sync or async. From a `hook` **step**, `input` is `undefined` and the
 result is bound under the step's `id`; from a `hook` **transform**, `input` is the value so far. `context`
-gives `recipeId`, the scope snapshot and a `log`. A recipe naming an unregistered hook fails at the call.
+gives `recipeId`, the scope snapshot and a `log`. A recipe naming an unregistered hook fails the run before
+its first request: `crawler.run` and `crawler.work` reject with `UnknownHookError`, naming the recipe and where
+it calls the hook (`shop mapping.inStock.transform.1: unknown hook "positive"`).
 
 **From the cli and the MCP server**, hooks come from a JavaScript module whose default export is the map
 (named function exports work too):
@@ -1092,7 +1140,8 @@ engine sends the same request again: that is `limits.retry`, and it is **on by d
 | `statuses` | `[408, 425, 429, 500, 502, 503, 504]` | Answers retried. Connection failures always are: resets, refusals, timeouts, a DNS lookup that could not run, a proxy that dropped the tunnel. A host that does not exist is not. |
 | `forMs` | none | A time budget: keep retrying until this long after the first try. Without `attempts`, tries are not counted; with it, whichever runs out first. No pause runs past the budget. |
 
-- It covers every `goto`, `request` and `next.url` page. A `Retry-After` (seconds or a date) is honoured, and it
+- It covers every `goto`, `request` and `next.url` page, and the page a `next.selector`, `click`, `press` or
+  `select` navigates to (retried by loading that URL again; a form post is not retried). A `Retry-After` (seconds or a date) is honoured, and it
   holds back **every** request to that site, not only the one that got it.
 - A retry is the same request again, on the same access lease. It does not spend the step's `onError` retries,
   and each one is a `request:retry` event (`↺` in the trace).
@@ -1114,7 +1163,9 @@ an unattended run, give the retry a time budget instead of a number of tries. Th
 
 Retry 404 only for a site known to answer it for an outage: on most sites a 404 means the page is not there.
 
-**A mapped value is missing** (`undefined`, `null`, `""`; an empty list is a value). The policy is the
+**A mapped value is missing** (`undefined`, `null`, `""`, and in a field that is not `string` or `json` text
+with nothing but spaces; an empty list is a value). This holds for every field type: an empty table cell
+mapped to an `integer` is missing, not a number that failed to parse. The policy is the
 mapping rule's `onMissing`, else the field's, else `default` when the field has a `default`, else the
 recipe's, else `fail` for required fields and `null` otherwise:
 
@@ -1123,10 +1174,12 @@ recipe's, else `fail` for required fields and `null` otherwise:
 | `fail` | The recipe stops (`MappingFailedError`). |
 | `skip-record` | This record is dropped and reported (`record:reject`); the walk continues. |
 | `null` | The field is `null` (the field must be `nullable` or not `required`). |
-| `default` | The field's `default`. |
+| `default` | The field's `default`, coerced to the field's type. |
 
 **A value cannot be coerced** (`"call us"` into a `number`, a relative link into a `url`) follows the same
-missing-value policy: `skip-record` drops the record, anything else stops the recipe.
+missing-value policy: `skip-record` drops the record, anything else stops the recipe. The message names the
+field and its type, not a transform the rule doesn't have: `mapping failed: price: number field: no number in
+"call us"`.
 
 **A transform throws** (a `number` op on `"OTR £"`, a hook error): the recipe stops, unless the mapping rule
 itself says `onMissing: "skip-record"`, which reads as "without this field the record is worthless" and
@@ -1161,12 +1214,18 @@ only.
 
 `loadRecipeSet` parses every file against its schema (`RecipeValidationError` lists every problem with its
 JSON path) and then **binds** the inputs to the output (`RecipeBindingError`): every mapping key names an
-output field, every `from` starts with a known id, required fields are covered, web steps stay in web
-recipes, `next.selector` only in web mode, one emitting construct per path.
+output field and every `each` field a field of the items, every `from` starts with a known id, required fields
+are covered, every `default` coerces to its field's type and passes its rules, `onMissing: "default"` has a
+`default`, web steps stay in web recipes, `next.selector` only in web mode, one emitting construct per path, and
+no step `id` or `forEach` `as` rebinds a name already bound on its path. Hook names are checked when the crawler
+runs the set, before any request (§6).
 
 The report gives, per recipe: `emitted`, `rejected`, `duplicates`, `skipped` (records a resumed run already
 had), `stepsSkipped` (steps whose `onError: skip` swallowed a failure: a check that found nothing), `pages`,
-`durationMs`, and `error` when the recipe stopped. The sink summary says how many records were written and where.
+`durationMs`, and `error` when the recipe stopped. `pages` counts every `page:visit`: each page a `goto`, a
+`next` or a navigating `click`, `press` or `select` reached, and each `request` that got an answer. An answer
+that fails the step still counts (a 404 is a page that was fetched); a request or navigation that got no
+answer at all (a dropped connection, a refused one) does not. The sink summary says how many records were written and where.
 
 **Resuming.** A long crawl that dies halfway does not have to start over. Open the sink in append mode and
 ask the crawler to resume:
@@ -1191,7 +1250,8 @@ const crawler = createCrawler({ allowedHosts: ['example.com', '*.shop.example', 
 - A pattern is a host, `*.host` (its subdomains and the host itself), `host:port`, or `*` for any host.
 - It holds wherever a request leaves: navigations, the page's own requests (a script's `fetch`, images,
   frames), web sockets, `request` steps, and every redirect hop, which is checked before it is followed.
-- `file:` is refused whatever the list says; `data:`, `blob:` and `about:` never leave the page and pass.
+- `file:` is refused whatever the list says, a relative `file:` URL too (after it resolves); `data:`, `blob:` and
+  `about:` never leave the page and pass.
 - Service workers are blocked, since their requests would bypass the check. A remote browser's own service
   workers (`cdp` profiles) can't be blocked.
 - A refused request fails the step: `HostNotAllowedError` in api mode, `net::ERR_BLOCKED_BY_CLIENT` in a
@@ -1219,7 +1279,7 @@ its markup rarely makes a recipe fail; it makes it find less.
 
 ### 8.2 Events and the trace
 
-Everything the engine does is an event: `recipe:start` / `recipe:finish`, `page:visit` (with the HTTP status),
+Everything the engine does is an event: `recipe:start` / `recipe:finish`, `page:visit` (with the HTTP status; one per page counted in `pages`),
 `access:lease` / `access:blocked` / `access:rotate`, `request:retry`, `captcha:detected` / `captcha:solve` / `captcha:solved` /
 `captcha:failed` / `captcha:budget`, `step:start` /
 `step:finish` / `step:retry` / `step:skip` (with the step type, its id and its path such as
@@ -1278,7 +1338,7 @@ instead of a terminal command.
 | `no match for <selector>` on the first extract of a page | wrong selector, or the page is a challenge / login wall | print `page:visit` URLs; fetch the page and look; on a bot wall switch to `web` or run through a proxy ([access.md](./access.md)) |
 | `none of the N texts bound to "x" is JSON` | the scripts are not JSON-LD, or hold JavaScript | check the block; `evaluate` in web mode is the fallback |
 | a field carries the *next* row's value | the row selector matched a wrapper element first | select the innermost repeating element (§4.5) |
-| `"…" is not a URL and no page is known` | a relative URL before any navigation | make the first step `goto` / `request` with `{{start.url}}` |
+| `"…" is not an absolute URL, and there is no page to resolve it against` | a relative URL before any navigation, or a start URL that is a plain path | make the first step `goto` / `request` with `{{start.url}}`; give a start point a full URL, or `file:` for a local file (§3.2) |
 | `mapping.x.from: "y" does not start with a known id` | typo in an id, or the id is bound only in a bootstrap | ids are per recipe; bootstraps produce a session, not ids |
 | `record rejected: title: missing` on every record | the id is bound in a sibling scope, not the emitting one | extract inside the `forEach` body, or before it |
 | the crawl stops after page 1 in web mode | the body navigated away and `next.selector` is not on the page | the engine returns to the listing page; if the listing is itself reached by clicking, use `next.url` |

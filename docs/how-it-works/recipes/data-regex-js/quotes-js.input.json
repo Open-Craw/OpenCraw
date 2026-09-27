@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-js",
+  "output": "quote-script",
+  "mode": "api",
+  "start": [{ "url": "https://quotes.toscrape.com/js/" }],
+  "limits": { "delayMs": 300, "maxRecords": 2 },
+  "steps": [
+    { "type": "request", "id": "html", "url": "{{start.url}}" },
+    { "type": "extract", "id": "rendered", "selector": "div.quote", "kind": "css", "take": "html", "many": true },
+    { "type": "extract", "id": "names", "selector": "\"name\": \"([^\"]+)\"", "kind": "regex", "many": true },
+    { "type": "extract", "id": "firstName", "selector": "\"name\": \"[^\"]+\"", "kind": "regex" },
+    { "type": "extract", "id": "data", "selector": "var data = (\\[.*?\\]);\\s*for", "kind": "regex" },
+    { "type": "extract", "id": "quotes", "from": "data", "selector": "$[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [] }
+  ],
+  "mapping": {
+    "text": { "from": "quote.text" },
+    "author": { "from": "quote.author.name" },
+    "tags": { "from": "quote.tags" }
+  }
+}

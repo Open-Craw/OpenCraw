@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "sequential-art-pages",
+  "output": "book",
+  "mode": "api",
+  "description": "Three listing pages of the Sequential Art category, the first book of each. Its own delayMs is 300 ms; the crawler's throttle for the site is 1000 ms.",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html" }],
+  "vars": { "category": "Sequential Art" },
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "paginate", "next": { "url": "{{first(next)}}" }, "maxPages": 3, "steps": [
+      { "type": "request", "id": "listing", "url": "{{page.url}}", "as": "html" },
+      { "type": "extract", "id": "next", "selector": "li.next a", "kind": "css", "take": "attr:href", "many": true },
+      { "type": "extract", "id": "books", "selector": "li:first-child > article.product_pod", "kind": "css", "take": "html", "many": true },
+      { "type": "forEach", "over": "books", "as": "book", "emit": true, "steps": [
+        { "type": "extract", "id": "title", "from": "book", "selector": "h3 a", "kind": "css", "take": "attr:title" },
+        { "type": "extract", "id": "link", "from": "book", "selector": "h3 a", "kind": "css", "take": "attr:href" },
+        { "type": "extract", "id": "price", "from": "book", "selector": ".price_color", "kind": "css", "take": "text" }
+      ]}
+    ]}
+  ],
+  "mapping": {
+    "url": { "from": "link", "transform": [{ "op": "absoluteUrl" }] },
+    "title": { "from": "title" },
+    "price": { "from": "price", "transform": [{ "op": "currency" }] },
+    "category": { "from": "vars.category" }
+  }
+}

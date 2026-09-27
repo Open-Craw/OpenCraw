@@ -71,6 +71,22 @@ describe('validateBinding', () => {
     ]))
   })
 
+  it('checks the fields of an each rule against the item\'s fields (#78)', () => {
+    const variants = api.mapping.variants as Extract<InputRecipe['mapping'][string], { each: string }>
+    const typo: InputRecipe = { ...api, mapping: { ...api.mapping, variants: { ...variants, fields: { ...variants.fields, szie: { from: 'size' } } } } }
+    expect(messages(typo)).toEqual(['mapping.variants.fields.szie: the items of "variants" have no field "szie"'])
+    const strict = parseOutputRecipe({ ...output, fields: { ...output.fields, variants: { type: 'array', items: { type: 'object', fields: { size: { type: 'string', required: true }, price: { type: 'currency' } } } } } })
+    const { size: _size, ...priceOnly } = variants.fields
+    expect(validateBinding({ ...api, mapping: { ...api.mapping, variants: { ...variants, fields: priceOnly } } }, strict).map(issue => `${issue.path}: ${issue.message}`)).toEqual([
+      'mapping.variants.fields: required field of the items of "variants" "size" is not mapped',
+    ])
+  })
+
+  it('needs a default for a rule whose onMissing is default (#78)', () => {
+    expect(messages({ ...api, mapping: { ...api.mapping, title: { from: 'item.name', onMissing: 'default' } } })).toEqual(['mapping.title.onMissing: onMissing "default" needs a default: "title" has none'])
+    expect(messages({ ...api, mapping: { ...api.mapping, inStock: { from: 'item.stock', onMissing: 'default' } } })).toEqual([])
+  })
+
   it('rejects browser steps in api mode outside the bootstrap, and a form body in api mode; takes request in web mode', () => {
     const badApi: InputRecipe = { ...api, steps: [{ type: 'goto', url: 'x' }, ...api.steps] }
     expect(messages(badApi)[0]).toMatch(/steps\.0: "goto" needs a browser/)
@@ -98,6 +114,45 @@ describe('validateBinding', () => {
       'steps.1: id "links" is already bound on this path',
       'steps.2.steps.0: inside an emitting forEach; only one emit per path',
     ]))
+  })
+
+  it('refuses a forEach variable that shadows a reserved name or an id bound on its path', () => {
+    const loop = (as: string, steps: InputRecipe['steps'] = []): InputRecipe['steps'][number] => ({ type: 'forEach', over: 'links', as, steps })
+    const bad: InputRecipe = {
+      ...web,
+      steps: [
+        { type: 'extract', id: 'links', selector: 'a', kind: 'css', many: true },
+        loop('page'),
+        loop('vars'),
+        loop('links'),
+        loop('link', [loop('link')]),
+        loop('row', [{ type: 'extract', id: 'cell', selector: 'td', kind: 'css' }, loop('cell')]),
+        { type: 'forEach', id: 'rows', over: 'links', as: 'rows', steps: [] },
+      ],
+    }
+    expect(messages(bad).filter(text => text.includes('already bound'))).toEqual([
+      'steps.1.as: id "page" is already bound on this path',
+      'steps.2.as: id "vars" is already bound on this path',
+      'steps.3.as: id "links" is already bound on this path',
+      'steps.4.steps.0.as: id "link" is already bound on this path',
+      'steps.5.steps.1.as: id "cell" is already bound on this path',
+      'steps.6.as: id "rows" is already bound on this path',
+    ])
+  })
+
+  it('lets sibling loops, and the branches of an if, reuse a forEach variable', () => {
+    const loop = (as: string): InputRecipe['steps'][number] => ({ type: 'forEach', over: 'links', as, steps: [] })
+    const ok: InputRecipe = {
+      ...web,
+      steps: [
+        { type: 'extract', id: 'links', selector: 'a', kind: 'css', many: true },
+        loop('link'),
+        loop('link'),
+        { type: 'if', test: '{{links}}', steps: [loop('item')], else: [loop('item')] },
+        { type: 'forEach', over: 'links', as: 'item', emit: true, steps: [{ type: 'extract', id: 'title', selector: 'h1', kind: 'css' }] },
+      ],
+    }
+    expect(messages(ok).filter(text => text.includes('already bound'))).toEqual([])
   })
 
   it('knows paginate "as" bindings and forEach variables', () => {

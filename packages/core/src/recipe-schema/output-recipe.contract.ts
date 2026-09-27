@@ -65,7 +65,13 @@ const fieldShape = {
   maxLength:   z.int().nonnegative().optional(),
 }
 
-const fieldMap = z.record(z.string(), z.lazy(() => fieldSpecSchema))
+/**
+ * A field name, at the top level or inside an `object` field: mapping keys and record paths join names with
+ * dots, so a name holds none. Flag-free, so the JSON Schema `pattern` keeps its meaning.
+ */
+const fieldName = z.string().regex(/^[A-Za-z_][\w-]*$/, 'a field name has no dots')
+
+const fieldMap = z.record(fieldName, z.lazy(() => fieldSpecSchema))
 
 const REQUIRES: Partial<Record<FieldType, keyof FieldSpec>> = { enum: 'values', array: 'items', object: 'fields' }
 
@@ -93,6 +99,6 @@ export const outputRecipeSchema: z.ZodType<OutputRecipe> = z.strictObject({
   id:          z.string().regex(/^[a-z0-9][a-z0-9-]*$/, 'an id is lowercase letters, digits and hyphens'),
   version:     z.int().positive(),
   description: z.string().optional(),
-  fields:      z.record(z.string().regex(/^[A-Z_][\w-]*$/i, 'a field name has no dots'), fieldSpecSchema),
+  fields:      z.record(fieldName, fieldSpecSchema),
   onMissing:   z.enum(RECIPE_MISSING_POLICIES).optional(),
 })

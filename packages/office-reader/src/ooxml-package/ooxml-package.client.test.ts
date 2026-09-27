@@ -35,6 +35,23 @@ describe('OoxmlPackage', () => {
     expect(() => pkg.text('xl/sharedStrings.xml')).toThrow(/together/)
   })
 
+  it('counts a part read twice once against the total limit', () => {
+    const size = OoxmlPackage.open(workbook).text('xl/worksheets/sheet1.xml').length
+    const pkg = OoxmlPackage.open(workbook, { totalBytes: size + 10 })
+    for (let read = 0; read < 5; read += 1) expect(pkg.text('xl/worksheets/sheet1.xml')).toHaveLength(size)
+    expect(() => pkg.text('xl/sharedStrings.xml')).toThrow(/together/)
+  })
+
+  it('locates every part once, when it opens: reading a part never walks the zip\'s directory again', () => {
+    const bytes = new Uint8Array(workbook)
+    const pkg = OoxmlPackage.open(bytes)
+    // Wipe the central directory: parts already located still read.
+    const directory = bytes.findIndex((_byte, index) => bytes[index] === 0x50 && bytes[index + 1] === 0x4B && bytes[index + 2] === 0x01 && bytes[index + 3] === 0x02)
+    bytes.fill(0, directory)
+    expect(pkg.text('xl/workbook.xml')).toContain('<sheet name="Incentivi giugno"')
+    expect(() => OoxmlPackage.open(bytes)).toThrow(expect.objectContaining({ code: 'not-zip' }))
+  })
+
   it('never inflates past the size a header declares: a lying header gets a truncated part, not a megabyte', () => {
     expect(OoxmlPackage.open(fixture('fixtures', 'lying-size.xlsx')).text('xl/workbook.xml')).toHaveLength(16)
   })

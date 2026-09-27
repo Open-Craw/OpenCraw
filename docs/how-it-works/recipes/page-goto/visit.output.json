@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "visit",
+  "version": 1,
+  "description": "One record per page a goto reached: where the browser ended up, and the page's first heading.",
+  "fields": {
+    "asked": { "type": "string", "required": true },
+    "url": { "type": "url", "required": true, "key": true },
+    "number": { "type": "integer" },
+    "heading": { "type": "string", "nullable": true }
+  }
+}

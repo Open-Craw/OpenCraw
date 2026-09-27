@@ -1,0 +1,113 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "incentivi-xlsx",
+  "output": "dealer-incentive",
+  "mode": "api",
+  "description": "The office-reader workbook fixture: a title merged across the sheet, a header over two rows with Prezzo merged over Listino and Netto, a brand merged down two rows, a formula, a percentage, dates, booleans, an error, a hidden row, a hidden sheet and a chart sheet.",
+  "start": [
+    {
+      "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
+    }
+  ],
+  "steps": [
+    {
+      "type": "hook",
+      "id": "file",
+      "name": "repoFile",
+      "args": {
+        "url": "{{start.url}}"
+      }
+    },
+    {
+      "type": "request",
+      "url": "{{file}}"
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "selector": "^Marca Modello Prezzo",
+      "kind": "table",
+      "headerRows": 2,
+      "until": "^Consegna",
+      "columns": {
+        "brand": "^Marca$",
+        "model": "^Modello$",
+        "list": "^Prezzo Listino$",
+        "net": "^Prezzo Netto$",
+        "discount": "^Sconto$",
+        "from": "^Valido",
+        "active": "^Attivo$",
+        "note": "^Nota$"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "brand": {
+      "from": "row.brand"
+    },
+    "model": {
+      "from": "row.model"
+    },
+    "listPrice": {
+      "from": "row.list"
+    },
+    "netPrice": {
+      "from": "row.net",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "discount": {
+      "from": "row.discount",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "validFrom": {
+      "from": "row.from",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "active": {
+      "from": "row.active",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "note": {
+      "from": "row.note",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    }
+  }
+}

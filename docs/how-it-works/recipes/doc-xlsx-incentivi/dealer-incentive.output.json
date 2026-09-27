@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "dealer-incentive",
+  "version": 1,
+  "description": "One model of a dealer incentive sheet, with the types the workbook stores.",
+  "onMissing": "null",
+  "fields": {
+    "brand": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "model": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "listPrice": {
+      "type": "number"
+    },
+    "netPrice": {
+      "type": "number"
+    },
+    "discount": {
+      "type": "number"
+    },
+    "validFrom": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}

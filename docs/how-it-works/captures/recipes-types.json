@@ -1,0 +1,209 @@
+{
+  "scene": "recipes-types",
+  "summary": [
+    {
+      "recipeId": "attic-api",
+      "emitted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ attic-api (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract title  … ms",
+    "  · steps.2  extract price  … ms",
+    "  · steps.3  extract stock  … ms",
+    "  · steps.4  extract upc  … ms",
+    "  · steps.5  extract productType  … ms",
+    "  · steps.6  extract excl  … ms",
+    "  · steps.7  extract incl  … ms",
+    "  · steps.8  extract tax  … ms",
+    "  · steps.9  extract reviews  … ms",
+    "  · steps.10  extract image  … ms",
+    "  · steps.11  extract breadcrumb  … ms",
+    "  · steps.12  extract rows  … ms",
+    "  ↷ steps.13  extract oldPrice  skipped: no match for .product_main .price_old",
+    "  ↷ steps.14  extract saleBadge  skipped: no match for .product_main .sale",
+    "  ↷ steps.15  extract subtitle  skipped: no match for .product_main h2",
+    "  ✚ record [\"a897fe39b1053632\"]",
+    "  · steps.16  emit  … ms",
+    "■ attic-api: 1 emitted, 0 rejected, 0 duplicates, 3 steps skipped, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "key": "[\"a897fe39b1053632\"]",
+      "data": {
+        "upc": "a897fe39b1053632",
+        "title": "A Light in the Attic",
+        "price": {
+          "amount": 51.77,
+          "currency": "GBP"
+        },
+        "priceValue": 51.77,
+        "prices": {
+          "excl": {
+            "amount": 51.77,
+            "currency": "GBP"
+          },
+          "incl": {
+            "amount": 51.77,
+            "currency": "GBP"
+          },
+          "tax": {
+            "amount": 0,
+            "currency": "GBP"
+          }
+        },
+        "inStock": true,
+        "available": 22,
+        "reviews": 0,
+        "productType": "Books",
+        "image": "https://books.toscrape.com/media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg",
+        "breadcrumb": [
+          "Home",
+          "Books",
+          "Poetry"
+        ],
+        "rows": [
+          "UPCa897fe39b1053632",
+          "Product TypeBooks",
+          "Price (excl. tax)£51.77",
+          "Price (incl. tax)£51.77",
+          "Tax£0.00",
+          "Availability In stock (22 available)",
+          "Number of reviews 0"
+        ],
+        "oldPrice": null,
+        "onSale": false,
+        "subtitle": null,
+        "scrapedAt": "2026-09-27T21:45:03.948Z",
+        "scrapedOn": "2026-09-27",
+        "sourceUrl": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "recipe": "attic-api"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "title": "A Light in the Attic",
+        "price": "£51.77",
+        "stock": "In stock (22 available)",
+        "upc": "a897fe39b1053632",
+        "productType": "Books",
+        "excl": "£51.77",
+        "incl": "£51.77",
+        "tax": "£0.00",
+        "reviews": "0",
+        "image": "../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg",
+        "breadcrumb": [
+          "Home",
+          "Books",
+          "Poetry"
+        ],
+        "rows": [
+          "UPCa897fe39b1053632",
+          "Product TypeBooks",
+          "Price (excl. tax)£51.77",
+          "Price (incl. tax)£51.77",
+          "Tax£0.00",
+          "Availability In stock (22 available)",
+          "Number of reviews 0"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        }
+      },
+      "mapping": {
+        "upc": {
+          "from": "a897fe39b1053632",
+          "steps": []
+        },
+        "title": {
+          "from": "A Light in the Attic",
+          "steps": []
+        },
+        "price": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "priceValue": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "prices.excl": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "prices.incl": {
+          "from": "£51.77",
+          "steps": []
+        },
+        "prices.tax": {
+          "from": "£0.00",
+          "steps": []
+        },
+        "inStock": {
+          "from": "In stock (22 available)",
+          "steps": []
+        },
+        "available": {
+          "from": "In stock (22 available)",
+          "steps": []
+        },
+        "reviews": {
+          "from": "0",
+          "steps": []
+        },
+        "productType": {
+          "from": "Books",
+          "steps": []
+        },
+        "image": {
+          "from": "../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg"
+            }
+          ]
+        },
+        "breadcrumb": {
+          "from": [
+            "Home",
+            "Books",
+            "Poetry"
+          ],
+          "steps": []
+        },
+        "rows": {
+          "from": [
+            "UPCa897fe39b1053632",
+            "Product TypeBooks",
+            "Price (excl. tax)£51.77",
+            "Price (incl. tax)£51.77",
+            "Tax£0.00",
+            "Availability In stock (22 available)",
+            "Number of reviews 0"
+          ],
+          "steps": []
+        },
+        "oldPrice": {
+          "steps": []
+        },
+        "onSale": {
+          "steps": []
+        },
+        "subtitle": {
+          "steps": []
+        }
+      }
+    }
+  ]
+}

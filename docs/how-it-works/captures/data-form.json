@@ -1,0 +1,69 @@
+{
+  "scene": "data-form",
+  "summary": [
+    {
+      "recipeId": "quotes-login",
+      "emitted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2
+    }
+  ],
+  "trace": [
+    "▶ quotes-login (web)",
+    "  ⇄ access direct (direct)",
+    "  ↺ https://quotes.toscrape.com/login: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/login",
+    "  · steps.0  goto  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.1  request home  … ms",
+    "  · steps.2  extract liveLink  … ms",
+    "  · steps.3  extract fetchedLink  … ms",
+    "  · steps.4  extract firstQuote  … ms",
+    "  ✚ record (no key)",
+    "  · steps.5  emit  … ms",
+    "■ quotes-login: 1 emitted, 0 rejected, 0 duplicates, 2 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/login",
+      "key": null,
+      "data": {
+        "livePage": "Login",
+        "fetchedPage": "Logout",
+        "firstQuote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+      },
+      "scope": {
+        "vars": {
+          "user": "reader",
+          "password": "practice"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/login"
+        },
+        "home": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<title>Quotes to Scrape</title>\n    <link rel=\"stylesheet\" href=\"/static/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/static/main.css\">\n    \n    \n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"row header-box\">\n            <div class=\"col-md-8\">\n                <h1>\n                    <a href=\"/\" style=\"text-decoration: none\">Quotes to Scrape</a>\n                </h1>\n            </div>\n            <div class=\"col-md-4\">\n                <p>\n                \n                    <a href=\"/logout\">Logout</a…",
+        "liveLink": "Login",
+        "fetchedLink": "Logout",
+        "firstQuote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "page": {
+          "url": "https://quotes.toscrape.com/login",
+          "number": 1
+        }
+      },
+      "mapping": {
+        "livePage": {
+          "from": "Login",
+          "steps": []
+        },
+        "fetchedPage": {
+          "from": "Logout",
+          "steps": []
+        },
+        "firstQuote": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

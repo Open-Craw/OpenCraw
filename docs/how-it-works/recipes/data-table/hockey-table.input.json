@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "hockey-table",
+  "output": "team-season",
+  "mode": "api",
+  "start": [{ "url": "https://www.scrapethissite.com/pages/forms/?per_page=5" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "table", "selector": "^Team Name", "kind": "table", "columns": { "team": "^Team Name$", "year": "^Year$", "wins": "^Wins$", "losses": "^Losses$", "otLosses": "^OT Losses$" } },
+    { "type": "set", "id": "rows", "value": "{{table.rows}}" },
+    { "type": "forEach", "over": "rows", "as": "row", "emit": true, "steps": [] }
+  ],
+  "mapping": {
+    "team": { "from": "row.team" },
+    "year": { "from": "row.year" },
+    "wins": { "from": "row.wins" },
+    "losses": { "from": "row.losses" },
+    "otLosses": { "from": "row.otLosses" }
+  }
+}

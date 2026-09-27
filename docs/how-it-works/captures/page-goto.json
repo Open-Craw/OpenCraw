@@ -1,0 +1,183 @@
+{
+  "scene": "page-goto",
+  "summary": [
+    {
+      "recipeId": "goto-pages",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3
+    },
+    {
+      "recipeId": "request-missing",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2,
+      "error": "step steps.1 (request) failed: HTTP 404 for https://quotes.toscrape.com/does-not-exist"
+    }
+  ],
+  "trace": [
+    "▶ goto-pages (web)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  set targets  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "    · steps.1.steps.0  goto  … ms",
+    "    · steps.1.steps.1  extract heading  … ms",
+    "  ✚ record [\"https://quotes.toscrape.com/\"]",
+    "  ⇢ page 1  http://quotes.toscrape.com/js/",
+    "    · steps.1.steps.0  goto  … ms",
+    "    · steps.1.steps.1  extract heading  … ms",
+    "  ✚ record [\"http://quotes.toscrape.com/js/\"]",
+    "  ⇢ page 1  https://quotes.toscrape.com/does-not-exist  [404]",
+    "    · steps.1.steps.0  goto  … ms",
+    "    · steps.1.steps.1  extract heading  … ms",
+    "  ✚ record [\"https://quotes.toscrape.com/does-not-exist\"]",
+    "  · steps.1  forEach  … ms",
+    "■ goto-pages: 3 emitted, 0 rejected, 0 duplicates, 3 pages, … ms",
+    "▶ request-missing (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  goto  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/does-not-exist  [404]",
+    "  ✖ step steps.1 (request) failed: HTTP 404 for https://quotes.toscrape.com/does-not-exist",
+    "■ request-missing: 0 emitted, 0 rejected, 0 duplicates, 2 pages, … ms\n  ✖ stopped: step steps.1 (request) failed: HTTP 404 for https://quotes.toscrape.com/does-not-exist"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/",
+      "key": "[\"https://quotes.toscrape.com/\"]",
+      "data": {
+        "asked": "/",
+        "url": "https://quotes.toscrape.com/",
+        "number": 1,
+        "heading": "Quotes to Scrape"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "targets": [
+          "/",
+          "js",
+          "does-not-exist"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/",
+          "number": 1
+        },
+        "target": "/",
+        "heading": "Quotes to Scrape"
+      },
+      "mapping": {
+        "asked": {
+          "from": "/",
+          "steps": []
+        },
+        "url": {
+          "from": "https://quotes.toscrape.com/",
+          "steps": []
+        },
+        "number": {
+          "from": 1,
+          "steps": []
+        },
+        "heading": {
+          "from": "Quotes to Scrape",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "http://quotes.toscrape.com/js/",
+      "key": "[\"http://quotes.toscrape.com/js/\"]",
+      "data": {
+        "asked": "js",
+        "url": "http://quotes.toscrape.com/js/",
+        "number": 1,
+        "heading": "Quotes to Scrape"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "targets": [
+          "/",
+          "js",
+          "does-not-exist"
+        ],
+        "page": {
+          "url": "http://quotes.toscrape.com/js/",
+          "number": 1
+        },
+        "target": "js",
+        "heading": "Quotes to Scrape"
+      },
+      "mapping": {
+        "asked": {
+          "from": "js",
+          "steps": []
+        },
+        "url": {
+          "from": "http://quotes.toscrape.com/js/",
+          "steps": []
+        },
+        "number": {
+          "from": 1,
+          "steps": []
+        },
+        "heading": {
+          "from": "Quotes to Scrape",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/does-not-exist",
+      "key": "[\"https://quotes.toscrape.com/does-not-exist\"]",
+      "data": {
+        "asked": "does-not-exist",
+        "url": "https://quotes.toscrape.com/does-not-exist",
+        "number": 1,
+        "heading": "Not Found"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "targets": [
+          "/",
+          "js",
+          "does-not-exist"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/does-not-exist",
+          "number": 1
+        },
+        "target": "does-not-exist",
+        "heading": "Not Found"
+      },
+      "mapping": {
+        "asked": {
+          "from": "does-not-exist",
+          "steps": []
+        },
+        "url": {
+          "from": "https://quotes.toscrape.com/does-not-exist",
+          "steps": []
+        },
+        "number": {
+          "from": 1,
+          "steps": []
+        },
+        "heading": {
+          "from": "Not Found",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

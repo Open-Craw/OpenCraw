@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-outer-skip",
+  "output": "tagged-quote",
+  "mode": "api",
+  "start": [{ "url": "https://quotes.toscrape.com/api/quotes?page=3" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "id": "list", "url": "{{start.url}}" },
+    { "type": "extract", "id": "quotes", "selector": "$.quotes[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "onError": { "policy": "skip" }, "steps": [
+      { "type": "extract", "id": "author", "from": "quote", "selector": "$.author.name", "kind": "jsonpath" },
+      { "type": "extract", "id": "firstTag", "from": "quote", "selector": "$.tags[0]", "kind": "jsonpath" }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "quote.text" },
+    "author": { "from": "author" },
+    "firstTag": { "from": "firstTag" }
+  }
+}

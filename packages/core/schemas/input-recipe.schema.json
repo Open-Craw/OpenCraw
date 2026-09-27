@@ -41,7 +41,7 @@
             "type": "object",
             "propertyNames": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "additionalProperties": {
               "type": [
@@ -62,7 +62,7 @@
       "type": "object",
       "propertyNames": {
         "type": "string",
-        "pattern": "^[A-Z_]\\w*$"
+        "pattern": "^[A-Za-z_]\\w*$"
       },
       "additionalProperties": {
         "type": [
@@ -78,7 +78,7 @@
           "type": "object",
           "propertyNames": {
             "type": "string",
-            "pattern": "^[A-Z_]\\w*$"
+            "pattern": "^[A-Za-z_]\\w*$"
           },
           "additionalProperties": {
             "minItems": 1,
@@ -99,7 +99,7 @@
             "type": "object",
             "propertyNames": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "additionalProperties": {
               "type": [
@@ -250,7 +250,7 @@
             },
             "country": {
               "type": "string",
-              "pattern": "^[A-Z]{2}$"
+              "pattern": "^[A-Za-z]{2}$"
             },
             "sticky": {
               "type": "boolean"
@@ -524,7 +524,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -638,7 +638,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -767,7 +767,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -856,7 +856,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -946,7 +946,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1087,7 +1087,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1164,6 +1164,16 @@
             },
             "untilStable": {
               "type": "boolean"
+            },
+            "maxScrolls": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "settleMs": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
             }
           },
           "required": [
@@ -1177,7 +1187,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1272,7 +1282,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1361,7 +1371,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1443,7 +1453,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1617,7 +1627,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1719,7 +1729,7 @@
             },
             "from": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "columns": {
               "type": "object",
@@ -1774,7 +1784,7 @@
               "type": "object",
               "propertyNames": {
                 "type": "string",
-                "pattern": "^[A-Z_][\\w.-]*$"
+                "pattern": "^[A-Za-z_][\\w.-]*$"
               },
               "additionalProperties": {
                 "type": "string",
@@ -1797,7 +1807,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1876,7 +1886,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -1944,7 +1954,7 @@
             },
             "into": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "value": {}
           },
@@ -1960,7 +1970,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -2040,7 +2050,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -2129,7 +2139,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -2197,7 +2207,7 @@
             },
             "over": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "selector": {
               "type": "string",
@@ -2205,7 +2215,7 @@
             },
             "as": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "steps": {
               "type": "array",
@@ -2247,7 +2257,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -2342,7 +2352,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -2445,7 +2455,7 @@
                     },
                     "as": {
                       "type": "string",
-                      "pattern": "^[A-Z_]\\w*$"
+                      "pattern": "^[A-Za-z_]\\w*$"
                     }
                   },
                   "required": [
@@ -2482,7 +2492,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^[A-Z_]\\w*$"
+              "pattern": "^[A-Za-z_]\\w*$"
             },
             "onError": {
               "oneOf": [
@@ -2578,7 +2588,7 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "pattern": "^[A-Z_]\\w*$"
+                        "pattern": "^[A-Za-z_]\\w*$"
                       },
                       "onError": {
                         "oneOf": [
@@ -2707,7 +2717,7 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "pattern": "^[A-Z_]\\w*$"
+                        "pattern": "^[A-Za-z_]\\w*$"
                       },
                       "onError": {
                         "oneOf": [
@@ -2796,7 +2806,7 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "pattern": "^[A-Z_]\\w*$"
+                        "pattern": "^[A-Za-z_]\\w*$"
                       },
                       "onError": {
                         "oneOf": [
@@ -2886,7 +2896,7 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "pattern": "^[A-Z_]\\w*$"
+                        "pattern": "^[A-Za-z_]\\w*$"
                       },
                       "onError": {
                         "oneOf": [
@@ -3027,7 +3037,7 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "pattern": "^[A-Z_]\\w*$"
+                        "pattern": "^[A-Za-z_]\\w*$"
                       },
                       "onError": {
                         "oneOf": [
@@ -3122,7 +3132,7 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "pattern": "^[A-Z_]\\w*$"
+                        "pattern": "^[A-Za-z_]\\w*$"
                       },
                       "onError": {
                         "oneOf": [

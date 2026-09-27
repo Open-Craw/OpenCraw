@@ -1,0 +1,353 @@
+{
+  "scene": "run-matrix",
+  "summary": [
+    {
+      "recipeId": "category-firsts",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "category-firsts",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ category-firsts [category=Travel, slug=travel_2] (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+    "  · steps.0  request listing  … ms",
+    "  · steps.1  extract books  … ms",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"]",
+    "  · steps.2  forEach  … ms",
+    "■ category-firsts [category=Travel, slug=travel_2]: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ category-firsts [category=Poetry, slug=poetry_23] (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/poetry_23/index.html",
+    "  · steps.0  request listing  … ms",
+    "  · steps.1  extract books  … ms",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html\"]",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-black-maria_991/index.html\"]",
+    "  · steps.2  forEach  … ms",
+    "■ category-firsts [category=Poetry, slug=poetry_23]: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
+        "title": "It's Only the Himalayas",
+        "price": {
+          "amount": 45.17,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel",
+          "slug": "travel_2"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+        "title": "It's Only the Himalayas",
+        "link": "../../../its-only-the-himalayas_981/index.html",
+        "price": "£45.17"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../its-only-the-himalayas_981/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "It's Only the Himalayas",
+          "steps": []
+        },
+        "price": {
+          "from": "£45.17",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 45.17,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+        "title": "Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond",
+        "price": {
+          "amount": 49.43,
+          "currency": "GBP"
+        },
+        "category": "Travel"
+      },
+      "scope": {
+        "vars": {
+          "category": "Travel",
+          "slug": "travel_2"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Travel | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../its-only-the-himalayas_981/index.html\"><img src=\"../../../../media/cache/27/a5/27a53d0bb95bdd88288eaf66c9230d7e.jpg\" alt=\"It's Only the Himalayas\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"><img src=\"../../../../media/cache/9a/7e/9a7e63f12829df4b43b31d110bf3dc2e.jpg\" alt=\"See America: A Celebration of Our National Parks &amp; Treasured Sites\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html\"><img src=\"../../../../media/cache/d5/bf/d5bf0090470b0b8ea46d9c166f7895aa.jpg\" alt=\"Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../under-the-tuscan-sun_504/index.html\"><img src=\"../../../../media/cache/98/c2/98c2e95c5fd1a4e7cd5f2b63c52826cb.jpg\" alt=\"Under the Tuscan Sun\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-summer-in-europe_458/index.html\"><img src=\"../../../../media/cache/4e/15/4e15150388702ebca2c5a523ac270539.jpg\" alt=\"A Summer In Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-great-railway-bazaar_446/index.html\"><img src=\"../../../../media/cache/76/de/76de41867f323d7f1f4fbe2fdfc1b2ba.jpg\" alt=\"The Great Railway Bazaar\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i clas…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-year-in-provence-provence-1_421/index.html\"><img src=\"../../../../media/cache/db/46/db46159b05faa5d95262112bf9c29ddd.jpg\" alt=\"A Year in Provence (Provence #1)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n             …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html\"><img src=\"../../../../media/cache/e0/4f/e04f8eda2a2fa947aec17640202d9ab0.jpg\" alt=\"The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../neither-here-nor-there-travels-in-europe_198/index.html\"><img src=\"../../../../media/cache/06/81/0681530a7bc301caf5c3257e1b0f0750.jpg\" alt=\"Neither Here nor There: Travels in Europe\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-sta…",
+          "… 1 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\"><img src=\"../../../../media/cache/57/77/57770cac1628f4407636635f4b85e88c.jpg\" alt=\"Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"…",
+        "title": "Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond",
+        "link": "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+        "price": "£49.43"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond",
+          "steps": []
+        },
+        "price": {
+          "from": "£49.43",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 49.43,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Travel",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/poetry_23/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "title": "A Light in the Attic",
+        "price": {
+          "amount": 51.77,
+          "currency": "GBP"
+        },
+        "category": "Poetry"
+      },
+      "scope": {
+        "vars": {
+          "category": "Poetry",
+          "slug": "poetry_23"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Poetry | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-light-in-the-attic_1000/index.html\"><img src=\"../../../../media/cache/2c/da/2cdad67c44b002e7ead0cc35693c0e8b.jpg\" alt=\"A Light in the Attic\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-black-maria_991/index.html\"><img src=\"../../../../media/cache/58/46/5846057e28022268153beff6d352b06c.jpg\" alt=\"The Black Maria\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../shakespeares-sonnets_989/index.html\"><img src=\"../../../../media/cache/10/48/1048f63d3b5061cd2f424d20b3f9b666.jpg\" alt=\"Shakespeare's Sonnets\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../olio_984/index.html\"><img src=\"../../../../media/cache/55/33/553310a7162dfbc2c6d19a84da0df9e1.jpg\" alt=\"Olio\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../you-cant-bury-them-all-poems_961/index.html\"><img src=\"../../../../media/cache/e9/20/e9203b733126c4a0832a1c7885dc27cf.jpg\" alt=\"You can't bury them all: Poems\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                 …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../slow-states-of-collapse-poems_960/index.html\"><img src=\"../../../../media/cache/72/41/72417db983862010ef0c1a25de98c7d7.jpg\" alt=\"Slow States of Collapse: Poems\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n              …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../untitled-collection-sabbath-poems-2014_953/index.html\"><img src=\"../../../../media/cache/f9/3b/f93b4a650f03a5d21f2436d7813f42c2.jpg\" alt=\"Untitled Collection: Sabbath Poems 2014\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../poems-that-make-grown-women-cry_824/index.html\"><img src=\"../../../../media/cache/38/64/386468a8c3e6b880664bf7885bf6f726.jpg\" alt=\"Poems That Make Grown Women Cry\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n            …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../night-sky-with-exit-wounds_822/index.html\"><img src=\"../../../../media/cache/25/54/2554431c797ec725eea50b3f8a83758c.jpg\" alt=\"Night Sky with Exit Wounds\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../salt_731/index.html\"><img src=\"../../../../media/cache/3f/41/3f4160ada0b16e3c64cd2d0dffe781c8.jpg\" alt=\"salt.\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                   …",
+          "… 9 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/poetry_23/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-light-in-the-attic_1000/index.html\"><img src=\"../../../../media/cache/2c/da/2cdad67c44b002e7ead0cc35693c0e8b.jpg\" alt=\"A Light in the Attic\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+        "title": "A Light in the Attic",
+        "link": "../../../a-light-in-the-attic_1000/index.html",
+        "price": "£51.77"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../a-light-in-the-attic_1000/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "A Light in the Attic",
+          "steps": []
+        },
+        "price": {
+          "from": "£51.77",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 51.77,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Poetry",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/poetry_23/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-black-maria_991/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-black-maria_991/index.html",
+        "title": "The Black Maria",
+        "price": {
+          "amount": 52.15,
+          "currency": "GBP"
+        },
+        "category": "Poetry"
+      },
+      "scope": {
+        "vars": {
+          "category": "Poetry",
+          "slug": "poetry_23"
+        },
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/"
+        },
+        "listing": "\n\n<!DOCTYPE html>\n<!--[if lt IE 7]>      <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n<!--[if IE 7]>         <html lang=\"en-us\" class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n<!--[if IE 8]>         <html lang=\"en-us\" class=\"no-js lt-ie9\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html lang=\"en-us\" class=\"no-js\"> <!--<![endif]-->\n    <head>\n        <title>\n    Poetry | \n     Books to Scrape - Sandbox\n\n</title>\n\n        <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"created\" content=\"24th Jun 2016 09:29\" />\n        <meta name=\"description\"…",
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../a-light-in-the-attic_1000/index.html\"><img src=\"../../../../media/cache/2c/da/2cdad67c44b002e7ead0cc35693c0e8b.jpg\" alt=\"A Light in the Attic\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ic…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-black-maria_991/index.html\"><img src=\"../../../../media/cache/58/46/5846057e28022268153beff6d352b06c.jpg\" alt=\"The Black Maria\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../shakespeares-sonnets_989/index.html\"><img src=\"../../../../media/cache/10/48/1048f63d3b5061cd2f424d20b3f9b666.jpg\" alt=\"Shakespeare's Sonnets\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"ico…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../olio_984/index.html\"><img src=\"../../../../media/cache/55/33/553310a7162dfbc2c6d19a84da0df9e1.jpg\" alt=\"Olio\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../you-cant-bury-them-all-poems_961/index.html\"><img src=\"../../../../media/cache/e9/20/e9203b733126c4a0832a1c7885dc27cf.jpg\" alt=\"You can't bury them all: Poems\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Two\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                 …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../slow-states-of-collapse-poems_960/index.html\"><img src=\"../../../../media/cache/72/41/72417db983862010ef0c1a25de98c7d7.jpg\" alt=\"Slow States of Collapse: Poems\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Three\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n              …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../untitled-collection-sabbath-poems-2014_953/index.html\"><img src=\"../../../../media/cache/f9/3b/f93b4a650f03a5d21f2436d7813f42c2.jpg\" alt=\"Untitled Collection: Sabbath Poems 2014\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></…",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../poems-that-make-grown-women-cry_824/index.html\"><img src=\"../../../../media/cache/38/64/386468a8c3e6b880664bf7885bf6f726.jpg\" alt=\"Poems That Make Grown Women Cry\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n            …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../night-sky-with-exit-wounds_822/index.html\"><img src=\"../../../../media/cache/25/54/2554431c797ec725eea50b3f8a83758c.jpg\" alt=\"Night Sky with Exit Wounds\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i …",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../salt_731/index.html\"><img src=\"../../../../media/cache/3f/41/3f4160ada0b16e3c64cd2d0dffe781c8.jpg\" alt=\"salt.\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                   …",
+          "… 9 more"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/poetry_23/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-black-maria_991/index.html\"><img src=\"../../../../media/cache/58/46/5846057e28022268153beff6d352b06c.jpg\" alt=\"The Black Maria\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>…",
+        "title": "The Black Maria",
+        "link": "../../../the-black-maria_991/index.html",
+        "price": "£52.15"
+      },
+      "mapping": {
+        "url": {
+          "from": "../../../the-black-maria_991/index.html",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/catalogue/the-black-maria_991/index.html"
+            }
+          ]
+        },
+        "title": {
+          "from": "The Black Maria",
+          "steps": []
+        },
+        "price": {
+          "from": "£52.15",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 52.15,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "category": {
+          "from": "Poetry",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

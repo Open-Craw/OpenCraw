@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "url-without-policy",
+  "output": "probe",
+  "mode": "api",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "value", "selector": "#product_gallery img", "kind": "css", "take": "attr:src" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "image": { "from": "value" }
+  }
+}

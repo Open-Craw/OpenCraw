@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "book",
+  "version": 1,
+  "fields": {
+    "url": { "type": "url", "required": true, "key": true },
+    "title": { "type": "string", "required": true },
+    "price": { "type": "currency", "currency": "GBP", "required": true },
+    "stars": { "type": "integer", "nullable": true },
+    "inStock": { "type": "boolean", "default": false },
+    "category": { "type": "string" },
+    "page": { "type": "integer" }
+  }
+}

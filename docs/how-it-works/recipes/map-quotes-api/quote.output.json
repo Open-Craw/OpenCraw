@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "quote",
+  "version": 1,
+  "fields": {
+    "text": { "type": "string", "required": true, "key": true },
+    "author": { "type": "object", "fields": {
+      "name": { "type": "string", "required": true },
+      "slug": { "type": "string" },
+      "url": { "type": "url" }
+    }},
+    "authorQuery": { "type": "string" },
+    "openLibrary": { "type": "url" },
+    "citation": { "type": "string" },
+    "tagList": { "type": "string" },
+    "tagCount": { "type": "integer" },
+    "mainTag": { "type": "string" },
+    "tagPopularity": { "type": "array", "items": { "type": "integer" } },
+    "tags": { "type": "array", "items": { "type": "object", "fields": {
+      "name": { "type": "string" },
+      "url": { "type": "url" }
+    }}},
+    "numberInText": { "type": "number" }
+  }
+}

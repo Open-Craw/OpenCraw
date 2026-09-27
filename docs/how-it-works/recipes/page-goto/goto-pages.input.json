@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "goto-pages",
+  "output": "visit",
+  "mode": "web",
+  "description": "Three gotos from the same page: a plain one, one that redirects, one to a page that does not exist.",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "set", "id": "targets", "value": ["/", "js", "does-not-exist"] },
+    { "type": "forEach", "over": "targets", "as": "target", "emit": true, "steps": [
+      { "type": "goto", "url": "{{target}}" },
+      { "type": "extract", "id": "heading", "selector": "h1", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "asked": { "from": "target" },
+    "url": { "from": "page.url" },
+    "number": { "from": "page.number" },
+    "heading": { "from": "heading" }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "book-specs",
+  "output": "spec-row",
+  "mode": "api",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "book", "selector": "h1", "kind": "css" },
+    { "type": "extract", "id": "rows", "selector": "table.table-striped tr", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "rows", "as": "row", "emit": true, "steps": [
+      { "type": "extract", "id": "name", "from": "row", "selector": "th", "kind": "css" },
+      { "type": "extract", "id": "value", "from": "row", "selector": "td", "kind": "css" },
+      { "type": "extract", "id": "valueByXpath", "from": "row", "selector": "//td", "kind": "xpath" }
+    ]}
+  ],
+  "mapping": {
+    "book": { "from": "book" },
+    "name": { "from": "name" },
+    "value": { "from": "value" }
+  }
+}

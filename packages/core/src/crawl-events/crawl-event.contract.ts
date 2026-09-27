@@ -41,8 +41,12 @@ export type CrawlEvent =
   (Base & { type: 'step:retry', stepType: string, stepId?: string, path: string, attempt: number, error: string }) |
   (Base & { type: 'step:skip', stepType: string, stepId?: string, path: string, error: string }) |
   (Base & { type: 'step:branch', path: string, branch: 'then' | 'else' }) |
-  /** `scope` (the snapshot the record was mapped from) is present only under `CrawlOptions.debug`. */
-  (Base & { type: 'record:emit', url: string, key: string | null, data: Record<string, unknown>, scope?: Record<string, unknown> }) |
+  /**
+   * `scope` (the snapshot the record was mapped from) and `mapping` (each
+   * field's source value and its value after each transform, by target) are
+   * present only under `CrawlOptions.debug`.
+   */
+  (Base & { type: 'record:emit', url: string, key: string | null, data: Record<string, unknown>, scope?: Record<string, unknown>, mapping?: Record<string, { from: unknown, steps: { op: string, value: unknown }[] }> }) |
   (Base & { type: 'record:reject', url: string, field: string, reason: string, scope?: Record<string, unknown> }) |
   (Base & { type: 'record:duplicate', url: string, key: string }) |
   /** A resumed run found the key already in the sink. */

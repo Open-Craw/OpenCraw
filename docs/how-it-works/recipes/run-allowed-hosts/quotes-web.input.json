@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-web",
+  "output": "quote",
+  "mode": "web",
+  "description": "Reads the first quote, then follows the footer link to goodreads.com, a host the crawler's allowedHosts does not list.",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}", "waitUntil": "domcontentloaded" },
+    { "type": "extract", "id": "text", "selector": "div.quote span.text", "kind": "css", "take": "text" },
+    { "type": "extract", "id": "author", "selector": "div.quote small.author", "kind": "css", "take": "text" },
+    { "type": "emit" },
+    { "type": "extract", "id": "source", "selector": "footer a", "kind": "css", "take": "attr:href" },
+    { "type": "goto", "url": "{{source}}", "waitUntil": "domcontentloaded" }
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" }
+  }
+}

@@ -19,7 +19,11 @@ export interface Paragraph {
   links?:   DocumentLink[]
 }
 
-/** A table as a grid: rows of cell texts, merged cells as A1 ranges whose value sits in the top-left cell. */
+/**
+ * A table as a grid: rows of cell texts, merged cells as A1 ranges whose value sits in the top-left cell. Its
+ * `name` is `table N`, numbered once over the parts read, in the order headers, body, footers, notes, so no two
+ * tables share a name.
+ */
 export type DocumentTable = { kind: 'table' } & Sheet<string>
 
 export type DocumentBlock = Paragraph | DocumentTable

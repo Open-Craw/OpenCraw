@@ -31,6 +31,11 @@ export interface TransportAttempt<T> {
   run:     () => Promise<T>
   /** A transient problem in the outcome (a retry status, a connection error), or `undefined` when the outcome stands. */
   problem: (outcome: { value: T } | { error: unknown }) => Transient | undefined
+  /**
+   * The outcome of a first try the caller already made, outside the gate (a
+   * click that navigated): judged like any other try; `run` makes the retries.
+   */
+  made?:   { value: T } | { error: unknown }
 }
 
 export interface RetryContext {
@@ -111,15 +116,7 @@ export async function withTransportRetry<T> (url: string, attempt: TransportAtte
   const { rule } = context
   const deadline = rule.forMs === undefined ? Infinity : Date.now() + rule.forMs
   for (let tries = 1; ; tries += 1) {
-    const release = await context.gate.request(url)
-    let outcome: { value: T } | { error: unknown }
-    try {
-      outcome = { value: await attempt.run() }
-    } catch (error) {
-      outcome = { error }
-    } finally {
-      release()
-    }
+    const outcome = tries === 1 && attempt.made !== undefined ? attempt.made : await tryOnce(url, attempt, context.gate)
     const left = deadline - Date.now()
     const transient = tries < rule.attempts && left > 0 ? attempt.problem(outcome) : undefined
     const wanted = transient === undefined ? undefined : retryDelay(rule, tries, transient.retryAfter)
@@ -133,6 +130,18 @@ export async function withTransportRetry<T> (url: string, attempt: TransportAtte
     if (transient.retryAfter !== undefined) context.gate.hosts?.pause(url, Date.now() + delay)
     context.events.emit({ type: 'request:retry', recipeId: context.recipeId, url, attempt: tries + 1, reason: transient.reason, delayMs: delay })
     await sleep(delay)
+  }
+}
+
+/** One try through the gate: what `run` gave, or what it threw. */
+async function tryOnce<T> (url: string, attempt: TransportAttempt<T>, gate: RunGate): Promise<{ value: T } | { error: unknown }> {
+  const release = await gate.request(url)
+  try {
+    return { value: await attempt.run() }
+  } catch (error) {
+    return { error }
+  } finally {
+    release()
   }
 }
 

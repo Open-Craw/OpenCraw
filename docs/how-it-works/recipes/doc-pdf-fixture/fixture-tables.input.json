@@ -1,0 +1,127 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "fixture-tables",
+  "output": "fixture-row",
+  "mode": "api",
+  "description": "The four tables of packages/core/src/pdf-document/fixtures/discounts.pdf, read twice: with until, then without it. The second pass adds two records, the last rows of ALPHA and GAMMA with the note under each table glued to them; its other rows repeat the first pass and count as duplicates.",
+  "start": [
+    {
+      "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+    }
+  ],
+  "steps": [
+    {
+      "type": "hook",
+      "id": "file",
+      "name": "repoFile",
+      "args": {
+        "url": "{{start.url}}"
+      }
+    },
+    {
+      "type": "request",
+      "url": "{{file}}"
+    },
+    {
+      "type": "extract",
+      "id": "tables",
+      "selector": "^MODELS",
+      "kind": "table",
+      "many": true,
+      "until": "^(NOTE|\\*)",
+      "columns": {
+        "model": "^MODELS",
+        "discount": "^(Discount|\\(PROMO)",
+        "excluded": "^Excluded",
+        "extra": "^Extra"
+      }
+    },
+    {
+      "type": "forEach",
+      "over": "tables",
+      "as": "table",
+      "steps": [
+        {
+          "type": "set",
+          "id": "rows",
+          "value": "{{table.rows}}"
+        },
+        {
+          "type": "forEach",
+          "over": "rows",
+          "as": "row",
+          "emit": true,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "type": "extract",
+      "id": "without_until",
+      "selector": "^MODELS",
+      "kind": "table",
+      "many": true,
+      "columns": {
+        "model": "^MODELS",
+        "discount": "^(Discount|\\(PROMO)",
+        "excluded": "^Excluded",
+        "extra": "^Extra"
+      }
+    },
+    {
+      "type": "forEach",
+      "over": "without_until",
+      "as": "table",
+      "steps": [
+        {
+          "type": "set",
+          "id": "rows",
+          "value": "{{table.rows}}"
+        },
+        {
+          "type": "forEach",
+          "over": "rows",
+          "as": "row",
+          "emit": true,
+          "steps": []
+        }
+      ]
+    }
+  ],
+  "mapping": {
+    "table": {
+      "from": "table.title"
+    },
+    "model": {
+      "from": "row.model"
+    },
+    "discount": {
+      "from": "row.discount",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "excluded": {
+      "from": "row.excluded",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "extra": {
+      "from": "row.extra",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    }
+  }
+}

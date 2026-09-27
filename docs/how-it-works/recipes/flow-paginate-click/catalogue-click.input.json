@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "catalogue-click",
+  "output": "catalogue-page",
+  "mode": "web",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/page-1.html" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "paginate", "next": { "selector": "li.next a" }, "maxPages": 3, "steps": [
+      { "type": "extract", "id": "titles", "selector": "article.product_pod h3 a", "kind": "css", "take": "attr:title", "many": true },
+      { "type": "extract", "id": "pager", "selector": "li.current", "kind": "css" },
+      { "type": "emit" }
+    ]}
+  ],
+  "mapping": {
+    "page": { "from": "page.number" },
+    "url": { "from": "page.url" },
+    "pager": { "from": "pager" },
+    "books": { "from": "titles", "transform": [{ "op": "count" }] },
+    "firstTitle": { "from": "titles[0]" }
+  }
+}

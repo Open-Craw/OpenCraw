@@ -4,6 +4,7 @@ import { OfficeReadError } from '../read-error'
 import { readSource } from '../source-bytes'
 import type { OfficeSource } from '../source-bytes'
 import type { ValueMode } from '../spreadsheet'
+import { readChartEx } from './chart-ex.mapper'
 import { readChart } from './chart.mapper'
 import type { Deck, Slide, SlideChart, SlideFilter } from './deck.model'
 import { readNotes } from './notes.mapper'
@@ -87,7 +88,10 @@ export async function readPptx (source: OfficeSource, options: ReadPptxOptions =
       : content.chartIds.flatMap((chartId) => {
           const chart = slideRelationships.get(chartId)
 
-          return chart === undefined ? [] : [readChart(pkg.text(chart.target), mode)]
+          if (chart === undefined) return []
+
+          // A chartEx part (waterfall, treemap, funnel…) has a schema of its own.
+          return [(chart.type === 'chartEx' ? readChartEx : readChart)(pkg.text(chart.target), mode)]
         })
     const notesPart = options.notes === false ? undefined : relationshipOfType(slideRelationships, 'notesSlide')?.target
     slides.push({

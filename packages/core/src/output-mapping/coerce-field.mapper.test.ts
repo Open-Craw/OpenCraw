@@ -29,6 +29,29 @@ describe('coerceValue', () => {
     expect(() => coerceValue({ when: new Date(0) }, { type: 'json' }, 'f')).toThrow('f.when: Date is not JSON')
   })
 
+  it('reads blank text as undefined in a field that is not text (#80)', () => {
+    for (const type of ['number', 'integer', 'boolean', 'date', 'datetime', 'currency', 'url', 'enum'] as const) {
+      expect(coerceValue('', { type, values: ['a'], currency: 'EUR' }, 'f')).toBeUndefined()
+      expect(coerceValue(' \n ', { type, values: ['a'], currency: 'EUR' }, 'f')).toBeUndefined()
+    }
+    expect(coerceValue('', { type: 'string' }, 'f')).toBe('')
+    expect(coerceValue(' ', { type: 'string' }, 'f')).toBe(' ')
+    expect(coerceValue('', { type: 'json' }, 'f')).toBe('')
+  })
+
+  it('names the field type, not the parser, and keeps the reason apart from the path (#78, #80)', () => {
+    expect(() => coerceValue('n/a', { type: 'integer' }, 'qty')).toThrow('qty: integer field: no number in "n/a"')
+    const error = (() => {
+      try {
+        return coerceValue('n/a', { type: 'number' }, 'price')
+      } catch (error_) {
+        return error_ as CoercionError
+      }
+    })() as CoercionError
+    expect(error.path).toBe('price')
+    expect(error.reason).toBe('number field: no number in "n/a"')
+  })
+
   it('names the path in errors', () => {
     expect(() => coerceValue('nope', { type: 'url' }, 'images[1]')).toThrow(CoercionError)
     expect(() => coerceValue('nope', { type: 'url' }, 'images[1]')).toThrow(/^images\[1\]: /)

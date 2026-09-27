@@ -13,6 +13,7 @@ import { csvWorkbook, readXlsxWorkbook, sheetNameOf } from '../workbook-document
 import { parseJsonLike, parseJsonLines } from '../selection'
 import { readYaml } from '../yaml-document'
 import { gunzipIfNeeded, parseXml } from '../xml-document'
+import { sniffFormat } from './body-sniff.algorithm'
 import { HttpError } from './http-response.contract'
 import type { HttpBody, HttpRequest, HttpResponse, HttpSender } from './http-response.contract'
 import { charsetOf, decodeText } from './text-decoding.algorithm'
@@ -139,12 +140,13 @@ export class HttpClient implements HttpSender {
  * downloaded CSV, spreadsheet, PDF, Word or JSON file.
  *
  * @param bytes - The file.
- * @param name - Its name: the extension decides the format unless `reading.as` does.
+ * @param name - Its name: the extension decides the format unless `reading.as`
+ * does; a name with no known extension is sniffed ({@link formatOfFile}).
  * @param reading - `as`, `encoding`, `delimiter`, `scalars`.
  * @returns The document, what reading noticed, and the format.
  */
 export async function readFileBody (bytes: Uint8Array, name: string, reading: Pick<HttpRequest, 'as' | 'encoding' | 'delimiter' | 'scalars'> = {}): Promise<ReadBody> {
-  return parseBody(reading.as ?? formatFromExtension(name), bytes, name, reading)
+  return parseBody(reading.as ?? formatOfFile(name, bytes), bytes, name, reading)
 }
 
 /** A body as read, with what reading it noticed. */
@@ -156,20 +158,21 @@ export interface ReadBody {
 
 async function readBody (response: APIResponse, httpRequest: HttpRequest): Promise<ReadBody> {
   const contentType = response.headers()['content-type'] ?? ''
-  const format = httpRequest.as ?? formatFromContentType(contentType, response.url())
+  const bytes = await response.body()
+  const format = httpRequest.as ?? formatOfResponse(contentType, response.url(), bytes, response.status() < 400)
 
-  return parseBody(format, await response.body(), response.url(), { ...httpRequest, charset: charsetOf(contentType) })
+  return parseBody(format, bytes, response.url(), { ...httpRequest, charset: charsetOf(contentType) })
 }
 
 /**
  * A `file:` URL, read from disk: a PDF, spreadsheet, presentation, CSV, YAML
  * or JSON a recipe gets from a folder instead of a server. The format is `as`,
- * else the file extension.
+ * else the file extension, else what the bytes show.
  */
 async function readLocalFile (httpRequest: HttpRequest): Promise<HttpResponse> {
   const path = fileURLToPath(httpRequest.url)
   const bytes = await readFile(path)
-  const { body, warnings, format } = await parseBody(httpRequest.as ?? formatFromExtension(path), bytes, httpRequest.url, httpRequest)
+  const { body, warnings, format } = await parseBody(httpRequest.as ?? formatOfFile(path, bytes), bytes, httpRequest.url, httpRequest)
 
   return { status: 200, url: httpRequest.url, headers: {}, body, format, ...(warnings.length > 0 && { warnings }) }
 }
@@ -229,10 +232,37 @@ function looksLikeJsonLines (text: string): boolean {
   return 'value' in first
 }
 
-function formatFromContentType (contentType: string, url: string): BodyKind {
+/**
+ * A response's format: its content type, unless the type is one servers send
+ * for anything (`application/octet-stream`, `text/plain`, `application/zip`,
+ * none). Then the bytes decide (a PDF, an Office package, a gzipped sitemap),
+ * else the URL path's extension, else it is text. An error page is not what
+ * its URL names, so a 4xx or 5xx body skips the extension.
+ */
+function formatOfResponse (contentType: string, url: string, bytes: Uint8Array, success: boolean): BodyKind {
   const type = contentType.toLowerCase().split(';', 1)[0].trim()
+  if (!GENERIC_TYPES.has(type)) return formatFromContentType(type, url)
+  const path = pathOf(url)
+
+  return sniffFormat(bytes, path) ?? (success ? formatFromExtension(path) : undefined) ?? 'text'
+}
+
+/** A file's format: its extension, else what its bytes show, else text. */
+function formatOfFile (path: string, bytes: Uint8Array): BodyKind {
+  return formatFromExtension(path) ?? sniffFormat(bytes, path) ?? 'text'
+}
+
+function pathOf (url: string): string {
+  try {
+    return new URL(url).pathname
+  } catch {
+    return url
+  }
+}
+
+function formatFromContentType (type: string, url: string): BodyKind {
   // A gzipped sitemap is served as an archive; its name says what is inside.
-  if (GZIP_TYPES.has(type) && /\.xml\.gz$/i.test(new URL(url).pathname)) return 'xml'
+  if (GZIP_TYPES.has(type) && /\.xml\.gz$/i.test(pathOf(url))) return 'xml'
   if (CSV_TYPES.has(type)) return 'csv'
   if (JSON_LINES_TYPES.has(type)) return 'jsonl'
   // A legacy .xls or .ppt goes to the Office reader too, which says what to do with it.
@@ -251,13 +281,15 @@ function formatFromContentType (contentType: string, url: string): BodyKind {
 
 const JSON_LINES_TYPES = new Set(['application/x-ndjson', 'application/ndjson', 'application/jsonl', 'application/x-jsonlines', 'application/jsonlines'])
 const YAML_TYPES = new Set(['application/yaml', 'application/x-yaml', 'text/yaml', 'text/x-yaml'])
-const GZIP_TYPES = new Set(['application/gzip', 'application/x-gzip', 'application/octet-stream'])
+const GZIP_TYPES = new Set(['application/gzip', 'application/x-gzip'])
+/** Content types that say nothing about the format: a download, a file behind a bucket or a CDN, a raw file. */
+const GENERIC_TYPES = new Set(['', 'application/octet-stream', 'binary/octet-stream', 'application/binary', 'application/download', 'application/force-download', 'application/x-download', 'text/plain', 'application/zip', 'application/x-zip-compressed', 'application/x-zip'])
 const CSV_TYPES = new Set(['text/csv', 'application/csv', 'text/x-csv', 'application/x-csv', 'text/comma-separated-values', 'text/tab-separated-values'])
 
-function formatFromExtension (path: string): BodyKind {
+function formatFromExtension (path: string): BodyKind | undefined {
   if (/\.xml\.gz$/i.test(path)) return 'xml'
   const extension = extname(path)
   const formats: Record<string, BodyKind> = { '.json': 'json', '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.pdf': 'pdf', '.csv': 'csv', '.tsv': 'csv', '.xlsx': 'xlsx', '.xlsm': 'xlsx', '.xls': 'xlsx', '.pptx': 'pptx', '.pptm': 'pptx', '.ppsx': 'pptx', '.ppt': 'pptx', '.docx': 'docx', '.docm': 'docx', '.dotx': 'docx', '.doc': 'docx', '.yaml': 'yaml', '.yml': 'yaml', '.md': 'markdown', '.markdown': 'markdown', '.html': 'html', '.htm': 'html', '.xml': 'xml', '.rss': 'xml', '.atom': 'xml', '.kml': 'xml', '.gpx': 'xml' }
 
-  return formats[extension.toLowerCase()] ?? 'text'
+  return formats[extension.toLowerCase()]
 }

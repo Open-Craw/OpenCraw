@@ -1,0 +1,260 @@
+{
+  "scene": "flow-paginate-click",
+  "summary": [
+    {
+      "recipeId": "catalogue-click",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 3
+    }
+  ],
+  "trace": [
+    "▶ catalogue-click (web)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/page-1.html",
+    "  · steps.0  goto  … ms",
+    "    · steps.1.steps.0  extract titles  … ms",
+    "    · steps.1.steps.1  extract pager  … ms",
+    "  ✚ record [1]",
+    "    · steps.1.steps.2  emit  … ms",
+    "  ↺ https://books.toscrape.com/catalogue/page-2.html: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
+    "  ⇢ page 2  https://books.toscrape.com/catalogue/page-2.html",
+    "    · steps.1.steps.0  extract titles  … ms",
+    "    · steps.1.steps.1  extract pager  … ms",
+    "  ✚ record [2]",
+    "    · steps.1.steps.2  emit  … ms",
+    "  ↺ https://books.toscrape.com/catalogue/page-3.html: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
+    "  ⇢ page 3  https://books.toscrape.com/catalogue/page-3.html",
+    "    · steps.1.steps.0  extract titles  … ms",
+    "    · steps.1.steps.1  extract pager  … ms",
+    "  ✚ record [3]",
+    "    · steps.1.steps.2  emit  … ms",
+    "  · steps.1  paginate  … ms",
+    "■ catalogue-click: 3 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/page-1.html",
+      "key": "[1]",
+      "data": {
+        "page": 1,
+        "url": "https://books.toscrape.com/catalogue/page-1.html",
+        "pager": "Page 1 of 50",
+        "books": 20,
+        "firstTitle": "A Light in the Attic"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html",
+          "number": 1
+        },
+        "titles": [
+          "A Light in the Attic",
+          "Tipping the Velvet",
+          "Soumission",
+          "Sharp Objects",
+          "Sapiens: A Brief History of Humankind",
+          "The Requiem Red",
+          "The Dirty Little Secrets of Getting Your Dream Job",
+          "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+          "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+          "The Black Maria",
+          "… 10 more"
+        ],
+        "pager": "Page 1 of 50"
+      },
+      "mapping": {
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/page-1.html",
+          "steps": []
+        },
+        "pager": {
+          "from": "Page 1 of 50",
+          "steps": []
+        },
+        "books": {
+          "from": [
+            "A Light in the Attic",
+            "Tipping the Velvet",
+            "Soumission",
+            "Sharp Objects",
+            "Sapiens: A Brief History of Humankind",
+            "The Requiem Red",
+            "The Dirty Little Secrets of Getting Your Dream Job",
+            "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+            "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+            "The Black Maria",
+            "… 10 more"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 20
+            }
+          ]
+        },
+        "firstTitle": {
+          "from": "A Light in the Attic",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/page-2.html",
+      "key": "[2]",
+      "data": {
+        "page": 2,
+        "url": "https://books.toscrape.com/catalogue/page-2.html",
+        "pager": "Page 2 of 50",
+        "books": 20,
+        "firstTitle": "In Her Wake"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-2.html",
+          "number": 2
+        },
+        "titles": [
+          "In Her Wake",
+          "How Music Works",
+          "Foolproof Preserving: A Guide to Small Batch Jams, Jellies, Pickles, Condiments, and More: A Foolproof Guide to Making Small Batch Jams, Jellies, Pickles, Condiments, and More",
+          "Chase Me (Paris Nights #2)",
+          "Black Dust",
+          "Birdsong: A Story in Pictures",
+          "America's Cradle of Quarterbacks: Western Pennsylvania's Football Factory from Johnny Unitas to Joe Montana",
+          "Aladdin and His Wonderful Lamp",
+          "Worlds Elsewhere: Journeys Around Shakespeare’s Globe",
+          "Wall and Piece",
+          "… 10 more"
+        ],
+        "pager": "Page 2 of 50"
+      },
+      "mapping": {
+        "page": {
+          "from": 2,
+          "steps": []
+        },
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/page-2.html",
+          "steps": []
+        },
+        "pager": {
+          "from": "Page 2 of 50",
+          "steps": []
+        },
+        "books": {
+          "from": [
+            "In Her Wake",
+            "How Music Works",
+            "Foolproof Preserving: A Guide to Small Batch Jams, Jellies, Pickles, Condiments, and More: A Foolproof Guide to Making Small Batch Jams, Jellies, Pickles, Condiments, and More",
+            "Chase Me (Paris Nights #2)",
+            "Black Dust",
+            "Birdsong: A Story in Pictures",
+            "America's Cradle of Quarterbacks: Western Pennsylvania's Football Factory from Johnny Unitas to Joe Montana",
+            "Aladdin and His Wonderful Lamp",
+            "Worlds Elsewhere: Journeys Around Shakespeare’s Globe",
+            "Wall and Piece",
+            "… 10 more"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 20
+            }
+          ]
+        },
+        "firstTitle": {
+          "from": "In Her Wake",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/page-3.html",
+      "key": "[3]",
+      "data": {
+        "page": 3,
+        "url": "https://books.toscrape.com/catalogue/page-3.html",
+        "pager": "Page 3 of 50",
+        "books": 20,
+        "firstTitle": "Slow States of Collapse: Poems"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/page-1.html"
+        },
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/page-3.html",
+          "number": 3
+        },
+        "titles": [
+          "Slow States of Collapse: Poems",
+          "Reasons to Stay Alive",
+          "Private Paris (Private #10)",
+          "#HigherSelfie: Wake Up Your Life. Free Your Soul. Find Your Tribe.",
+          "Without Borders (Wanderlove #1)",
+          "When We Collided",
+          "We Love You, Charlie Freeman",
+          "Untitled Collection: Sabbath Poems 2014",
+          "Unseen City: The Majesty of Pigeons, the Discreet Charm of Snails & Other Wonders of the Urban Wilderness",
+          "Unicorn Tracks",
+          "… 10 more"
+        ],
+        "pager": "Page 3 of 50"
+      },
+      "mapping": {
+        "page": {
+          "from": 3,
+          "steps": []
+        },
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/page-3.html",
+          "steps": []
+        },
+        "pager": {
+          "from": "Page 3 of 50",
+          "steps": []
+        },
+        "books": {
+          "from": [
+            "Slow States of Collapse: Poems",
+            "Reasons to Stay Alive",
+            "Private Paris (Private #10)",
+            "#HigherSelfie: Wake Up Your Life. Free Your Soul. Find Your Tribe.",
+            "Without Borders (Wanderlove #1)",
+            "When We Collided",
+            "We Love You, Charlie Freeman",
+            "Untitled Collection: Sabbath Poems 2014",
+            "Unseen City: The Majesty of Pigeons, the Discreet Charm of Snails & Other Wonders of the Urban Wilderness",
+            "Unicorn Tracks",
+            "… 10 more"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 20
+            }
+          ]
+        },
+        "firstTitle": {
+          "from": "Slow States of Collapse: Poems",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

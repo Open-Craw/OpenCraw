@@ -1,5 +1,9 @@
+import { copyFile, mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import type { Server } from 'node:http'
-import { createCrawler, loadRecipes, memorySink } from '../src/index'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { createCrawler, loadRecipes, loadRecipeSet, memorySink } from '../src/index'
 import { FIXTURE_BASE, startFixtureSite, stopFixtureSite } from './fixture-site'
 
 let site: Server
@@ -53,6 +57,24 @@ describe('csv recipe (a Windows-1252, semicolon-separated price list served as t
         { brand: 'Citroën', model: 'C3', version: 'Plus; automatica nuova', price: 19_300, source },
         { brand: 'Peugeot', model: '208', version: 'Allure', price: 21_450, source },
       ])
+    } finally {
+      await crawler.close()
+    }
+  })
+
+  it('reads the list from a file: URL relative to the recipe file', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'csv-recipe-'))
+    await mkdir(join(directory, 'data'))
+    await copyFile(join(__dirname, '..', 'src', 'workbook-document', 'fixtures', 'listino.csv'), join(directory, 'data', 'listino.csv'))
+    await writeFile(join(directory, 'list-price.output.json'), JSON.stringify(output))
+    await writeFile(join(directory, 'price-list.input.json'), JSON.stringify({ ...input, start: [{ url: 'file:data/listino.csv' }] }))
+    const sink = memorySink()
+    const crawler = createCrawler({ sink })
+    try {
+      // Run from elsewhere: the recipe's folder decides, not the working directory.
+      const report = await crawler.run(await loadRecipeSet({ output: join(directory, 'list-price.output.json'), inputs: [directory] }))
+      expect(report.recipes[0]).toMatchObject({ recipeId: 'price-list', emitted: 4, rejected: 0 })
+      expect(sink.records[0].data).toMatchObject({ brand: 'Fiat', price: 15_950, source: pathToFileURL(join(directory, 'data', 'listino.csv')).href })
     } finally {
       await crawler.close()
     }

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "quote",
+  "version": 1,
+  "fields": {
+    "text": { "type": "string", "required": true, "key": true },
+    "author": { "type": "string", "required": true },
+    "authorUrl": { "type": "url" },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -36,7 +36,8 @@ mode produced the session.
 `hook` transform, and so stay declarative and shareable. The cli (`--plugins <module>`, alias `--hooks`) and the
 MCP server (`OPENCRAW_PLUGINS` or `OPENCRAW_HOOKS` in its environment) load them from a JavaScript module
 exporting `hooks`, `accessPlugins` and `captchaSolvers`, or, as a bare hooks module, a default name -> function
-map or named functions.
+map or named functions. A run checks every hook its recipes name against the registered ones before its first
+request, and rejects with `UnknownHookError` (the recipe, the path, the name) when one is missing.
 
 ## 2. Input recipe (`InputRecipe`)
 
@@ -45,7 +46,7 @@ map or named functions.
 | `id` | Lowercase letters, digits, hyphens. Unique within a run. |
 | `output` | The output recipe id this recipe feeds. |
 | `mode` | `web` (Playwright browser page) or `api` (Playwright request context, no browser). |
-| `start` | One or more `{ url, vars? }`; each start point runs the whole step list. |
+| `start` | One or more `{ url, vars? }`; each start point runs the whole step list. A start `url` is absolute (`http(s):`, `file:`…): a plain path fails validation with why. |
 | `vars` | Recipe-level variables, read in templates as `{{vars.name}}`. |
 | `matrix` | Sets of vars to run the recipe with, once each: an object of lists (every combination) or a list of objects. Names must be declared in `vars`. Each run is reported with its `variant`. |
 | `session` | Headers, cookies, user agent, viewport, a saved `storageStatePath`, a `bootstrap`, `access` (`{ profile?, country?, sticky? }`), `blockedWhen`, `onBlock`, `captcha` and `browserProfile` (section 2.1). |
@@ -73,6 +74,21 @@ with its name. Each recipe run takes one lease, shared by its bootstrap and its 
 context (proxy, extra headers, `ignoreHTTPSErrors`, blocked resource types) and to the HTTP request context. The
 lease is reported as an `access:lease` event without credentials. Authenticated SOCKS proxies are refused at load:
 Chromium does not send SOCKS credentials.
+
+**Navigations a step causes.** A `click`, `press` or `select` that navigates the main frame, and a
+`next.selector` click, are followed like a `goto`: the engine waits for the final response (past redirects) and
+the new page's `load`, applies the retries and the block rule, and emits `page:visit` with the real URL and
+status. A navigation that fails, or still answers a retried status once the tries are spent, fails the step with
+its cause (`net::ERR_… at <url>`, `HTTP 503 at <url>`); a `chrome-error://` page is never treated as a page.
+An element's click or key press waits for the navigation it starts; a key press on the page and a pick give one
+150 ms to start, a `next.selector` click 500 ms. An action that does not navigate leaves the page as it is: a
+`next` that swaps the content in place still pages (and counts a page without a status), and a script's
+`history.pushState` to a new URL counts a page without a status. A cancelled navigation or a download is not a
+page.
+
+**Pages.** The report's `pages` counts `page:visit` events: every page a navigation reached and every
+`request` that got an answer, a 4xx or 5xx that fails the step included (the page was fetched). A request or
+navigation that got no answer at all (a transport failure) is not a page.
 
 **Blocks.** Every navigation and request is checked against `session.blockedWhen` (`status`, `header` patterns,
 `text` pattern; default 403, 429 or `x-amzn-waf-action: challenge`). A match raises a `BlockedError` and an
@@ -107,8 +123,10 @@ Both report `errorKind: 'host'`. The check is by host name, not resolved address
 over the default of 3 tries, 1 s doubling with ±25 % jitter, capped at 30 s, statuses 408, 425, 429, 500, 502,
 503, 504, plus connection failures and timeouts (not unknown hosts). `Retry-After` is honoured when within
 `maxDelayMs` and pauses the whole site in the per-site throttle; a longer one is not retried. It covers `goto`,
-`request` and `next.url`; each retry is a `request:retry` event. After the last try the outcome goes on as
-before: block detection, then the step's `onError`. `forMs` is a time budget from the first try: without
+`request` and `next.url`, and the main-frame navigation a `next.selector`, `click`, `press` or `select` causes
+(retried by loading the URL it navigated to again, a GET only: a posted form is never sent twice); each retry is
+a `request:retry` event. After the last try the outcome goes on as before: block detection, then the step's
+`onError`. `forMs` is a time budget from the first try: without
 `attempts` it alone ends the tries (to ride out an outage), with it whichever runs out first; no pause runs past it.
 
 **Change detection.** `diffRecords(previous, current, { key?, ignore?, shrink? })` compares two runs' records
@@ -140,7 +158,8 @@ counts them under `captchas`. See `docs/recipes/captcha.md`.
 
 ### 2.2 Steps
 
-Every step has `type`, an optional `id` (the name of the value it produces), an optional `onError`, an
+Every step has `type`, an optional `id` (the name of the value it produces: a word, letters of either case,
+digits and underscores, not starting with a digit), an optional `onError`, an
 optional `when` template that must render truthy for the step to run and, in worker mode, `keep` (top-level
 steps; section 5).
 
@@ -151,12 +170,12 @@ steps; section 5).
 | `fill` | web | – | `selector` or `target`, `value` (template) |
 | `press` | web | – | `key`, `selector?` or `target?` |
 | `select` | web | – | `selector` or `target`, one of `value`, `label`, `index`, `values`; `multiple?`, `force?`, `ignoreCase?`, `timeoutMs?`, `search?`, `clear?` |
-| `scroll` | web | – | `to: 'bottom' \| selector`, `times?`, `untilStable?` |
+| `scroll` | web | – | `to: 'bottom' \| selector`, `times?`, `untilStable?`, `maxScrolls?` (with `untilStable`, default 50; reaching it stops without failing and emits a `warning`), `settleMs?` (the wait after each scroll, default 300) |
 | `wait` | web | – | one of `selector`, `ms`, `state: 'networkidle'`; `timeoutMs?` |
 | `evaluate` | web | value | `script`, JavaScript run in the page; `args?`. Trusted recipes only. |
 | `screenshot` | web | – | `path` |
 | `captcha` | web | – | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; for form captchas `image`, `refresh?`, `field`, `submit`; defaults from `session.captcha` |
-| `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
+| `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`; relative to the current page, else a clear error), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
 | `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
 | `set` | both | value | `value` (template or literal) |
 | `collect` | both | – | `into` (a list id bound in an enclosing scope), `value` (template or literal); appends, so values outlive the `forEach` iteration or `paginate` page that found them |
@@ -165,6 +184,18 @@ steps; section 5).
 | `paginate` | both | – | `next`, `until?` (template), `maxPages?`, `steps` |
 | `emit` | both | record | `output?` |
 | `hook` | both | value | `name`, `args?` |
+
+**Choosing the reader.** `as` wins. Else a response's content type decides, unless it says nothing
+(`application/octet-stream`, `binary/octet-stream`, `text/plain`, `application/zip` and kin, none): then the
+body's first bytes decide (`%PDF-` a PDF; a zip with parts under `xl/`, `ppt/` or `word/` a workbook, a deck or a
+Word document, read from the zip's directory without inflating; gzip XML when the URL ends `.xml.gz`), else the
+URL path's extension (skipped for a 4xx/5xx body), else text. A local file or a download goes by its extension,
+else its bytes, else text.
+
+**Local files.** A `file:` URL reads a file. A relative one (`file:data/x.csv`, `file:./x.pdf`) resolves against
+the folder of the recipe file that names it when the recipe is read from a file (start URLs, start and recipe
+`vars`, `matrix` values, every step `url`; a template's placeholders are kept), else against the process working
+directory. `allowedHosts` refuses `file:` URLs, relative or not.
 
 A PDF (`as: 'pdf'`) is read into pages of rows of positioned cells (pdf.js, text layer only; a scan fails).
 `table` finds tables by their header row and returns `{ page, title, header, rows }`, rows keyed by column:
@@ -206,12 +237,13 @@ prefix (`)]}'`, `while(1);`, `for(;;);`), a JSONP call or a script assignment; t
 `probe` on JSON, JSON Lines or YAML shows the structure (four levels, a sample per leaf) and every array of
 objects with its path and shared keys.
 
-Markdown (`as: 'markdown'`, `text/markdown`, `.md`) is rendered with `marked` (GFM) into an HTML document:
-each heading and its content wrapped in `<section data-heading data-level>` (nesting by level), headings
-slugged, a leading YAML front matter parsed (YAML 1.2) into `<script type="application/json"
-data-front-matter>` in the head, raw HTML kept (parsed, never run). `table` reads an HTML document's
-`<table>`s (fetched, rendered Markdown, or the live page in web mode) as grids — rows in order, `th`/`td`
-alike, `colspan`/`rowspan` as merged ranges, nested tables on their own — through the grid table reader.
+Markdown (`as: 'markdown'`, `text/markdown`, `.md`) is rendered with `marked` (GFM) into an HTML document: each
+heading and its content wrapped in `<section data-heading data-level>` (nesting by level), headings slugged, a
+leading YAML front matter parsed (YAML 1.2) into `<script type="application/json" data-front-matter>` in the head,
+raw HTML kept (parsed, never run). `table` reads an HTML document's `<table>`s (fetched, rendered Markdown or
+Word, the live page in web mode, or with `from` the HTML text an id holds: a Word or Markdown document, a page a
+web-mode `request` fetched, a list of fragments) as grids — rows in order, `th`/`td` alike, `colspan`/`rowspan` as
+merged ranges, nested tables on their own — through the grid table reader.
 
 `take` is `text` (default), `html`, `value`, `json` or `attr:<name>`. `xpath` (XPath 1.0, `xpath` +
 `@xmldom/xmldom`) reads live pages, fetched XML and fetched HTML (parsed with the HTML5 parser, then queried
@@ -249,7 +281,8 @@ every use, so a page that re-renders after each interaction (a configurator) sti
   navigated. In `web` mode `page.url` is the real page URL after the last navigation; in `api` mode it is the
   final URL of the nearest `request` up the chain, and `start.url` before any request. `extract` without
   `from` reads the current document of the nearest scope that has one.
-- `paginate.next` is evaluated **after** the page body: `{ selector }` (web: click it), `{ url }` (both: the
+- `paginate.next` is evaluated **after** the page body: `{ selector }` (web: click it, and check the navigation
+  it causes like a `goto`'s), `{ url }` (both: the
   rendered value becomes the next `page.url`), `{ jsonpath, as? }` (api: evaluated on the current document;
   without `as` the value is the next URL, relative allowed; with `as` it is bound under that name in the next
   page's scope so the body builds the URL itself, e.g. a cursor). Pagination stops when `next` yields nothing,
@@ -258,6 +291,10 @@ every use, so a page that re-renders after each interaction (a configurator) sti
   ids bound in a branch are visible after it. The engine reports the branch taken as a `step:branch` event.
 - **One emitting construct per path**: an emitting `forEach` may not contain another emitting `forEach` or
   an `emit`. The two branches of an `if` are separate paths. `emit` snapshots the whole scope chain, child values shadowing parents.
+- **One binding per name per path**: a step `id` and a `forEach`'s `as` are bound once along any path, and
+  never as `page`, `start` or `vars`. Binding rejects a second one with `id "<name>" is already bound on this
+  path`: a loop variable can't hide an outer id or a loop variable of an enclosing loop. Sibling loops, and
+  the two branches of an `if`, are separate paths and may reuse a name.
 - `limits.maxRecords` stops the walk cleanly once reached. Emits are serialised, so the count is exact under
   concurrency; iterations in flight finish without emitting.
 - **Concurrency** is one gate per recipe run: `concurrency` permits shared by every `forEach` in it (the
@@ -273,7 +310,7 @@ every use, so a page that re-renders after each interaction (a configurator) sti
 | Field | Meaning |
 |---|---|
 | `id`, `version`, `description?` | Identity. |
-| `fields` | Name -> `FieldSpec`. Names have no dots. |
+| `fields` | Name -> `FieldSpec`. A name is letters (either case), digits, `_` and `-`, not starting with a digit, and has no dots; the same rule holds for the member names of an `object` field. A dotted name is reported as `fields["stock.count"]: a field name has no dots`. |
 | `onMissing?` | Recipe default: `fail`, `skip-record` or `null`. Built-in default is `fail` for required fields, `null` otherwise. |
 
 `FieldSpec`: `type` (`string`, `number`, `integer`, `boolean`, `date`, `datetime`, `currency`, `url`, `enum`,
@@ -285,7 +322,18 @@ every use, so a page that re-renders after each interaction (a configurator) sti
 
 An `object` keeps only its declared `fields`; a `json` field keeps any JSON value verbatim and takes no
 `fields` or `items`. A `currency` value is stored as `{ amount: number, currency: string }`. A `date` is `YYYY-MM-DD`, a
-`datetime` an ISO 8601 instant.
+`datetime` an ISO 8601 instant; text that names no zone is read as UTC (or in the `date` transform's
+`timezone`), never in the host's zone.
+
+A `default` is coerced and validated like a mapped value when the recipes are bound, so a default that can't be
+its field's type, or `onMissing: 'default'` on a field without one, is a binding error.
+
+A `number` (and `integer`, and a `currency` amount) is read from text holding exactly one number, with a sign,
+currency, words and thousands separators around it; text holding two numbers or more is an error that names the
+text and suggests a `regex` transform. Without a `locale` the decimal separator is guessed: of two kinds the
+last; a single one groups thousands only when three digits follow it and one to three digits other than a
+lone `0` precede it (`1.299` is 1299, `0.125` is 0.125). A `currency` code is an ISO 4217 code (one next to the
+amount first) or a symbol.
 
 ## 4. Mapping and transformation
 
@@ -300,7 +348,9 @@ type MappingRule =
   array of resolved values (`["price_int", "price_cents"]` -> `join`).
 - `each` builds an array of objects from a list id; the nested `from` paths are relative to each list item
   (`.` is the item itself). A `lookup`'s `in` and a `template`'s paths inside those rules look in the item
-  first, then in the record.
+  first, then in the record. The `fields` keys must name fields of the items (checked at binding), and each
+  member of each item gets the missing-value policy, `default` and validation, reported at its index
+  (`variants[1].size`).
 - Transforms run in order. Built-ins: `trim`, `lowercase`, `uppercase`, `replace`, `regex` (capture group),
   `split`, `join`, `first`, `last`, `nth`, `slice`, `concat`, `coalesce`, `default`, `number` (locale aware),
   `integer`, `boolean` (`truthy` list), `currency` (locale aware; currency from the op, else the field),
@@ -311,13 +361,16 @@ type MappingRule =
 - A transform applied to a list applies to each element, except the collection ops (`first`, `last`, `nth`,
   `slice`, `join`, `concat`, `coalesce`, `flatten`, `unique`, `sum`, `count`, `group`) and `default`, `template`,
   `jsonpath`, `hook`, which act on the value as a whole.
-- After the chain, the value is coerced and validated against the `FieldSpec`.
+- After the chain, the value is coerced and validated against the `FieldSpec`. Blank text (`""`, or only
+  spaces in a field that is not `string` or `json`) is missing, not a failed coercion, so the missing-value
+  policy applies to it in every field type. A coercion error names the field and its type
+  (`price: number field: …`), never a transform the rule doesn't have.
 
 ### 4.1 Precedence of policies
 
 1. A step failure resolves step `onError` -> recipe `onError` -> `fail`. `skip` leaves the id unset and
    continues; `retry` re-runs the step; `fail` aborts the recipe.
-2. A missing mapped value resolves mapping rule `onMissing` -> field `onMissing` -> `default` when the field has
+2. A missing mapped value (`undefined`, `null`, `""`) resolves mapping rule `onMissing` -> field `onMissing` -> `default` when the field has
    a `default` -> recipe `onMissing` -> built-in default (`fail` if required, else `null`). `fail` aborts the recipe; `skip-record` rejects the record and continues; `null` and
    `default` fill the value.
 3. Whether a failed recipe stops the run is a run option (`onRecipeError: 'continue' | 'stop'`, default

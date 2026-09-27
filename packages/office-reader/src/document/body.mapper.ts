@@ -4,10 +4,12 @@ import type { ParagraphStyles } from './styles.mapper'
 
 /** What reading a part needs from the rest of the document. */
 export interface BodyContext {
-  styles:  ParagraphStyles
-  ordered: (numId: string, level: number) => boolean
+  styles:    ParagraphStyles
+  ordered:   (numId: string, level: number) => boolean
   /** The part's relationships: a hyperlink's `r:id` to its URL. */
-  links:   ReadonlyMap<string, string>
+  links:     ReadonlyMap<string, string>
+  /** The next table's name (`table 1`, `table 2`…): one numbering over the whole document, so names never repeat across parts. */
+  tableName: () => string
 }
 
 interface OpenParagraph {
@@ -67,7 +69,6 @@ export function readBlocks (xml: string, context: BodyContext): { blocks: Docume
   let skipping = 0
   let inText = false
   let inNumbering = false
-  let tableCount = 0
   const append = (text: string): void => {
     const paragraph = paragraphs.at(-1)
     if (paragraph !== undefined && skipping === 0) paragraph.text += text
@@ -277,8 +278,7 @@ export function readBlocks (xml: string, context: BodyContext): { blocks: Docume
           const table = tables.pop()
           if (table === undefined) break
           for (const [column, open] of table.vertical) closeVertical(table, column, open)
-          tableCount += 1
-          const block: DocumentTable = { kind: 'table', name: `table ${tableCount}`, hidden: false, rows: table.rows, hiddenRows: [], merges: table.merges }
+          const block: DocumentTable = { kind: 'table', name: context.tableName(), hidden: false, rows: table.rows, hiddenRows: [], merges: table.merges }
           blocks.push(block)
           // A table inside a cell: its text belongs to the cell too.
           tables.at(-1)?.cell?.paragraphs.push(table.rows.map(row => row.filter(cell => cell !== '').join(' ')).join('\n'))

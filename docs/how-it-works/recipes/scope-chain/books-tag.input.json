@@ -1,0 +1,33 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "books-tag",
+  "output": "tagged-quote",
+  "mode": "web",
+  "vars": { "tag": "books" },
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}tag/{{vars.tag}}/" },
+    { "type": "set", "id": "label", "value": "outside the loop" },
+    { "type": "set", "id": "authors", "value": [] },
+    { "type": "paginate", "next": { "selector": "li.next a" }, "maxPages": 3, "steps": [
+      { "type": "extract", "id": "quotes", "selector": "div.quote", "kind": "css", "take": "html", "many": true },
+      { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+        { "type": "extract", "id": "text", "from": "quote", "selector": ".text", "kind": "css" },
+        { "type": "extract", "id": "author", "from": "quote", "selector": ".author", "kind": "css" },
+        { "type": "set", "id": "where", "value": "{{author}}, page {{page.number}}" },
+        { "type": "collect", "into": "authors", "value": "{{author}}" }
+      ]}
+    ]},
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "where": { "from": "where" },
+    "label": { "from": "label" },
+    "page": { "from": "page.number" },
+    "seen": { "from": "authors", "transform": [{ "op": "count" }] }
+  }
+}

@@ -192,11 +192,16 @@ export interface WindowSpec {
 
 const scalar = z.union([z.string(), z.number(), z.boolean()])
 const windowSchema: z.ZodType<WindowSpec> = z.strictObject({ check: z.string().min(1).optional(), maxItems: z.int().min(1).optional() })
-const varName = z.string().regex(/^[A-Z_]\w*$/i)
+const varName = z.string().regex(/^[A-Za-z_]\w*$/)
 const vars = z.record(varName, scalar)
 const matrixSchema: z.ZodType<RecipeMatrix> = z.union([z.record(varName, z.array(scalar).min(1)), z.array(vars).min(1)])
 
-export const startPointSchema: z.ZodType<StartPoint> = z.strictObject({ url: z.string().min(1), vars: vars.optional() })
+/** A start point has no page before it to resolve a relative URL against. A relative `file:` URL is absolute enough: it names a local file. */
+const startUrl = z.string().min(1).refine(url => URL.canParse(url), {
+  error: issue => `"${String(issue.input)}" is not an absolute URL, and a start point has no page to resolve it against: give a full URL (https://…), or a file: URL for a local file (file:data/listino.csv reads from the recipe file's folder)`,
+})
+
+export const startPointSchema: z.ZodType<StartPoint> = z.strictObject({ url: startUrl, vars: vars.optional() })
 
 const cookieSchema: z.ZodType<RecipeCookie> = z.strictObject({
   name:     z.string().min(1),
@@ -217,7 +222,7 @@ const bootstrapSchema: z.ZodType<SessionBootstrap> = z.strictObject({
 
 const sessionAccessSchema: z.ZodType<SessionAccess> = z.strictObject({
   profile: z.string().regex(/^[\w-]+$/, 'a profile name is letters, digits, hyphens and underscores').optional(),
-  country: z.string().regex(/^[A-Z]{2}$/i, 'a country is a two-letter ISO code').optional(),
+  country: z.string().regex(/^[A-Za-z]{2}$/, 'a country is a two-letter ISO code').optional(),
   sticky:  z.boolean().optional(),
 })
 
