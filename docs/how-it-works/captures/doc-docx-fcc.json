@@ -13,7 +13,7 @@
     "▶ fcc-radio-fees-local (api)",
     "  ⇄ access direct (direct)",
     "  · steps.0  hook file  … ms",
-    "  ⇢ page 1  file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+    "  ⇢ page 1  file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
     "  · steps.1  request  … ms",
     "  · steps.2  extract table  … ms",
     "  · steps.3  set rows  … ms",
@@ -31,7 +31,7 @@
   ],
   "records": [
     {
-      "url": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+      "url": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
       "key": "[\"<=10,000\"]",
       "data": {
         "populationServed": "<=10,000",
@@ -65,7 +65,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx"
         },
-        "file": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+        "file": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
         "table": {
           "sheet": "table 2",
           "title": "Population Served",
@@ -246,7 +246,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+          "url": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
           "number": 1
         },
         "row": {
@@ -404,7 +404,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+      "url": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
       "key": "[\"10,001 – 25,000\"]",
       "data": {
         "populationServed": "10,001 – 25,000",
@@ -438,7 +438,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx"
         },
-        "file": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+        "file": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
         "table": {
           "sheet": "table 2",
           "title": "Population Served",
@@ -619,7 +619,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+          "url": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
           "number": 1
         },
         "row": {
@@ -777,7 +777,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+      "url": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
       "key": "[\"25,001 – 75,000\"]",
       "data": {
         "populationServed": "25,001 – 75,000",
@@ -811,7 +811,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx"
         },
-        "file": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+        "file": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
         "table": {
           "sheet": "table 2",
           "title": "Population Served",
@@ -992,7 +992,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
+          "url": "file://<repo>/examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx",
           "number": 1
         },
         "row": {

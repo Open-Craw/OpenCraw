@@ -13,7 +13,7 @@
     "▶ listino-md (api)",
     "  ⇄ access direct (direct)",
     "  · steps.0  hook file  … ms",
-    "  ⇢ page 1  file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+    "  ⇢ page 1  file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
     "  · steps.1  request  … ms",
     "  · steps.2  extract front  … ms",
     "  · steps.3  extract updated  … ms",
@@ -28,7 +28,7 @@
   ],
   "records": [
     {
-      "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+      "url": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
       "key": "[\"Pandina\"]",
       "data": {
         "model": "Pandina",
@@ -42,7 +42,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+        "file": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
         "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
         "updated": "2026-06-01",
         "accessories": [
@@ -100,7 +100,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+          "url": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
           "number": 1
         },
         "row": {
@@ -149,7 +149,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+      "url": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
       "key": "[\"600e\"]",
       "data": {
         "model": "600e",
@@ -163,7 +163,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+        "file": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
         "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
         "updated": "2026-06-01",
         "accessories": [
@@ -221,7 +221,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+          "url": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
           "number": 1
         },
         "row": {
@@ -270,7 +270,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+      "url": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
       "key": "[\"Solo due celle\"]",
       "data": {
         "model": "Solo due celle",
@@ -284,7 +284,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+        "file": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
         "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
         "updated": "2026-06-01",
         "accessories": [
@@ -342,7 +342,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+          "url": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
           "number": 1
         },
         "row": {

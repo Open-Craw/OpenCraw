@@ -13,7 +13,7 @@
     "▶ listino-csv (api)",
     "  ⇄ access direct (direct)",
     "  · steps.0  hook file  … ms",
-    "  ⇢ page 1  file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+    "  ⇢ page 1  file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
     "  · steps.1  request listino  … ms",
     "  · steps.2  extract table  … ms",
     "  · steps.3  set rows  … ms",
@@ -26,7 +26,7 @@
   ],
   "records": [
     {
-      "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
       "key": "[\"Fiat\",\"Pandina\",\"1.0 Hybrid \\\"Cross\\\"\"]",
       "data": {
         "brand": "Fiat",
@@ -40,7 +40,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {
           "kind": "workbook",
           "sheets": [
@@ -178,7 +178,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
           "number": 1
         },
         "row": {
@@ -218,7 +218,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
       "key": "[\"Fiat\",\"Pandina\",\"1.0 Hybrid Icon\"]",
       "data": {
         "brand": "Fiat",
@@ -232,7 +232,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {
           "kind": "workbook",
           "sheets": [
@@ -370,7 +370,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
           "number": 1
         },
         "row": {
@@ -410,7 +410,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
       "key": "[\"Citroën\",\"C3\",\"Plus; automatica\\nnuova\"]",
       "data": {
         "brand": "Citroën",
@@ -424,7 +424,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {
           "kind": "workbook",
           "sheets": [
@@ -562,7 +562,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
           "number": 1
         },
         "row": {
@@ -602,7 +602,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+      "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
       "key": "[\"Peugeot\",\"208\",\"Allure\"]",
       "data": {
         "brand": "Peugeot",
@@ -616,7 +616,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+        "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {
           "kind": "workbook",
           "sheets": [
@@ -754,7 +754,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/workbook-document/fixtures/listino.csv",
+          "url": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
           "number": 1
         },
         "row": {

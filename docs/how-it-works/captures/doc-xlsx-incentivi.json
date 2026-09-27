@@ -13,7 +13,7 @@
     "▶ incentivi-xlsx (api)",
     "  ⇄ access direct (direct)",
     "  · steps.0  hook file  … ms",
-    "  ⇢ page 1  file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+    "  ⇢ page 1  file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
     "  · steps.1  request  … ms",
     "  · steps.2  extract table  … ms",
     "  · steps.3  set rows  … ms",
@@ -25,7 +25,7 @@
   ],
   "records": [
     {
-      "url": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+      "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
       "key": "[\"Fiat\",\"Pandina\"]",
       "data": {
         "brand": "Fiat",
@@ -42,7 +42,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
         },
-        "file": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+        "file": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
         "table": {
           "sheet": "Incentivi giugno",
           "title": "Marca",
@@ -122,7 +122,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+          "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
           "number": 1
         },
         "row": {
@@ -197,7 +197,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+      "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
       "key": "[\"Fiat\",\"Pandina Cross\"]",
       "data": {
         "brand": "Fiat",
@@ -214,7 +214,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
         },
-        "file": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+        "file": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
         "table": {
           "sheet": "Incentivi giugno",
           "title": "Marca",
@@ -294,7 +294,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+          "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
           "number": 1
         },
         "row": {
@@ -369,7 +369,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+      "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
       "key": "[\"Jeep\",\"Avenger\"]",
       "data": {
         "brand": "Jeep",
@@ -386,7 +386,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
         },
-        "file": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+        "file": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
         "table": {
           "sheet": "Incentivi giugno",
           "title": "Marca",
@@ -466,7 +466,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
+          "url": "file://<repo>/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx",
           "number": 1
         },
         "row": {

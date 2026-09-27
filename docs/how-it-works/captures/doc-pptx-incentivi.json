@@ -13,7 +13,7 @@
     "▶ incentivi-pptx (api)",
     "  ⇄ access direct (direct)",
     "  · steps.0  hook file  … ms",
-    "  ⇢ page 1  file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+    "  ⇢ page 1  file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
     "  · steps.1  request  … ms",
     "  · steps.2  extract native  … ms",
     "  · steps.3  extract chart  … ms",
@@ -27,7 +27,7 @@
   ],
   "records": [
     {
-      "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+      "url": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
       "key": "[\"Avenger\"]",
       "data": {
         "model": "Avenger",
@@ -40,7 +40,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
         },
-        "file": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+        "file": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
         "native": {
           "slide": 1,
           "slideTitle": "Incentivi giugno",
@@ -134,7 +134,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+          "url": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
           "number": 1
         },
         "row": {
@@ -163,7 +163,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+      "url": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
       "key": "[\"Compass\"]",
       "data": {
         "model": "Compass",
@@ -176,7 +176,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
         },
-        "file": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+        "file": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
         "native": {
           "slide": 1,
           "slideTitle": "Incentivi giugno",
@@ -270,7 +270,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+          "url": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
           "number": 1
         },
         "row": {

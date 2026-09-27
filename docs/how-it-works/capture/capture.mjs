@@ -13,13 +13,14 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, join, relative } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createCrawler, loadRecipeSet, memorySink, readPdf, traceLine } from '@opencraw/core'
 import { chromium } from 'playwright'
 import { SCENES } from './scenes.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const guide = dirname(here)
+const REPOSITORY = join(guide, '..', '..')
 const CAPTURES = join(guide, 'captures')
 const RECIPES = join(guide, 'recipes')
 const SHOTS = join(guide, '..', 'assets', 'how-it-works')
@@ -91,14 +92,37 @@ async function capture (scene, browser) {
   } finally {
     await crawler.close()
   }
+  const summary = report.recipes.map(({ recipeId, emitted, rejected, duplicates, pages, error }) => ({ recipeId, emitted, rejected, duplicates, pages, ...(error !== undefined && { error }) }))
+  await writeFile(join(CAPTURES, `${scene.name}.json`), portable({ scene: scene.name, summary, trace: trace.map(line => stripTimings(line)), records: records.slice(0, scene.keep ?? 5).map(record => compact(record)) }))
+  for (const recipe of summary) console.log(`  ${recipe.recipeId}: ${recipe.emitted} emitted, ${recipe.rejected} rejected${recipe.error === undefined ? '' : `, stopped: ${recipe.error}`}`)
+  // After the capture is saved: a flaky screenshot then costs only the picture, not the run.
   const shots = scene.screenshots ?? []
   for (const [index, shot] of shots.entries()) {
     const path = join(SHOTS, `${scene.name}${index === 0 ? '' : `-${index + 1}`}.png`)
     await (shot.pdf === undefined ? screenshot(browser, shot, path) : pdfFigure(browser, shot, path))
   }
-  const summary = report.recipes.map(({ recipeId, emitted, rejected, duplicates, pages, error }) => ({ recipeId, emitted, rejected, duplicates, pages, ...(error !== undefined && { error }) }))
-  await writeFile(join(CAPTURES, `${scene.name}.json`), `${JSON.stringify({ scene: scene.name, summary, trace: trace.map(line => stripTimings(line)), records: records.slice(0, scene.keep ?? 5) }, null, 2)}\n`)
-  for (const recipe of summary) console.log(`  ${recipe.recipeId}: ${recipe.emitted} emitted, ${recipe.rejected} rejected${recipe.error === undefined ? '' : `, stopped: ${recipe.error}`}`)
+}
+
+/**
+ * A capture as JSON that doesn't depend on where the repository is checked out: this checkout's path (as a
+ * path and as a `file:` URL) becomes `<repo>`.
+ */
+function portable (capture) {
+  const root = pathToFileURL(REPOSITORY).href
+
+  return `${JSON.stringify(capture, null, 2).replaceAll(root, 'file://<repo>').replaceAll(REPOSITORY, '<repo>')}\n`
+}
+
+/**
+ * A record trimmed for keeping: a scope can hold a whole document (a 650-row sheet, a PDF), which no page
+ * shows. Strings, lists and nesting are cut well above what `shorten` renders, so the pages don't change.
+ */
+function compact (value, depth = 0) {
+  if (typeof value === 'string') return value.length > 600 ? `${value.slice(0, 599)}…` : value
+  if (Array.isArray(value)) return value.length > 10 ? [...value.slice(0, 10).map(item => compact(item, depth + 1)), `… ${value.length - 10} more`] : value.map(item => compact(item, depth + 1))
+  if (value !== null && typeof value === 'object') return depth > 12 ? '{…}' : Object.fromEntries(Object.entries(value).map(([key, item]) => [key, compact(item, depth + 1)]))
+
+  return value
 }
 
 /** Timings change on every run; the guide shows `… ms` so a re-capture only changes what really changed. */
@@ -295,9 +319,16 @@ function getPath (data, path) {
 }
 
 /** Long strings and lists cut down for reading; the capture file keeps them whole. */
+/** The length a list had before `compact` cut it: its trailing `… N more` note stands for N items. */
+function fullLength (list) {
+  const note = /^… (\d+) more$/.exec(typeof list.at(-1) === 'string' ? list.at(-1) : '')
+
+  return note ? list.length - 1 + Number(note[1]) : list.length
+}
+
 function shorten (value, depth = 0) {
   if (typeof value === 'string') return value.length > 160 ? `${value.slice(0, 157)}…` : value
-  if (Array.isArray(value)) return value.length > 4 ? [...value.slice(0, 3).map(item => shorten(item, depth + 1)), `… ${value.length - 3} more`] : value.map(item => shorten(item, depth + 1))
+  if (Array.isArray(value)) return fullLength(value) > 4 ? [...value.slice(0, 3).map(item => shorten(item, depth + 1)), `… ${fullLength(value) - 3} more`] : value.map(item => shorten(item, depth + 1))
   if (value !== null && typeof value === 'object') return depth > 3 ? '{…}' : Object.fromEntries(Object.entries(value).map(([key, item]) => [key, shorten(item, depth + 1)]))
 
   return value

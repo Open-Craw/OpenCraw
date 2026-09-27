@@ -13,7 +13,7 @@
     "▶ fixture-tables (api)",
     "  ⇄ access direct (direct)",
     "  · steps.0  hook file  … ms",
-    "  ⇢ page 1  file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+    "  ⇢ page 1  file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
     "  · steps.1  request  … ms",
     "  · steps.2  extract tables  … ms",
     "    · steps.3.steps.0  set rows  … ms",
@@ -63,7 +63,7 @@
   ],
   "records": [
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS ALPHA\",\"CITY (model 101)\"]",
       "data": {
         "table": "MODELS ALPHA",
@@ -77,7 +77,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -192,7 +192,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -327,7 +327,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS ALPHA\",\"CITY EV (model 102)\"]",
       "data": {
         "table": "MODELS ALPHA",
@@ -341,7 +341,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -456,7 +456,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -591,7 +591,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS ALPHA\",\"MINI (model 103)\"]",
       "data": {
         "table": "MODELS ALPHA",
@@ -605,7 +605,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -720,7 +720,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -855,7 +855,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS ALPHA\",\"SEDAN (model 104)\"]",
       "data": {
         "table": "MODELS ALPHA",
@@ -869,7 +869,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -984,7 +984,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -1119,7 +1119,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS ALPHA\",\"WAGON base series 1 (104.E23 without OPT JFS-JFR)\"]",
       "data": {
         "table": "MODELS ALPHA",
@@ -1133,7 +1133,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -1248,7 +1248,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -1383,7 +1383,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS ALPHA\",\"COUPE (model 105)\"]",
       "data": {
         "table": "MODELS ALPHA",
@@ -1397,7 +1397,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -1512,7 +1512,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -1647,7 +1647,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS BETA\",\"ROADSTER\"]",
       "data": {
         "table": "MODELS BETA",
@@ -1661,7 +1661,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -1776,7 +1776,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -1856,7 +1856,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS BETA\",\"VAN\"]",
       "data": {
         "table": "MODELS BETA",
@@ -1870,7 +1870,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -1985,7 +1985,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -2065,7 +2065,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 290\"]",
       "data": {
         "table": "MODELS DELTA (DEALERS ONLY)",
@@ -2079,7 +2079,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -2194,7 +2194,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -2274,7 +2274,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS DELTA (DEALERS ONLY)\",\"TRUCK 505\"]",
       "data": {
         "table": "MODELS DELTA (DEALERS ONLY)",
@@ -2288,7 +2288,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -2403,7 +2403,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -2483,7 +2483,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS GAMMA\",\"G3 MHEV\"]",
       "data": {
         "table": "MODELS GAMMA",
@@ -2497,7 +2497,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -2612,7 +2612,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -2692,7 +2692,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS GAMMA\",\"G3 BEV\"]",
       "data": {
         "table": "MODELS GAMMA",
@@ -2706,7 +2706,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -2821,7 +2821,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -2901,7 +2901,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS ALPHA\",\"COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded\"]",
       "data": {
         "table": "MODELS ALPHA",
@@ -2915,7 +2915,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -3143,7 +3143,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
@@ -3278,7 +3278,7 @@
       }
     },
     {
-      "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+      "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
       "key": "[\"MODELS GAMMA\",\"G3 BEV *Discounts apply to the base list price\"]",
       "data": {
         "table": "MODELS GAMMA",
@@ -3292,7 +3292,7 @@
         "start": {
           "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
         },
-        "file": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+        "file": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
         "tables": [
           {
             "page": 1,
@@ -3520,7 +3520,7 @@
           }
         ],
         "page": {
-          "url": "file:///home/user/open.craw/packages/core/src/pdf-document/fixtures/discounts.pdf",
+          "url": "file://<repo>/packages/core/src/pdf-document/fixtures/discounts.pdf",
           "number": 1
         },
         "table": {
