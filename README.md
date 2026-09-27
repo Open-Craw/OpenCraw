@@ -31,7 +31,9 @@ Several input recipes can feed one output; a run processes them one after anothe
 
 One recipe format covers every source below. A site, an API and a PDF price list can feed the same output, and
 the records come out typed and checked alike. Documents arrive by a `request` (typed by `Content-Type`), a local
-`file:` URL (typed by extension), or a browser download; `as` overrides the guess.
+`file:` URL (typed by extension), or a browser download. A generic type (`application/octet-stream`,
+`text/plain`) is sniffed from the bytes, so a PDF or a workbook behind a CDN is still read as one; `as` overrides
+the guess.
 
 | Source | Reaches a recipe by | Read with | What the reader does |
 |---|---|---|---|
