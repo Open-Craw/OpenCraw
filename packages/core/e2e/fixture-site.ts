@@ -6,6 +6,7 @@ import { gzipSync } from 'node:zlib'
 import type { BrowserSessionConfig } from '../src/index'
 import { allowlistRoute } from './allowlist-site'
 import { formCaptchaRoute } from './form-captcha-site'
+import { navigationRoute } from './navigation-site'
 import { reportRoute } from './report-site'
 import { widgetsRoute } from './widgets-site'
 import { workerRoute } from './worker-site'
@@ -261,6 +262,7 @@ function handle (incoming: IncomingMessage, outgoing: ServerResponse): void {
   if (url.pathname.startsWith('/form-captcha') && formCaptchaRoute(incoming, outgoing, url)) return
   if (url.pathname.startsWith('/report') && reportRoute(incoming, outgoing, url)) return
   if (url.pathname.startsWith('/widgets') && widgetsRoute(incoming, outgoing, url)) return
+  if (url.pathname.startsWith('/nav/') && navigationRoute(incoming, outgoing, url)) return
   if (url.pathname.startsWith('/worker/') && workerRoute(incoming, outgoing, url)) return
   if (url.pathname.startsWith('/allow/') && allowlistRoute(incoming, outgoing, url, FIXTURE_PORT)) return
   if (url.pathname === '/feed.xml') {

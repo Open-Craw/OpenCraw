@@ -15,8 +15,8 @@ describe('api recipe (browser bootstrap, then HTTP only)', () => {
     try {
       const report = await crawler.run(recipes)
       expect(report.recipes[0].error).toBeUndefined()
-      // 3 API pages plus the login page the bootstrap visited
-      expect(report.recipes[0]).toMatchObject({ recipeId: 'shop-api', mode: 'api', emitted: 6, rejected: 0, pages: 4 })
+      // 3 API pages, plus the login page the bootstrap visited and the account page its login click reached
+      expect(report.recipes[0]).toMatchObject({ recipeId: 'shop-api', mode: 'api', emitted: 6, rejected: 0, pages: 5 })
       const records = sink.records.map(({ data: { scrapedAt: _at, ...rest } }) => rest).sort((a, b) => String(a.url).localeCompare(String(b.url)))
       expect(records).toEqual(expectedRecords())
     } finally {

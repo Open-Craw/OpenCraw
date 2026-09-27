@@ -74,6 +74,21 @@ context (proxy, extra headers, `ignoreHTTPSErrors`, blocked resource types) and 
 lease is reported as an `access:lease` event without credentials. Authenticated SOCKS proxies are refused at load:
 Chromium does not send SOCKS credentials.
 
+**Navigations a step causes.** A `click`, `press` or `select` that navigates the main frame, and a
+`next.selector` click, are followed like a `goto`: the engine waits for the final response (past redirects) and
+the new page's `load`, applies the retries and the block rule, and emits `page:visit` with the real URL and
+status. A navigation that fails, or still answers a retried status once the tries are spent, fails the step with
+its cause (`net::ERR_… at <url>`, `HTTP 503 at <url>`); a `chrome-error://` page is never treated as a page.
+An element's click or key press waits for the navigation it starts; a key press on the page and a pick give one
+150 ms to start, a `next.selector` click 500 ms. An action that does not navigate leaves the page as it is: a
+`next` that swaps the content in place still pages (and counts a page without a status), and a script's
+`history.pushState` to a new URL counts a page without a status. A cancelled navigation or a download is not a
+page.
+
+**Pages.** The report's `pages` counts `page:visit` events: every page a navigation reached and every
+`request` that got an answer, a 4xx or 5xx that fails the step included (the page was fetched). A request or
+navigation that got no answer at all (a transport failure) is not a page.
+
 **Blocks.** Every navigation and request is checked against `session.blockedWhen` (`status`, `header` patterns,
 `text` pattern; default 403, 429 or `x-amzn-waf-action: challenge`). A match raises a `BlockedError` and an
 `access:blocked` event. With `session.onBlock: { rotate: true, attempts? }` the run keeps the old lease until it ends, takes a
@@ -107,8 +122,10 @@ Both report `errorKind: 'host'`. The check is by host name, not resolved address
 over the default of 3 tries, 1 s doubling with ±25 % jitter, capped at 30 s, statuses 408, 425, 429, 500, 502,
 503, 504, plus connection failures and timeouts (not unknown hosts). `Retry-After` is honoured when within
 `maxDelayMs` and pauses the whole site in the per-site throttle; a longer one is not retried. It covers `goto`,
-`request` and `next.url`; each retry is a `request:retry` event. After the last try the outcome goes on as
-before: block detection, then the step's `onError`. `forMs` is a time budget from the first try: without
+`request` and `next.url`, and the main-frame navigation a `next.selector`, `click`, `press` or `select` causes
+(retried by loading the URL it navigated to again, a GET only: a posted form is never sent twice); each retry is
+a `request:retry` event. After the last try the outcome goes on as before: block detection, then the step's
+`onError`. `forMs` is a time budget from the first try: without
 `attempts` it alone ends the tries (to ride out an outage), with it whichever runs out first; no pause runs past it.
 
 **Change detection.** `diffRecords(previous, current, { key?, ignore?, shrink? })` compares two runs' records
@@ -151,7 +168,7 @@ steps; section 5).
 | `fill` | web | – | `selector` or `target`, `value` (template) |
 | `press` | web | – | `key`, `selector?` or `target?` |
 | `select` | web | – | `selector` or `target`, one of `value`, `label`, `index`, `values`; `multiple?`, `force?`, `ignoreCase?`, `timeoutMs?`, `search?`, `clear?` |
-| `scroll` | web | – | `to: 'bottom' \| selector`, `times?`, `untilStable?` |
+| `scroll` | web | – | `to: 'bottom' \| selector`, `times?`, `untilStable?`, `maxScrolls?` (with `untilStable`, default 50; reaching it stops without failing and emits a `warning`), `settleMs?` (the wait after each scroll, default 300) |
 | `wait` | web | – | one of `selector`, `ms`, `state: 'networkidle'`; `timeoutMs?` |
 | `evaluate` | web | value | `script`, JavaScript run in the page; `args?`. Trusted recipes only. |
 | `screenshot` | web | – | `path` |
@@ -249,7 +266,8 @@ every use, so a page that re-renders after each interaction (a configurator) sti
   navigated. In `web` mode `page.url` is the real page URL after the last navigation; in `api` mode it is the
   final URL of the nearest `request` up the chain, and `start.url` before any request. `extract` without
   `from` reads the current document of the nearest scope that has one.
-- `paginate.next` is evaluated **after** the page body: `{ selector }` (web: click it), `{ url }` (both: the
+- `paginate.next` is evaluated **after** the page body: `{ selector }` (web: click it, and check the navigation
+  it causes like a `goto`'s), `{ url }` (both: the
   rendered value becomes the next `page.url`), `{ jsonpath, as? }` (api: evaluated on the current document;
   without `as` the value is the next URL, relative allowed; with `as` it is bound under that name in the next
   page's scope so the body builds the URL itself, e.g. a cursor). Pagination stops when `next` yields nothing,

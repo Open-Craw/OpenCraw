@@ -138,6 +138,13 @@ describe('recipeKindOf', () => {
     expect(recipeKindOf('text')).toBeUndefined()
   })
 
+  it('caps a scroll untilStable with maxScrolls and tunes its settle time, and refuses maxScrolls without untilStable', () => {
+    expect(() => parseInputRecipe(recipe([{ type: 'scroll', to: 'bottom', untilStable: true, maxScrolls: 20, settleMs: 800 }]))).not.toThrow()
+    expect(() => parseInputRecipe(recipe([{ type: 'scroll', to: 'bottom', times: 3, settleMs: 0 }]))).not.toThrow()
+    expect(() => parseInputRecipe(recipe([{ type: 'scroll', to: 'bottom', times: 3, maxScrolls: 20 }]))).toThrow('maxScrolls caps untilStable')
+    expect(() => parseInputRecipe(recipe([{ type: 'scroll', to: 'bottom', untilStable: true, maxScrolls: 0 }]))).toThrow(/maxScrolls/)
+  })
+
   it('requires exactly one of over and selector on forEach, and one target on interactions', () => {
     const both = () => parseInputRecipe(recipe([{ type: 'forEach', over: 'a', selector: 'option', as: 'o', steps: [] }]))
     expect(both).toThrow('give exactly one of over (a list id) or selector (live elements)')

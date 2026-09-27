@@ -4,6 +4,10 @@ import { HostThrottle } from './host-throttle.policy'
 import { RunGate } from './run-gate.policy'
 import { DEFAULT_RETRY_RULE, resolveRetryRule, retryDelay, transientError, withTransportRetry } from './transport-retry.policy'
 
+function connectionProblem (outcome: { value: string } | { error: unknown }): ReturnType<typeof transientError> {
+  return 'error' in outcome ? transientError(outcome.error) : undefined
+}
+
 describe('transport retry', () => {
   it('layers the recipe over the crawler over the defaults', () => {
     expect(resolveRetryRule()).toEqual(DEFAULT_RETRY_RULE)
@@ -53,6 +57,35 @@ describe('transport retry', () => {
     events.length = 0
     await expect(withTransportRetry('https://a.example/', permanent, context)).rejects.toThrow('HTTP 404')
     expect(events).toEqual([])
+  })
+
+  it('judges a first try the caller made like any other, and runs only the retries', async () => {
+    const events: CrawlEvent[] = []
+    const context = { recipeId: 'r', gate: new RunGate(1, 0), events: new EventBus((event) => { events.push(event) }), rule: { ...DEFAULT_RETRY_RULE, backoffMs: 1 } }
+    const runs: string[] = []
+    const retried = {
+      made: { error: new Error('net::ERR_CONNECTION_RESET at https://a.example/2') },
+      run:  async () => {
+        runs.push('run')
+
+        return 'page 2'
+      },
+      problem: connectionProblem,
+    }
+    await expect(withTransportRetry('https://a.example/2', retried, context)).resolves.toBe('page 2')
+    expect(runs).toEqual(['run'])
+    expect(events.map(event => (event.type === 'request:retry' ? [event.url, event.attempt] : event.type))).toEqual([['https://a.example/2', 2]])
+    const stands = {
+      made: { value: 'page 2' },
+      run:  async () => {
+        runs.push('again')
+
+        return 'never'
+      },
+      problem: connectionProblem,
+    }
+    await expect(withTransportRetry('https://a.example/2', stands, context)).resolves.toBe('page 2')
+    expect(runs).toEqual(['run'])
   })
 
   it('under a time budget alone counts no tries; with attempts too, stops at whichever runs out first', () => {

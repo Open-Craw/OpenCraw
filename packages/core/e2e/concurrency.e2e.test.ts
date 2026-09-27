@@ -22,8 +22,8 @@ describe('concurrency and resume (api mode)', () => {
     try {
       const report = await crawler.run(recipes)
       expect(report.recipes[0].error).toBeUndefined()
-      // login page, 3 list pages, 6 product pages
-      expect(report.recipes[0]).toMatchObject({ emitted: 6, rejected: 0, skipped: 0, pages: 10 })
+      // login page, the account page the login click reached, 3 list pages, 6 product pages
+      expect(report.recipes[0]).toMatchObject({ emitted: 6, rejected: 0, skipped: 0, pages: 11 })
       const records = sink.records.map(({ data: { scrapedAt: _at, ...rest } }) => rest).sort((a, b) => String(a.url).localeCompare(String(b.url)))
       expect(records).toEqual(expectedRecords())
       // the first request of a page's detail fan-out starts before the previous detail response arrived
