@@ -455,7 +455,8 @@ how it's read:
 | Data (an object, a list of objects) | Fails: `is not HTML text; use kind "jsonpath" for data` | Fails: `is not markup` | The data | The data as JSON text |
 
 A read PDF, workbook, deck or XML document bound to an id is read as [part 7](06-documents.md) describes, and
-`table` reads only those: `table` with `from` bound to HTML text fails.
+`table` reads those, and HTML text too: with `from` bound to a page a `request` fetched, a Word or Markdown
+document, or a list of fragments taken with `take: "html"`, it reads their `<table>`s.
 
 The fragment row matters for table rows and list items. The recipe
 [`book-specs`](recipes/data-fragments/book-specs.input.json) reads the product table of a
@@ -699,9 +700,8 @@ in to [quotes.toscrape.com/login](https://quotes.toscrape.com/login), which acce
   holds it, and its header says **Logout**.
 - The browser tab never moved. `page.url` is still `/login`, and an extract without `from` reads the live page,
   whose header still says **Login**. In web mode, `css`, `xpath`, `regex` and `table` without `from` always read
-  the live page: read a fetched document with `from: <request id>`. Only `jsonpath` reads the fetched JSON
-  directly, and `table` can't read fetched HTML at all in web mode (with `from` it reads only a PDF, a workbook
-  or a deck).
+  the live page: read a fetched document with `from: <request id>`, `table` included. Only `jsonpath` reads the
+  fetched JSON directly.
 
 `form` is refused in api mode, since there is no page to read it from: send the fields as a `body` there.
 

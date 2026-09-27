@@ -3,8 +3,8 @@
 // outline each `highlight` selector with its label, save the viewport or the `clip` element. A screenshot
 // with `pdf` instead renders that PDF's page with every cell readPdf found drawn on it.
 //
-// Page 7 reads documents from the repository as well as from the web. A recipe's `file:` URL must be
-// absolute, so the `doc-` recipes start from the file's GitHub URL and the `repoFile` hook below turns it
+// Page 7 reads documents from the repository as well as from the web. A relative `file:` URL resolves against
+// the recipe's own folder, far from the fixtures, so the `doc-` recipes start from the file's GitHub URL and the `repoFile` hook below turns it
 // into a file URL into the checkout that runs the capture.
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'

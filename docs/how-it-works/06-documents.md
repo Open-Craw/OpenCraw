@@ -51,17 +51,21 @@ a `file:` URL into the local checkout ([`capture/scenes/06-documents.mjs`](captu
 ### 1.1 Choosing the reader
 
 Documents reach a recipe three ways: a `request` over HTTP, a `request` to a `file:` URL, and a web-mode
-`click` with `download`. The format is chosen in this order
-([`http-session/http.client.ts`](../../packages/core/src/http-session/http.client.ts)):
+`click` with `download`. A relative `file:` URL (`file:data/listino.csv`, `file:../x.pdf`) in a recipe read from a
+file resolves against that file's folder when the recipe loads; in a recipe given as an object, or made relative
+only by a template, it resolves against the working directory when the step runs. The format is chosen in this
+order ([`http-session/http.client.ts`](../../packages/core/src/http-session/http.client.ts)):
 
-1. **`as` wins.** `httpRequest.as ?? formatFromContentType(…)` for a response (`:159`), `as ?? formatFromExtension(…)`
-   for a file or a download (`:147`, `:172`).
-2. **An HTTP response is typed by its `Content-Type`**, lower-cased, parameters dropped (`:232-250`). The rules
-   run in order, first match wins:
+1. **`as` wins.** `httpRequest.as ?? formatOfResponse(…)` for a response (`:162`), `as ?? formatOfFile(…)` for a
+   file or a download (`:149`, `:175`).
+2. **An HTTP response is typed by its `Content-Type`**, lower-cased, parameters dropped (`:242-248`), unless the
+   type is one servers send for anything: none, `application/octet-stream`, `binary/octet-stream`, `text/plain`,
+   `application/zip` and the download types. A specific type goes through these rules in order, first match wins
+   (`:263-280`):
 
    | Content type | Format |
    |---|---|
-   | `application/gzip`, `application/x-gzip` or `application/octet-stream`, **and** a URL path ending `.xml.gz` | `xml` |
+   | `application/gzip` or `application/x-gzip`, **and** a URL path ending `.xml.gz` | `xml` |
    | `text/csv`, `application/csv`, `text/x-csv`, `application/x-csv`, `text/comma-separated-values`, `text/tab-separated-values` | `csv` |
    | `application/x-ndjson`, `application/ndjson`, `application/jsonl`, `application/x-jsonlines`, `application/jsonlines` | `jsonl` |
    | contains `spreadsheetml`, or starts `application/vnd.ms-excel` | `xlsx` |
@@ -73,20 +77,25 @@ Documents reach a recipe three ways: a `request` over HTTP, a `request` to a `fi
    | contains `pdf`, then `html`, then `xml` (so `application/xhtml+xml` is `html`) | `pdf`, `html`, `xml` |
    | anything else | `text` |
 
-3. **A file or a download is typed by its extension** (`:257-263`), case-insensitively: `.json`; `.jsonl`
+3. **A generic type is sniffed** ([`body-sniff.algorithm.ts`](../../packages/core/src/http-session/body-sniff.algorithm.ts)):
+   `%PDF-` within the first 1 KiB is a PDF; a zip (`50 4B 03 04`) is typed by its part names, read from the zip's
+   directory without inflating anything: `xl/` a workbook, `ppt/` a deck, `word/` a Word document; gzip
+   (`1F 8B`) is XML only when the URL path ends `.xml.gz`. When the bytes prove nothing, the URL path's
+   extension decides (rule 4), except on a 4xx or 5xx response, whose body is an error page whatever its URL
+   says; then it's `text`. So a PDF served as `application/octet-stream` reads as a PDF with no `as`.
+4. **A file or a download is typed by its extension** (`:289-295`), case-insensitively: `.json`; `.jsonl`
    `.ndjson`; `.pdf`; `.csv` `.tsv`; `.xlsx` `.xlsm` `.xls`; `.pptx` `.pptm` `.ppsx` `.ppt`; `.docx` `.docm`
    `.dotx` `.doc`; `.yaml` `.yml`; `.md` `.markdown`; `.html` `.htm`; `.xml` `.rss` `.atom` `.kml` `.gpx`
-   and `.xml.gz`. Anything else is `text`.
+   and `.xml.gz`. A name with no known extension is sniffed as in rule 3; anything else is `text`.
 
-There is **no byte sniffing**. A response's URL extension is not consulted (except for `.xml.gz`), and the
-first bytes are not looked at to choose a reader, so a PDF served as `application/octet-stream` or
-`text/plain` reads as text unless the recipe says `as: "pdf"`. That is why the Stellantis recipe sets `as`.
-[Issue #76](https://github.com/russoedu/open.craw/issues/76) is open for it. Bytes are only inspected inside a
-reader once it is chosen: text decoding looks for a byte-order mark (§3.1), the XML reader gunzips a body that
-starts with `1F 8B` (§9), `office-reader` recognises a legacy or encrypted compound file by its
-`D0 CF 11 E0 A1 B1 1A E1` signature (§3.3), and pdf.js refuses bytes that are not a PDF.
+A **specific** content type is trusted: a PDF served as `text/html` is read as HTML unless the recipe says
+`as: "pdf"`. That is why the Stellantis recipe sets `as`, which costs nothing and survives a server that changes
+its headers. Past the choice, bytes are also inspected inside a reader: text decoding looks for a byte-order mark
+(§3.1), the XML reader gunzips a body that starts with `1F 8B` (§9), `office-reader` recognises a legacy or
+encrypted compound file by its `D0 CF 11 E0 A1 B1 1A E1` signature (§3.3), and pdf.js refuses bytes that are
+not a PDF.
 
-A 4xx or 5xx response is parsed by format too before `HttpError` is thrown (`:120-122`), so the block detector
+A 4xx or 5xx response is parsed by format too before `HttpError` is thrown (`:121-123`), so the block detector
 can read its text.
 
 **The readers load lazily.** Each is a dynamic `import()` on first use, so a recipe that never reads a format
@@ -102,8 +111,8 @@ the three entry points of `@opencraw/office-reader`, `/xlsx`, `/pptx` and `/docx
 
 Every reader produces one of seven document kinds. The `request` binds it as the scope's current document, the
 one an `extract` without `from` reads, and binds `documentValue(body)` under the step's `id`
-([`send-request.use-case.ts:64-65`](../../packages/core/src/api-steps/send-request.use-case.ts#L64-L65),
-`:109`):
+([`send-request.use-case.ts:65-66`](../../packages/core/src/api-steps/send-request.use-case.ts#L65-L66),
+`:94`):
 
 | Format | Document kind | What the step's `id` holds |
 |---|---|---|
@@ -116,10 +125,9 @@ one an `extract` without `from` reads, and binds `documentValue(body)` under the
 | `xml` | `xml` | the document object: `{ kind, xml }` |
 
 Markdown and Word become HTML, so their `id` holds a string. An `extract` with `from` on that id reads it as
-HTML for `css`, as markup for `xpath`, as text for `regex`, but **not** as a table: `table` with `from` accepts
-only a PDF, workbook or deck object
-([`extract-from-document.use-case.ts:207`](../../packages/core/src/api-steps/extract-from-document.use-case.ts#L207)).
-A table in a Word or Markdown document is read from the current document, without `from`.
+HTML for `css` and `table`, as markup for `xpath`, and as text for `regex`: `table` with `from` accepts a PDF,
+workbook or deck object, or HTML text, or a list of HTML fragments, which it reads through the HTML table reader
+of §6 ([`extract-from-document.use-case.ts:185-190`](../../packages/core/src/api-steps/extract-from-document.use-case.ts#L185-L190)).
 
 ### 1.3 Which `extract` kind reads which document
 
@@ -1339,7 +1347,7 @@ as it reads JSON.
 
 ## 9. XML
 
-Reading ([`http.client.ts:184-194`](../../packages/core/src/http-session/http.client.ts#L184-L194)): bytes that
+Reading ([`http.client.ts:187-197`](../../packages/core/src/http-session/http.client.ts#L187-L197)): bytes that
 start with `1F 8B` are gunzipped (a `sitemap.xml.gz` served as a file), the text is decoded (§3.1), parsed once
 to validate it (a body that looks like HTML gets the hint `read it with "as": "html"`), and kept **as text**,
 `{ kind: 'xml', xml }`. Parsing
