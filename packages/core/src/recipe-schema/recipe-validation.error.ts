@@ -1,6 +1,6 @@
 /** One problem found in a recipe file, located by its JSON path. */
 export interface RecipeIssue {
-  /** Dotted JSON path, `''` for the root. */
+  /** Dotted JSON path, `''` for the root; a key that is not a plain word is bracketed: `fields["stock.count"]`. */
   path:    string
   message: string
 }
