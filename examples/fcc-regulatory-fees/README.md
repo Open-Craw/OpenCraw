@@ -60,13 +60,16 @@ Population Served | AM Class A | AM Class B | AM Class C | AM Class D | FM Class
   merged title above it is skipped.
 - **Two values in one cell.** Each cell holds the payment type code, then the fee, on two lines. Two mapping
   rules read the same cell: `regex` `^\s*(\d{4})` for the code, `regex` `\$\s*([\d,.]+)` then `number` for the fee.
-  The line break between them is lost when the table is read ([#72](https://github.com/russoedu/open.craw/issues/72)),
-  so the cell arrives as `2659$560`; the patterns accept both forms, so the recipe keeps working once that's fixed.
+  The line break between them reads as a space, so the cell arrives as `2659 $560` (before
+  [#72](https://github.com/russoedu/open.craw/issues/72), `@opencraw/core` 0.1.10 and earlier glued it into
+  `2659$560`; the patterns accept both).
 - **Dotted targets build objects.** `amClassA.paymentTypeCode` and `amClassA.feeUsd` fill the `amClassA` object
   the output declares.
-- **Column headers with digits and odd spacing.** `FM Classes A, B1 & C3` also loses its line break (it reads
-  `FM ClassesA, B1 & C3`), hence the pattern `^FM Classes\s*A`. `probe` doesn't suggest this header
-  ([#73](https://github.com/russoedu/open.craw/issues/73)); the selector was written by hand from what it lists.
+- **Column headers with digits and a line break.** `FM Classes` / `A, B1 & C3` is two lines in its cell; the
+  pattern `^FM Classes\s*A` matches it with or without the space the break becomes.
+  `opencraw probe fy2026-regulatory-fees-media-bureau.docx` suggests this table's selector,
+  `^Population Served`, and the three simpler ones below it (before
+  [#73](https://github.com/russoedu/open.craw/issues/73), the digits in `B1` and `C3` hid this header from it).
 
 The same document has three simpler tables (`Regulatory Fee Group or Category | Regulatory Fee | Payment Type
 Code`, and two like it), a good next recipe to write.

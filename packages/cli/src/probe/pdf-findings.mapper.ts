@@ -1,4 +1,5 @@
-import type { PdfDocument, PdfRow } from '@opencraw/core'
+import type { PdfDocument } from '@opencraw/core'
+import { isDataRow, isHeaderRow } from './table-header.policy'
 
 /** Rows shown in a probe, at most. */
 const ROW_LIMIT = 80
@@ -22,18 +23,13 @@ export interface PdfFindings {
  */
 export function describePdf (document: PdfDocument): PdfFindings {
   const rows = document.pages.flatMap(page => page.rows.map((row, index) => ({ page: page.number, row, next: page.rows.slice(index + 1, index + 3) })))
-  const headers = rows.filter(({ row, next }) => row.cells.length >= 2 && row.cells.every(cell => !/\d/.test(cell.text)) && next.some(candidate => dataRow(candidate)))
+  const headers = rows.filter(({ row, next }) => isHeaderRow(row.cells.map(cell => cell.text)) && next.some(candidate => isDataRow(candidate.cells.map(cell => cell.text))))
 
   return {
     pages:   document.pages.length,
     rows:    rows.slice(0, ROW_LIMIT).map(({ page, row }) => ({ page, text: row.cells.map(cell => cell.text).join(' | ') })),
     headers: headers.map(({ page, row }) => ({ page, text: row.cells.map(cell => cell.text).join(' | '), selector: `^${escape(row.cells[0].text)}` })),
   }
-}
-
-/** A row of at least two cells, one with a digit: data, not a heading. */
-function dataRow (row: PdfRow): boolean {
-  return row.cells.length >= 2 && row.cells.some(cell => /\d/.test(cell.text))
 }
 
 function escape (text: string): string {

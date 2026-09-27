@@ -1,4 +1,5 @@
 import type { Sheet, WorkbookDocument } from '@opencraw/core'
+import { isDataRow, isHeaderRow } from './table-header.policy'
 
 /** Rows shown per sheet in a probe, at most. */
 const ROW_LIMIT = 20
@@ -13,9 +14,10 @@ export interface WorkbookFindings {
   /** The first non-empty rows of each visible sheet, cells separated by " | ". */
   rows:    { sheet: string, row: number, text: string }[]
   /**
-   * Rows of text cells (no digit) with a data row (a digit) just below: likely
-   * table headers, with the `sheet` and `selector` a `table` extract needs, and
-   * a hint when the header has merged cells (a header over two rows).
+   * Rows of words (no cell a figure) with a data row (a figure) just below:
+   * likely table headers, with the `sheet` and `selector` a `table` extract
+   * needs, and a hint when the header has merged cells (a header over two
+   * rows). The rows right under a header are its table's body, not headers.
    */
   headers: { sheet: string, row: number, text: string, selector: string, hint?: string }[]
 }
@@ -42,14 +44,21 @@ export function describeWorkbook (document: WorkbookDocument): WorkbookFindings 
 function headersOf (sheet: Sheet): WorkbookFindings['headers'] {
   const rows = filledRows(sheet)
   const merged = mergedRows(sheet)
-
-  return rows.flatMap(({ index, cells }, position) => {
-    if (cells.length < 2 || cells.some(cell => /\d/.test(cell))) return []
-    if (rows.slice(position + 1, position + 1 + LOOKAHEAD).every(row => !(row.cells.length >= 2 && row.cells.some(cell => /\d/.test(cell))))) return []
+  const headers: WorkbookFindings['headers'] = []
+  // The table a row belongs to: the header it follows, until an empty row ends the block.
+  let table: { header: number, merged: boolean } | undefined
+  for (const [position, { index, cells }] of rows.entries()) {
+    const previous = rows[position - 1]?.index
+    if (previous === undefined || index > previous + 1) table = undefined
+    const secondHeaderRow = table?.merged === true && index === table.header + 1
+    if (table !== undefined && !secondHeaderRow) continue
+    if (!isHeaderRow(cells) || rows.slice(position + 1, position + 1 + LOOKAHEAD).every(row => !isDataRow(row.cells))) continue
     const header = { sheet: sheet.name, row: index + 1, text: cells.join(' | '), selector: `^${escape(cells[0])}` }
+    headers.push(merged.has(index) ? { ...header, hint: 'merged header cells: try "headerRows": 2' } : header)
+    table ??= { header: index, merged: merged.has(index) }
+  }
 
-    return [merged.has(index) ? { ...header, hint: 'merged header cells: try "headerRows": 2' } : header]
-  })
+  return headers
 }
 
 /** The non-empty rows, as their non-empty cells, whitespace collapsed. */

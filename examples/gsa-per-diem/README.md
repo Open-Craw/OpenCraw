@@ -66,9 +66,9 @@ Master r5  2 | AL | Gulf Shores | Baldwin | October 1 | February 28 | 134 | 74
 - **Numbers are numbers.** The rate cells are numeric in the workbook, so they arrive as numbers and need no
   transform.
 
-`opencraw probe gsa-per-diem-fy2026.xlsx` lists the sheet and its rows. It doesn't suggest this header
-([#73](https://github.com/russoedu/open.craw/issues/73): it skips header rows containing a digit, and this one
-has `FY26`), so the selector was written from row 2 by hand.
+`opencraw probe gsa-per-diem-fy2026.xlsx` lists the sheet, its first rows, and this header with its selector
+(`Master r2 ^ID`). A digit inside a word, like `FY26`, doesn't stop a row being a header; before
+[#73](https://github.com/russoedu/open.craw/issues/73) it did, and the selector was written by hand.
 
 ## Source
 
