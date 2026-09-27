@@ -1,0 +1,18 @@
+{
+  "name": "opencraw-example-fcc-regulatory-fees",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenCraw example: a fee table read from a Word document (the FCC FY 2026 radio station regulatory fees).",
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs",
+    "live": "node run.mjs --live",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@opencraw/core": "^0.1.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

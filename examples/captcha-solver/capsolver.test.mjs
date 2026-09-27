@@ -1,4 +1,4 @@
-// node --test examples/captcha-solver
+// npm test
 // The API is faked; the page part runs in a real Chromium (OPENCRAW_CHROMIUM picks the binary).
 import assert from 'node:assert/strict'
 import { after, before, describe, it } from 'node:test'

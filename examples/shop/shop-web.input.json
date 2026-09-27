@@ -1,10 +1,10 @@
 {
-  "$schema": "../../packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "shop-web",
   "output": "product",
   "mode": "web",
-  "start": [{ "url": "http://127.0.0.1:4545/catalog?page=1" }],
+  "start": [{ "url": "http://127.0.0.1:4580/catalog?page=1" }],
   "limits": { "delayMs": 50 },
   "steps": [
     { "type": "goto", "url": "{{start.url}}" },

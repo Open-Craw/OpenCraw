@@ -1,10 +1,9 @@
 // Every version and priced configuration of one model on BYD UK (Seal) and Kia UK (EV3),
 // into one `vehicle-configuration` output.
 //
-//   npm run core:build
-//   node examples/vehicles/run.mjs                 # both sources
-//   node examples/vehicles/run.mjs --only byd-uk   # or --only kia-uk
-//   node examples/vehicles/run.mjs --trace         # print the route: pages, steps, records
+//   npm start                         # both sources
+//   npm start -- --only byd-uk        # or --only kia-uk
+//   npm start -- --trace              # print the route: pages, steps, records
 //
 // Neither source needs a browser. OPENCRAW_INSECURE_TLS=1 accepts an intercepting
 // proxy's certificate (sandboxes only).
@@ -37,6 +36,8 @@ try {
   const report = await crawler.run(recipes)
   console.log(`\n${report.records} records written to ${report.sink.location}`)
   for (const recipe of report.recipes) console.log(`  ${recipe.recipeId}: ${recipe.emitted} emitted, ${recipe.rejected} rejected, ${recipe.pages} pages, ${recipe.durationMs} ms${recipe.error === undefined ? '' : `, stopped: ${recipe.error}`}`)
+  // A site that changed shows up as a stopped recipe or an empty run: fail, so a scheduled check notices.
+  if (report.records === 0 || report.recipes.some(recipe => recipe.error !== undefined)) process.exitCode = 1
 } finally {
   await crawler.close()
 }

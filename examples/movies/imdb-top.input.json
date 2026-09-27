@@ -1,5 +1,5 @@
 {
-  "$schema": "../../packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "imdb",
   "output": "movie",

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "gsa-per-diem",
+  "output": "per-diem-rate",
+  "mode": "api",
+  "start": [
+    {
+      "url": "https://www.gsa.gov/system/files/FY2026_PerDiemMasterRatesFile.xlsx"
+    }
+  ],
+  "steps": [
+    {
+      "type": "request",
+      "id": "workbook",
+      "url": "{{start.url}}"
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "from": "workbook",
+      "kind": "table",
+      "sheet": "^Master$",
+      "selector": "^ID STATE DESTINATION",
+      "columns": {
+        "state": "^STATE$",
+        "destination": "^DESTINATION$",
+        "counties": "^COUNTY",
+        "begin": "^SEASON BEGIN$",
+        "end": "^SEASON END$",
+        "lodging": "Lodging Rate$",
+        "meals": "M&IE$"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "state": {
+      "from": "row.state",
+      "onMissing": "skip-record"
+    },
+    "destination": {
+      "from": "row.destination"
+    },
+    "counties": {
+      "from": "row.counties"
+    },
+    "seasonBegin": {
+      "from": "row.begin",
+      "transform": [
+        {
+          "op": "default",
+          "value": "all year"
+        }
+      ]
+    },
+    "seasonEnd": {
+      "from": "row.end"
+    },
+    "lodgingUsd": {
+      "from": "row.lodging"
+    },
+    "mealsUsd": {
+      "from": "row.meals"
+    }
+  }
+}

@@ -1,10 +1,9 @@
 // Crawls five movies from Netflix and five from IMDb into one `movie` output.
 //
-//   npm run core:build
-//   node examples/movies/run.mjs                 # both sources
-//   node examples/movies/run.mjs --only netflix  # or --only imdb
+//   npm start                         # both sources
+//   npm start -- --only netflix       # or --only imdb
 //
-// IMDb needs a browser: `npm run playwright:install` once. Environment:
+// IMDb needs a browser: `npm run setup` once. Environment:
 //   OPENCRAW_CHROMIUM=/path/to/chrome   use a browser other than the one Playwright installed
 //   OPENCRAW_INSECURE_TLS=1             accept an intercepting proxy's certificate (sandboxes only)
 import { dirname, join } from 'node:path'
@@ -36,6 +35,8 @@ try {
   const report = await crawler.run(recipes)
   console.log(`\n${report.records} records written to ${report.sink.location}`)
   for (const recipe of report.recipes) console.log(`  ${recipe.recipeId}: ${recipe.emitted} emitted, ${recipe.rejected} rejected, ${recipe.pages} pages, ${recipe.durationMs} ms${recipe.error === undefined ? '' : `, stopped: ${recipe.error}`}`)
+  // A site that changed shows up as a stopped recipe or an empty run: fail, so a scheduled check notices.
+  if (report.records === 0 || report.recipes.some(recipe => recipe.error !== undefined)) process.exitCode = 1
 } finally {
   await crawler.close()
 }

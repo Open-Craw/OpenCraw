@@ -18,6 +18,8 @@
     "core:e2e": "nx run core:e2e",
     "core:schemas": "nx run core:schemas",
     "playwright:install": "playwright install chromium",
+    "examples:check": "nx run core:build && node examples/check.mjs",
+    "examples:test": "nx run-many -t build -p core cli && node --test \"examples/*/*.test.mjs\"",
     "cli:qa": "nx run cli:lint && nx run cli:test",
     "cli:build": "nx run cli:build",
     "cli:e2e": "nx run cli:e2e",

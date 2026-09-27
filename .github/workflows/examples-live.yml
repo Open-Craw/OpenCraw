@@ -1,0 +1,49 @@
+# The examples against their real sources, the way a reader runs them: each folder copied out of the
+# repository and installed from npm, so this checks the published packages as well as the sites. Sites change
+# and rate-limit, so it runs weekly and on demand, never as a pull request gate.
+name: examples-live
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { example: shop, browser: true }
+          - { example: captcha-solver, browser: true }
+          # IMDb's WAF challenges cloud IPs, CI runners included, so only Netflix is checked here.
+          - { example: movies, args: '-- --only netflix' }
+          - { example: filmography }
+          - { example: vehicles }
+          - { example: stellantis-it-discounts }
+          # The document examples read their shipped copy by default; `live` fetches the original.
+          - { example: gsa-per-diem, script: live }
+          - { example: dfe-college-accounts, script: live }
+          - { example: fcc-regulatory-fees, script: live }
+    name: ${{ matrix.example }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Copy the example out of the repository
+        run: cp -r "examples/${{ matrix.example }}" "$RUNNER_TEMP/example"
+      - name: Install it from npm
+        working-directory: ${{ runner.temp }}/example
+        run: npm install
+      - name: Install the browser
+        if: matrix.browser
+        working-directory: ${{ runner.temp }}/example
+        run: npx playwright install --with-deps chromium
+      - name: Run it
+        working-directory: ${{ runner.temp }}/example
+        run: npm run ${{ matrix.script || 'start' }} ${{ matrix.args }}

@@ -52,7 +52,7 @@ const report = await crawler.run(recipes)
 await crawler.close()
 ```
 
-Start from [`examples/recipes`](./examples/recipes) and the guide in [`docs/recipes/authoring.md`](./docs/recipes/authoring.md).
+Start from the [examples](./examples/README.md) (each one runs with `npm start`; [`examples/shop`](./examples/shop) runs offline) and the guide in [`docs/recipes/authoring.md`](./docs/recipes/authoring.md).
 The specification is [`docs/requirements.md`](./docs/requirements.md).
 
 ## Working on this repository

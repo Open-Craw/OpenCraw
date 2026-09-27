@@ -1,0 +1,113 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "dfe-student-numbers",
+  "output": "student-numbers",
+  "mode": "api",
+  "start": [
+    {
+      "url": "https://assets.publishing.service.gov.uk/media/69c12f4b13101e9908704a5b/management-accounts-powerpoint-presentation-model-march-2026.pptx"
+    }
+  ],
+  "steps": [
+    {
+      "type": "request",
+      "id": "deck",
+      "url": "{{start.url}}"
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "from": "deck",
+      "kind": "table",
+      "slide": "^Student Numbers$",
+      "selector": "^Headcount Full year",
+      "columns": {
+        "programme": "^Headcount$",
+        "last": "last year",
+        "current": "current year",
+        "budget": "^Full-year budget",
+        "forecast": "^Full-year forecast",
+        "rag": "^RAG$",
+        "implications": "^Financial"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "programme": {
+      "from": "row.programme",
+      "transform": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    "lastYearActual": {
+      "from": "row.last",
+      "transform": [
+        {
+          "op": "number",
+          "locale": "en-GB"
+        }
+      ]
+    },
+    "currentActual": {
+      "from": "row.current",
+      "transform": [
+        {
+          "op": "number",
+          "locale": "en-GB"
+        }
+      ]
+    },
+    "budget": {
+      "from": "row.budget",
+      "transform": [
+        {
+          "op": "number",
+          "locale": "en-GB"
+        }
+      ]
+    },
+    "forecast": {
+      "from": "row.forecast",
+      "transform": [
+        {
+          "op": "number",
+          "locale": "en-GB"
+        }
+      ]
+    },
+    "rag": {
+      "from": "row.rag",
+      "transform": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    "implications": {
+      "from": "row.implications",
+      "transform": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    "slide": {
+      "from": "table.slide"
+    }
+  }
+}

@@ -37,4 +37,17 @@ describe('workbookReport', () => {
     expect(report).toContain('  listino r3  ^Marca\n        Marca | Modello | Versione | Prezzo € | Sconto %')
     expect(report.indexOf('Likely table headers')).toBeLessThan(report.indexOf('First rows'))
   })
+
+  it('finds headers whose words contain digits (#73)', () => {
+    const gsa = { name: 'Master', rows: [['FY2026 Per Diem Rates - Effective October 1, 2025'], ['ID', 'STATE', 'DESTINATION', 'SEASON BEGIN', 'FY26 Lodging Rate', 'FY26 M&IE'], ['Standard CONUS rate applies', '', '', '', 110, 68], [2, 'AL', 'Gulf Shores', 'October 1', 134, 74]] }
+    const fcc = { name: 'table 2', rows: [['FY 2026 RADIO STATION REGULATORY FEES', '', ''], ['Population Served', 'AM Class A', 'FM Classes A, B1 & C3'], ['<=10,000', '2659 $560', '2663 $615']], merges: ['A1:C1'] }
+    const findings = describeWorkbook({ kind: 'workbook', sheets: [gsa, fcc] })
+    expect(findings.headers.map(({ sheet, row, selector }) => [sheet, row, selector])).toEqual([['Master', 2, '^ID'], ['table 2', 2, '^Population Served']])
+  })
+
+  it('reads the rows under a header as its body, not as more headers (#73)', () => {
+    const slide = { name: 'table 1', rows: [['Headlines', 'Current Status', 'RAG'], ['Capital Programme', 'On track', 'Green'], ['Asset Disposals', 'None planned', 'Green'], ['Cash days', '42', 'Amber'], [], ['Ref', 'Risk', 'RAG'], ['R1', 'Enrolment down 5%', 'Red'], ['R2', 'Pay award 3%', 'Amber']] }
+    const findings = describeWorkbook({ kind: 'workbook', sheets: [slide] })
+    expect(findings.headers.map(({ row, selector }) => [row, selector])).toEqual([[1, '^Headlines'], [6, '^Ref']])
+  })
 })

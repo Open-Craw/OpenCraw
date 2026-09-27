@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "local-search",
+  "output": "search-result",
+  "mode": "web",
+  "vars": { "q": "rain" },
+  "start": [{ "url": "http://127.0.0.1:4581/search?q=rain" }],
+  "session": { "captcha": { "solver": "capsolver", "verify": { "selector": "#results" }, "attempts": 2, "maxSolves": 2 } },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "extract", "id": "items", "selector": "#results .item", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "items", "as": "item", "emit": true, "steps": [
+      { "type": "extract", "id": "name", "from": "item", "selector": ".name", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "price", "from": "item", "selector": ".price", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "query": { "from": "vars.q" },
+    "name": { "from": "name", "transform": [{ "op": "trim" }] },
+    "price": { "from": "price", "transform": [{ "op": "regex", "pattern": "([\\d.]+)" }, { "op": "number" }] }
+  }
+}

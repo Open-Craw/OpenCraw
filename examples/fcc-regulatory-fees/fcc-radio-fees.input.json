@@ -1,0 +1,187 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "fcc-radio-fees",
+  "output": "radio-station-fee",
+  "mode": "api",
+  "start": [
+    {
+      "url": "https://docs.fcc.gov/public/attachments/DOC-424493A1.docx"
+    }
+  ],
+  "steps": [
+    {
+      "type": "request",
+      "url": "{{start.url}}"
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "kind": "table",
+      "selector": "^Population Served",
+      "columns": {
+        "population": "^Population Served$",
+        "amClassA": "^AM Class A$",
+        "amClassB": "^AM Class B$",
+        "amClassC": "^AM Class C$",
+        "amClassD": "^AM Class D$",
+        "fmClassesA": "^FM Classes\\s*A",
+        "fmClassesB": "^FM Classes\\s*B"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "populationServed": {
+      "from": "row.population",
+      "transform": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    "amClassA.paymentTypeCode": {
+      "from": "row.amClassA",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "^\\s*(\\d{4})"
+        }
+      ]
+    },
+    "amClassA.feeUsd": {
+      "from": "row.amClassA",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "\\$\\s*([\\d,.]+)"
+        },
+        {
+          "op": "number",
+          "locale": "en-US"
+        }
+      ]
+    },
+    "amClassB.paymentTypeCode": {
+      "from": "row.amClassB",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "^\\s*(\\d{4})"
+        }
+      ]
+    },
+    "amClassB.feeUsd": {
+      "from": "row.amClassB",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "\\$\\s*([\\d,.]+)"
+        },
+        {
+          "op": "number",
+          "locale": "en-US"
+        }
+      ]
+    },
+    "amClassC.paymentTypeCode": {
+      "from": "row.amClassC",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "^\\s*(\\d{4})"
+        }
+      ]
+    },
+    "amClassC.feeUsd": {
+      "from": "row.amClassC",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "\\$\\s*([\\d,.]+)"
+        },
+        {
+          "op": "number",
+          "locale": "en-US"
+        }
+      ]
+    },
+    "amClassD.paymentTypeCode": {
+      "from": "row.amClassD",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "^\\s*(\\d{4})"
+        }
+      ]
+    },
+    "amClassD.feeUsd": {
+      "from": "row.amClassD",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "\\$\\s*([\\d,.]+)"
+        },
+        {
+          "op": "number",
+          "locale": "en-US"
+        }
+      ]
+    },
+    "fmClassesA.paymentTypeCode": {
+      "from": "row.fmClassesA",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "^\\s*(\\d{4})"
+        }
+      ]
+    },
+    "fmClassesA.feeUsd": {
+      "from": "row.fmClassesA",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "\\$\\s*([\\d,.]+)"
+        },
+        {
+          "op": "number",
+          "locale": "en-US"
+        }
+      ]
+    },
+    "fmClassesB.paymentTypeCode": {
+      "from": "row.fmClassesB",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "^\\s*(\\d{4})"
+        }
+      ]
+    },
+    "fmClassesB.feeUsd": {
+      "from": "row.fmClassesB",
+      "transform": [
+        {
+          "op": "regex",
+          "pattern": "\\$\\s*([\\d,.]+)"
+        },
+        {
+          "op": "number",
+          "locale": "en-US"
+        }
+      ]
+    }
+  }
+}
