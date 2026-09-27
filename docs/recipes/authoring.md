@@ -78,7 +78,7 @@ text is predictable, strict where a wrong value would poison the data.
 | `string` | text, numbers, booleans | text. A list is an error: extract one value or `join` it. |
 | `number` | text with a number in it (`"1.299,00 €"`, `"$1,299"`), numbers | a number. Without a `locale` transform the decimal separator is guessed: the last separator followed by 1 or 2 digits. |
 | `integer` | as `number` | truncated. |
-| `boolean` | booleans, numbers, text | `true` for `true`, `yes`, `y`, `1`, `on`, `in stock`, `available` (case-insensitive); use the `boolean` transform with `truthy` for other phrases. |
+| `boolean` | booleans, numbers, text | `true` when the whole text is `true`, `yes`, `y`, `1` or `on`, or it contains the words `in stock` or `available` (case-insensitive). So `"none"`, `"2021"` and `"unavailable"` are `false`. Negation is not read: `"not available"` is `true`. For other phrases, use the `boolean` transform with `truthy`. |
 | `date` | ISO text, `Date.parse`-able text, epoch ms, or text matching `format` | `YYYY-MM-DD` (UTC). |
 | `datetime` | same | ISO 8601 instant. |
 | `currency` | text with amount and symbol or code, a number, or `{ amount, currency }` | `{ "amount": 1299, "currency": "EUR" }`. Needs a code from the text, the transform or the field, else an error. |
@@ -902,7 +902,7 @@ reaches the missing-value policy untouched.
 | `default` | `value` | list | replaces `undefined`, `null` or `''` |
 | `number` | `locale?` | scalar | parse (`"1.299,00"` with `de-DE` → 1299) |
 | `integer` | – | scalar | parse and truncate |
-| `boolean` | `truthy?` | scalar | substring match against the phrases |
+| `boolean` | `truthy?` | scalar | `truthy`: `true` when the text contains a phrase (substring, case-insensitive). Without it, the field type's default phrases (§1.2). |
 | `currency` | `locale?`, `currency?` | scalar | `{ amount, currency }`; the code from the arg, else the text's symbol or code |
 | `date` | `format?`, `timezone?` | scalar | a Date; `format` tokens `YYYY MM DD HH mm ss`; `timezone` an IANA zone for text without an offset |
 | `absoluteUrl` | `base?` | scalar | resolve against `base`, else `page.url` |

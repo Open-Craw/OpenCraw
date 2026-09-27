@@ -41,4 +41,20 @@ describe('parseBoolean', () => {
     expect(parseBoolean(false)).toBe(false)
     expect(parseBoolean(undefined)).toBe(false)
   })
+
+  it('matches the short default phrases only as the whole text (#64)', () => {
+    for (const text of ['none', 'Monday', 'Sold out today', 'only by request', '2021', '0.1', 'no', 'sold out']) expect(parseBoolean(text)).toBe(false)
+    for (const text of ['true', ' Yes ', 'Y', '1', 'ON']) expect(parseBoolean(text)).toBe(true)
+  })
+
+  it('matches the long default phrases as whole words anywhere in the text (#64)', () => {
+    expect(parseBoolean('Available now')).toBe(true)
+    expect(parseBoolean('Currently unavailable')).toBe(false)
+    expect(parseBoolean('Restocking')).toBe(false)
+  })
+
+  it('keeps substring matching for a recipe\'s own phrases', () => {
+    expect(parseBoolean('Only 2 in stock!', ['in stock'])).toBe(true)
+    expect(parseBoolean('Monday', ['on'])).toBe(true)
+  })
 })
