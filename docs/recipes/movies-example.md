@@ -105,6 +105,7 @@ without a title link means the markup changed.
 
 ```text
 request  entry        https://letterboxd.com/film/heat-1995/
+extract  entry_ld     script[type="application/ld+json"], many
 extract  entry_title  from entry_ld  $[?(@['@type']=='Movie')].name
 extract  actor_name   div.cast-list a.text-slug                              "Al Pacino"
 extract  actor_href   same, attr:href                                        "/actor/al-pacino/"

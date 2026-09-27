@@ -23,7 +23,7 @@ a solver:
 - **Log in, if the data is behind an account.** A `session.bootstrap` login, solved once and saved with
   `saveTo`, costs one solve instead of one per page.
 
-## The three places a challenge appears
+## The four places a challenge appears
 
 | Where | Recipe | What the engine does |
 |---|---|---|

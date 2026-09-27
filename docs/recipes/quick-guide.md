@@ -3,7 +3,7 @@
 A crawl is two kinds of JSON file: **one output recipe** that says what a record looks like, and **input
 recipes** that say how to get there from a site or an API. The engine runs the inputs one after another and
 every record, whatever its source, matches the output. The formal specification is
-[requirements.md](./requirements.md); this is the working guide.
+[requirements.md](../requirements.md); this is the working guide.
 
 Point `$schema` at `packages/core/schemas/output-recipe.schema.json` or `input-recipe.schema.json` and your
 editor validates and completes the file as you type.
@@ -30,7 +30,7 @@ editor validates and completes the file as you type.
   `null`, or `default` (use `default`).
 - `generated` fields come from the engine: `now`, `uuid`, `sourceUrl`, `recipeId`. Do not map them.
 - Types: `string`, `number`, `integer`, `boolean`, `date` (`YYYY-MM-DD`), `datetime` (ISO 8601), `currency`
-  (`{ amount, currency }`), `url` (absolute), `enum` (`values`), `array` (`items`), `object` (`fields`).
+  (`{ amount, currency }`), `url` (absolute), `enum` (`values`), `array` (`items`), `object` (`fields`), `json` (any value, kept as is).
 
 ## 2. The input recipe
 
@@ -53,14 +53,17 @@ Every step can have an `id` (the name of the value it produces), an `onError` po
 | Step | Mode | What it does |
 |---|---|---|
 | `goto` | web | Navigates to `url` (a template, relative to the current page). |
-| `click`, `fill`, `press`, `scroll`, `wait`, `screenshot` | web | Interacts with the page. `click` with `optional: true` skips a missing element. |
+| `click`, `fill`, `press`, `select`, `scroll`, `wait`, `screenshot` | web | Interacts with the page. `click` with `optional: true` skips a missing element. |
 | `evaluate` | web | Runs `script` in the page and binds the result. Trusted recipes only. |
-| `request` | api | Sends an HTTP request; the response becomes the current document (and the `id`, if given). `as` forces `json`, `html` or `text`. A relative `url` resolves against the current page, like a link. |
-| `extract` | both | Selects from the current document (or the `from` id): `kind` is `css`, `xpath` (live pages, fetched HTML and XML) or `jsonpath`; `take` is `text` (default), `html`, `value`, `json` or `attr:href`; `many: true` gives a list. A single `extract` that matches nothing fails, so give it `onError: { "policy": "skip" }` when the element is optional. |
+| `request` | both | Sends an HTTP request (in web mode, through the page's own session); the response becomes the current document (and the `id`, if given). `as` forces the body kind: `json`, `jsonl`, `html`, `text`, `xml`, `yaml`, `markdown`, `csv`, `xlsx`, `pptx`, `docx` or `pdf`. A relative `url` resolves against the current page, like a link. |
+| `extract` | both | Selects from the current document (or the `from` id): `kind` is `css`, `xpath` (live pages, fetched HTML and XML), `jsonpath`, `regex` (group 1 of the text) or `table` (PDF, workbook and deck tables); `take` is `text` (default), `html`, `value`, `json` or `attr:href`; `many: true` gives a list. A single `extract` that matches nothing fails, so give it `onError: { "policy": "skip" }` when the element is optional. |
 | | | A `jsonpath` extract whose `from` holds **text** parses it as JSON, and a **list of texts** (every `script[type="application/ld+json"]` of a page, extracted with `many`) becomes an array of the entries that parse: `$[*].actors[*].name` then finds the block that has actors wherever it sits. |
 | `set` | both | Binds a literal or a rendered template. |
-| `forEach` | both | Runs `steps` once per item of the list `over`, with the item bound as `as`. `emit: true` produces one record per iteration. |
+| `forEach` | both | Runs `steps` once per item of the list `over` (or per live element matching `selector`, web), with the item bound as `as`. `emit: true` produces one record per iteration. |
 | `paginate` | both | Runs `steps` per page, then follows `next`: `{ "selector" }` (web, clicks it), `{ "url" }` (a template), `{ "jsonpath" }` (api, a URL from the document; add `"as"` to bind a cursor instead). Stops when there is no next page, when `until` is truthy, or at `maxPages`. |
+| `if` | both | Runs `steps` when `test` renders truthy, else `else`. |
+| `collect` | both | Appends `value` to a list bound in an enclosing scope (`into`). |
+| `captcha` | web | Solves a captcha on the page, if there is one (see [captcha.md](./captcha.md)). |
 | `emit` | both | Produces a record from everything in scope. |
 | `hook` | both | Calls a handler registered in code by `name`, with `args`. |
 
@@ -68,7 +71,7 @@ Every step can have an `id` (the name of the value it produces), an `onError` po
 
 `{{path}}` reads any id in scope, the `forEach` variable (`{{item.href}}`), `{{vars.name}}`,
 `{{start.url}}`, `{{page.url}}` and `{{page.number}}`. A template that is exactly one placeholder keeps the
-value's type, so `"over": "links"` and `"{{links}}"` both give the list.
+value's type, so `"value": "{{links}}"` in a `set` binds the list itself, not its text (`forEach.over` takes the bare id: `"over": "links"`).
 
 ### Scope, in one paragraph
 
@@ -104,7 +107,7 @@ stopped recipe never stops the run unless the crawler was created with `onRecipe
   except `default`, `template` and `hook`, then meets the field's missing policy.
 - The ops: `trim`, `lowercase`, `uppercase`, `replace`, `regex`, `split`, `join`, `first`, `last`, `nth`,
   `slice`, `concat`, `coalesce`, `default`, `number`, `integer`, `boolean`, `currency`, `date`,
-  `absoluteUrl`, `flatten`, `unique`, `sum`, `count`, `template`, `jsonpath`, `hook`.
+  `absoluteUrl`, `urlEncode`, `flatten`, `unique`, `sum`, `count`, `template`, `jsonpath`, `lookup`, `group`, `hook`.
 
 ## 4. Sessions and logins
 

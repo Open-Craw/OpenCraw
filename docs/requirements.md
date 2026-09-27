@@ -1,7 +1,7 @@
 # Recipe-based, data-driven crawler engine: requirements
 
 This is the specification `@opencraw/core` is built and checked against. The user guide is
-[recipes.md](./recipes/authoring.md); the code layout is in [architecture/vertical-feature-slices.md](./architecture/vertical-feature-slices.md).
+[recipes/authoring.md](./recipes/authoring.md); the code layout is in [architecture/vertical-feature-slices.md](./architecture/vertical-feature-slices.md).
 
 ## 1. Architecture and philosophy
 
@@ -20,17 +20,19 @@ site-specific lives in configuration.
    for the cases JSON cannot express.
 
 **Binding.** An input recipe names its output by id (`"output": "product"`). A run takes one output recipe and
-a list of input recipes bound to it and executes the inputs **one after another**. All inputs bound to the same
+a list of input recipes bound to it and executes the inputs **one after another** by default (`parallel` runs several at once, section 2.1). All inputs bound to the same
 output produce records of the same shape, whatever their source or mode.
 
 **Sessions.** `api` mode reuses Playwright's request context, so a browser-driven bootstrap (a login, a consent
 wall) can hand its cookies and local storage to the API calls unchanged. Nothing else in the engine cares which
 mode produced the session.
 
-**Extension.** Hooks are registered in code by name (`createCrawler({ hooks })`) and referenced from recipes in
-a `hook` step or a `hook` transform. That is the only extension point: recipes stay declarative and shareable.
-The cli (`--hooks <module>`) and the MCP server (`OPENCRAW_HOOKS` in its environment) load them from a
-JavaScript module whose default export is the name -> function map.
+**Extension.** Hooks, access plugins and captcha solvers are registered in code
+(`createCrawler({ hooks, accessPlugins, captchaSolvers })`); recipes reference hooks by name in a `hook` step or a
+`hook` transform, and so stay declarative and shareable. The cli (`--plugins <module>`, alias `--hooks`) and the
+MCP server (`OPENCRAW_PLUGINS` or `OPENCRAW_HOOKS` in its environment) load them from a JavaScript module
+exporting `hooks`, `accessPlugins` and `captchaSolvers`, or, as a bare hooks module, a default name -> function
+map or named functions.
 
 ## 2. Input recipe (`InputRecipe`)
 
@@ -44,7 +46,8 @@ JavaScript module whose default export is the name -> function map.
 | `matrix` | Sets of vars to run the recipe with, once each: an object of lists (every combination) or a list of objects. Names must be declared in `vars`. Each run is reported with its `variant`. |
 | `session` | Headers, cookies, user agent, viewport, a saved `storageStatePath`, a `bootstrap`, `access` (`{ profile?, country?, sticky? }`), `blockedWhen`, `onBlock`, `captcha` and `browserProfile` (section 2.1). |
 | `limits` | `maxRecords` (exact, whatever is in flight), `delayMs` (minimum interval between request starts across the recipe), `timeoutMs`, `concurrency` (`forEach` iterations over a list in flight: requests in api mode, tabs in web mode; default `1`), `retry` (see Retries). |
-| `onError` | Default step policy: `fail`, `skip`, or `retry { attempts, backoffMs }`. |
+| `onError` | Default step policy: `{ policy: 'fail' }`, `{ policy: 'skip' }` or `{ policy: 'retry', attempts, backoffMs? }`. |
+| `window` | Worker mode: `check` (an element a reused page must show) and `maxItems` (section 5). |
 | `steps` | The acquisition recipe (section 2.2). |
 | `mapping` | Output field path -> mapping rule (section 4). |
 
@@ -133,22 +136,23 @@ counts them under `captchas`. See `docs/recipes/captcha.md`.
 
 ### 2.2 Steps
 
-Every step has `type`, an optional `id` (the name of the value it produces), an optional `onError` and an
-optional `when` template that must render truthy for the step to run.
+Every step has `type`, an optional `id` (the name of the value it produces), an optional `onError`, an
+optional `when` template that must render truthy for the step to run and, in worker mode, `keep` (top-level
+steps; section 5).
 
 | Step | Mode | Produces | Fields |
 |---|---|---|---|
-| `goto` | web | – | `url` (template), `waitUntil?` |
-| `click` | web | – | `selector` or `target`, `optional?` |
+| `goto` | web | – | `url` (template), `waitUntil?`, `ready?` (`{ selector, timeoutMs?, reloads? }`) |
+| `click` | web | – / file | `selector` or `target`, `optional?`, `download?` |
 | `fill` | web | – | `selector` or `target`, `value` (template) |
 | `press` | web | – | `key`, `selector?` or `target?` |
-| `select` | web | – | `selector` or `target`, one of `value`, `label`, `index` |
+| `select` | web | – | `selector` or `target`, one of `value`, `label`, `index`, `values`; `multiple?`, `force?`, `ignoreCase?`, `timeoutMs?`, `search?`, `clear?` |
 | `scroll` | web | – | `to: 'bottom' \| selector`, `times?`, `untilStable?` |
-| `wait` | web | – | one of `selector`, `ms`, `state: 'networkidle'` |
-| `evaluate` | web | value | `script`, JavaScript run in the page. Trusted recipes only. |
+| `wait` | web | – | one of `selector`, `ms`, `state: 'networkidle'`; `timeoutMs?` |
+| `evaluate` | web | value | `script`, JavaScript run in the page; `args?`. Trusted recipes only. |
 | `screenshot` | web | – | `path` |
-| `captcha` | web | – | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; defaults from `session.captcha` |
-| `request` | api | document | `method?`, `url` (`http(s):` or a local `file:`), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
+| `captcha` | web | – | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; for form captchas `image`, `refresh?`, `field`, `submit`; defaults from `session.captcha` |
+| `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
 | `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
 | `set` | both | value | `value` (template or literal) |
 | `collect` | both | – | `into` (a list id bound in an enclosing scope), `value` (template or literal); appends, so values outlive the `forEach` iteration or `paginate` page that found them |
@@ -191,7 +195,7 @@ YAML (`as: 'yaml'`, `application/yaml` and kin, `.yaml`/`.yml`) is parsed with t
 duplicate keys an error, aliases capped at 100, custom tags read as plain values with a `warning` event;
 `scalars: 'text'` (failsafe schema) keeps every scalar as written.
 
-JSON Lines (`as: 'jsonl'`, `application/x-ndjson` and kin, `.jsonl`/`.ndjson`) read into an array of the lines'
+JSON Lines (`as: 'jsonl'`, `application/x-ndjson` and kin, `.jsonl`/`.ndjson`) is read into an array of the lines'
 values; a line that does not parse fails with its number. JSON — a response read as JSON or text a `jsonpath`
 extract parses — is read as it is, and only when that fails, unwrapped from comment guards, an anti-hijacking
 prefix (`)]}'`, `while(1);`, `for(;;);`), a JSONP call or a script assignment; the rest must be strict JSON.
@@ -219,7 +223,7 @@ texts becomes the array of its parsable entries (the JSON-LD blocks of a page), 
 **Templates** are `{{ }}` placeholders resolved against the scope: a path (any id, the current `forEach`
 variable, `vars.*`, `start.url`, `page.url`, `page.number`) or an expression over paths: literals,
 `+ - * / %`, `== != < <= > >=`, `&& || !`, `??`, `a ? b : c`, parentheses and a fixed set of functions
-(`upper lower trim len default round number join first last replace contains split`). A placeholder made
+(`upper lower trim len default round number join first last replace contains split urlEncode entries keys values`). A placeholder made
 only of path characters is a path (so `price-1` is a path and `price - 1` a subtraction). A template that
 is exactly one placeholder yields the raw value (a list stays a list). Templates never execute code: the
 expression is parsed into a tree and walked, paths read own properties of plain data only, a function
@@ -301,15 +305,16 @@ type MappingRule =
   list of JSON texts; `key`: the path compared, as text, with the value; `pick?`: the path returned), `group`
   (`by`: a path; yields `[{ key, items }]` in first-seen order), `hook`.
 - A transform applied to a list applies to each element, except the collection ops (`first`, `last`, `nth`,
-  `slice`, `join`, `concat`, `coalesce`, `flatten`, `unique`, `sum`, `count`, `group`), which act on the list.
+  `slice`, `join`, `concat`, `coalesce`, `flatten`, `unique`, `sum`, `count`, `group`) and `default`, `template`,
+  `jsonpath`, `hook`, which act on the value as a whole.
 - After the chain, the value is coerced and validated against the `FieldSpec`.
 
 ### 4.1 Precedence of policies
 
 1. A step failure resolves step `onError` -> recipe `onError` -> `fail`. `skip` leaves the id unset and
    continues; `retry` re-runs the step; `fail` aborts the recipe.
-2. A missing mapped value resolves mapping rule `onMissing` -> field `onMissing` -> recipe `onMissing` ->
-   built-in default. `fail` aborts the recipe; `skip-record` rejects the record and continues; `null` and
+2. A missing mapped value resolves mapping rule `onMissing` -> field `onMissing` -> `default` when the field has
+   a `default` -> recipe `onMissing` -> built-in default (`fail` if required, else `null`). `fail` aborts the recipe; `skip-record` rejects the record and continues; `null` and
    `default` fill the value.
 3. Whether a failed recipe stops the run is a run option (`onRecipeError: 'continue' | 'stop'`, default
    `continue`), never a recipe concern.

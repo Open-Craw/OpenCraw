@@ -2,7 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-24
-- **Scope:** every hand-authored TypeScript package under `packages/` (today: `@opencraw/core`)
+- **Scope:** every hand-authored TypeScript package under `packages/` (core, cli, mcp, office-reader, captcha-tesseract,
+  azure-durable); `apps/` is not covered
 - **Enforced by:** `@mnci/eslint-config`'s `verticalSlices` rules, switched on in the root `eslint.config.mjs`
 
 ## Decision
@@ -15,7 +16,7 @@ Each package is organised as **capability -> cohesive subfeature -> flat, role-s
 - A slice is **flat**. The only folder allowed inside one is `fixtures/`, which holds test data (HTML, JSON),
   never code.
 - Every production file is `<kebab-name>.<role>.ts`; tests are `<basename>.test.ts` beside the file.
-- Only `index.ts` lives at the root of `src/`.
+- Only `index.ts` (and a program's `main.ts`) lives at the root of `src/`.
 - Code that is not part of the library (`e2e/`, `tools/`) sits **outside `src/`** and is not subject to the
   slice rules.
 
@@ -26,7 +27,7 @@ Domain-Driven Design. No framework, mediator or dependency-injection container i
 
 | Suffix | Responsibility | Example |
 |---|---|---|
-| `.handler.ts` | Adapts a transport (HTTP, queue, timer, webhook). Not used by the library today. | – |
+| `.handler.ts` | Adapts a transport (HTTP, queue, timer, webhook, an MCP tool). Not used by `@opencraw/core`. | `start-crawl.handler.ts` |
 | `.use-case.ts` | Coordinates one operation, including I/O. | `run-steps.use-case.ts` |
 | `.algorithm.ts` | Computes something purely: no decision with business meaning, no I/O. | `template.algorithm.ts` |
 | `.policy.ts` | Makes a reusable decision. | `retry.policy.ts` |
@@ -51,8 +52,7 @@ Domain-Driven Design. No framework, mediator or dependency-injection container i
 - No two slices import each other, **type-only imports included**. A leaf slice that needs a type from a
   higher slice declares its own structural type instead (see `crawl-events` and `hooks`).
 - Dependencies point one way: `index.ts -> crawl-execution -> feature slices -> leaf slices`. The graph is
-  documented per slice in the plan and checked by `vertical-slices/no-slice-cycle` and `madge`-equivalent
-  `import-x/no-cycle`.
+  checked by `vertical-slices/no-slice-cycle` and `import-x/no-cycle`.
 
 ## Naming rules
 
@@ -90,7 +90,8 @@ Place the file in the slice whose outcome would fail if the file disappeared.
 | Path | Rule waived | Why | Temporary? |
 |---|---|---|---|
 | `packages/*/src/**/fixtures/**/*.{html,json,txt}` | markup/JSON lint | Test data, not code. | No |
-| `packages/core/e2e/`, `packages/core/tools/` | slice rules | Outside `src/`: an e2e fixture server and a build script are not library slices. | No |
+| `packages/*/e2e/`, `packages/*/tools/` | slice rules | Outside `src/`: e2e suites, fixture servers and build scripts are not library slices. | No |
+| `packages/core/src/crawl-execution/` | folder threshold | 15 production files: crawler, runs, reports and worker mode. Split pending (worker mode is the candidate). | Yes |
 
 ## PR checklist
 
