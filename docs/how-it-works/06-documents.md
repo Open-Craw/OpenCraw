@@ -790,8 +790,10 @@ and every cell is a string: numbers are converted in the mapping, with a `locale
 - **Listing without inflating.** The zip's directory is read first; each part is inflated only when asked for.
   Part names are case-folded and backslashes turned to slashes, since OPC names are case-insensitive and some
   writers produce `xl\sharedStrings.xml`.
-- **Limits.** A part may declare at most 256 MiB, all parts read together 512 MiB (`:18-19`); fflate never
-  inflates past a declared size, so a header that lies about a zip bomb gets a truncated part.
+- **Limits.** A part may declare at most 256 MiB, all parts read together 512 MiB (`:18-19`), each part
+  counted once however often it is read; fflate never inflates past a declared size, so a header that lies
+  about a zip bomb gets a truncated part. Every part is located when the package opens, so reading a part
+  never walks the zip's directory again.
 - **Streaming XML** (`walkXml`): SAX events, no DOM, no DTD processing, so declared entities are never expanded
   and nothing external is fetched. Relationships are typed by the last segment of their type URI, which is
   what the transitional and strict namespaces share.
@@ -816,12 +818,14 @@ quoted text, escapes and `[…]` brackets (`[Red]`, `[$-410]`) removed, as a dat
 remain (an `m` after `h` or `:`, or before `:` or `s`, is minutes), a time for `h` or `s`, and `[h]` elapsed
 time as a number. **Display formats are never applied**: a percentage is `0.125`, a currency cell `15950`.
 A serial becomes a date by `(serial − 25 569) × 86 400 s` from 1970, `+ 1462` days in the 1904 system, and one
-day added to serials 1–59 to undo Lotus 1-2-3's phantom 29 February 1900.
+day added to serials 1–59 to undo Lotus 1-2-3's phantom 29 February 1900. Serial 60, that phantom day, has no
+real date: it reads as the text `1900-02-29`, what Excel shows, with its time when it has one.
 
 The core adapter ([`read-xlsx.client.ts`](../../packages/core/src/workbook-document/read-xlsx.client.ts)) keeps
 numbers and booleans typed ("`13955.625` is unambiguous; as text, a locale guess could read it as thirteen
-million"), writes dates as ISO text (`2026-06-01` at midnight, `2026-06-01T09:30:00` otherwise, `12:00:00` for a
-time on day zero), errors as their text, and empty cells as `''`.
+million"), writes dates as ISO text (`2026-06-01` at midnight, `2026-06-01T09:30:00` otherwise, and `12:00:00`
+for a time of day, a serial under 1 in either date system, so a 1904 workbook's `h:mm` cell holding 0.5 is
+`12:00:00` too), errors as their text, and empty cells as `''`.
 
 ### 3.4 The grid table algorithm
 
@@ -968,8 +972,12 @@ in EMU, 12 700 per point (default 9 144 000 × 6 858 000, 720 × 540 pt). Each s
 - **tables**, each a grid with its merges: `gridSpan` and `rowSpan` record a range from the cell that starts it,
   and the cells an `hMerge` or `vMerge` covers hold `''`.
 - **charts**, read from the values the chart part caches (`c:strCache`, `c:numCache`), so the embedded workbook
-  is never opened: the type (the first `…Chart` element of the plot area), the title (not an axis title), and
-  each series' name, categories and values, `null` for a point left out of the cache.
+  is never opened: the type (the first `…Chart` element of the plot area), the title (not an axis title: its
+  rich-text runs once, or, for a title linked to a cell, the cached text, never the `c:f` reference), and each
+  series' name, categories and values, `null` for a point left out of the cache. The chart types Office added
+  in 2016 (waterfall, treemap, sunburst, histogram, box and whisker, funnel, region map) live in `chartEx`
+  parts: their type is the series' `layoutId`, and their data comes from the part's own `cx:chartData`
+  (`cx:strDim`, `cx:numDim`).
 - **notes**, the notes slide's body placeholder.
 
 SmartArt, text in images and animations are not read. The core adapter keeps typed values, notes and charts
@@ -1050,9 +1058,10 @@ The header cells hold line breaks (`Full year\nactuals\n(last year)`); keys are 
 ```
 <!-- /capture -->
 
-The deck's one chart, a waterfall on slide 9, is not read: it is a `chartEx` part (the chart types Office added
-in 2016), which the reader finds but does not parse, so it reports `type: ""` and no series (and its title twice
-over, run together).
+The deck's one chart, a waterfall on slide 9, is a `chartEx` part. `readPptx` gives it as
+`{ type: "waterfall", title: "Income and Expenditure Forecast Variance to Budget (£’000)" }` with one series:
+the categories `Budget`, `ASF`, `Apps`, `HE`, `Other income`, `Pay`, `Non pay`, `Other`, `Forecast` and the values
+`-20`, `-139`, `-56`, `-92`, `-69`, `216`, `-110`, `8`, `-262`, which `jsonpath` reads like any other chart's.
 
 **Text-box grids** read with `shapes: true` (`shapeTables`, `:53-72`). Each selected slide becomes a pseudo-PDF
 page: each shape a cell, with `y` flipped to the PDF convention (`slide height − y − height`, the box's bottom
@@ -1198,8 +1207,9 @@ builds it:
 
 Each header and value cell is two Word paragraphs. The HTML table reader (§6) reads `<br>` as a space, so
 `FM Classes<br>A, B1 &amp; C3` is the key `FM Classes A, B1 & C3` and `2659<br>$560` the value `2659 $560`.
-The HTML table reader numbers tables in document order and the page header holds one, so this is `table 2`
-(its `data-name` is `table 1`: the Word reader numbers each part's tables on their own):
+The page header holds a table and headers come first, so this is `table 2`, both as the HTML table reader's
+sheet name and as the Word reader's `data-name` (one numbering over the whole document: headers, body, footers,
+notes):
 
 <!-- capture:doc-docx-fcc scope ids=table -->
 ```json
@@ -1300,7 +1310,8 @@ This rule is the table reader's own. A `css` extract with `take: "text"` and `xp
    autolinks. Raw HTML is kept; it is data, parsed by cheerio and never run.
 3. **Sections**: `sectioned` walks the top-level nodes; each `<h1>`–`<h6>` closes any open section of the same
    or a deeper level and opens `<section data-heading="<text>" data-level="<n>">`. The heading gets GitHub's
-   slug `id` (lower case, punctuation dropped, spaces to hyphens, `-1`, `-2` for repeats). Headings nested
+   slug `id` (lower case, punctuation dropped, spaces to hyphens, `-1`, `-2` for repeats, skipping ids already
+   taken, so `a`, `a`, `a-1` give `a`, `a-1`, `a-1-1`). Headings nested
    inside other elements are not sectioned.
 4. **Output**: `<!doctype html><html><head><script type="application/json" data-front-matter>…</script></head><body>…`,
    `<` in the JSON escaped as `\u003c` so a value holding `</script>` cannot close the element.

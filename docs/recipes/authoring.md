@@ -740,7 +740,8 @@ also reports the encoding and the delimiter it used.
     notes }] }
 ```
 
-A title placeholder that PowerPoint places through the slide's layout gets the layout's position, and boxes
+Charts are read from the data the chart caches, the 2016 kinds too (waterfall, treemap, sunburst, histogram, box
+and whisker, funnel, region map), so the embedded workbook is never opened. A title placeholder that PowerPoint places through the slide's layout gets the layout's position, and boxes
 inside a group are placed through its scaling. Slide numbers, dates and footers are left out. A legacy `.ppt`,
 a password-protected file or an `.odp` fails the step, with what to do.
 

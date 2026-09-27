@@ -611,9 +611,35 @@
               "tables": [],
               "charts": [
                 {
-                  "type": "",
-                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)Income and Expenditure Forecast Variance to Budget (£’000)",
-                  "series": []
+                  "type": "waterfall",
+                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)",
+                  "series": [
+                    {
+                      "name": "Series1",
+                      "categories": [
+                        "Budget",
+                        "ASF",
+                        "Apps",
+                        "HE",
+                        "Other income",
+                        "Pay",
+                        "Non pay",
+                        "Other   ",
+                        "Forecast"
+                      ],
+                      "values": [
+                        -20,
+                        -139,
+                        -56,
+                        -92,
+                        -69,
+                        216,
+                        -110,
+                        8,
+                        -262
+                      ]
+                    }
+                  ]
                 }
               ],
               "notes": ""
@@ -1525,9 +1551,35 @@
               "tables": [],
               "charts": [
                 {
-                  "type": "",
-                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)Income and Expenditure Forecast Variance to Budget (£’000)",
-                  "series": []
+                  "type": "waterfall",
+                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)",
+                  "series": [
+                    {
+                      "name": "Series1",
+                      "categories": [
+                        "Budget",
+                        "ASF",
+                        "Apps",
+                        "HE",
+                        "Other income",
+                        "Pay",
+                        "Non pay",
+                        "Other   ",
+                        "Forecast"
+                      ],
+                      "values": [
+                        -20,
+                        -139,
+                        -56,
+                        -92,
+                        -69,
+                        216,
+                        -110,
+                        8,
+                        -262
+                      ]
+                    }
+                  ]
                 }
               ],
               "notes": ""
@@ -2439,9 +2491,35 @@
               "tables": [],
               "charts": [
                 {
-                  "type": "",
-                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)Income and Expenditure Forecast Variance to Budget (£’000)",
-                  "series": []
+                  "type": "waterfall",
+                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)",
+                  "series": [
+                    {
+                      "name": "Series1",
+                      "categories": [
+                        "Budget",
+                        "ASF",
+                        "Apps",
+                        "HE",
+                        "Other income",
+                        "Pay",
+                        "Non pay",
+                        "Other   ",
+                        "Forecast"
+                      ],
+                      "values": [
+                        -20,
+                        -139,
+                        -56,
+                        -92,
+                        -69,
+                        216,
+                        -110,
+                        8,
+                        -262
+                      ]
+                    }
+                  ]
                 }
               ],
               "notes": ""
