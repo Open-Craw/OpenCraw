@@ -17,6 +17,16 @@
   },
   "nx": {
     "targets": {
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "lint": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
       "build": {
         "executor": "@nx/esbuild:esbuild",
         "outputs": [
