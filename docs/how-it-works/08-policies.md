@@ -14,7 +14,7 @@ wrong on the way, and each one ends in one of two ways:
 | The value is **missing** | a season with no overtime losses recorded | the missing-value policy, in full precedence |
 | The value **can't be coerced** | a relative link into a `url` field | the same policy, in full precedence |
 | The value **fails validation** | `3` in a field with `min: 5` | the same policy, but only `skip-record` helps |
-| A **transform throws** | `integer` on an empty cell, a hook that throws | the mapping rule's own `onMissing` only |
+| A **transform throws** | the `integer` transform on an empty cell, a hook that throws | the mapping rule's own `onMissing` only |
 
 The two endings: the record is **rejected** (`RecordRejectedError`: it is dropped, counted, and the walk goes
 on), or the mapping **fails** (`MappingFailedError`: the step that emitted fails, and by default the recipe
@@ -24,15 +24,16 @@ stops). This page shows each case on real data. The reference is
 ## What counts as missing
 
 A value is missing when it is `undefined` (the path isn't there, `regex` found no match, `first` of an empty
-list), `null`, or `""`. An empty list is a value, and so is text made of spaces. An `object` field that ends
-up with no members is missing too.
+list), `null`, or `""`. An empty list is a value. An `object` field that ends up with no members is missing too.
 
-Coercion runs **before** the missing check, and it passes only `undefined` and `null` through. So `""` is
-missing only in a field whose type accepts it: a `string` or `json` field. In an `integer`, `number`,
-`currency`, `date`, `url` or `enum` field, `""` is a value that fails coercion (`no number in ""`), and in a
-`boolean` field it becomes `false`. The [transform failures](#transform-failures-look-only-at-the-rule) section
-shows it on a real table. To make an empty cell missing, end its chain with an op that returns a missing value
-for it, such as `regex`.
+Blank text, `""` or only spaces, is missing in a field of every type except `string` and `json`. An empty table
+cell mapped into an `integer`, `number`, `currency`, `date`, `boolean`, `url` or `enum` field is missing, so the
+field's `default`, `null` or its policy applies: it is never a coercion error, and a `boolean` field doesn't turn
+it into `false`. A `string` or `json` field keeps text as it is, so there `""` is missing and `"  "` is a value.
+The [precedence](#the-precedence) scene below maps an empty cell into `integer` fields with no transform.
+
+An explicit `number` or `integer` **transform** is another matter: it is asked to read a number, and blank text
+has none, so it throws (see [transform failures](#transform-failures-look-only-at-the-rule)).
 
 ## The precedence
 
@@ -50,8 +51,8 @@ source without changing the shared output recipe.
 The hockey table on [scrapethissite.com](https://www.scrapethissite.com/pages/forms/?q=Boston) leaves the "OT
 Losses" column empty before 1999, when the league started counting overtime losses. The scene reads Boston's
 seasons from 1997 to 2001 ([recipes](recipes/policy-precedence)) into an output recipe whose `onMissing` is
-`skip-record`, with four fields fed from the same cell, each through `regex (\d+)` so that the empty cell is
-missing:
+`skip-record`, with four `integer` fields fed from the same cell, with no transform. Before 1999 the cell is
+empty, and blank text in an `integer` field is missing:
 
 ```json
 "onMissing": "skip-record",
@@ -59,16 +60,16 @@ missing:
   "otLosses":      { "type": "integer", "default": 0 },
   "otLossesField": { "type": "integer", "default": 0, "onMissing": "null" },
   "otLossesRule":  { "type": "integer", "default": 0, "onMissing": "default" },
-  "otLossesNote":  { "type": "integer", "default": "not recorded" }
+  "otLossesNote":  { "type": "integer", "default": "-1" }
 }
 ```
 
-and in the input recipe, `"otLossesRule": { "from": "ot", "transform": [...], "onMissing": "null" }`.
+and in the input recipe, `"otLossesRule": { "from": "ot", "onMissing": "null" }`.
 
 <!-- capture:policy-precedence records n=3 -->
 ```json
-{"team":"Boston Bruins","year":1997,"otLosses":0,"otLossesField":null,"otLossesRule":null,"otLossesNote":"not recorded"}
-{"team":"Boston Bruins","year":1998,"otLosses":0,"otLossesField":null,"otLossesRule":null,"otLossesNote":"not recorded"}
+{"team":"Boston Bruins","year":1997,"otLosses":0,"otLossesField":null,"otLossesRule":null,"otLossesNote":-1}
+{"team":"Boston Bruins","year":1998,"otLosses":0,"otLossesField":null,"otLossesRule":null,"otLossesNote":-1}
 {"team":"Boston Bruins","year":1999,"otLosses":6,"otLossesField":6,"otLossesRule":6,"otLossesNote":6}
 ```
 <!-- /capture -->
@@ -77,10 +78,8 @@ and in the input recipe, `"otLossesRule": { "from": "ot", "transform": [...], "o
 | Field | Step | Value |
 |---|---|---|
 | `otLosses` | read | `""` |
-| | `regex` | *(missing)* |
 | | **field** | `0` |
 | `otLossesRule` | read | `""` |
-| | `regex` | *(missing)* |
 | | **field** | `null` |
 <!-- /capture -->
 
@@ -90,10 +89,21 @@ For 1997 and 1998, with the cell empty:
   recipe's `skip-record` (step 4) is never reached, which is why no season is dropped.
 - `otLossesField`: the field's own `onMissing: "null"` (step 2) comes before its `default`: `null`.
 - `otLossesRule`: the field says `default`, the rule says `null`, and the rule wins (step 1): `null`.
-- `otLossesNote`: step 3, with a `default` that isn't an integer. It is written as it is: see
-  [the gaps](#two-gaps-issue-78).
+- `otLossesNote`: step 3 again, with the `default` written as the text `"-1"`. A `default` is coerced to its
+  field's type like a mapped value, so the field holds the integer `-1`.
 
 From 1999 the cell has a number, and no policy is consulted.
+
+The loader coerces and validates every `default` before anything runs. With `"default": "not recorded"` on
+`otLossesNote`, `loadRecipeSet` rejects the set with a `RecipeBindingError`, and no page is requested:
+
+```text
+recipes do not bind
+  ot-season fields.otLossesNote.default: "not recorded" is not a valid default: integer field: no number in "not recorded"
+```
+
+A `default` that breaks the field's `min`, `max` or `pattern` fails the same way, and so does
+`onMissing: "default"` on a field (or a rule) whose field has no `default`.
 
 ## The four policies
 
@@ -102,7 +112,7 @@ From 1999 the cell has a number, and no policy is consulted.
 | `skip-record` | `RecordRejectedError`: the record is dropped, `rejected` is counted, a `record:reject` event (`✖` in the trace) names the field, and the walk goes on. |
 | `fail` | `MappingFailedError`: the step that emitted fails, and goes through its `onError`. |
 | `null` | The field is `null`, when it is `nullable` or not `required`. A required field that isn't `nullable` fails instead. |
-| `default` | The field's `default`, as written. A `default` policy on a field without a `default` leaves the field out of the record. |
+| `default` | The field's `default`, coerced to the field's type (`"0"` in a `number` field is `0`). The loader checks it: a `default` the field can't take, or a `default` policy on a field without one, is a `RecipeBindingError`. |
 
 The output recipe's own `onMissing` takes only `fail`, `skip-record` or `null`; `default` belongs to a field.
 
@@ -204,36 +214,36 @@ link as it is; `link-null` adds `"onMissing": "null"` to the rule:
 <!-- capture:policy-coercion summary -->
 ```text
 link-as-is: 0 emitted, 3 rejected, 0 duplicates, 1 pages
-link-null: 0 emitted, 0 rejected, 0 duplicates, 1 pages, stopped: step steps.2 (forEach) failed: mapping failed: url: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
+link-null: 0 emitted, 0 rejected, 0 duplicates, 1 pages, stopped: step steps.2 (forEach) failed: mapping failed: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
 ```
 <!-- /capture -->
 
 <!-- capture:policy-coercion records n=3 -->
 ```json
-{"rejected":{"field":"url","reason":"url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"}}
-{"rejected":{"field":"url","reason":"url: \"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)"}}
-{"rejected":{"field":"url","reason":"url: \"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)"}}
+{"rejected":{"field":"url","reason":"\"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"}}
+{"rejected":{"field":"url","reason":"\"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)"}}
+{"rejected":{"field":"url","reason":"\"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)"}}
 ```
 <!-- /capture -->
 
 <!-- capture:policy-coercion trace grep=▶|✖ -->
 ```text
 ▶ link-as-is (api)
-  ✖ record rejected: url: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
-  ✖ record rejected: url: url: "../../../in-a-dark-dark-wood_963/index.html" is not an absolute URL (use the absoluteUrl transform)
-  ✖ record rejected: url: url: "../../../the-past-never-ends_942/index.html" is not an absolute URL (use the absoluteUrl transform)
+  ✖ record rejected: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
+  ✖ record rejected: url: "../../../in-a-dark-dark-wood_963/index.html" is not an absolute URL (use the absoluteUrl transform)
+  ✖ record rejected: url: "../../../the-past-never-ends_942/index.html" is not an absolute URL (use the absoluteUrl transform)
 ▶ link-null (api)
-  ✖ step steps.2 (forEach) failed: mapping failed: url: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
+  ✖ step steps.2 (forEach) failed: mapping failed: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
 ■ link-null: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms
-  ✖ stopped: step steps.2 (forEach) failed: mapping failed: url: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
+  ✖ stopped: step steps.2 (forEach) failed: mapping failed: url: "../../../sharp-objects_997/index.html" is not an absolute URL (use the absoluteUrl transform)
 ```
 <!-- /capture -->
 
 For `link-as-is`, nothing is set on the rule or the field and there is no `default`, so the output recipe's
 `skip-record` applies and each book is rejected. For `link-null`, the rule says `null`, which isn't
 `skip-record`, so the first book fails the mapping and the recipe stops. The fix is the `absoluteUrl`
-transform, which the error message names. The field's path appears twice in these messages (`url: url: …`),
-tracked in [#78](https://github.com/russoedu/open.craw/issues/78).
+transform, which the error message names. The rejection holds the field and the reason apart; the trace line
+joins them, with the field's path once.
 
 ## Transform failures look only at the rule
 
@@ -252,7 +262,7 @@ The same hockey seasons, 1997 to 2001, into an output recipe whose `onMissing` i
 <!-- capture:policy-transform summary -->
 ```text
 ot-integer-skip: 3 emitted, 2 rejected, 0 duplicates, 1 pages
-ot-integer: 0 emitted, 0 rejected, 0 duplicates, 1 pages, stopped: step steps.2 (forEach) failed: mapping failed: otLosses: transform "number": no number in ""
+ot-integer: 0 emitted, 0 rejected, 0 duplicates, 1 pages, stopped: step steps.2 (forEach) failed: mapping failed: otLosses: transform "integer": no number in ""
 ot-plain: 3 emitted, 2 rejected, 0 duplicates, 1 pages
 ```
 <!-- /capture -->
@@ -260,36 +270,39 @@ ot-plain: 3 emitted, 2 rejected, 0 duplicates, 1 pages
 <!-- capture:policy-transform trace grep=▶|✖ -->
 ```text
 ▶ ot-integer-skip (api)
-  ✖ record rejected: otLosses: transform "number": no number in ""
-  ✖ record rejected: otLosses: transform "number": no number in ""
+  ✖ record rejected: otLosses: transform "integer": no number in ""
+  ✖ record rejected: otLosses: transform "integer": no number in ""
 ▶ ot-integer (api)
-  ✖ step steps.2 (forEach) failed: mapping failed: otLosses: transform "number": no number in ""
+  ✖ step steps.2 (forEach) failed: mapping failed: otLosses: transform "integer": no number in ""
 ■ ot-integer: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms
-  ✖ stopped: step steps.2 (forEach) failed: mapping failed: otLosses: transform "number": no number in ""
+  ✖ stopped: step steps.2 (forEach) failed: mapping failed: otLosses: transform "integer": no number in ""
 ▶ ot-plain (api)
-  ✖ record rejected: otLosses: otLosses: transform "number": no number in ""
-  ✖ record rejected: otLosses: otLosses: transform "number": no number in ""
+  ✖ record rejected: otLosses: missing
+  ✖ record rejected: otLosses: missing
 ```
 <!-- /capture -->
 
 <!-- capture:policy-transform records n=5 -->
 ```json
-{"rejected":{"field":"otLosses","reason":"transform \"number\": no number in \"\""}}
-{"rejected":{"field":"otLosses","reason":"transform \"number\": no number in \"\""}}
+{"rejected":{"field":"otLosses","reason":"transform \"integer\": no number in \"\""}}
+{"rejected":{"field":"otLosses","reason":"transform \"integer\": no number in \"\""}}
 {"team":"Boston Bruins","year":1999,"otLosses":6}
 {"team":"Boston Bruins","year":2000,"otLosses":8}
 {"team":"Boston Bruins","year":2001,"otLosses":9}
 ```
 <!-- /capture -->
 
-- `ot-integer-skip`: `integer` throws on `""` (the error names `number`, the op `integer` is built on). The
+- `ot-integer-skip`: the `integer` transform throws on `""`: it was asked for a number and there is none. The
   rule says `skip-record`, so 1997 and 1998 are rejected, and 1999 to 2001 kept.
 - `ot-integer`: the same error, and the rule says nothing. The output recipe's `skip-record` isn't consulted
   for a transform failure, so the first season stops the recipe.
-- `ot-plain`: no transform, so no transform failure. `""` reaches coercion, which fails because an `integer`
-  field doesn't take `""` ([What counts as missing](#what-counts-as-missing)). A coercion failure follows the
-  full precedence, the output recipe says `skip-record`, and the two seasons are rejected. The reason carries
-  the path, as coercion errors do.
+- `ot-plain`: no transform, so no transform failure. `""` reaches the `integer` field, where blank text is
+  missing ([What counts as missing](#what-counts-as-missing)). Nothing on the rule or the field, and no
+  `default`, so the output recipe's `skip-record` applies: the two seasons are rejected as `missing`.
+
+An `integer` field reads the number itself, so a transform that only does the same adds a way to fail. Keep the
+`number` transform for what the field can't do, such as reading with a `locale`, or before a step that needs a
+number (`sum`), and give its rule `skip-record` when the cell can be empty.
 
 ## Validation failures
 
@@ -311,63 +324,80 @@ so there is no captured example.
 | The walk | goes on; `maxRecords` counts only emitted records | the emitting step fails through its `onError`: `fail` (the default) stops the recipe, `skip` skips the whole step |
 | Records written before | kept | kept |
 
-## Two gaps (issue #78)
+## The items of `each`
 
-Two things the policies don't do today, tracked in [#78](https://github.com/russoedu/open.craw/issues/78).
+An `each` rule builds a list of objects, and each member of each item goes through the same steps as a field:
+coercion, validation, then the missing-value policy with its `default`. The precedence is the same too, with the
+rule inside `each.fields` first. A problem is reported at the item's index (`variants[1].size`).
 
-**A `default` isn't coerced or validated.** It is written into the record as it is. The precedence scene's
-`otLossesNote` is an `integer` field with `"default": "not recorded"`, and the text lands in it:
+PokeAPI lists the abilities a Pokémon had in older generations. For Bulbasaur the one entry has
+`"ability": null`, because its hidden ability didn't exist before generation V:
 
-<!-- capture:policy-precedence record record=0 -->
+<!-- capture:policy-each-gap scope ids=past -->
 ```json
 {
-  "team": "Boston Bruins",
-  "year": 1997,
-  "otLosses": 0,
-  "otLossesField": null,
-  "otLossesRule": null,
-  "otLossesNote": "not recorded"
-}
-```
-<!-- /capture -->
-
-Nothing warns at load time or at run time. Check that each `default` has the field's type. (A `default` policy
-on a field without a `default` is the other side of it: the field is left out, without an error.)
-
-**The objects built by `each` get no policy and no validation.** Their members are coerced, but a `required`
-member that is missing passes. PokeAPI lists the abilities a Pokémon had in older generations; for Bulbasaur
-the one entry has `"ability": null`, because its hidden ability didn't exist before generation V
-([recipe](recipes/policy-each-gap/pokeapi-past.input.json)). The output recipe makes `name` required in each
-item:
-
-<!-- capture:policy-each-gap mapping fields=pastAbilities[0].name,pastAbilities[0].slot,pastAbilities[0].until -->
-| Field | Step | Value |
-|---|---|---|
-| `pastAbilities[0].name` | read | *(missing)* |
-| | **field** | *(missing)* |
-| `pastAbilities[0].slot` | read | `3` |
-| | **field** | `3` |
-| `pastAbilities[0].until` | read | `"generation-iv"` |
-| | **field** | `"generation-iv"` |
-<!-- /capture -->
-
-<!-- capture:policy-each-gap record -->
-```json
-{
-  "name": "bulbasaur",
-  "pastAbilities": [
+  "past": [
     {
-      "slot": 3,
-      "until": "generation-iv"
+      "generation": {
+        "name": "generation-iv",
+        "url": "https://pokeapi.co/api/v2/generation/4/"
+      },
+      "abilities": [
+        {
+          "is_hidden": true,
+          "slot": 3,
+          "ability": null
+        }
+      ]
     }
   ]
 }
 ```
 <!-- /capture -->
 
-The item has no `name` and the record is emitted anyway. Until #78 is fixed, a rule inside `each.fields` has
-an `onMissing` that matters only for its transform failures, and a check on the items has to happen after the
-crawl.
+The output recipe makes `name` required in each item ([recipes](recipes/policy-each-gap)). Two input recipes
+map it: `pokeapi-past` sets no policy, and `pokeapi-past-skip` puts `"onMissing": "skip-record"` on the `name`
+rule inside `each.fields`:
+
+<!-- capture:policy-each-gap summary -->
+```text
+pokeapi-past-skip: 0 emitted, 1 rejected, 0 duplicates, 1 pages
+pokeapi-past: 0 emitted, 0 rejected, 0 duplicates, 1 pages, stopped: step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing
+```
+<!-- /capture -->
+
+<!-- capture:policy-each-gap trace grep=✖ -->
+```text
+  ✖ record rejected: pastAbilities[0].name: missing
+  ✖ step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing
+■ pokeapi-past: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms
+  ✖ stopped: step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing
+```
+<!-- /capture -->
+
+With no policy anywhere, the required member's built-in `fail` applies and the recipe stops. With the rule's
+`skip-record`, the record is rejected and the rejection names the member at its index:
+
+<!-- capture:policy-each-gap record -->
+```json
+{
+  "rejected": {
+    "field": "pastAbilities[0].name",
+    "reason": "missing"
+  }
+}
+```
+<!-- /capture -->
+
+The loader checks `each` rules as well. A name in `each.fields` that the items don't have, or a required member
+that no rule maps (and that has no `default`), is a `RecipeBindingError`. Renaming `name` to `title` in the rule
+gives both:
+
+```text
+recipes do not bind
+  pokeapi-past mapping.pastAbilities.fields.title: the items of "pastAbilities" have no field "title"
+  pokeapi-past mapping.pastAbilities.fields: required field of the items of "pastAbilities" "name" is not mapped
+```
 
 ## What's next
 

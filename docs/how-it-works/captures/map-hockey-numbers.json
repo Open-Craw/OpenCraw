@@ -237,7 +237,7 @@
       "data": {
         "team": "Boston Bruins",
         "year": 1992,
-        "winPct": 607,
+        "winPct": 0.607,
         "winPctEnglish": 0.607,
         "goalDiff": 64,
         "winning": true
@@ -295,7 +295,7 @@
           "steps": [
             {
               "op": "number",
-              "value": 607
+              "value": 0.607
             }
           ]
         },

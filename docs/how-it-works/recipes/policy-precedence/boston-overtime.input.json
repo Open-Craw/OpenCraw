@@ -19,9 +19,9 @@
   "mapping": {
     "team": { "from": "name" },
     "year": { "from": "year" },
-    "otLosses": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }] },
-    "otLossesField": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }] },
-    "otLossesRule": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }], "onMissing": "null" },
-    "otLossesNote": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }] }
+    "otLosses": { "from": "ot" },
+    "otLossesField": { "from": "ot" },
+    "otLossesRule": { "from": "ot", "onMissing": "null" },
+    "otLossesNote": { "from": "ot" }
   }
 }

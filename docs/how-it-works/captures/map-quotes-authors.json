@@ -2,6 +2,14 @@
   "scene": "map-quotes-authors",
   "summary": [
     {
+      "recipeId": "authors-as-number",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2,
+      "error": "step steps.2 (forEach) failed: mapping failed: bornAsNumber: transform \"number\": \"March 14, 1879\" holds 2 numbers (14, 1879): pick one with a \"regex\" transform first"
+    },
+    {
       "recipeId": "quote-authors",
       "emitted": 3,
       "rejected": 0,
@@ -10,6 +18,18 @@
     }
   ],
   "trace": [
+    "▶ authors-as-number (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract authorLinks  … ms",
+    "  ⇢ page 1  http://quotes.toscrape.com/author/Albert-Einstein/",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract name  … ms",
+    "    · steps.2.steps.2  extract bornDate  … ms",
+    "    · steps.2.steps.3  extract bornLocation  … ms",
+    "  ✖ step steps.2 (forEach) failed: mapping failed: bornAsNumber: transform \"number\": \"March 14, 1879\" holds 2 numbers (14, 1879): pick one with a \"regex\" transform first",
+    "■ authors-as-number: 0 emitted, 0 rejected, 0 duplicates, 2 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: bornAsNumber: transform \"number\": \"March 14, 1879\" holds 2 numbers (14, 1879): pick one with a \"regex\" transform first",
     "▶ quote-authors (api)",
     "  ⇄ access direct (direct)",
     "  ⇢ page 1  https://quotes.toscrape.com/",
@@ -50,7 +70,8 @@
         "url": "http://quotes.toscrape.com/author/Albert-Einstein/",
         "name": "Albert Einstein",
         "born": "1879-03-14",
-        "bornAsNumber": 141879,
+        "bornAsNumber": null,
+        "bornYear": 1879,
         "birthplace": "Ulm, Germany",
         "country": "Germany"
       },
@@ -102,12 +123,16 @@
             }
           ]
         },
-        "bornAsNumber": {
+        "bornYear": {
           "from": "March 14, 1879",
           "steps": [
             {
+              "op": "regex",
+              "value": "1879"
+            },
+            {
               "op": "number",
-              "value": 141879
+              "value": 1879
             }
           ]
         },
@@ -145,7 +170,8 @@
         "url": "http://quotes.toscrape.com/author/J-K-Rowling/",
         "name": "J.K. Rowling",
         "born": "1965-07-31",
-        "bornAsNumber": 311965,
+        "bornAsNumber": null,
+        "bornYear": 1965,
         "birthplace": "Yate, South Gloucestershire, England, The United Kingdom",
         "country": "The United Kingdom"
       },
@@ -197,12 +223,16 @@
             }
           ]
         },
-        "bornAsNumber": {
+        "bornYear": {
           "from": "July 31, 1965",
           "steps": [
             {
+              "op": "regex",
+              "value": "1965"
+            },
+            {
               "op": "number",
-              "value": 311965
+              "value": 1965
             }
           ]
         },
@@ -242,7 +272,8 @@
         "url": "http://quotes.toscrape.com/author/Jane-Austen/",
         "name": "Jane Austen",
         "born": "1775-12-16",
-        "bornAsNumber": 161775,
+        "bornAsNumber": null,
+        "bornYear": 1775,
         "birthplace": "Steventon Rectory, Hampshire, The United Kingdom",
         "country": "The United Kingdom"
       },
@@ -294,12 +325,16 @@
             }
           ]
         },
-        "bornAsNumber": {
+        "bornYear": {
           "from": "December 16, 1775",
           "steps": [
             {
+              "op": "regex",
+              "value": "1775"
+            },
+            {
               "op": "number",
-              "value": 161775
+              "value": 1775
             }
           ]
         },

@@ -14,7 +14,7 @@
       "rejected": 0,
       "duplicates": 0,
       "pages": 1,
-      "error": "step steps.2 (forEach) failed: mapping failed: otLosses: transform \"number\": no number in \"\""
+      "error": "step steps.2 (forEach) failed: mapping failed: otLosses: transform \"integer\": no number in \"\""
     },
     {
       "recipeId": "ot-plain",
@@ -33,11 +33,11 @@
     "    · steps.2.steps.0  extract name  … ms",
     "    · steps.2.steps.1  extract year  … ms",
     "    · steps.2.steps.2  extract ot  … ms",
-    "  ✖ record rejected: otLosses: transform \"number\": no number in \"\"",
+    "  ✖ record rejected: otLosses: transform \"integer\": no number in \"\"",
     "    · steps.2.steps.0  extract name  … ms",
     "    · steps.2.steps.1  extract year  … ms",
     "    · steps.2.steps.2  extract ot  … ms",
-    "  ✖ record rejected: otLosses: transform \"number\": no number in \"\"",
+    "  ✖ record rejected: otLosses: transform \"integer\": no number in \"\"",
     "    · steps.2.steps.0  extract name  … ms",
     "    · steps.2.steps.1  extract year  … ms",
     "    · steps.2.steps.2  extract ot  … ms",
@@ -60,8 +60,8 @@
     "    · steps.2.steps.0  extract name  … ms",
     "    · steps.2.steps.1  extract year  … ms",
     "    · steps.2.steps.2  extract ot  … ms",
-    "  ✖ step steps.2 (forEach) failed: mapping failed: otLosses: transform \"number\": no number in \"\"",
-    "■ ot-integer: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: otLosses: transform \"number\": no number in \"\"",
+    "  ✖ step steps.2 (forEach) failed: mapping failed: otLosses: transform \"integer\": no number in \"\"",
+    "■ ot-integer: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: otLosses: transform \"integer\": no number in \"\"",
     "▶ ot-plain (api)",
     "  ⇄ access direct (direct)",
     "  ⇢ page 1  https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
@@ -70,11 +70,11 @@
     "    · steps.2.steps.0  extract name  … ms",
     "    · steps.2.steps.1  extract year  … ms",
     "    · steps.2.steps.2  extract ot  … ms",
-    "  ✖ record rejected: otLosses: otLosses: transform \"number\": no number in \"\"",
+    "  ✖ record rejected: otLosses: missing",
     "    · steps.2.steps.0  extract name  … ms",
     "    · steps.2.steps.1  extract year  … ms",
     "    · steps.2.steps.2  extract ot  … ms",
-    "  ✖ record rejected: otLosses: otLosses: transform \"number\": no number in \"\"",
+    "  ✖ record rejected: otLosses: missing",
     "    · steps.2.steps.0  extract name  … ms",
     "    · steps.2.steps.1  extract year  … ms",
     "    · steps.2.steps.2  extract ot  … ms",
@@ -95,7 +95,7 @@
       "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
       "rejected": {
         "field": "otLosses",
-        "reason": "transform \"number\": no number in \"\""
+        "reason": "transform \"integer\": no number in \"\""
       },
       "scope": {
         "vars": {},
@@ -123,7 +123,7 @@
       "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
       "rejected": {
         "field": "otLosses",
-        "reason": "transform \"number\": no number in \"\""
+        "reason": "transform \"integer\": no number in \"\""
       },
       "scope": {
         "vars": {},
@@ -298,7 +298,7 @@
       "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
       "rejected": {
         "field": "otLosses",
-        "reason": "otLosses: transform \"number\": no number in \"\""
+        "reason": "missing"
       },
       "scope": {
         "vars": {},
@@ -326,7 +326,7 @@
       "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
       "rejected": {
         "field": "otLosses",
-        "reason": "otLosses: transform \"number\": no number in \"\""
+        "reason": "missing"
       },
       "scope": {
         "vars": {},

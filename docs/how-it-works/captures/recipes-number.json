@@ -3,8 +3,8 @@
   "summary": [
     {
       "recipeId": "attic-rows",
-      "emitted": 6,
-      "rejected": 1,
+      "emitted": 5,
+      "rejected": 2,
       "duplicates": 0,
       "pages": 1
     }
@@ -17,10 +17,10 @@
     "  · steps.1  extract rows  … ms",
     "    · steps.2.steps.0  extract label  … ms",
     "    · steps.2.steps.1  extract value  … ms",
-    "  ✚ record (no key)",
+    "  ✖ record rejected: number: number field: \"a897fe39b1053632\" holds 3 numbers (897, 39, 1053632): pick one with a \"regex\" transform first",
     "    · steps.2.steps.0  extract label  … ms",
     "    · steps.2.steps.1  extract value  … ms",
-    "  ✖ record rejected: number: number: transform \"number\": no number in \"Books\"",
+    "  ✖ record rejected: number: number field: no number in \"Books\"",
     "    · steps.2.steps.0  extract label  … ms",
     "    · steps.2.steps.1  extract value  … ms",
     "  ✚ record (no key)",
@@ -37,18 +37,14 @@
     "    · steps.2.steps.1  extract value  … ms",
     "  ✚ record (no key)",
     "  · steps.2  forEach  … ms",
-    "■ attic-rows: 6 emitted, 1 rejected, 0 duplicates, 1 pages, … ms"
+    "■ attic-rows: 5 emitted, 2 rejected, 0 duplicates, 1 pages, … ms"
   ],
   "records": [
     {
       "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
-      "key": null,
-      "data": {
-        "row": "UPC",
-        "text": "a897fe39b1053632",
-        "number": 897391053632,
-        "integer": 897391053632,
-        "boolean": false
+      "rejected": {
+        "field": "number",
+        "reason": "number field: \"a897fe39b1053632\" holds 3 numbers (897, 39, 1053632): pick one with a \"regex\" transform first"
       },
       "scope": {
         "vars": {},
@@ -71,35 +67,13 @@
         "row": "\n            <th>UPC</th><td>a897fe39b1053632</td>\n        ",
         "label": "UPC",
         "value": "a897fe39b1053632"
-      },
-      "mapping": {
-        "row": {
-          "from": "UPC",
-          "steps": []
-        },
-        "text": {
-          "from": "a897fe39b1053632",
-          "steps": []
-        },
-        "number": {
-          "from": "a897fe39b1053632",
-          "steps": []
-        },
-        "integer": {
-          "from": "a897fe39b1053632",
-          "steps": []
-        },
-        "boolean": {
-          "from": "a897fe39b1053632",
-          "steps": []
-        }
       }
     },
     {
       "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
       "rejected": {
         "field": "number",
-        "reason": "number: transform \"number\": no number in \"Books\""
+        "reason": "number field: no number in \"Books\""
       },
       "scope": {
         "vars": {},

@@ -48,7 +48,7 @@
         "otLosses": 0,
         "otLossesField": null,
         "otLossesRule": null,
-        "otLossesNote": "not recorded"
+        "otLossesNote": -1
       },
       "scope": {
         "vars": {},
@@ -82,35 +82,19 @@
         },
         "otLosses": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         },
         "otLossesField": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         },
         "otLossesRule": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         },
         "otLossesNote": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         }
       }
     },
@@ -123,7 +107,7 @@
         "otLosses": 0,
         "otLossesField": null,
         "otLossesRule": null,
-        "otLossesNote": "not recorded"
+        "otLossesNote": -1
       },
       "scope": {
         "vars": {},
@@ -157,35 +141,19 @@
         },
         "otLosses": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         },
         "otLossesField": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         },
         "otLossesRule": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         },
         "otLossesNote": {
           "from": "",
-          "steps": [
-            {
-              "op": "regex"
-            }
-          ]
+          "steps": []
         }
       }
     },
@@ -232,39 +200,19 @@
         },
         "otLosses": {
           "from": "6",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "6"
-            }
-          ]
+          "steps": []
         },
         "otLossesField": {
           "from": "6",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "6"
-            }
-          ]
+          "steps": []
         },
         "otLossesRule": {
           "from": "6",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "6"
-            }
-          ]
+          "steps": []
         },
         "otLossesNote": {
           "from": "6",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "6"
-            }
-          ]
+          "steps": []
         }
       }
     },
@@ -311,39 +259,19 @@
         },
         "otLosses": {
           "from": "8",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "8"
-            }
-          ]
+          "steps": []
         },
         "otLossesField": {
           "from": "8",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "8"
-            }
-          ]
+          "steps": []
         },
         "otLossesRule": {
           "from": "8",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "8"
-            }
-          ]
+          "steps": []
         },
         "otLossesNote": {
           "from": "8",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "8"
-            }
-          ]
+          "steps": []
         }
       }
     },
@@ -390,39 +318,19 @@
         },
         "otLosses": {
           "from": "9",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "9"
-            }
-          ]
+          "steps": []
         },
         "otLossesField": {
           "from": "9",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "9"
-            }
-          ]
+          "steps": []
         },
         "otLossesRule": {
           "from": "9",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "9"
-            }
-          ]
+          "steps": []
         },
         "otLossesNote": {
           "from": "9",
-          "steps": [
-            {
-              "op": "regex",
-              "value": "9"
-            }
-          ]
+          "steps": []
         }
       }
     }

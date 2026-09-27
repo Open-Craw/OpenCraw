@@ -29,9 +29,9 @@ field by field:
 
 1. **coerce** the value to the field's type, or fail;
 2. **validate** it against `min`, `max`, `pattern`, `minLength` or `maxLength`, if the field has any;
-3. if the value is **missing** (`undefined`, `null`, or `""` after coercion), apply the missing-value policy
-   instead. Coercion runs first, so `""` counts as missing only where the type keeps it (`string`, `json`); in a
-   `number` or `date` field it fails coercion ([#80](https://github.com/russoedu/open.craw/issues/80));
+3. if the value is **missing** (`undefined`, `null`, or `""`), apply the missing-value policy instead. Blank
+   text (empty once trimmed) is missing in every type except `string` and `json`, which keep text as it is: a
+   `"  "` in a `number` or `date` field gets the field's `default`, `null` or its policy, not a coercion error;
 4. add the **generated** fields, and compute the **key**.
 
 Only the fields the output declares make it into the record. A mapping can't add a field the output doesn't
@@ -103,12 +103,12 @@ type does:
 | Type | What it accepts | What it refuses | Seen here |
 |---|---|---|---|
 | `string` | text as it is, with no trimming; a number or a boolean becomes its text | a list or an object | `"a897fe39b1053632"` stays as it is |
-| `number` | a number, or text containing one: it keeps the digits, `.`, `,` and the signs, and drops everything else (see [below](#the-same-text-read-as-a-number)) | text with no digit in it | `"£51.77"` → `51.77` |
+| `number` | a number, or text holding exactly one number: a sign, currency symbols and words around it are ignored, and `.` or `,` is read as a decimal or a thousands separator (see [below](#the-same-text-read-as-a-number)) | text with no number, with two or more (`"2 for 10,00"`, the UPC), or with separators that make no sense (`1.2.3`) | `"£51.77"` → `51.77` |
 | `integer` | the same as `number`, then cut toward zero (truncated, not rounded) | the same as `number` | `"In stock (22 available)"` → `22` |
 | `boolean` | anything. `true` when the whole text is `true`, `yes`, `y`, `1` or `on`, or it contains the words `in stock` or `available`; a number is `true` unless it's `0` | nothing: whatever isn't `true` is `false` | `"In stock (22 available)"` → `true` |
-| `date` | a `Date`, milliseconds since 1970, ISO text (or other text JavaScript's `Date` reads), or text matching the field's `format` (`DD/MM/YYYY`…); gives the day in UTC. Without a `format`, text with a time but no offset is read in the machine's time zone | text that doesn't read as a date | `now` → `"2026-09-27"` (the generated `scrapedOn`) |
+| `date` | a `Date`, milliseconds since 1970, ISO text (or other text JavaScript's `Date` reads), or text matching the field's `format` (`DD/MM/YYYY`…); gives the day in UTC. Text that names no zone (no `Z`, offset or `GMT`) is read as UTC, whatever the machine's time zone (the `date` transform's `timezone` names another) | text that doesn't read as a date | `now` → `"2026-09-27"` (the generated `scrapedOn`) |
 | `datetime` | the same as `date` | the same | `now` → `"2026-09-27T17:…Z"` |
-| `currency` | text with an amount and a symbol or a three-letter code, a number, or `{ amount, currency }`. The field's own `currency`, when set, replaces any code in the value | a value with no code anywhere (not in the text, the transform or the field) | `"£51.77"` → `{"amount":51.77,"currency":"GBP"}` |
+| `currency` | text with one amount and a symbol or an ISO 4217 code (a code written next to the amount wins, and three capitals that aren't a currency, like `OTR`, are ignored), a number, or `{ amount, currency }`. The field's own `currency`, when set, replaces any code in the value | a value with no code anywhere (not in the text, the transform or the field); text with no amount or two | `"£51.77"` → `{"amount":51.77,"currency":"GBP"}` |
 | `url` | an absolute URL, trimmed and normalised | anything relative | the image, after `absoluteUrl` |
 | `enum` | text that is exactly one of `values`, case included | anything else | `"Books"` |
 | `array` | a list, or a single value (wrapped in a list); each item is coerced with `items` | an item its `items` refuses | the breadcrumb |
@@ -164,7 +164,7 @@ The record, with the generated fields at the end:
   "oldPrice": null,
   "onSale": false,
   "subtitle": null,
-  "scrapedAt": "2026-09-27T17:40:57.616Z",
+  "scrapedAt": "2026-09-27T21:45:03.948Z",
   "scrapedOn": "2026-09-27",
   "sourceUrl": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
   "recipe": "attic-api"
@@ -179,15 +179,16 @@ seven.
 
 ### The same text, read as a number
 
-A number type doesn't look for "the number" in a text. It keeps every digit, `.`, `,`, `-`, `+` and space, drops
-everything else, and reads what's left. The scene
+A number type looks for **the one number** in a text: digits with `.` or `,` between them, a sign in front, and
+anything around it (a currency symbol, words, brackets) ignored. A text with no number, or with two or more,
+is refused rather than guessed at. The scene
 [`recipes-number`](recipes/recipes-number/attic-rows.input.json) reads every row of the product table and maps
 the same cell into a `number`, an `integer` and a `boolean` field:
 
 <!-- capture:recipes-number records n=7 -->
 ```json
-{"row":"UPC","text":"a897fe39b1053632","number":897391053632,"integer":897391053632,"boolean":false}
-{"rejected":{"field":"number","reason":"number: transform \"number\": no number in \"Books\""}}
+{"rejected":{"field":"number","reason":"number field: \"a897fe39b1053632\" holds 3 numbers (897, 39, 1053632): pick one with a \"regex\" transform first"}}
+{"rejected":{"field":"number","reason":"number field: no number in \"Books\""}}
 {"row":"Price (excl. tax)","text":"£51.77","number":51.77,"integer":51,"boolean":false}
 {"row":"Price (incl. tax)","text":"£51.77","number":51.77,"integer":51,"boolean":false}
 {"row":"Tax","text":"£0.00","number":0,"integer":0,"boolean":false}
@@ -196,30 +197,35 @@ the same cell into a `number`, an `integer` and a `boolean` field:
 ```
 <!-- /capture -->
 
-- The UPC `a897fe39b1053632` becomes `897391053632`: the letters are dropped and the digits are joined. A number
-  field fed the wrong text gives no error; it gives a wrong number. Pick the number out with a `regex` transform
-  first when the text holds anything but one number (`"2 for 10,00"` would read as `210`).
-- `"Books"` has no digit, so it's refused. The mapping rule says `"onMissing": "skip-record"`, so the record is
-  rejected and the run goes on (next section).
-- Without a `locale`, the decimal separator is guessed: the last `.` or `,` is the decimal point only if 1 or 2
-  digits follow it and it appears once. So `"£51.77"` is `51.77`, `"1.299"` is `1299`, and `"0.125"` is `125`.
-  Use the `number` transform with `locale` when a site's format is known.
+- The UPC `a897fe39b1053632` holds three numbers (`897`, `39` and `1053632`), so the `number` field refuses it
+  and names them. The same goes for `"2 for 10,00"` or a date such as `"March 14, 1879"`: when a text holds more
+  than one number, pick the one you want with a `regex` transform first. The mapping rule says
+  `"onMissing": "skip-record"`, so the record is rejected and the run goes on (next section).
+- `"Books"` has no number at all, so it's refused the same way. Both reasons name the `number` field: it's the
+  first of the two number fields, and one refusal is enough to reject the record. The message names the field's
+  type, not a `number` transform the rule doesn't have.
+- Without a `locale`, the separators are guessed. Of two kinds (`1.299,50 €`) the last one is the decimal point,
+  so that's `1299.5`. A single `.` or `,` groups thousands only when exactly three digits follow it and one to
+  three digits other than a lone `0` precede it: `"1.299"` is `1299`, while `"0.125"` is `0.125` and
+  `"10,00"` is `10`. A repeated one groups thousands (`1,234,567`), and separators that make no sense
+  (`1.2.3`) are refused. Use the `number` transform with `locale` when a site's format is known.
 - `integer` truncates: `51.77` becomes `51`.
-- `boolean` never fails. Of the seven texts only `"In stock (22 available)"` is `true`, and `"0"` is `false`.
+- `boolean` never fails. Of the five records emitted only `"In stock (22 available)"` is `true`, and `"0"` is
+  `false`.
 
 ### What coercion refuses
 
 The scene [`recipes-rejects`](recipes/recipes-rejects) runs six small input recipes against the same page.
 Five each map one real value into a field that can't take it, with `"onMissing": "skip-record"` on the rule, so
-the record is rejected with the reason:
+the record is rejected, with the field and the reason apart:
 
 <!-- capture:recipes-rejects records n=5 -->
 ```json
-{"rejected":{"field":"amount","reason":"amount: no currency: set \"currency\" on the field or use the currency transform"}}
-{"rejected":{"field":"availableOn","reason":"availableOn: transform \"date\": cannot read \"In stock (22 available)\" as a date"}}
-{"rejected":{"field":"kind","reason":"kind: \"Books\" is not one of book, ebook"}}
-{"rejected":{"field":"section","reason":"section: expected text, got a list"}}
-{"rejected":{"field":"image","reason":"image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"}}
+{"rejected":{"field":"amount","reason":"no currency: set \"currency\" on the field or use the currency transform"}}
+{"rejected":{"field":"availableOn","reason":"date field: cannot read \"In stock (22 available)\" as a date"}}
+{"rejected":{"field":"kind","reason":"\"Books\" is not one of book, ebook"}}
+{"rejected":{"field":"section","reason":"expected text, got a list"}}
+{"rejected":{"field":"image","reason":"\"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"}}
 ```
 <!-- /capture -->
 
@@ -228,7 +234,8 @@ lowercase `values` (enums are case-sensitive); the breadcrumb (`many: true`, a l
 relative image link in a `url` field.
 
 The sixth recipe, `url-without-policy`, maps the same image link with no policy. A coercion failure isn't a
-missing value, so `default` and `null` can't rescue it. Only `skip-record` turns it into a rejected record;
+missing value (blank text is, [above](#the-output-recipe-what-a-record-is)), so `default` and `null` can't rescue
+it. Only `skip-record` turns it into a rejected record;
 anything else fails the step that emitted, and with the default step policy the recipe stops:
 
 <!-- capture:recipes-rejects summary -->
@@ -238,7 +245,7 @@ reject-date: 0 emitted, 1 rejected, 0 duplicates, 1 pages
 reject-enum: 0 emitted, 1 rejected, 0 duplicates, 1 pages
 reject-string: 0 emitted, 1 rejected, 0 duplicates, 1 pages
 reject-url: 0 emitted, 1 rejected, 0 duplicates, 1 pages
-url-without-policy: 0 emitted, 0 rejected, 0 duplicates, 1 pages, stopped: step steps.2 (emit) failed: mapping failed: image: image: "../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg" is not an absolute URL (use the absoluteUrl transform)
+url-without-policy: 0 emitted, 0 rejected, 0 duplicates, 1 pages, stopped: step steps.2 (emit) failed: mapping failed: image: "../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg" is not an absolute URL (use the absoluteUrl transform)
 ```
 <!-- /capture -->
 
@@ -270,7 +277,9 @@ Each of the three fields then shows a different rule for a missing value:
 - `required` alone makes a missing value fail the recipe. `nullable` doesn't change that on its own: it only
   lets a required field be `null` when the policy that applies is `null` (from the field, the rule or the output
   recipe's `onMissing`). Without the `onMissing`, `subtitle` would stop the run.
-- A `default` is used as it is: it isn't coerced or validated, so write it in the field's type.
+- A `default` is coerced and validated like a mapped value, and the loader does it: `"default": "0"` on a
+  `number` field is `0`, while `"default": "none"` on it (or `onMissing: "default"` on a field with no default)
+  is a `RecipeBindingError` before anything runs ([Part 9](08-policies.md#the-precedence) shows one).
 - An empty list is not missing. `many: true` with no match binds `[]`, and `[]` goes to coercion like any value
   (a `string` field refuses it).
 

@@ -10,6 +10,6 @@
     "otLosses": { "type": "integer", "default": 0 },
     "otLossesField": { "type": "integer", "default": 0, "onMissing": "null" },
     "otLossesRule": { "type": "integer", "default": 0, "onMissing": "default" },
-    "otLossesNote": { "type": "integer", "default": "not recorded" }
+    "otLossesNote": { "type": "integer", "default": "-1" }
   }
 }

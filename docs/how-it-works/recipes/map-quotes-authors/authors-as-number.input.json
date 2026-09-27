@@ -1,12 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
-  "id": "quote-authors",
+  "id": "authors-as-number",
   "output": "author",
   "mode": "api",
-  "description": "Each quote on quotes.toscrape.com links to its author's page, which gives the birth date as \"March 14, 1879\" and the place as \"in Ulm, Germany\".",
+  "description": "The first author's birth date, \"March 14, 1879\", through the number transform: it holds two numbers, so the transform throws and, with no skip-record on the rule, the recipe stops.",
   "start": [{ "url": "https://quotes.toscrape.com/" }],
-  "limits": { "delayMs": 300, "maxRecords": 3 },
+  "limits": { "delayMs": 300, "maxRecords": 1 },
   "steps": [
     { "type": "request", "url": "{{start.url}}" },
     { "type": "extract", "id": "authorLinks", "selector": ".quote span a", "kind": "css", "take": "attr:href", "many": true },
@@ -20,9 +20,6 @@
   "mapping": {
     "url": { "from": "page.url" },
     "name": { "from": "name" },
-    "born": { "from": "bornDate", "transform": [{ "op": "hook", "name": "monthDayYear" }, { "op": "date" }] },
-    "bornYear": { "from": "bornDate", "transform": [{ "op": "regex", "pattern": "(\\d{4})$" }, { "op": "number" }] },
-    "birthplace": { "from": "bornLocation", "transform": [{ "op": "replace", "pattern": "^in ", "replacement": "" }] },
-    "country": { "from": "bornLocation", "transform": [{ "op": "split", "separator": ", " }, { "op": "last" }] }
+    "bornAsNumber": { "from": "bornDate", "transform": [{ "op": "number" }] }
   }
 }

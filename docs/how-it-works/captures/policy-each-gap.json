@@ -2,36 +2,46 @@
   "scene": "policy-each-gap",
   "summary": [
     {
-      "recipeId": "pokeapi-past",
-      "emitted": 1,
-      "rejected": 0,
+      "recipeId": "pokeapi-past-skip",
+      "emitted": 0,
+      "rejected": 1,
       "duplicates": 0,
       "pages": 1
+    },
+    {
+      "recipeId": "pokeapi-past",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing"
     }
   ],
   "trace": [
+    "▶ pokeapi-past-skip (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/bulbasaur",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract name  … ms",
+    "  · steps.2  extract past  … ms",
+    "  ✖ record rejected: pastAbilities[0].name: missing",
+    "  · steps.3  emit  … ms",
+    "■ pokeapi-past-skip: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
     "▶ pokeapi-past (api)",
     "  ⇄ access direct (direct)",
     "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/bulbasaur",
     "  · steps.0  request  … ms",
     "  · steps.1  extract name  … ms",
     "  · steps.2  extract past  … ms",
-    "  ✚ record [\"bulbasaur\"]",
-    "  · steps.3  emit  … ms",
-    "■ pokeapi-past: 1 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+    "  ✖ step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing",
+    "■ pokeapi-past: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.3 (emit) failed: mapping failed: pastAbilities[0].name: missing"
   ],
   "records": [
     {
       "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur",
-      "key": "[\"bulbasaur\"]",
-      "data": {
-        "name": "bulbasaur",
-        "pastAbilities": [
-          {
-            "slot": 3,
-            "until": "generation-iv"
-          }
-        ]
+      "rejected": {
+        "field": "pastAbilities[0].name",
+        "reason": "missing"
       },
       "scope": {
         "vars": {},
@@ -57,23 +67,6 @@
         "page": {
           "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur",
           "number": 1
-        }
-      },
-      "mapping": {
-        "name": {
-          "from": "bulbasaur",
-          "steps": []
-        },
-        "pastAbilities[0].name": {
-          "steps": []
-        },
-        "pastAbilities[0].slot": {
-          "from": 3,
-          "steps": []
-        },
-        "pastAbilities[0].until": {
-          "from": "generation-iv",
-          "steps": []
         }
       }
     }

@@ -118,6 +118,8 @@ function portable (capture) {
  * shows. Strings, lists and nesting are cut well above what `shorten` renders, so the pages don't change.
  */
 function compact (value, depth = 0) {
+  // A Date (the `date` transform's value in a trace) is written as JSON writes it, not as an empty object.
+  if (value instanceof Date) return value.toJSON()
   if (typeof value === 'string') return value.length > 600 ? `${value.slice(0, 599)}…` : value
   if (Array.isArray(value)) return value.length > 10 ? [...value.slice(0, 10).map(item => compact(item, depth + 1)), `… ${value.length - 10} more`] : value.map(item => compact(item, depth + 1))
   if (value !== null && typeof value === 'object') return depth > 12 ? '{…}' : Object.fromEntries(Object.entries(value).map(([key, item]) => [key, compact(item, depth + 1)]))

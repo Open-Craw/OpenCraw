@@ -14,7 +14,7 @@
       "rejected": 0,
       "duplicates": 0,
       "pages": 1,
-      "error": "step steps.2 (forEach) failed: mapping failed: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+      "error": "step steps.2 (forEach) failed: mapping failed: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
     }
   ],
   "trace": [
@@ -25,13 +25,13 @@
     "  · steps.1  extract books  … ms",
     "    · steps.2.steps.0  extract title  … ms",
     "    · steps.2.steps.1  extract link  … ms",
-    "  ✖ record rejected: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "  ✖ record rejected: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)",
     "    · steps.2.steps.0  extract title  … ms",
     "    · steps.2.steps.1  extract link  … ms",
-    "  ✖ record rejected: url: url: \"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "  ✖ record rejected: url: \"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)",
     "    · steps.2.steps.0  extract title  … ms",
     "    · steps.2.steps.1  extract link  … ms",
-    "  ✖ record rejected: url: url: \"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "  ✖ record rejected: url: \"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)",
     "  · steps.2  forEach  … ms",
     "■ link-as-is: 0 emitted, 3 rejected, 0 duplicates, 1 pages, … ms",
     "▶ link-null (api)",
@@ -41,15 +41,15 @@
     "  · steps.1  extract books  … ms",
     "    · steps.2.steps.0  extract title  … ms",
     "    · steps.2.steps.1  extract link  … ms",
-    "  ✖ step steps.2 (forEach) failed: mapping failed: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)",
-    "■ link-null: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+    "  ✖ step steps.2 (forEach) failed: mapping failed: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "■ link-null: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
   ],
   "records": [
     {
       "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
       "rejected": {
         "field": "url",
-        "reason": "url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+        "reason": "\"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
       },
       "scope": {
         "vars": {},
@@ -74,7 +74,7 @@
       "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
       "rejected": {
         "field": "url",
-        "reason": "url: \"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+        "reason": "\"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)"
       },
       "scope": {
         "vars": {},
@@ -99,7 +99,7 @@
       "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
       "rejected": {
         "field": "url",
-        "reason": "url: \"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+        "reason": "\"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)"
       },
       "scope": {
         "vars": {},

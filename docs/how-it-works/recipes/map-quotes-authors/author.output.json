@@ -8,6 +8,7 @@
     "name": { "type": "string", "required": true },
     "born": { "type": "date" },
     "bornAsNumber": { "type": "number" },
+    "bornYear": { "type": "integer" },
     "birthplace": { "type": "string" },
     "country": { "type": "string" }
   }

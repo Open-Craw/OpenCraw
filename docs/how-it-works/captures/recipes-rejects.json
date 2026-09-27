@@ -42,7 +42,7 @@
       "rejected": 0,
       "duplicates": 0,
       "pages": 1,
-      "error": "step steps.2 (emit) failed: mapping failed: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
+      "error": "step steps.2 (emit) failed: mapping failed: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
     }
   ],
   "trace": [
@@ -51,7 +51,7 @@
     "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
     "  · steps.0  request  … ms",
     "  · steps.1  extract value  … ms",
-    "  ✖ record rejected: amount: amount: no currency: set \"currency\" on the field or use the currency transform",
+    "  ✖ record rejected: amount: no currency: set \"currency\" on the field or use the currency transform",
     "  · steps.2  emit  … ms",
     "■ reject-currency: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
     "▶ reject-date (api)",
@@ -59,7 +59,7 @@
     "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
     "  · steps.0  request  … ms",
     "  · steps.1  extract value  … ms",
-    "  ✖ record rejected: availableOn: availableOn: transform \"date\": cannot read \"In stock (22 available)\" as a date",
+    "  ✖ record rejected: availableOn: date field: cannot read \"In stock (22 available)\" as a date",
     "  · steps.2  emit  … ms",
     "■ reject-date: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
     "▶ reject-enum (api)",
@@ -67,7 +67,7 @@
     "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
     "  · steps.0  request  … ms",
     "  · steps.1  extract value  … ms",
-    "  ✖ record rejected: kind: kind: \"Books\" is not one of book, ebook",
+    "  ✖ record rejected: kind: \"Books\" is not one of book, ebook",
     "  · steps.2  emit  … ms",
     "■ reject-enum: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
     "▶ reject-string (api)",
@@ -75,7 +75,7 @@
     "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
     "  · steps.0  request  … ms",
     "  · steps.1  extract value  … ms",
-    "  ✖ record rejected: section: section: expected text, got a list",
+    "  ✖ record rejected: section: expected text, got a list",
     "  · steps.2  emit  … ms",
     "■ reject-string: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
     "▶ reject-url (api)",
@@ -83,7 +83,7 @@
     "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
     "  · steps.0  request  … ms",
     "  · steps.1  extract value  … ms",
-    "  ✖ record rejected: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)",
+    "  ✖ record rejected: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)",
     "  · steps.2  emit  … ms",
     "■ reject-url: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
     "▶ url-without-policy (api)",
@@ -91,15 +91,15 @@
     "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
     "  · steps.0  request  … ms",
     "  · steps.1  extract value  … ms",
-    "  ✖ step steps.2 (emit) failed: mapping failed: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)",
-    "■ url-without-policy: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (emit) failed: mapping failed: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
+    "  ✖ step steps.2 (emit) failed: mapping failed: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)",
+    "■ url-without-policy: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (emit) failed: mapping failed: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
   ],
   "records": [
     {
       "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
       "rejected": {
         "field": "amount",
-        "reason": "amount: no currency: set \"currency\" on the field or use the currency transform"
+        "reason": "no currency: set \"currency\" on the field or use the currency transform"
       },
       "scope": {
         "vars": {},
@@ -117,7 +117,7 @@
       "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
       "rejected": {
         "field": "availableOn",
-        "reason": "availableOn: transform \"date\": cannot read \"In stock (22 available)\" as a date"
+        "reason": "date field: cannot read \"In stock (22 available)\" as a date"
       },
       "scope": {
         "vars": {},
@@ -135,7 +135,7 @@
       "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
       "rejected": {
         "field": "kind",
-        "reason": "kind: \"Books\" is not one of book, ebook"
+        "reason": "\"Books\" is not one of book, ebook"
       },
       "scope": {
         "vars": {},
@@ -153,7 +153,7 @@
       "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
       "rejected": {
         "field": "section",
-        "reason": "section: expected text, got a list"
+        "reason": "expected text, got a list"
       },
       "scope": {
         "vars": {},
@@ -175,7 +175,7 @@
       "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
       "rejected": {
         "field": "image",
-        "reason": "image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
+        "reason": "\"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
       },
       "scope": {
         "vars": {},

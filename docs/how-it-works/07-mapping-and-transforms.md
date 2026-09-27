@@ -172,8 +172,9 @@ The trace has one entry per item and field, keyed with the item's index:
 - A `null` or missing list gives a missing field. Something that isn't a list fails the mapping
   (`"quote.tags" is not a list`).
 - The `each` rule itself has no trace entry, only its items' fields.
-- The items are coerced to the array's `items` type, but their members get no missing-value policy and no
-  validation: see [Policies](08-policies.md#two-gaps-issue-78).
+- Each member of an item is coerced, validated and given its missing-value policy and `default`, like a field,
+  and reported at its index (`tags[1].url`): see [Policies](08-policies.md#the-items-of-each). The loader checks
+  that every name in `fields` is a member of the items, and that every required member is mapped.
 
 ## Joins
 
@@ -376,27 +377,44 @@ page. The quotes API gives Goodreads paths, which need `base`:
 
 | Op | Does |
 |---|---|
-| `number` | Reads a number out of text; a number passes through. |
+| `number` | Reads the one number in a text; a number passes through. No number, or two or more, is an error. |
 | `integer` | `number`, then drops the fraction (`12.9` → `12`). |
-| `currency` | `{ amount, currency }`: the amount as `number` reads it, and the code from the `currency` arg, else the first word of three capital letters in the text, else a symbol (`€ £ ¥ ₹ ₩ R$ US$ CA$ A$ $`). No code found gives `{ amount }` only. |
-| `date` | A date object. With `format`, numeric text in the tokens `YYYY MM DD HH mm ss`; without, text as JavaScript's `Date` reads it (ISO is the safe choice). `timezone` applies to text without an offset. |
+| `currency` | `{ amount, currency }`: the amount as `number` reads it, and the code from the `currency` arg, else an ISO 4217 code written next to the amount (`USD 12.50`), else a symbol (`€ £ ¥ ₹ ₩ R$ US$ CA$ A$ $`), else an ISO 4217 code anywhere in the text. No code found gives `{ amount }` only. |
+| `date` | A date object. With `format`, numeric text in the tokens `YYYY MM DD HH mm ss`; without, text as JavaScript's `Date` reads it (ISO is the safe choice). Text without a zone is read as UTC, or in `timezone` when given. |
 | `boolean` | `true` or `false`, never an error. |
 
-**`number` joins every digit in the text.** It removes every character that isn't a digit, `.`, `,`, a sign
-or a space, and parses what's left. That is why `£47.82` or `Price: 1.299,00 €` work, but it also means a
-text with two numbers gives one wrong number, with no error. An author's birth date:
+**`number` reads one number.** It finds the number in the text, with its sign, and ignores what's around it:
+that is why `£47.82`, `Price: 1.299,00 €` or `In stock (20 available)` work. A text with no number, or with
+two or more, is an error that names them, rather than a guess. An author's birth date holds two, and the
+scene's `authors-as-number` recipe maps it with `number` alone
+([recipe](recipes/map-quotes-authors/authors-as-number.input.json)). The rule has no `skip-record`, so the
+transform failure stops the recipe at its first author:
 
-<!-- capture:map-quotes-authors mapping fields=bornAsNumber record=0 -->
-| Field | Step | Value |
-|---|---|---|
-| `bornAsNumber` | read | `"March 14, 1879"` |
-| | `number` | `141879` |
-| | **field** | `141879` |
+<!-- capture:map-quotes-authors summary -->
+```text
+authors-as-number: 0 emitted, 0 rejected, 0 duplicates, 2 pages, stopped: step steps.2 (forEach) failed: mapping failed: bornAsNumber: transform "number": "March 14, 1879" holds 2 numbers (14, 1879): pick one with a "regex" transform first
+quote-authors: 3 emitted, 0 rejected, 1 duplicates, 5 pages
+```
 <!-- /capture -->
 
-**Without a `locale`, `number` guesses the decimal separator.** The last `.` or `,` is the decimal separator
-only if one or two digits follow it and it is the only one of its kind; otherwise it is a thousands separator.
-The hockey table's win percentage has two or three decimals, so the same column reads two ways:
+(`quote-authors` is the scene's main recipe; its duplicate is Albert Einstein, who wrote two of the first
+quotes.) The fix is the one the message names: cut out the number you want with `regex`, then read it:
+
+<!-- capture:map-quotes-authors mapping fields=bornYear record=0 -->
+| Field | Step | Value |
+|---|---|---|
+| `bornYear` | read | `"March 14, 1879"` |
+| | `regex` | `"1879"` |
+| | `number` | `1879` |
+| | **field** | `1879` |
+<!-- /capture -->
+
+**Without a `locale`, `number` guesses the separators.** With both `.` and `,` in the number, the last one is
+the decimal separator (`1.299,50` is `1299.5`). A single one is a thousands separator only when exactly three
+digits follow it and one to three digits other than a lone `0` precede it, so `1.299` is `1299`, but `0.607`
+and `10,00` are decimals. A separator repeated in groups of three (`1,234,567`) groups thousands, and one that
+makes no sense (`1.2.3`) is an error. The hockey table's win percentage has two or three decimals, and reads the
+same with or without `"locale": "en-US"`:
 
 <!-- capture:map-hockey-numbers mapping fields=winPct,winPctEnglish record=0 -->
 | Field | Step | Value |
@@ -413,18 +431,16 @@ The hockey table's win percentage has two or three decimals, so the same column 
 | Field | Step | Value |
 |---|---|---|
 | `winPct` | read | `"0.607"` |
-| | `number` | `607` |
-| | **field** | `607` |
+| | `number` | `0.607` |
+| | **field** | `0.607` |
 | `winPctEnglish` | read | `"0.607"` |
 | | `number` | `0.607` |
 | | **field** | `0.607` |
 <!-- /capture -->
 
-`0.607` has three digits after the point, so without a locale it reads as 607. With `"locale": "en-US"` the
-separators come from the locale, and it reads 0.607. Both behaviours are tracked in issue
-[#77](https://github.com/russoedu/open.craw/issues/77) (read the first number only; a leading `0.` is always a
-decimal). Until it is fixed: cut the number out with `regex` first, and give `locale` for any column with
-decimals.
+`0.607` has three digits after the point, which could be a group of thousands, but a lone `0` before it can't
+start one. Give `locale` when a site writes numbers in a known format: it decides what the guess can't know,
+that `1.299` is `1299` on a German page (`"locale": "de-DE"`) and `1.299` on an English one (`"en-US"`).
 
 **`integer`.** The same parsing, so the same traps, then truncated. A signed goal difference and a year:
 
@@ -451,8 +467,8 @@ coercion, as shown for `tax` [above](#the-mapping-trace):
 <!-- /capture -->
 
 Two things to know: the field's `currency` **overrides** a code found in the text (there is no conversion),
-and any three capital letters count as a code, so `OTR £34,000` reads as currency `OTR`
-([#77](https://github.com/russoedu/open.craw/issues/77)).
+and only an ISO 4217 code counts as one, so the capitals in `OTR £34,000` are ignored and the price reads as
+`GBP`.
 
 **`date`.** `format` knows only numeric tokens, and the site writes "March 14, 1879". The recipe calls a hook
 first (`hook`, [below](#structure)) that rewrites it as `1879-03-14`, then `date`:
@@ -468,8 +484,8 @@ first (`hook`, [below](#structure)) that rewrites it as `1879-03-14`, then `date
 
 The `date` op returns a date object, shown in the trace as an instant. The field is of type `date`, so coercion
 writes the day; a `datetime` field would keep the instant, and a `string` field refuses a date object. Text
-with a time but no offset, and no `timezone`, is read in the time zone of the machine running the crawl
-([#77](https://github.com/russoedu/open.craw/issues/77)); give `timezone` when that matters.
+that names no zone (no `Z`, offset or `GMT`) is read as UTC, whatever the time zone of the machine running the
+crawl; give `timezone` when the site writes local times.
 
 **`boolean`.** Without `truthy`, the text is `true` when it is exactly `true`, `yes`, `y`, `1` or `on`, or
 contains the words `in stock` or `available`; everything else is `false`, including `2`, `none` and
@@ -672,9 +688,10 @@ createCrawler({ hooks: {
 "born": { "from": "bornDate", "transform": [{ "op": "hook", "name": "monthDayYear" }, { "op": "date" }] }
 ```
 
-A hook receives `(value, args, { recipeId, scope, log })`. Its name is checked only when it runs, so a recipe
-naming an unregistered hook loads fine and fails at the first record
-([#78](https://github.com/russoedu/open.craw/issues/78)).
+A hook receives `(value, args, { recipeId, scope, log })`. Hooks belong to the crawler, not the recipe, so the
+loader can't check a hook's name; `run` and `work` do, before the first request. A recipe that names a hook
+nobody registered rejects with `UnknownHookError`, which says where the recipe uses it and which hooks are
+registered (`quote-authors mapping.born.transform.0: unknown hook "monthDayYear" (no hooks registered)`).
 
 ## What's next
 
