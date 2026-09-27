@@ -1,10 +1,10 @@
-import type { Page } from 'playwright'
+import type { Page, Response } from 'playwright'
 import type { EventBus } from '../crawl-events'
 import type { ExtractionScope } from '../extraction-scope'
 import { resolveRequestUrl } from '../http-session'
 import type { GotoStep, InputRecipe } from '../recipe-schema'
 import { detectBlock, resolveRetryRule, transientError, withTransportRetry } from '../step-flow'
-import type { RunGate } from '../step-flow'
+import type { ResolvedRetryRule, RunGate, Transient } from '../step-flow'
 import { renderText } from '../template'
 import { appears } from './interact.use-case'
 
@@ -43,16 +43,54 @@ async function load (step: GotoStep, url: string, page: Page, scope: ExtractionS
   const rule = resolveRetryRule(recipe.limits?.retry)
   const response = await withTransportRetry(url, {
     run:     () => page.goto(url, { waitUntil: step.waitUntil, timeout: recipe.limits?.timeoutMs }),
-    problem: (outcome) => {
-      if ('error' in outcome) return transientError(outcome.error)
-      const status = outcome.value?.status()
-
-      return status !== undefined && rule.statuses.includes(status) ? { reason: `HTTP ${status}`, retryAfter: outcome.value?.headers()['retry-after'] } : undefined
-    },
+    problem: navigationProblem(rule),
   }, { recipeId: recipe.id, gate, events, rule })
   scope.setPage({ url: page.url() })
-  events.emit({ type: 'page:visit', recipeId: recipe.id, url: page.url(), number: scope.pageState?.number ?? 1, status: response?.status() })
+  await reportVisit(page, response, scope.pageState?.number ?? 1, recipe, events)
+}
+
+/**
+ * How a navigation's outcome is judged for a retry: a connection that failed
+ * in passing, or a status the retry rule lists (with the server's `Retry-After`).
+ *
+ * @param rule - The recipe's resolved retry rule.
+ * @returns The judge `withTransportRetry` takes.
+ */
+export function navigationProblem (rule: ResolvedRetryRule): (outcome: { value: Response | null } | { error: unknown }) => Transient | undefined {
+  return (outcome) => {
+    if ('error' in outcome) return transientError(outcome.error)
+    const status = outcome.value?.status()
+
+    return status !== undefined && rule.statuses.includes(status) ? { reason: `HTTP ${status}`, retryAfter: outcome.value?.headers()['retry-after'] } : undefined
+  }
+}
+
+/**
+ * Reports the page a navigation reached as `page:visit` (with its status), and
+ * checks the response against the recipe's block rule. A browser error page
+ * (`chrome-error://`) is never a page: it fails instead.
+ *
+ * @param page - The page, on the document the navigation reached.
+ * @param response - The navigation's response; `null` when there was none (a same-document navigation).
+ * @param number - The page number to report.
+ * @param recipe - The recipe: id and block rule.
+ * @param events - Where the visit is reported.
+ * @throws BlockedError when the response is a block; Error on a browser error page.
+ */
+export async function reportVisit (page: Page, response: Response | null, number: number, recipe: InputRecipe, events: EventBus): Promise<void> {
+  if (isErrorPage(page.url())) throw new Error(`the browser shows its error page instead of ${response?.url() ?? 'the page'}`)
+  events.emit({ type: 'page:visit', recipeId: recipe.id, url: page.url(), number, status: response?.status() })
   if (response === null) return
   const blocked = await detectBlock({ url: page.url(), status: response.status(), headers: response.headers(), text: () => response.text() }, recipe.session?.blockedWhen)
   if (blocked !== undefined) throw blocked
+}
+
+/**
+ * Whether a URL is the browser's own error page, which Chromium shows when a navigation fails.
+ *
+ * @param url - The page URL.
+ * @returns `true` for `chrome-error://…`.
+ */
+export function isErrorPage (url: string): boolean {
+  return url.startsWith('chrome-error:')
 }

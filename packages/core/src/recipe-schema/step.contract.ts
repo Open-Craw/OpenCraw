@@ -102,7 +102,13 @@ export interface SelectSearch {
   open?:  string
   close?: string
 }
-export interface ScrollStep extends StepBaseFields { type: 'scroll', to: string, times?: number, untilStable?: boolean }
+/**
+ * Scrolls to the bottom or to an element, `times` times; with `untilStable`,
+ * until the page stops growing or `maxScrolls` (default 50) scrolls, without
+ * failing when the cap stops it. `settleMs` (default 300) is the wait after
+ * each scroll for the page to load more.
+ */
+export interface ScrollStep extends StepBaseFields { type: 'scroll', to: string, times?: number, untilStable?: boolean, maxScrolls?: number, settleMs?: number }
 /** Waits for an element, a time or the network to settle; `timeoutMs` bounds the element and network forms (default `limits.timeoutMs`). */
 export interface WaitStep extends StepBaseFields { type: 'wait', selector?: string, ms?: number, state?: 'networkidle', timeoutMs?: number }
 /**
@@ -286,7 +292,16 @@ const selectStep = z.strictObject({
 })
   .refine(oneTarget, ONE_TARGET)
   .refine(step => [step.value, step.label, step.index, step.values].filter(choice => choice !== undefined).length === 1, 'give exactly one of value, label, index or values')
-const scrollStep = z.strictObject({ ...base, type: z.literal('scroll'), to: z.string().min(1), times: z.int().min(1).optional(), untilStable: z.boolean().optional() })
+const scrollStep = z.strictObject({
+  ...base,
+  type:        z.literal('scroll'),
+  to:          z.string().min(1),
+  times:       z.int().min(1).optional(),
+  untilStable: z.boolean().optional(),
+  maxScrolls:  z.int().min(1).optional(),
+  settleMs:    z.int().nonnegative().optional(),
+})
+  .refine(step => step.maxScrolls === undefined || step.untilStable === true, 'maxScrolls caps untilStable: give untilStable, or times for a fixed count')
 const waitStep = z.strictObject({ ...base, type: z.literal('wait'), selector: plainSelector.optional(), ms: z.int().nonnegative().optional(), state: z.literal('networkidle').optional(), timeoutMs: z.int().min(1).optional() })
 const evaluateStep = z.strictObject({ ...base, type: z.literal('evaluate'), script: z.string().min(1), args: z.record(z.string(), z.unknown()).optional() })
 const screenshotStep = z.strictObject({ ...base, type: z.literal('screenshot'), path: z.string().min(1) })

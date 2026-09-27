@@ -14,10 +14,14 @@ import { extractFromPage } from './extract-from-page.use-case'
 import { appears, click, fill, press, screenshot, scroll, select, wait } from './interact.use-case'
 import { snapshotElements } from './snapshot-elements.use-case'
 import { navigate } from './navigate.use-case'
+import { followNavigation } from './follow-navigation.use-case'
+import type { FollowOptions } from './follow-navigation.use-case'
 import { sendPageRequest } from './send-page-request.use-case'
 import { downloadByClick } from './download-by-click.use-case'
 
 const NEXT_LINK_TIMEOUT_MS = 2000
+/** How long a key press on the page, or a pick, is given to start a navigation. */
+const LATE_NAVIGATION_MS = 150
 /** Steps after which a page may show a new captcha (`session.captcha`). */
 const CHALLENGING_STEPS = new Set<string>(['click', 'press'])
 
@@ -49,15 +53,29 @@ export class WebStepRunner implements StepRunner {
 
   /** Navigates; a block page showing a captcha is solved under `onBlock.solve`, and a page reached is checked for one. */
   private async visit (step: GotoStep, scope: ExtractionScope): Promise<void> {
+    if (await this.solvingBlocks(() => navigate(step, this.page, scope, this.recipe, this.gate, this.events))) await this.captcha?.check(this.page)
+  }
+
+  /**
+   * Runs an action that may navigate, checking the navigation it causes like a
+   * `goto` (see `followNavigation`); a block page showing a captcha is solved under `onBlock.solve`.
+   */
+  private async follow (action: () => Promise<unknown>, options: Pick<FollowOptions, 'number' | 'graceMs' | 'gated' | 'alwaysVisit'>): Promise<void> {
+    await this.solvingBlocks(() => followNavigation(this.page, action, { recipe: this.recipe, gate: this.gate, events: this.events, ...options }))
+  }
+
+  /** Runs a navigation; a block it meets is solved as a captcha under `onBlock.solve`. Returns `false` when it was. */
+  private async solvingBlocks (run: () => Promise<void>): Promise<boolean> {
     try {
-      await navigate(step, this.page, scope, this.recipe, this.gate, this.events)
+      await run()
     } catch (error) {
       if (!(error instanceof BlockedError) || this.captcha?.solvesBlocks !== true) throw error
       await this.captcha.solveBlock(this.page, error)
 
-      return
+      return false
     }
-    await this.captcha?.check(this.page)
+
+    return true
   }
 
   /** A form captcha's `submit` steps: interactions, each under its `when`, without the automatic captcha check between them. */
@@ -79,15 +97,26 @@ export class WebStepRunner implements StepRunner {
         await this.captcha.step(this.page, step, submit === undefined ? undefined : () => this.submit(submit, scope))
         break
       }
-      case 'click': { await (step.download === undefined ? click(step, this.page, scope) : downloadByClick(step, this.page, scope, this.recipe, this.events)); break
+      case 'click': {
+        await (step.download === undefined ? this.follow(() => click(step, this.page, scope), { number: pageNumber(scope) }) : downloadByClick(step, this.page, scope, this.recipe, this.events))
+        break
       }
       case 'fill': { await fill(step, this.page, scope); break
       }
-      case 'press': { await press(step, this.page, scope); break
+      case 'press': {
+        // A key press on the page itself does not wait for the navigation it starts, as an element's does.
+        await this.follow(() => press(step, this.page, scope), { number: pageNumber(scope), graceMs: step.selector === undefined && step.target === undefined ? LATE_NAVIGATION_MS : 0 })
+        break
       }
-      case 'select': { await select(step, this.page, scope, this.recipe.limits?.timeoutMs); break
+      case 'select': {
+        // A pick's change handler may navigate (a jump menu); the browser does not wait for it.
+        await this.follow(() => select(step, this.page, scope, this.recipe.limits?.timeoutMs), { number: pageNumber(scope), graceMs: LATE_NAVIGATION_MS })
+        break
       }
-      case 'scroll': { await scroll(step, this.page); break
+      case 'scroll': {
+        const scrolled = await scroll(step, this.page)
+        if (scrolled.capped) this.events.emit({ type: 'warning', recipeId: this.recipe.id, message: `scroll stopped at maxScrolls (${scrolled.scrolls}) while ${this.page.url()} was still growing`, meta: { url: this.page.url(), scrolls: scrolled.scrolls } })
+        break
       }
       case 'wait': { await wait(step, this.page, this.recipe.limits?.timeoutMs); break
       }
@@ -129,16 +158,9 @@ export class WebStepRunner implements StepRunner {
     if (listing !== undefined && listing !== '' && this.page.url() !== listing) await this.page.goto(listing)
     const link = this.page.locator(next.selector).first()
     if (!await appears(link, NEXT_LINK_TIMEOUT_MS)) return null
-    const before = this.page.url()
-    const release = await this.gate.request(before)
-    try {
-      await link.click()
-      await this.page.waitForLoadState()
-    } finally {
-      release()
-    }
-    if (this.page.url() === before) await this.page.waitForTimeout(NEXT_LINK_TIMEOUT_MS / 4)
-    this.events.emit({ type: 'page:visit', recipeId: this.recipe.id, url: this.page.url(), number: (scope.pageState?.number ?? 1) + 1 })
+    // The click is a request (it takes the site's turn); its navigation is checked like a goto's.
+    // A next that swaps the content in place does not navigate: it gets a moment to do so, and counts as a page.
+    await this.follow(() => link.click(), { number: pageNumber(scope) + 1, gated: true, graceMs: NEXT_LINK_TIMEOUT_MS / 4, alwaysVisit: true })
     await this.captcha?.check(this.page)
 
     return { kind: 'url', url: this.page.url() }
@@ -166,4 +188,9 @@ export class WebStepRunner implements StepRunner {
   async dispose (): Promise<void> {
     await this.session.close()
   }
+}
+
+/** The number of the page a scope is on. */
+function pageNumber (scope: ExtractionScope): number {
+  return scope.pageState?.number ?? 1
 }

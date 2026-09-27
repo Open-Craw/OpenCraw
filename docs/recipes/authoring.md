@@ -221,13 +221,22 @@ Every step has `type`, and may have:
 | `fill` | `selector` or `target`, `value` (template) | |
 | `press` | `key`, `selector?` or `target?` | A key on an element, or on the page. |
 | `select` | `selector` or `target`, one of `value`, `label`, `index`, `values`; `multiple?`, `force?`, `ignoreCase?`, `timeoutMs?` | Picks an option of a `<select>`; `value` and `label` are templates. Fires the page's `change` handlers. `values` picks several, each matched by value or label (an item rendering a list, `{{ split(vars.states) }}`, adds each); `multiple` adds to what is chosen. `force` sets the options on the element itself, visible or not, and fires `input` and `change`: a hidden `<select multiple>` behind a script-built widget, when the page listens to the select (it usually does: that is how the widget's choice reaches the form). The step waits up to `timeoutMs` (`limits.timeoutMs`, else 30 s) for options the page loads after another pick, then names what matched nothing. `values` that render to nothing (a blank filter var) leave the control alone. `clear: true` makes `values` that render to nothing clear the control instead (a worker window reused for the next item must not keep the last item's filter). `search: { input, open?, close? }` is for a widget that loads its options as you type (a maker list of thousands): each value missing from the options is typed into `input` key by key (after clicking `open` when the box is hidden), picked once the page lists it, and the picks add up; `close` is clicked at the end. A search usually replaces the widget's list, so check that earlier picks survive a later search on the site at hand. |
-| `scroll` | `to` (`bottom` or a selector), `times?`, `untilStable?` | `untilStable` keeps scrolling until the page stops growing: infinite lists. |
+| `scroll` | `to` (`bottom` or a selector), `times?`, `untilStable?`, `maxScrolls?`, `settleMs?` | Scrolls `times` times (default 1), waiting `settleMs` (default 300) after each for the page to load more. `untilStable` keeps scrolling until the page stops growing: infinite lists. It stops at `maxScrolls` scrolls (default 50) on a feed that never ends, without failing: a `warning` event (`!` in the trace) says so. Raise `settleMs` for a site whose next batch takes longer to arrive: `untilStable` measures the page, and a slow API makes it stop early. |
 | `wait` | one of `selector`, `ms`, `state: "networkidle"`; `timeoutMs?` | `selector` waits for visibility. Put a `wait` after `goto` on script-heavy pages before extracting. `timeoutMs` bounds the `selector` and `state` forms; default `limits.timeoutMs`, else 30 s. Give a long one to wait for a slow report, or for a person in a headed run. |
 | `evaluate` | `script`, `args?` | JavaScript evaluated in the page; the result is bound under `id`. `script` is a template. With `args`, `script` is a function expression called with them, each string rendered (a lone placeholder keeps its type): `{ "script": "(a) => a.states.length", "args": { "states": "{{ split(vars.state) }}" } }`. **Trusted recipes only.** |
 | `screenshot` | `path` (template) | Full page. A debugging aid. |
 | `captcha` | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; a form captcha: `image`, `refresh?`, `field?`, `submit?` | Solves the challenge on the page, if there is one (none is fine), reCAPTCHA v3 included. Missing fields come from `session.captcha`. With `image`, a captcha checked when its form is posted: the solver fills `field`, `submit` posts the form, `verify.selector` / `verify.failure` say yes or no. §6.1. |
 
-Clicks and key presses can navigate; the engine re-reads the page URL after every web step.
+Clicks and key presses can navigate; the engine re-reads the page URL after every web step. A `click`,
+`press` or `select` that navigates the page is checked like a `goto`: the engine waits for the new page to
+load, retries a load that fails in passing (`limits.retry`: it loads the URL the step navigated to again; a
+form the step posted is never sent twice), checks the answer against `session.blockedWhen`, and reports the
+page as `page:visit` with its status, so it counts in `pages`. A navigation that fails, or still answers a
+retried status (a 503) once the tries are spent, fails the step with its cause (`net::ERR_… at <url>`,
+`HTTP 503 at <url>`): the browser's error page is never taken for the page. A click that only changes the
+page in place counts nothing; one whose script changes the URL (`history.pushState`) counts a page without
+a status. A key press on the page itself and a `select` do not wait for a navigation their handlers start;
+they give it 150 ms to begin.
 
 `target` is a template instead of a selector: it renders either to a **live element** (the variable of a
 `forEach` over `selector`, §3.7) or to a selector string. Give one of `selector` and `target`, never both.
@@ -374,7 +383,7 @@ is true.
 
 | `next` | Mode | Behaviour |
 |---|---|---|
-| `{ "selector": "a.next" }` | web | Clicks it. If the body navigated away (a `forEach` visiting every item), the engine returns to the listing page first. No visible element within 2 s means no next page. |
+| `{ "selector": "a.next" }` | web | Clicks it. If the body navigated away (a `forEach` visiting every item), the engine returns to the listing page first. No visible element within 2 s means no next page. The navigation the click causes is checked like a `goto`'s: a load that fails in passing is retried (`limits.retry`) by loading the URL the click led to again, not by clicking again; the answer is checked against the block rule; a failure fails the `paginate` step with its cause (`HTTP 503 at …`, `net::ERR_… at …`), never running the body on the browser's error page. A next that swaps the content in place (no navigation) still works: the click gets 500 ms to start one, and the page counts either way. |
 | `{ "url": "{{start.url}}?page={{ page.number + 1 }}" }` | both | The rendered value is the next `page.url` (web mode navigates to it). Empty means no next page. |
 | `{ "jsonpath": "$.nextPage" }` | api, web (on a `request`'s JSON) | Evaluated on the current document; the value is the next URL, relative allowed. `null`, `false` or empty means no next page. |
 | `{ "jsonpath": "$.cursor", "as": "cursor" }` | api, web (on a `request`'s JSON) | The value is bound under `cursor` in the next page's scope and the body builds the URL itself (`?cursor={{cursor}}`); on page 1 it is unset. |
@@ -1131,7 +1140,8 @@ engine sends the same request again: that is `limits.retry`, and it is **on by d
 | `statuses` | `[408, 425, 429, 500, 502, 503, 504]` | Answers retried. Connection failures always are: resets, refusals, timeouts, a DNS lookup that could not run, a proxy that dropped the tunnel. A host that does not exist is not. |
 | `forMs` | none | A time budget: keep retrying until this long after the first try. Without `attempts`, tries are not counted; with it, whichever runs out first. No pause runs past the budget. |
 
-- It covers every `goto`, `request` and `next.url` page. A `Retry-After` (seconds or a date) is honoured, and it
+- It covers every `goto`, `request` and `next.url` page, and the page a `next.selector`, `click`, `press` or
+  `select` navigates to (retried by loading that URL again; a form post is not retried). A `Retry-After` (seconds or a date) is honoured, and it
   holds back **every** request to that site, not only the one that got it.
 - A retry is the same request again, on the same access lease. It does not spend the step's `onError` retries,
   and each one is a `request:retry` event (`↺` in the trace).
@@ -1212,7 +1222,10 @@ runs the set, before any request (§6).
 
 The report gives, per recipe: `emitted`, `rejected`, `duplicates`, `skipped` (records a resumed run already
 had), `stepsSkipped` (steps whose `onError: skip` swallowed a failure: a check that found nothing), `pages`,
-`durationMs`, and `error` when the recipe stopped. The sink summary says how many records were written and where.
+`durationMs`, and `error` when the recipe stopped. `pages` counts every `page:visit`: each page a `goto`, a
+`next` or a navigating `click`, `press` or `select` reached, and each `request` that got an answer. An answer
+that fails the step still counts (a 404 is a page that was fetched); a request or navigation that got no
+answer at all (a dropped connection, a refused one) does not. The sink summary says how many records were written and where.
 
 **Resuming.** A long crawl that dies halfway does not have to start over. Open the sink in append mode and
 ask the crawler to resume:
@@ -1266,7 +1279,7 @@ its markup rarely makes a recipe fail; it makes it find less.
 
 ### 8.2 Events and the trace
 
-Everything the engine does is an event: `recipe:start` / `recipe:finish`, `page:visit` (with the HTTP status),
+Everything the engine does is an event: `recipe:start` / `recipe:finish`, `page:visit` (with the HTTP status; one per page counted in `pages`),
 `access:lease` / `access:blocked` / `access:rotate`, `request:retry`, `captcha:detected` / `captcha:solve` / `captcha:solved` /
 `captcha:failed` / `captcha:budget`, `step:start` /
 `step:finish` / `step:retry` / `step:skip` (with the step type, its id and its path such as
