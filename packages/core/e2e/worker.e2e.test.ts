@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process'
 import type { Server } from 'node:http'
-import { createCrawler, loadRecipes, memorySink, workFrom } from '../src/index'
+import { createCrawler, createWorkInbox, loadRecipes, memorySink, workFrom } from '../src/index'
 import type { CaptchaSolver, CrawlEvent, RecipeReport, WorkItem, WorkOptions, WorkSource } from '../src/index'
 import { browserConfig, FIXTURE_BASE, startFixtureSite, stopFixtureSite } from './fixture-site'
 import { workerSite } from './worker-site'
@@ -178,6 +178,36 @@ describe('worker mode', () => {
     expect(sink.records.map(({ source, data }) => `${source.item}: ${String(data.row)}`)).toEqual(['lynx: lynx-1', 'lynx: lynx-2', 'otter: otter-1', 'otter: otter-2', 'heron: heron-1', 'heron: heron-2'])
   }, 60_000)
 
+  it('takes pushed items one at a time on a kept window, and answers each with its own records', async () => {
+    const events: CrawlEvent[] = []
+    const inbox = createWorkInbox()
+    const crawler = createCrawler({ browser: browserConfig(), onEvent: (event) => { events.push(event) } })
+    try {
+      const working = crawler.work(await loadRecipes([output, report]), inbox.source, { windows: 1 })
+      const first = await inbox.submit(item('DL', 'DL1'))
+      await pause(300)
+      expect(inbox.idle).toBe(1)
+      const [second, again] = await Promise.all([inbox.submit(item('DL', 'DL2')), inbox.submit(item('DL', 'DL2'))])
+      await pause(300)
+      const third = await inbox.submit(item('GA', 'GA1', 'Car'))
+      inbox.close()
+      const result = await working
+      expect(first.outcome === 'success' && first.records.map(({ data }) => data.row)).toEqual(['maker|DL|DL1|all'])
+      expect(second.outcome === 'success' && second.records.map(({ data }) => data.row)).toEqual(['maker|DL|DL2|all'])
+      expect(third.outcome === 'success' && third.records.map(({ data }) => data.row)).toEqual(['maker|GA|GA1|Car'])
+      // The same id twice while it ran: one run, one answer.
+      expect(again).toBe(second)
+      expect(result.items).toEqual({ success: 3, failure: 0, neutral: 0 })
+      // One window, one page load: the pushed items reused it, gaps and all.
+      expect(ofType(events, 'window:open')).toHaveLength(1)
+      expect(workerSite.loads).toBe(1)
+      expect(ofType(events, 'step:kept').filter(event => event.path === 'steps.0')).toHaveLength(2)
+    } finally {
+      inbox.abort()
+      await crawler.close()
+    }
+  }, 60_000)
+
   it('runs api recipes the same way, one HTTP session per window', async () => {
     const sink = memorySink()
     const crawler = createCrawler({ sink })
@@ -200,6 +230,11 @@ describe('worker mode', () => {
     expect(await workMakers({ dedupe: 'run' })).toEqual(['TATA: TATA MOTORS LTD', 'TATA: TATA MOTORS PASSENGER VEHICLES LTD', 'MOTOR: EICHER MOTORS', 'MOTOR: TVS MOTOR'])
   }, 30_000)
 })
+
+/** Waits a moment, as a caller between two requests would. */
+async function pause (ms: number): Promise<void> {
+  await new Promise((resolve) => { setTimeout(resolve, ms) })
+}
 
 /** Runs the makers search for `TATA` then `MOTOR` on one window. */
 async function workMakers (options: { dedupe?: 'run' }): Promise<string[]> {

@@ -81,6 +81,37 @@ interface WorkSource {
 - `item.id` is on every event of the item, on its report (`item`) and on its records (`record.source.item`).
 - `item.recipe` picks the input recipe when the set has several.
 
+### Pushing items: the inbox
+
+Some callers don't own a queue: they receive items one at a time (an HTTP request each, a message handler)
+and want each item's result back where they asked for it. `createWorkInbox()` turns pushes into a source:
+
+```ts
+import { createWorkInbox } from '@opencraw/core'
+
+const inbox = createWorkInbox()
+const working = crawler.work(recipes, inbox.source, { windows: { min: 1, max: 8 } })
+working.catch(error => inbox.abort(error))     // work itself failed: reject what is still waiting
+
+const result = await inbox.submit({ id: 'r-42', vars: { state: 'DL' } })
+// { outcome: 'success', report, records } | { outcome: 'failure' | 'neutral', report }
+
+inbox.close()                                  // no new items; queued and running ones finish
+const report = await working                   // then work() ends with its report
+```
+
+- **First come, first served**, for items and for windows waiting on `next()` alike.
+- **One result per item.** `submit` resolves when that item ends, with its own records only. `neutral` is
+  returned, not retried: the caller decides whether to submit it again.
+- **No double runs.** Submitting an id that is queued or running returns that run's result. Once it has
+  ended, the same id runs again.
+- **Demand.** `inbox.idle` counts windows waiting for an item, `inbox.queued` items waiting for a window,
+  `inbox.running` items in progress. Keep submitting while `idle` is above zero, or the pool can't grow: it
+  only keeps as many windows busy as the caller keeps items in flight.
+- **Cancel before start.** `submit(item, { signal })` takes the item back while it is queued; a running item
+  is not interrupted.
+- `close()` refuses new items; `abort(reason)` also rejects every item not finished yet.
+
 **Records are held until the item succeeds.** Mapped records wait in memory. De-duplication, `resume` and
 the sink see them only when the whole item succeeded. A failed item therefore writes nothing and leaves no
 key behind, so running it again later is safe. `done` receives the records, for a source that files one

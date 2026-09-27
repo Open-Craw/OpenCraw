@@ -329,7 +329,10 @@ await crawler.close()
 
 **Worker mode.** `crawler.work(recipes, source, { windows, classify })` runs work items (`{ id, vars,
 recipe? }`, the vars over the recipe's) from a `WorkSource` (`next`, `done`, `failed`) on a pool of windows,
-until `next` returns `undefined`. Each window is a browser context (or HTTP session) that lives across items
+until `next` returns `undefined`. `createWorkInbox()` is a source fed by pushes: `submit(item, { signal? })`
+resolves with that item's outcome and records, an id queued or running is not run twice, `close()` lets the
+pool run dry, `abort()` rejects what is unfinished; `queued`, `running` and `idle` (windows waiting) tell a
+caller how much to keep in flight. Each window is a browser context (or HTTP session) that lives across items
 and takes the next item as soon as it is free. Top-level steps marked `keep` are skipped when the window
 already did the same (their rendered form); a kept step that runs again forgets the kept steps after it. A
 failed item's window is replaced; `window.check` (an element a reused page must show) and `window.maxItems`
