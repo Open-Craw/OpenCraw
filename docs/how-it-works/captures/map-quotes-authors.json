@@ -1,0 +1,335 @@
+{
+  "scene": "map-quotes-authors",
+  "summary": [
+    {
+      "recipeId": "quote-authors",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 1,
+      "pages": 5
+    }
+  ],
+  "trace": [
+    "▶ quote-authors (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract authorLinks  … ms",
+    "  ⇢ page 1  http://quotes.toscrape.com/author/Albert-Einstein/",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract name  … ms",
+    "    · steps.2.steps.2  extract bornDate  … ms",
+    "    · steps.2.steps.3  extract bornLocation  … ms",
+    "  ✚ record [\"http://quotes.toscrape.com/author/Albert-Einstein/\"]",
+    "  ⇢ page 1  http://quotes.toscrape.com/author/J-K-Rowling/",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract name  … ms",
+    "    · steps.2.steps.2  extract bornDate  … ms",
+    "    · steps.2.steps.3  extract bornLocation  … ms",
+    "  ✚ record [\"http://quotes.toscrape.com/author/J-K-Rowling/\"]",
+    "  ⇢ page 1  http://quotes.toscrape.com/author/Albert-Einstein/",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract name  … ms",
+    "    · steps.2.steps.2  extract bornDate  … ms",
+    "    · steps.2.steps.3  extract bornLocation  … ms",
+    "  ≡ duplicate [\"http://quotes.toscrape.com/author/Albert-Einstein/\"]",
+    "  ⇢ page 1  http://quotes.toscrape.com/author/Jane-Austen/",
+    "    · steps.2.steps.0  request  … ms",
+    "    · steps.2.steps.1  extract name  … ms",
+    "    · steps.2.steps.2  extract bornDate  … ms",
+    "    · steps.2.steps.3  extract bornLocation  … ms",
+    "  ✚ record [\"http://quotes.toscrape.com/author/Jane-Austen/\"]",
+    "  · steps.2  forEach  … ms",
+    "■ quote-authors: 3 emitted, 0 rejected, 1 duplicates, 5 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "http://quotes.toscrape.com/author/Albert-Einstein/",
+      "key": "[\"http://quotes.toscrape.com/author/Albert-Einstein/\"]",
+      "data": {
+        "url": "http://quotes.toscrape.com/author/Albert-Einstein/",
+        "name": "Albert Einstein",
+        "born": "1879-03-14",
+        "bornAsNumber": 141879,
+        "birthplace": "Ulm, Germany",
+        "country": "Germany"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "authorLinks": [
+          "/author/Albert-Einstein",
+          "/author/J-K-Rowling",
+          "/author/Albert-Einstein",
+          "/author/Jane-Austen",
+          "/author/Marilyn-Monroe",
+          "/author/Albert-Einstein",
+          "/author/Andre-Gide",
+          "/author/Thomas-A-Edison",
+          "/author/Eleanor-Roosevelt",
+          "/author/Steve-Martin"
+        ],
+        "page": {
+          "url": "http://quotes.toscrape.com/author/Albert-Einstein/",
+          "number": 1
+        },
+        "link": "/author/Albert-Einstein",
+        "name": "Albert Einstein",
+        "bornDate": "March 14, 1879",
+        "bornLocation": "in Ulm, Germany"
+      },
+      "mapping": {
+        "url": {
+          "from": "http://quotes.toscrape.com/author/Albert-Einstein/",
+          "steps": []
+        },
+        "name": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "born": {
+          "from": "March 14, 1879",
+          "steps": [
+            {
+              "op": "hook",
+              "value": "1879-03-14"
+            },
+            {
+              "op": "date",
+              "value": "1879-03-14T00:00:00.000Z"
+            }
+          ]
+        },
+        "bornAsNumber": {
+          "from": "March 14, 1879",
+          "steps": [
+            {
+              "op": "number",
+              "value": 141879
+            }
+          ]
+        },
+        "birthplace": {
+          "from": "in Ulm, Germany",
+          "steps": [
+            {
+              "op": "replace",
+              "value": "Ulm, Germany"
+            }
+          ]
+        },
+        "country": {
+          "from": "in Ulm, Germany",
+          "steps": [
+            {
+              "op": "split",
+              "value": [
+                "in Ulm",
+                "Germany"
+              ]
+            },
+            {
+              "op": "last",
+              "value": "Germany"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "http://quotes.toscrape.com/author/J-K-Rowling/",
+      "key": "[\"http://quotes.toscrape.com/author/J-K-Rowling/\"]",
+      "data": {
+        "url": "http://quotes.toscrape.com/author/J-K-Rowling/",
+        "name": "J.K. Rowling",
+        "born": "1965-07-31",
+        "bornAsNumber": 311965,
+        "birthplace": "Yate, South Gloucestershire, England, The United Kingdom",
+        "country": "The United Kingdom"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "authorLinks": [
+          "/author/Albert-Einstein",
+          "/author/J-K-Rowling",
+          "/author/Albert-Einstein",
+          "/author/Jane-Austen",
+          "/author/Marilyn-Monroe",
+          "/author/Albert-Einstein",
+          "/author/Andre-Gide",
+          "/author/Thomas-A-Edison",
+          "/author/Eleanor-Roosevelt",
+          "/author/Steve-Martin"
+        ],
+        "page": {
+          "url": "http://quotes.toscrape.com/author/J-K-Rowling/",
+          "number": 1
+        },
+        "link": "/author/J-K-Rowling",
+        "name": "J.K. Rowling",
+        "bornDate": "July 31, 1965",
+        "bornLocation": "in Yate, South Gloucestershire, England, The United Kingdom"
+      },
+      "mapping": {
+        "url": {
+          "from": "http://quotes.toscrape.com/author/J-K-Rowling/",
+          "steps": []
+        },
+        "name": {
+          "from": "J.K. Rowling",
+          "steps": []
+        },
+        "born": {
+          "from": "July 31, 1965",
+          "steps": [
+            {
+              "op": "hook",
+              "value": "1965-07-31"
+            },
+            {
+              "op": "date",
+              "value": "1965-07-31T00:00:00.000Z"
+            }
+          ]
+        },
+        "bornAsNumber": {
+          "from": "July 31, 1965",
+          "steps": [
+            {
+              "op": "number",
+              "value": 311965
+            }
+          ]
+        },
+        "birthplace": {
+          "from": "in Yate, South Gloucestershire, England, The United Kingdom",
+          "steps": [
+            {
+              "op": "replace",
+              "value": "Yate, South Gloucestershire, England, The United Kingdom"
+            }
+          ]
+        },
+        "country": {
+          "from": "in Yate, South Gloucestershire, England, The United Kingdom",
+          "steps": [
+            {
+              "op": "split",
+              "value": [
+                "in Yate",
+                "South Gloucestershire",
+                "England",
+                "The United Kingdom"
+              ]
+            },
+            {
+              "op": "last",
+              "value": "The United Kingdom"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "http://quotes.toscrape.com/author/Jane-Austen/",
+      "key": "[\"http://quotes.toscrape.com/author/Jane-Austen/\"]",
+      "data": {
+        "url": "http://quotes.toscrape.com/author/Jane-Austen/",
+        "name": "Jane Austen",
+        "born": "1775-12-16",
+        "bornAsNumber": 161775,
+        "birthplace": "Steventon Rectory, Hampshire, The United Kingdom",
+        "country": "The United Kingdom"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "authorLinks": [
+          "/author/Albert-Einstein",
+          "/author/J-K-Rowling",
+          "/author/Albert-Einstein",
+          "/author/Jane-Austen",
+          "/author/Marilyn-Monroe",
+          "/author/Albert-Einstein",
+          "/author/Andre-Gide",
+          "/author/Thomas-A-Edison",
+          "/author/Eleanor-Roosevelt",
+          "/author/Steve-Martin"
+        ],
+        "page": {
+          "url": "http://quotes.toscrape.com/author/Jane-Austen/",
+          "number": 1
+        },
+        "link": "/author/Jane-Austen",
+        "name": "Jane Austen",
+        "bornDate": "December 16, 1775",
+        "bornLocation": "in Steventon Rectory, Hampshire, The United Kingdom"
+      },
+      "mapping": {
+        "url": {
+          "from": "http://quotes.toscrape.com/author/Jane-Austen/",
+          "steps": []
+        },
+        "name": {
+          "from": "Jane Austen",
+          "steps": []
+        },
+        "born": {
+          "from": "December 16, 1775",
+          "steps": [
+            {
+              "op": "hook",
+              "value": "1775-12-16"
+            },
+            {
+              "op": "date",
+              "value": "1775-12-16T00:00:00.000Z"
+            }
+          ]
+        },
+        "bornAsNumber": {
+          "from": "December 16, 1775",
+          "steps": [
+            {
+              "op": "number",
+              "value": 161775
+            }
+          ]
+        },
+        "birthplace": {
+          "from": "in Steventon Rectory, Hampshire, The United Kingdom",
+          "steps": [
+            {
+              "op": "replace",
+              "value": "Steventon Rectory, Hampshire, The United Kingdom"
+            }
+          ]
+        },
+        "country": {
+          "from": "in Steventon Rectory, Hampshire, The United Kingdom",
+          "steps": [
+            {
+              "op": "split",
+              "value": [
+                "in Steventon Rectory",
+                "Hampshire",
+                "The United Kingdom"
+              ]
+            },
+            {
+              "op": "last",
+              "value": "The United Kingdom"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

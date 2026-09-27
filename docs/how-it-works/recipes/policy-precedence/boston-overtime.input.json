@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "boston-overtime",
+  "output": "ot-season",
+  "mode": "api",
+  "description": "Boston's seasons 1997 to 2001 on scrapethissite.com: the OT Losses column is empty before 1999, when the league started counting overtime losses.",
+  "start": [{ "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "rows", "selector": "tr.team:nth-child(n+9):nth-child(-n+13)", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "rows", "as": "row", "emit": true, "steps": [
+      { "type": "extract", "id": "name", "from": "row", "selector": "td.name", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "year", "from": "row", "selector": "td.year", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "ot", "from": "row", "selector": "td.ot-losses", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "team": { "from": "name" },
+    "year": { "from": "year" },
+    "otLosses": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }] },
+    "otLossesField": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }] },
+    "otLossesRule": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }], "onMissing": "null" },
+    "otLossesNote": { "from": "ot", "transform": [{ "op": "regex", "pattern": "(\\d+)" }] }
+  }
+}

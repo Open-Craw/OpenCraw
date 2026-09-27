@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "ot-integer",
+  "output": "ot-strict",
+  "mode": "api",
+  "description": "The blank cell through the integer transform: the transform throws, and only the rule's own onMissing is consulted.",
+  "start": [{ "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "rows", "selector": "tr.team:nth-child(n+9):nth-child(-n+13)", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "rows", "as": "row", "emit": true, "steps": [
+      { "type": "extract", "id": "name", "from": "row", "selector": "td.name", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "year", "from": "row", "selector": "td.year", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "ot", "from": "row", "selector": "td.ot-losses", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "team": { "from": "name" },
+    "year": { "from": "year" },
+    "otLosses": { "from": "ot", "transform": [{ "op": "integer" }] }
+  }
+}

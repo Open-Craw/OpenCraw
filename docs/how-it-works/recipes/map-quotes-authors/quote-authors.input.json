@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quote-authors",
+  "output": "author",
+  "mode": "api",
+  "description": "Each quote on quotes.toscrape.com links to its author's page, which gives the birth date as \"March 14, 1879\" and the place as \"in Ulm, Germany\".",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300, "maxRecords": 3 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "authorLinks", "selector": ".quote span a", "kind": "css", "take": "attr:href", "many": true },
+    { "type": "forEach", "over": "authorLinks", "as": "link", "emit": true, "steps": [
+      { "type": "request", "url": "{{link}}" },
+      { "type": "extract", "id": "name", "selector": ".author-title", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "bornDate", "selector": ".author-born-date", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "bornLocation", "selector": ".author-born-location", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "url": { "from": "page.url" },
+    "name": { "from": "name" },
+    "born": { "from": "bornDate", "transform": [{ "op": "hook", "name": "monthDayYear" }, { "op": "date" }] },
+    "bornAsNumber": { "from": "bornDate", "transform": [{ "op": "number" }] },
+    "birthplace": { "from": "bornLocation", "transform": [{ "op": "replace", "pattern": "^in ", "replacement": "" }] },
+    "country": { "from": "bornLocation", "transform": [{ "op": "split", "separator": ", " }, { "op": "last" }] }
+  }
+}

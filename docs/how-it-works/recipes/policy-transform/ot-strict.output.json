@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "ot-strict",
+  "version": 1,
+  "onMissing": "skip-record",
+  "fields": {
+    "team": { "type": "string", "required": true },
+    "year": { "type": "integer", "required": true },
+    "otLosses": { "type": "integer" }
+  }
+}

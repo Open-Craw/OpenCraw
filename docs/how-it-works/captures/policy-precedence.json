@@ -1,0 +1,430 @@
+{
+  "scene": "policy-precedence",
+  "summary": [
+    {
+      "recipeId": "boston-overtime",
+      "emitted": 5,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ boston-overtime (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract rows  … ms",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "    · steps.2.steps.0  extract name  … ms",
+    "    · steps.2.steps.1  extract year  … ms",
+    "    · steps.2.steps.2  extract ot  … ms",
+    "  ✚ record (no key)",
+    "  · steps.2  forEach  … ms",
+    "■ boston-overtime: 5 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 1997,
+        "otLosses": 0,
+        "otLossesField": null,
+        "otLossesRule": null,
+        "otLossesNote": "not recorded"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            221\n                        </td>\n                        <td class=\"ga\">\n                            194\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            27\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            214\n                        </td>\n                        <td class=\"ga\">\n                            181\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            33\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.293\n                        </td>\n                        \n                        <td class=\"gf\">\n                            210\n                        </td>\n                        <td class=\"ga\">\n                            248\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -38\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.439\n                        </td>\n                        \n                        <td class=\"gf\">\n                            227\n                        </td>\n                        <td class=\"ga\">\n                            249\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -22\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n                        <td class=\"pct text-success\">\n                            0.524\n                        </td>\n                        \n                        <td class=\"gf\">\n                            236\n                        </td>\n                        <td class=\"ga\">\n                            201\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            35\n                        </td>\n                        \n                    "
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            221\n                        </td>\n                        <td class=\"ga\">\n                            194\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            27\n                        </td>\n                        \n                    ",
+        "name": "Boston Bruins",
+        "year": "1997",
+        "ot": ""
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "1997",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        },
+        "otLossesField": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        },
+        "otLossesRule": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        },
+        "otLossesNote": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 1998,
+        "otLosses": 0,
+        "otLossesField": null,
+        "otLossesRule": null,
+        "otLossesNote": "not recorded"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            221\n                        </td>\n                        <td class=\"ga\">\n                            194\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            27\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            214\n                        </td>\n                        <td class=\"ga\">\n                            181\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            33\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.293\n                        </td>\n                        \n                        <td class=\"gf\">\n                            210\n                        </td>\n                        <td class=\"ga\">\n                            248\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -38\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.439\n                        </td>\n                        \n                        <td class=\"gf\">\n                            227\n                        </td>\n                        <td class=\"ga\">\n                            249\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -22\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n                        <td class=\"pct text-success\">\n                            0.524\n                        </td>\n                        \n                        <td class=\"gf\">\n                            236\n                        </td>\n                        <td class=\"ga\">\n                            201\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            35\n                        </td>\n                        \n                    "
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            214\n                        </td>\n                        <td class=\"ga\">\n                            181\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            33\n                        </td>\n                        \n                    ",
+        "name": "Boston Bruins",
+        "year": "1998",
+        "ot": ""
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "1998",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        },
+        "otLossesField": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        },
+        "otLossesRule": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        },
+        "otLossesNote": {
+          "from": "",
+          "steps": [
+            {
+              "op": "regex"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 1999,
+        "otLosses": 6,
+        "otLossesField": 6,
+        "otLossesRule": 6,
+        "otLossesNote": 6
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            221\n                        </td>\n                        <td class=\"ga\">\n                            194\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            27\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            214\n                        </td>\n                        <td class=\"ga\">\n                            181\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            33\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.293\n                        </td>\n                        \n                        <td class=\"gf\">\n                            210\n                        </td>\n                        <td class=\"ga\">\n                            248\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -38\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.439\n                        </td>\n                        \n                        <td class=\"gf\">\n                            227\n                        </td>\n                        <td class=\"ga\">\n                            249\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -22\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n                        <td class=\"pct text-success\">\n                            0.524\n                        </td>\n                        \n                        <td class=\"gf\">\n                            236\n                        </td>\n                        <td class=\"ga\">\n                            201\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            35\n                        </td>\n                        \n                    "
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.293\n                        </td>\n                        \n                        <td class=\"gf\">\n                            210\n                        </td>\n                        <td class=\"ga\">\n                            248\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -38\n                        </td>\n                        \n                    ",
+        "name": "Boston Bruins",
+        "year": "1999",
+        "ot": "6"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "1999",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "6",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "6"
+            }
+          ]
+        },
+        "otLossesField": {
+          "from": "6",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "6"
+            }
+          ]
+        },
+        "otLossesRule": {
+          "from": "6",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "6"
+            }
+          ]
+        },
+        "otLossesNote": {
+          "from": "6",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 2000,
+        "otLosses": 8,
+        "otLossesField": 8,
+        "otLossesRule": 8,
+        "otLossesNote": 8
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            221\n                        </td>\n                        <td class=\"ga\">\n                            194\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            27\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            214\n                        </td>\n                        <td class=\"ga\">\n                            181\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            33\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.293\n                        </td>\n                        \n                        <td class=\"gf\">\n                            210\n                        </td>\n                        <td class=\"ga\">\n                            248\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -38\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.439\n                        </td>\n                        \n                        <td class=\"gf\">\n                            227\n                        </td>\n                        <td class=\"ga\">\n                            249\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -22\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n                        <td class=\"pct text-success\">\n                            0.524\n                        </td>\n                        \n                        <td class=\"gf\">\n                            236\n                        </td>\n                        <td class=\"ga\">\n                            201\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            35\n                        </td>\n                        \n                    "
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.439\n                        </td>\n                        \n                        <td class=\"gf\">\n                            227\n                        </td>\n                        <td class=\"ga\">\n                            249\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -22\n                        </td>\n                        \n                    ",
+        "name": "Boston Bruins",
+        "year": "2000",
+        "ot": "8"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "2000",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "8",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "8"
+            }
+          ]
+        },
+        "otLossesField": {
+          "from": "8",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "8"
+            }
+          ]
+        },
+        "otLossesRule": {
+          "from": "8",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "8"
+            }
+          ]
+        },
+        "otLossesNote": {
+          "from": "8",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+      "key": null,
+      "data": {
+        "team": "Boston Bruins",
+        "year": 2001,
+        "otLosses": 9,
+        "otLossesField": 9,
+        "otLossesRule": 9,
+        "otLossesNote": 9
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25"
+        },
+        "rows": [
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1997\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            221\n                        </td>\n                        <td class=\"ga\">\n                            194\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            27\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1998\n                        </td>\n                        <td class=\"wins\">\n                            39\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            \n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.476\n                        </td>\n                        \n                        <td class=\"gf\">\n                            214\n                        </td>\n                        <td class=\"ga\">\n                            181\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            33\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            1999\n                        </td>\n                        <td class=\"wins\">\n                            24\n                        </td>\n                        <td class=\"losses\">\n                            33\n                        </td>\n                        <td class=\"ot-losses\">\n                            6\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.293\n                        </td>\n                        \n                        <td class=\"gf\">\n                            210\n                        </td>\n                        <td class=\"ga\">\n                            248\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -38\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2000\n                        </td>\n                        <td class=\"wins\">\n                            36\n                        </td>\n                        <td class=\"losses\">\n                            30\n                        </td>\n                        <td class=\"ot-losses\">\n                            8\n                        </td>\n                        \n                        \n                        <td class=\"pct text-danger\">\n                            0.439\n                        </td>\n                        \n                        <td class=\"gf\">\n                            227\n                        </td>\n                        <td class=\"ga\">\n                            249\n                        </td>\n                        \n                        \n                        <td class=\"diff text-danger\">\n                            -22\n                        </td>\n                        \n                    ",
+          "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n                        <td class=\"pct text-success\">\n                            0.524\n                        </td>\n                        \n                        <td class=\"gf\">\n                            236\n                        </td>\n                        <td class=\"ga\">\n                            201\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            35\n                        </td>\n                        \n                    "
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?q=Boston&per_page=25",
+          "number": 1
+        },
+        "row": "\n                        <td class=\"name\">\n                            Boston Bruins\n                        </td>\n                        <td class=\"year\">\n                            2001\n                        </td>\n                        <td class=\"wins\">\n                            43\n                        </td>\n                        <td class=\"losses\">\n                            24\n                        </td>\n                        <td class=\"ot-losses\">\n                            9\n                        </td>\n                        \n                        \n                        <td class=\"pct text-success\">\n                            0.524\n                        </td>\n                        \n                        <td class=\"gf\">\n                            236\n                        </td>\n                        <td class=\"ga\">\n                            201\n                        </td>\n                        \n                        \n                        <td class=\"diff text-success\">\n                            35\n                        </td>\n                        \n                    ",
+        "name": "Boston Bruins",
+        "year": "2001",
+        "ot": "9"
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "2001",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "9",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "9"
+            }
+          ]
+        },
+        "otLossesField": {
+          "from": "9",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "9"
+            }
+          ]
+        },
+        "otLossesRule": {
+          "from": "9",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "9"
+            }
+          ]
+        },
+        "otLossesNote": {
+          "from": "9",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "9"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

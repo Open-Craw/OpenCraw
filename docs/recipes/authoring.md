@@ -949,8 +949,9 @@ annotate every row of a nested list:
 ```
 
 An item key with the same name as a record id wins. `from` inside `fields` stays relative to the item. Applied to a list, `lookup` runs per item. `group` goes the other way: one list of
-rows becomes one item per distinct key, for an output field that is an array of objects (`each` over the
-groups).
+rows becomes one `{ key, items }` per distinct key. Map the result straight into an `array` of `object` field
+(members `key` and `items`) or a `json` field: `each` can't walk it, since `each` reads a list bound in the
+scope, not a transform's output.
 
 ---
 

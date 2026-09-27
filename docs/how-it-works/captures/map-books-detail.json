@@ -1,0 +1,1011 @@
+{
+  "scene": "map-books-detail",
+  "summary": [
+    {
+      "recipeId": "mystery-detail",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 4
+    }
+  ],
+  "trace": [
+    "▶ mystery-detail (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  set starWords  … ms",
+    "  · steps.2  extract links  … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+    "    · steps.3.steps.0  request  … ms",
+    "    · steps.3.steps.1  extract title  … ms",
+    "    · steps.3.steps.2  extract price  … ms",
+    "    · steps.3.steps.3  extract availability  … ms",
+    "    · steps.3.steps.4  extract rating  … ms",
+    "    · steps.3.steps.5  extract info  … ms",
+    "    · steps.3.steps.6  extract crumbs  … ms",
+    "    · steps.3.steps.7  extract image  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/sharp-objects_997/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+    "    · steps.3.steps.0  request  … ms",
+    "    · steps.3.steps.1  extract title  … ms",
+    "    · steps.3.steps.2  extract price  … ms",
+    "    · steps.3.steps.3  extract availability  … ms",
+    "    · steps.3.steps.4  extract rating  … ms",
+    "    · steps.3.steps.5  extract info  … ms",
+    "    · steps.3.steps.6  extract crumbs  … ms",
+    "    · steps.3.steps.7  extract image  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html\"]",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+    "    · steps.3.steps.0  request  … ms",
+    "    · steps.3.steps.1  extract title  … ms",
+    "    · steps.3.steps.2  extract price  … ms",
+    "    · steps.3.steps.3  extract availability  … ms",
+    "    · steps.3.steps.4  extract rating  … ms",
+    "    · steps.3.steps.5  extract info  … ms",
+    "    · steps.3.steps.6  extract crumbs  … ms",
+    "    · steps.3.steps.7  extract image  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html\"]",
+    "  · steps.3  forEach  … ms",
+    "■ mystery-detail: 3 emitted, 0 rejected, 0 duplicates, 4 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/sharp-objects_997/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+        "title": "Sharp Objects",
+        "slug": "sharp-objects",
+        "upc": "E00EB4FD7B871A48",
+        "category": "Mystery",
+        "path": "Books / Mystery",
+        "price": {
+          "amount": 47.82,
+          "currency": "GBP"
+        },
+        "tax": {
+          "amount": 0,
+          "currency": "GBP"
+        },
+        "stock": {
+          "inStock": true,
+          "available": 20
+        },
+        "stars": 4,
+        "reviews": 0,
+        "hasReviews": false,
+        "image": "https://books.toscrape.com/media/cache/c0/59/c05972805aa7201171b8fc71a5b00292.jpg"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "starWords": [
+          {
+            "word": "One",
+            "n": 1
+          },
+          {
+            "word": "Two",
+            "n": 2
+          },
+          {
+            "word": "Three",
+            "n": 3
+          },
+          {
+            "word": "Four",
+            "n": 4
+          },
+          {
+            "word": "Five",
+            "n": 5
+          }
+        ],
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "../../../poisonous-max-revere-novels-3_627/index.html",
+          "../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html",
+          "../../../most-wanted_623/index.html",
+          "../../../hide-away-eve-duncan-20_620/index.html",
+          "../../../boar-island-anna-pigeon-19_613/index.html",
+          "../../../the-widow_609/index.html",
+          "../../../playing-with-fire_602/index.html",
+          "../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html",
+          "../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html",
+          "../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "link": "../../../sharp-objects_997/index.html",
+        "title": "Sharp Objects",
+        "price": "£47.82",
+        "availability": "In stock (20 available)",
+        "rating": "star-rating Four",
+        "info": [
+          "e00eb4fd7b871a48",
+          "Books",
+          "£47.82",
+          "£47.82",
+          "£0.00",
+          "In stock (20 available)",
+          "0"
+        ],
+        "crumbs": [
+          "Home",
+          "Books",
+          "Mystery",
+          "Sharp Objects"
+        ],
+        "image": "../../media/cache/c0/59/c05972805aa7201171b8fc71a5b00292.jpg"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "slug": {
+          "from": "Sharp Objects",
+          "steps": [
+            {
+              "op": "lowercase",
+              "value": "sharp objects"
+            },
+            {
+              "op": "replace",
+              "value": "sharp-objects"
+            }
+          ]
+        },
+        "upc": {
+          "from": [
+            "e00eb4fd7b871a48",
+            "Books",
+            "£47.82",
+            "£47.82",
+            "£0.00",
+            "In stock (20 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "e00eb4fd7b871a48"
+            },
+            {
+              "op": "uppercase",
+              "value": "E00EB4FD7B871A48"
+            }
+          ]
+        },
+        "category": {
+          "from": [
+            "Home",
+            "Books",
+            "Mystery",
+            "Sharp Objects"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "Mystery"
+            }
+          ]
+        },
+        "path": {
+          "from": [
+            "Home",
+            "Books",
+            "Mystery",
+            "Sharp Objects"
+          ],
+          "steps": [
+            {
+              "op": "slice",
+              "value": [
+                "Books",
+                "Mystery"
+              ]
+            },
+            {
+              "op": "join",
+              "value": "Books / Mystery"
+            }
+          ]
+        },
+        "price": {
+          "from": "£47.82",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 47.82,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "tax": {
+          "from": [
+            "e00eb4fd7b871a48",
+            "Books",
+            "£47.82",
+            "£47.82",
+            "£0.00",
+            "In stock (20 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "£0.00"
+            },
+            {
+              "op": "regex",
+              "value": "0.00"
+            },
+            {
+              "op": "currency",
+              "value": {
+                "amount": 0
+              }
+            }
+          ]
+        },
+        "stock.inStock": {
+          "from": "In stock (20 available)",
+          "steps": [
+            {
+              "op": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "stock.available": {
+          "from": [
+            "e00eb4fd7b871a48",
+            "Books",
+            "£47.82",
+            "£47.82",
+            "£0.00",
+            "In stock (20 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "In stock (20 available)"
+            },
+            {
+              "op": "regex",
+              "value": "20"
+            },
+            {
+              "op": "integer",
+              "value": 20
+            }
+          ]
+        },
+        "stars": {
+          "from": "star-rating Four",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "Four"
+            },
+            {
+              "op": "lookup",
+              "value": 4
+            }
+          ]
+        },
+        "reviews": {
+          "from": [
+            "e00eb4fd7b871a48",
+            "Books",
+            "£47.82",
+            "£47.82",
+            "£0.00",
+            "In stock (20 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "last",
+              "value": "0"
+            },
+            {
+              "op": "integer",
+              "value": 0
+            }
+          ]
+        },
+        "hasReviews": {
+          "from": [
+            "e00eb4fd7b871a48",
+            "Books",
+            "£47.82",
+            "£47.82",
+            "£0.00",
+            "In stock (20 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "last",
+              "value": "0"
+            },
+            {
+              "op": "boolean",
+              "value": false
+            }
+          ]
+        },
+        "image": {
+          "from": "../../media/cache/c0/59/c05972805aa7201171b8fc71a5b00292.jpg",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/media/cache/c0/59/c05972805aa7201171b8fc71a5b00292.jpg"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+        "title": "In a Dark, Dark Wood",
+        "slug": "in-a-dark-dark-wood",
+        "upc": "19ED25F4641D5EFD",
+        "category": "Mystery",
+        "path": "Books / Mystery",
+        "price": {
+          "amount": 19.63,
+          "currency": "GBP"
+        },
+        "tax": {
+          "amount": 0,
+          "currency": "GBP"
+        },
+        "stock": {
+          "inStock": true,
+          "available": 18
+        },
+        "stars": 1,
+        "reviews": 0,
+        "hasReviews": false,
+        "image": "https://books.toscrape.com/media/cache/95/84/95840dfd67c020067c99d70451147e20.jpg"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "starWords": [
+          {
+            "word": "One",
+            "n": 1
+          },
+          {
+            "word": "Two",
+            "n": 2
+          },
+          {
+            "word": "Three",
+            "n": 3
+          },
+          {
+            "word": "Four",
+            "n": 4
+          },
+          {
+            "word": "Five",
+            "n": 5
+          }
+        ],
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "../../../poisonous-max-revere-novels-3_627/index.html",
+          "../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html",
+          "../../../most-wanted_623/index.html",
+          "../../../hide-away-eve-duncan-20_620/index.html",
+          "../../../boar-island-anna-pigeon-19_613/index.html",
+          "../../../the-widow_609/index.html",
+          "../../../playing-with-fire_602/index.html",
+          "../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html",
+          "../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html",
+          "../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+          "number": 1
+        },
+        "link": "../../../in-a-dark-dark-wood_963/index.html",
+        "title": "In a Dark, Dark Wood",
+        "price": "£19.63",
+        "availability": "In stock (18 available)",
+        "rating": "star-rating One",
+        "info": [
+          "19ed25f4641d5efd",
+          "Books",
+          "£19.63",
+          "£19.63",
+          "£0.00",
+          "In stock (18 available)",
+          "0"
+        ],
+        "crumbs": [
+          "Home",
+          "Books",
+          "Mystery",
+          "In a Dark, Dark Wood"
+        ],
+        "image": "../../media/cache/95/84/95840dfd67c020067c99d70451147e20.jpg"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "In a Dark, Dark Wood",
+          "steps": []
+        },
+        "slug": {
+          "from": "In a Dark, Dark Wood",
+          "steps": [
+            {
+              "op": "lowercase",
+              "value": "in a dark, dark wood"
+            },
+            {
+              "op": "replace",
+              "value": "in-a-dark-dark-wood"
+            }
+          ]
+        },
+        "upc": {
+          "from": [
+            "19ed25f4641d5efd",
+            "Books",
+            "£19.63",
+            "£19.63",
+            "£0.00",
+            "In stock (18 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "19ed25f4641d5efd"
+            },
+            {
+              "op": "uppercase",
+              "value": "19ED25F4641D5EFD"
+            }
+          ]
+        },
+        "category": {
+          "from": [
+            "Home",
+            "Books",
+            "Mystery",
+            "In a Dark, Dark Wood"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "Mystery"
+            }
+          ]
+        },
+        "path": {
+          "from": [
+            "Home",
+            "Books",
+            "Mystery",
+            "In a Dark, Dark Wood"
+          ],
+          "steps": [
+            {
+              "op": "slice",
+              "value": [
+                "Books",
+                "Mystery"
+              ]
+            },
+            {
+              "op": "join",
+              "value": "Books / Mystery"
+            }
+          ]
+        },
+        "price": {
+          "from": "£19.63",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 19.63,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "tax": {
+          "from": [
+            "19ed25f4641d5efd",
+            "Books",
+            "£19.63",
+            "£19.63",
+            "£0.00",
+            "In stock (18 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "£0.00"
+            },
+            {
+              "op": "regex",
+              "value": "0.00"
+            },
+            {
+              "op": "currency",
+              "value": {
+                "amount": 0
+              }
+            }
+          ]
+        },
+        "stock.inStock": {
+          "from": "In stock (18 available)",
+          "steps": [
+            {
+              "op": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "stock.available": {
+          "from": [
+            "19ed25f4641d5efd",
+            "Books",
+            "£19.63",
+            "£19.63",
+            "£0.00",
+            "In stock (18 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "In stock (18 available)"
+            },
+            {
+              "op": "regex",
+              "value": "18"
+            },
+            {
+              "op": "integer",
+              "value": 18
+            }
+          ]
+        },
+        "stars": {
+          "from": "star-rating One",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "One"
+            },
+            {
+              "op": "lookup",
+              "value": 1
+            }
+          ]
+        },
+        "reviews": {
+          "from": [
+            "19ed25f4641d5efd",
+            "Books",
+            "£19.63",
+            "£19.63",
+            "£0.00",
+            "In stock (18 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "last",
+              "value": "0"
+            },
+            {
+              "op": "integer",
+              "value": 0
+            }
+          ]
+        },
+        "hasReviews": {
+          "from": [
+            "19ed25f4641d5efd",
+            "Books",
+            "£19.63",
+            "£19.63",
+            "£0.00",
+            "In stock (18 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "last",
+              "value": "0"
+            },
+            {
+              "op": "boolean",
+              "value": false
+            }
+          ]
+        },
+        "image": {
+          "from": "../../media/cache/95/84/95840dfd67c020067c99d70451147e20.jpg",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/media/cache/95/84/95840dfd67c020067c99d70451147e20.jpg"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+        "title": "The Past Never Ends",
+        "slug": "the-past-never-ends",
+        "upc": "5EE94540D0749EA0",
+        "category": "Mystery",
+        "path": "Books / Mystery",
+        "price": {
+          "amount": 56.5,
+          "currency": "GBP"
+        },
+        "tax": {
+          "amount": 0,
+          "currency": "GBP"
+        },
+        "stock": {
+          "inStock": true,
+          "available": 16
+        },
+        "stars": 4,
+        "reviews": 0,
+        "hasReviews": false,
+        "image": "https://books.toscrape.com/media/cache/9d/f2/9df248dcefeaba9eeb519a59b248f72c.jpg"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "starWords": [
+          {
+            "word": "One",
+            "n": 1
+          },
+          {
+            "word": "Two",
+            "n": 2
+          },
+          {
+            "word": "Three",
+            "n": 3
+          },
+          {
+            "word": "Four",
+            "n": 4
+          },
+          {
+            "word": "Five",
+            "n": 5
+          }
+        ],
+        "links": [
+          "../../../sharp-objects_997/index.html",
+          "../../../in-a-dark-dark-wood_963/index.html",
+          "../../../the-past-never-ends_942/index.html",
+          "../../../a-murder-in-time_877/index.html",
+          "../../../the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html",
+          "../../../the-last-mile-amos-decker-2_754/index.html",
+          "../../../that-darkness-gardiner-and-renner-1_743/index.html",
+          "../../../tastes-like-fear-di-marnie-rome-3_742/index.html",
+          "../../../a-time-of-torment-charlie-parker-14_657/index.html",
+          "../../../a-study-in-scarlet-sherlock-holmes-1_656/index.html",
+          "../../../poisonous-max-revere-novels-3_627/index.html",
+          "../../../murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html",
+          "../../../most-wanted_623/index.html",
+          "../../../hide-away-eve-duncan-20_620/index.html",
+          "../../../boar-island-anna-pigeon-19_613/index.html",
+          "../../../the-widow_609/index.html",
+          "../../../playing-with-fire_602/index.html",
+          "../../../what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html",
+          "../../../the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html",
+          "../../../delivering-the-truth-quaker-midwife-mystery-1_464/index.html"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+          "number": 1
+        },
+        "link": "../../../the-past-never-ends_942/index.html",
+        "title": "The Past Never Ends",
+        "price": "£56.50",
+        "availability": "In stock (16 available)",
+        "rating": "star-rating Four",
+        "info": [
+          "5ee94540d0749ea0",
+          "Books",
+          "£56.50",
+          "£56.50",
+          "£0.00",
+          "In stock (16 available)",
+          "0"
+        ],
+        "crumbs": [
+          "Home",
+          "Books",
+          "Mystery",
+          "The Past Never Ends"
+        ],
+        "image": "../../media/cache/9d/f2/9df248dcefeaba9eeb519a59b248f72c.jpg"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "The Past Never Ends",
+          "steps": []
+        },
+        "slug": {
+          "from": "The Past Never Ends",
+          "steps": [
+            {
+              "op": "lowercase",
+              "value": "the past never ends"
+            },
+            {
+              "op": "replace",
+              "value": "the-past-never-ends"
+            }
+          ]
+        },
+        "upc": {
+          "from": [
+            "5ee94540d0749ea0",
+            "Books",
+            "£56.50",
+            "£56.50",
+            "£0.00",
+            "In stock (16 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "5ee94540d0749ea0"
+            },
+            {
+              "op": "uppercase",
+              "value": "5EE94540D0749EA0"
+            }
+          ]
+        },
+        "category": {
+          "from": [
+            "Home",
+            "Books",
+            "Mystery",
+            "The Past Never Ends"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "Mystery"
+            }
+          ]
+        },
+        "path": {
+          "from": [
+            "Home",
+            "Books",
+            "Mystery",
+            "The Past Never Ends"
+          ],
+          "steps": [
+            {
+              "op": "slice",
+              "value": [
+                "Books",
+                "Mystery"
+              ]
+            },
+            {
+              "op": "join",
+              "value": "Books / Mystery"
+            }
+          ]
+        },
+        "price": {
+          "from": "£56.50",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 56.5,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "tax": {
+          "from": [
+            "5ee94540d0749ea0",
+            "Books",
+            "£56.50",
+            "£56.50",
+            "£0.00",
+            "In stock (16 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "£0.00"
+            },
+            {
+              "op": "regex",
+              "value": "0.00"
+            },
+            {
+              "op": "currency",
+              "value": {
+                "amount": 0
+              }
+            }
+          ]
+        },
+        "stock.inStock": {
+          "from": "In stock (16 available)",
+          "steps": [
+            {
+              "op": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "stock.available": {
+          "from": [
+            "5ee94540d0749ea0",
+            "Books",
+            "£56.50",
+            "£56.50",
+            "£0.00",
+            "In stock (16 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "nth",
+              "value": "In stock (16 available)"
+            },
+            {
+              "op": "regex",
+              "value": "16"
+            },
+            {
+              "op": "integer",
+              "value": 16
+            }
+          ]
+        },
+        "stars": {
+          "from": "star-rating Four",
+          "steps": [
+            {
+              "op": "regex",
+              "value": "Four"
+            },
+            {
+              "op": "lookup",
+              "value": 4
+            }
+          ]
+        },
+        "reviews": {
+          "from": [
+            "5ee94540d0749ea0",
+            "Books",
+            "£56.50",
+            "£56.50",
+            "£0.00",
+            "In stock (16 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "last",
+              "value": "0"
+            },
+            {
+              "op": "integer",
+              "value": 0
+            }
+          ]
+        },
+        "hasReviews": {
+          "from": [
+            "5ee94540d0749ea0",
+            "Books",
+            "£56.50",
+            "£56.50",
+            "£0.00",
+            "In stock (16 available)",
+            "0"
+          ],
+          "steps": [
+            {
+              "op": "last",
+              "value": "0"
+            },
+            {
+              "op": "boolean",
+              "value": false
+            }
+          ]
+        },
+        "image": {
+          "from": "../../media/cache/9d/f2/9df248dcefeaba9eeb519a59b248f72c.jpg",
+          "steps": [
+            {
+              "op": "absoluteUrl",
+              "value": "https://books.toscrape.com/media/cache/9d/f2/9df248dcefeaba9eeb519a59b248f72c.jpg"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

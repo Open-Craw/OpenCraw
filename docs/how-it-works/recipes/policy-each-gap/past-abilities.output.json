@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "past-abilities",
+  "version": 1,
+  "fields": {
+    "name": { "type": "string", "required": true, "key": true },
+    "pastAbilities": { "type": "array", "items": { "type": "object", "fields": {
+      "name": { "type": "string", "required": true },
+      "slot": { "type": "integer" },
+      "until": { "type": "string" }
+    }}}
+  }
+}

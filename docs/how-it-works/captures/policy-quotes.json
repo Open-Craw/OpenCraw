@@ -1,0 +1,1749 @@
+{
+  "scene": "policy-quotes",
+  "summary": [
+    {
+      "recipeId": "quotes-reject",
+      "emitted": 19,
+      "rejected": 1,
+      "duplicates": 0,
+      "pages": 2
+    },
+    {
+      "recipeId": "quotes-skip-step",
+      "emitted": 17,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2
+    },
+    {
+      "recipeId": "quotes-stop",
+      "emitted": 7,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.2 (forEach) failed: mapping failed: mainTag: missing"
+    }
+  ],
+  "trace": [
+    "▶ quotes-reject (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/api/quotes?page=3",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract quotes  … ms",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✖ record rejected: mainTag: missing",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  · steps.2  forEach  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/api/quotes?page=4",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract quotes  … ms",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  · steps.2  forEach  … ms",
+    "■ quotes-reject: 19 emitted, 1 rejected, 0 duplicates, 2 pages, … ms",
+    "▶ quotes-skip-step (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/api/quotes?page=3",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract quotes  … ms",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ↷ steps.2  forEach  skipped: mapping failed: mainTag: missing",
+    "  ⇢ page 1  https://quotes.toscrape.com/api/quotes?page=4",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract quotes  … ms",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  · steps.2  forEach  … ms",
+    "■ quotes-skip-step: 17 emitted, 0 rejected, 0 duplicates, 1 steps skipped, 2 pages, … ms",
+    "▶ quotes-stop (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/api/quotes?page=3",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract quotes  … ms",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✚ record (no key)",
+    "  ✖ step steps.2 (forEach) failed: mapping failed: mainTag: missing",
+    "■ quotes-stop: 7 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: mainTag: missing"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”",
+        "author": "Pablo Neruda",
+        "mainTag": "love"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/4026.Pablo_Neruda",
+            "name": "Pablo Neruda",
+            "slug": "Pablo-Neruda"
+          },
+          "tags": [
+            "love",
+            "poetry"
+          ],
+          "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Pablo Neruda",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "love",
+            "poetry"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "love"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“For every minute you are angry you lose sixty seconds of happiness.”",
+        "author": "Ralph Waldo Emerson",
+        "mainTag": "happiness"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+            "name": "Ralph Waldo Emerson",
+            "slug": "Ralph-Waldo-Emerson"
+          },
+          "tags": [
+            "happiness"
+          ],
+          "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“For every minute you are angry you lose sixty seconds of happiness.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Ralph Waldo Emerson",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "happiness"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "happiness"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“If you judge people, you have no time to love them.”",
+        "author": "Mother Teresa",
+        "mainTag": "attributed-no-source"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/838305.Mother_Teresa",
+            "name": "Mother Teresa",
+            "slug": "Mother-Teresa"
+          },
+          "tags": [
+            "attributed-no-source"
+          ],
+          "text": "“If you judge people, you have no time to love them.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“If you judge people, you have no time to love them.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Mother Teresa",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "attributed-no-source"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "attributed-no-source"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”",
+        "author": "Garrison Keillor",
+        "mainTag": "humor"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/2014.Garrison_Keillor",
+            "name": "Garrison Keillor",
+            "slug": "Garrison-Keillor"
+          },
+          "tags": [
+            "humor",
+            "religion"
+          ],
+          "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Garrison Keillor",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "humor",
+            "religion"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "humor"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”",
+        "author": "Jim Henson",
+        "mainTag": "humor"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/4427.Jim_Henson",
+            "name": "Jim Henson",
+            "slug": "Jim-Henson"
+          },
+          "tags": [
+            "humor"
+          ],
+          "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Jim Henson",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "humor"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "humor"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”",
+        "author": "Dr. Seuss",
+        "mainTag": "comedy"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/61105.Dr_Seuss",
+            "name": "Dr. Seuss",
+            "slug": "Dr-Seuss"
+          },
+          "tags": [
+            "comedy",
+            "life",
+            "yourself"
+          ],
+          "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Dr. Seuss",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "comedy",
+            "life",
+            "yourself"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "comedy"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”",
+        "author": "Albert Einstein",
+        "mainTag": "children"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/9810.Albert_Einstein",
+            "name": "Albert Einstein",
+            "slug": "Albert-Einstein"
+          },
+          "tags": [
+            "children",
+            "fairy-tales"
+          ],
+          "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "children",
+            "fairy-tales"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "children"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "rejected": {
+        "field": "mainTag",
+        "reason": "missing"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/1077326.J_K_Rowling",
+            "name": "J.K. Rowling",
+            "slug": "J-K-Rowling"
+          },
+          "tags": [],
+          "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“Logic will get you from A to Z; imagination will get you everywhere.”",
+        "author": "Albert Einstein",
+        "mainTag": "imagination"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/9810.Albert_Einstein",
+            "name": "Albert Einstein",
+            "slug": "Albert-Einstein"
+          },
+          "tags": [
+            "imagination"
+          ],
+          "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“Logic will get you from A to Z; imagination will get you everywhere.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "imagination"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "imagination"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=3",
+      "key": null,
+      "data": {
+        "text": "“One good thing about music, when it hits you, you feel no pain.”",
+        "author": "Bob Marley",
+        "mainTag": "music"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3"
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/4026.Pablo_Neruda",
+              "name": "Pablo Neruda",
+              "slug": "Pablo-Neruda"
+            },
+            "tags": [
+              "love",
+              "poetry"
+            ],
+            "text": "“I love you without knowing how, or when, or from where. I love you simply, without problems or pride: I love you in this way because I do not know any other way of loving but this, in which there is no I or you, so intimate that your hand upon my chest is my hand, so intimate that when I fall asleep your eyes close.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/12080.Ralph_Waldo_Emerson",
+              "name": "Ralph Waldo Emerson",
+              "slug": "Ralph-Waldo-Emerson"
+            },
+            "tags": [
+              "happiness"
+            ],
+            "text": "“For every minute you are angry you lose sixty seconds of happiness.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/838305.Mother_Teresa",
+              "name": "Mother Teresa",
+              "slug": "Mother-Teresa"
+            },
+            "tags": [
+              "attributed-no-source"
+            ],
+            "text": "“If you judge people, you have no time to love them.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/2014.Garrison_Keillor",
+              "name": "Garrison Keillor",
+              "slug": "Garrison-Keillor"
+            },
+            "tags": [
+              "humor",
+              "religion"
+            ],
+            "text": "“Anyone who thinks sitting in church can make you a Christian must also think that sitting in a garage can make you a car.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/4427.Jim_Henson",
+              "name": "Jim Henson",
+              "slug": "Jim-Henson"
+            },
+            "tags": [
+              "humor"
+            ],
+            "text": "“Beauty is in the eye of the beholder and it may be necessary from time to time to give a stupid or misinformed beholder a black eye.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/61105.Dr_Seuss",
+              "name": "Dr. Seuss",
+              "slug": "Dr-Seuss"
+            },
+            "tags": [
+              "comedy",
+              "life",
+              "yourself"
+            ],
+            "text": "“Today you are You, that is truer than true. There is no one alive who is Youer than You.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "children",
+              "fairy-tales"
+            ],
+            "text": "“If you want your children to be intelligent, read them fairy tales. If you want them to be more intelligent, read them more fairy tales.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [],
+            "text": "“It is impossible to live without failing at something, unless you live so cautiously that you might as well not have lived at all - in which case, you fail by default.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "imagination"
+            ],
+            "text": "“Logic will get you from A to Z; imagination will get you everywhere.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/25241.Bob_Marley",
+              "name": "Bob Marley",
+              "slug": "Bob-Marley"
+            },
+            "tags": [
+              "music"
+            ],
+            "text": "“One good thing about music, when it hits you, you feel no pain.”"
+          }
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=3",
+          "number": 1
+        },
+        "quote": {
+          "author": {
+            "goodreads_link": "/author/show/25241.Bob_Marley",
+            "name": "Bob Marley",
+            "slug": "Bob-Marley"
+          },
+          "tags": [
+            "music"
+          ],
+          "text": "“One good thing about music, when it hits you, you feel no pain.”"
+        }
+      },
+      "mapping": {
+        "text": {
+          "from": "“One good thing about music, when it hits you, you feel no pain.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Bob Marley",
+          "steps": []
+        },
+        "mainTag": {
+          "from": [
+            "music"
+          ],
+          "steps": [
+            {
+              "op": "first",
+              "value": "music"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

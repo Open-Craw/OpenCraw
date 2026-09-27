@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-skip-step",
+  "output": "tagged-quote",
+  "mode": "api",
+  "description": "mainTag is required with no policy, so a quote without tags fails the mapping; the emitting forEach has onError skip. Pages 3 and 4 of the quotes API; the eighth quote of page 3 has no tags.",
+  "start": [
+    { "url": "https://quotes.toscrape.com/api/quotes?page=3" },
+    { "url": "https://quotes.toscrape.com/api/quotes?page=4" }
+  ],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}", "as": "json" },
+    { "type": "extract", "id": "quotes", "selector": "$.quotes[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "onError": { "policy": "skip" }, "steps": [] }
+  ],
+  "mapping": {
+    "text": { "from": "quote.text" },
+    "author": { "from": "quote.author.name" },
+    "mainTag": { "from": "quote.tags", "transform": [{ "op": "first" }] }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "scene": "policy-each-gap",
+  "summary": [
+    {
+      "recipeId": "pokeapi-past",
+      "emitted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ pokeapi-past (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://pokeapi.co/api/v2/pokemon/bulbasaur",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract name  … ms",
+    "  · steps.2  extract past  … ms",
+    "  ✚ record [\"bulbasaur\"]",
+    "  · steps.3  emit  … ms",
+    "■ pokeapi-past: 1 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur",
+      "key": "[\"bulbasaur\"]",
+      "data": {
+        "name": "bulbasaur",
+        "pastAbilities": [
+          {
+            "slot": 3,
+            "until": "generation-iv"
+          }
+        ]
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur"
+        },
+        "name": "bulbasaur",
+        "past": [
+          {
+            "generation": {
+              "name": "generation-iv",
+              "url": "https://pokeapi.co/api/v2/generation/4/"
+            },
+            "abilities": [
+              {
+                "is_hidden": true,
+                "slot": 3,
+                "ability": null
+              }
+            ]
+          }
+        ],
+        "page": {
+          "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur",
+          "number": 1
+        }
+      },
+      "mapping": {
+        "name": {
+          "from": "bulbasaur",
+          "steps": []
+        },
+        "pastAbilities[0].name": {
+          "steps": []
+        },
+        "pastAbilities[0].slot": {
+          "from": 3,
+          "steps": []
+        },
+        "pastAbilities[0].until": {
+          "from": "generation-iv",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

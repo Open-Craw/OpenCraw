@@ -1,0 +1,124 @@
+{
+  "scene": "policy-coercion",
+  "summary": [
+    {
+      "recipeId": "link-as-is",
+      "emitted": 0,
+      "rejected": 3,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "link-null",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.2 (forEach) failed: mapping failed: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+    }
+  ],
+  "trace": [
+    "▶ link-as-is (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract books  … ms",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "  ✖ record rejected: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "  ✖ record rejected: url: url: \"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "  ✖ record rejected: url: url: \"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "  · steps.2  forEach  … ms",
+    "■ link-as-is: 0 emitted, 3 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ link-null (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract books  … ms",
+    "    · steps.2.steps.0  extract title  … ms",
+    "    · steps.2.steps.1  extract link  … ms",
+    "  ✖ step steps.2 (forEach) failed: mapping failed: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)",
+    "■ link-null: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (forEach) failed: mapping failed: url: url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+      "rejected": {
+        "field": "url",
+        "reason": "url: \"../../../sharp-objects_997/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+        "title": "Sharp Objects",
+        "link": "../../../sharp-objects_997/index.html"
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+      "rejected": {
+        "field": "url",
+        "reason": "url: \"../../../in-a-dark-dark-wood_963/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+        "title": "In a Dark, Dark Wood",
+        "link": "../../../in-a-dark-dark-wood_963/index.html"
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+      "rejected": {
+        "field": "url",
+        "reason": "url: \"../../../the-past-never-ends_942/index.html\" is not an absolute URL (use the absoluteUrl transform)"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+        },
+        "books": [
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../sharp-objects_997/index.html\"><img src=\"../../../../media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg\" alt=\"Sharp Objects\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../sharp-objects_997/index.html\" title=\"Sharp Objects\">Sharp Objects</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£47.82</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../in-a-dark-dark-wood_963/index.html\"><img src=\"../../../../media/cache/23/85/238570a1c284e730dbc737a7e631ae2b.jpg\" alt=\"In a Dark, Dark Wood\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating One\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../in-a-dark-dark-wood_963/index.html\" title=\"In a Dark, Dark Wood\">In a Dark, Dark ...</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£19.63</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+          "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/category/books/mystery_3/index.html",
+          "number": 1
+        },
+        "book": "\n        \n            <div class=\"image_container\">\n                \n                    \n                    <a href=\"../../../the-past-never-ends_942/index.html\"><img src=\"../../../../media/cache/89/b8/89b850edb01851a91f64ba114b96acb6.jpg\" alt=\"The Past Never Ends\" class=\"thumbnail\"></a>\n                    \n                \n            </div>\n        \n\n        \n            \n                <p class=\"star-rating Four\">\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                    <i class=\"icon-star\"></i>\n                </p>\n            \n        \n\n        \n            <h3><a href=\"../../../the-past-never-ends_942/index.html\" title=\"The Past Never Ends\">The Past Never Ends</a></h3>\n        \n\n        \n            <div class=\"product_price\">\n                \n\n\n\n\n\n\n    \n        <p class=\"price_color\">£56.50</p>\n    \n\n<p class=\"instock availability\">\n    <i class=\"icon-ok\"></i>\n    \n        In stock\n    \n</p>\n\n                \n                    \n\n\n\n\n\n\n    \n    <form>\n        <button type=\"submit\" class=\"btn btn-primary btn-block\" data-loading-text=\"Adding...\">Add to basket</button>\n    </form>\n\n\n                \n            </div>\n        \n    ",
+        "title": "The Past Never Ends",
+        "link": "../../../the-past-never-ends_942/index.html"
+      }
+    }
+  ]
+}

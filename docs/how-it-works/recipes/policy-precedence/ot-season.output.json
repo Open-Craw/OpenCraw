@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "ot-season",
+  "version": 1,
+  "onMissing": "skip-record",
+  "fields": {
+    "team": { "type": "string", "required": true },
+    "year": { "type": "integer", "required": true },
+    "otLosses": { "type": "integer", "default": 0 },
+    "otLossesField": { "type": "integer", "default": 0, "onMissing": "null" },
+    "otLossesRule": { "type": "integer", "default": 0, "onMissing": "default" },
+    "otLossesNote": { "type": "integer", "default": "not recorded" }
+  }
+}

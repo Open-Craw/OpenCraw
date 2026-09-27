@@ -1,0 +1,40 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "pokeapi",
+  "output": "pokemon",
+  "mode": "api",
+  "description": "PokeAPI's /pokemon/{name} is one JSON document per Pokémon: stats, types and abilities as lists of objects, sprites as URLs or null.",
+  "start": [
+    { "url": "https://pokeapi.co/api/v2/pokemon/bulbasaur" },
+    { "url": "https://pokeapi.co/api/v2/pokemon/pikachu" }
+  ],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}", "as": "json" },
+    { "type": "extract", "id": "name", "selector": "$.name", "kind": "jsonpath", "take": "text" },
+    { "type": "extract", "id": "stats", "selector": "$.stats", "kind": "jsonpath", "take": "json" },
+    { "type": "extract", "id": "types", "selector": "$.types", "kind": "jsonpath", "take": "json" },
+    { "type": "extract", "id": "abilities", "selector": "$.abilities", "kind": "jsonpath", "take": "json" },
+    { "type": "extract", "id": "typeNames", "selector": "$.types[*].type.name", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "extract", "id": "abilityNames", "selector": "$.abilities[*].ability.name", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "extract", "id": "heldItemNames", "selector": "$.held_items[*].item.name", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "extract", "id": "moveMethods", "selector": "$.moves[*].version_group_details[-1:].move_learn_method.name", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "extract", "id": "frontFemale", "selector": "$.sprites.front_female", "kind": "jsonpath", "take": "json" },
+    { "type": "extract", "id": "frontDefault", "selector": "$.sprites.front_default", "kind": "jsonpath", "take": "json" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "name": { "from": "name" },
+    "types": { "from": "types", "transform": [{ "op": "jsonpath", "path": "$[*].type.name" }, { "op": "join", "separator": "/" }] },
+    "statTotal": { "from": "stats", "transform": [{ "op": "jsonpath", "path": "$[*].base_stat" }, { "op": "sum" }] },
+    "hiddenAbility": { "from": "abilities", "transform": [{ "op": "jsonpath", "path": "$[?(@.is_hidden)].ability.name" }, { "op": "first" }] },
+    "abilitiesByHidden": { "from": "abilities", "transform": [{ "op": "group", "by": "is_hidden" }] },
+    "keywords": { "from": ["typeNames", "abilityNames"], "transform": [{ "op": "flatten" }] },
+    "learnMethods": { "from": "moveMethods", "transform": [{ "op": "unique" }] },
+    "moveCount": { "from": "moveMethods", "transform": [{ "op": "count" }] },
+    "heldItem": { "from": "heldItemNames", "transform": [{ "op": "first" }, { "op": "default", "value": "none" }] },
+    "heldItems": { "from": "heldItemNames", "transform": [{ "op": "default", "value": ["none"] }] },
+    "sprite": { "from": ["frontFemale", "frontDefault"], "transform": [{ "op": "coalesce" }] }
+  }
+}
