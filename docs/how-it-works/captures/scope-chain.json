@@ -1,0 +1,1115 @@
+{
+  "scene": "scope-chain",
+  "summary": [
+    {
+      "recipeId": "books-tag",
+      "emitted": 12,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2
+    }
+  ],
+  "trace": [
+    "▶ books-tag (web)",
+    "  ⇄ access direct (direct)",
+    "  ↺ https://quotes.toscrape.com/tag/books/: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/tag/books/",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  set label  … ms",
+    "  · steps.2  set quote  … ms",
+    "  · steps.3  set authors  … ms",
+    "    · steps.4.steps.0  extract quotes  … ms",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "    · steps.4.steps.1  forEach  … ms",
+    "  ⇢ page 2  https://quotes.toscrape.com/tag/books/page/2/",
+    "    · steps.4.steps.0  extract quotes  … ms",
+    "      · steps.4.steps.1.steps.0  extract text  … ms",
+    "      · steps.4.steps.1.steps.1  extract author  … ms",
+    "      · steps.4.steps.1.steps.2  set where  … ms",
+    "      · steps.4.steps.1.steps.3  collect  … ms",
+    "  ✚ record (no key)",
+    "    · steps.4.steps.1  forEach  … ms",
+    "  · steps.4  paginate  … ms",
+    "  ✚ record (no key)",
+    "  · steps.5  emit  … ms",
+    "■ books-tag: 12 emitted, 0 rejected, 0 duplicates, 2 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+        "author": "Jane Austen",
+        "where": "Jane Austen, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 1
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+        "author": "Jane Austen",
+        "where": "Jane Austen, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Jane Austen",
+          "steps": []
+        },
+        "where": {
+          "from": "Jane Austen, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“Good friends, good books, and a sleepy conscience: this is the ideal life.”",
+        "author": "Mark Twain",
+        "where": "Mark Twain, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 2
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“Good friends, good books, and a sleepy conscience: this is the ideal life.”",
+        "author": "Mark Twain",
+        "where": "Mark Twain, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“Good friends, good books, and a sleepy conscience: this is the ideal life.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Mark Twain",
+          "steps": []
+        },
+        "where": {
+          "from": "Mark Twain, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“I have always imagined that Paradise will be a kind of library.”",
+        "author": "Jorge Luis Borges",
+        "where": "Jorge Luis Borges, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 3
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“I have always imagined that Paradise will be a kind of library.”",
+        "author": "Jorge Luis Borges",
+        "where": "Jorge Luis Borges, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“I have always imagined that Paradise will be a kind of library.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Jorge Luis Borges",
+          "steps": []
+        },
+        "where": {
+          "from": "Jorge Luis Borges, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“You can never get a cup of tea large enough or a book long enough to suit me.”",
+        "author": "C.S. Lewis",
+        "where": "C.S. Lewis, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 4
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“You can never get a cup of tea large enough or a book long enough to suit me.”",
+        "author": "C.S. Lewis",
+        "where": "C.S. Lewis, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“You can never get a cup of tea large enough or a book long enough to suit me.”",
+          "steps": []
+        },
+        "author": {
+          "from": "C.S. Lewis",
+          "steps": []
+        },
+        "where": {
+          "from": "C.S. Lewis, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 4
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”",
+        "author": "Haruki Murakami",
+        "where": "Haruki Murakami, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 5
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”",
+        "author": "Haruki Murakami",
+        "where": "Haruki Murakami, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Haruki Murakami",
+          "steps": []
+        },
+        "where": {
+          "from": "Haruki Murakami, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“There is no friend as loyal as a book.”",
+        "author": "Ernest Hemingway",
+        "where": "Ernest Hemingway, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 6
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami",
+          "Ernest Hemingway"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“There is no friend as loyal as a book.”",
+        "author": "Ernest Hemingway",
+        "where": "Ernest Hemingway, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“There is no friend as loyal as a book.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Ernest Hemingway",
+          "steps": []
+        },
+        "where": {
+          "from": "Ernest Hemingway, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami",
+            "Ernest Hemingway"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”",
+        "author": "J.D. Salinger",
+        "where": "J.D. Salinger, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 7
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami",
+          "Ernest Hemingway",
+          "J.D. Salinger"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”",
+        "author": "J.D. Salinger",
+        "where": "J.D. Salinger, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”",
+          "steps": []
+        },
+        "author": {
+          "from": "J.D. Salinger",
+          "steps": []
+        },
+        "where": {
+          "from": "J.D. Salinger, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami",
+            "Ernest Hemingway",
+            "J.D. Salinger"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 7
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“′Classic′ - a book which people praise and don't read.”",
+        "author": "Mark Twain",
+        "where": "Mark Twain, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 8
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami",
+          "Ernest Hemingway",
+          "J.D. Salinger",
+          "Mark Twain"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“′Classic′ - a book which people praise and don't read.”",
+        "author": "Mark Twain",
+        "where": "Mark Twain, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“′Classic′ - a book which people praise and don't read.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Mark Twain",
+          "steps": []
+        },
+        "where": {
+          "from": "Mark Twain, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami",
+            "Ernest Hemingway",
+            "J.D. Salinger",
+            "Mark Twain"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”",
+        "author": "Jane Austen",
+        "where": "Jane Austen, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 9
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami",
+          "Ernest Hemingway",
+          "J.D. Salinger",
+          "Mark Twain",
+          "Jane Austen"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”",
+        "author": "Jane Austen",
+        "where": "Jane Austen, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Jane Austen",
+          "steps": []
+        },
+        "where": {
+          "from": "Jane Austen, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami",
+            "Ernest Hemingway",
+            "J.D. Salinger",
+            "Mark Twain",
+            "Jane Austen"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 9
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/",
+      "key": null,
+      "data": {
+        "text": "“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”",
+        "author": "Madeleine L'Engle",
+        "where": "Madeleine L'Engle, page 1",
+        "label": "outside the loop",
+        "page": 1,
+        "seen": 10
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami",
+          "Ernest Hemingway",
+          "J.D. Salinger",
+          "Mark Twain",
+          "Jane Austen",
+          "Madeleine L'Engle"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/",
+          "number": 1
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"aliteracy,books,classic,humor\"> \n            \n            <a class=\"tag\" href=\"/tag/aliteracy/page/1/\">aliteracy</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/humor/page/1/\">humor</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“Good friends, good books, and a sleepy conscience: this is the ideal life.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,contentment,friends,friendship,life\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/contentment/page/1/\">contentment</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/friendship/page/1/\">friendship</a>\n            \n            <a class=\"tag\" href=\"/tag/life/page/1/\">life</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I have always imagined that Paradise will be a kind of library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jorge Luis Borges</small>\n        <a href=\"/author/Jorge-Luis-Borges\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You can never get a cup of tea large enough or a book long enough to suit me.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">C.S. Lewis</small>\n        <a href=\"/author/C-S-Lewis\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,inspirational,reading,tea\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/inspirational/page/1/\">inspirational</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/tea/page/1/\">tea</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“If you only read the books that everyone else is reading, you can only think what everyone else is thinking.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Haruki Murakami</small>\n        <a href=\"/author/Haruki-Murakami\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,thought\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/thought/page/1/\">thought</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“There is no friend as loyal as a book.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Ernest Hemingway</small>\n        <a href=\"/author/Ernest-Hemingway\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,friends,novelist-quotes\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/friends/page/1/\">friends</a>\n            \n            <a class=\"tag\" href=\"/tag/novelist-quotes/page/1/\">novelist-quotes</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“What really knocks me out is a book that, when you're all done reading it, you wish the author that wrote it was a terrific friend of yours and you could call him up on the phone whenever you felt like it. That doesn't happen much, though.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">J.D. Salinger</small>\n        <a href=\"/author/J-D-Salinger\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"authors,books,literature,reading,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/authors/page/1/\">authors</a>\n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/literature/page/1/\">literature</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“′Classic′ - a book which people praise and don't read.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Mark Twain</small>\n        <a href=\"/author/Mark-Twain\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,classic,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/classic/page/1/\">classic</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Jane Austen</small>\n        <a href=\"/author/Jane-Austen\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,library,reading\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/library/page/1/\">library</a>\n            \n            <a class=\"tag\" href=\"/tag/reading/page/1/\">reading</a>\n            \n        </div>\n    ",
+          "\n        <span class=\"text\" itemprop=\"text\">“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">Madeleine L'Engle</small>\n        <a href=\"/author/Madeleine-LEngle\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,children,difficult,grown-ups,write,writers,writing\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/children/page/1/\">children</a>\n            \n            <a class=\"tag\" href=\"/tag/difficult/page/1/\">difficult</a>\n            \n            <a class=\"tag\" href=\"/tag/grown-ups/page/1/\">grown-ups</a>\n            \n            <a class=\"tag\" href=\"/tag/write/page/1/\">write</a>\n            \n            <a class=\"tag\" href=\"/tag/writers/page/1/\">writers</a>\n            \n            <a class=\"tag\" href=\"/tag/writing/page/1/\">writing</a>\n            \n        </div>\n    "
+        ],
+        "text": "“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”",
+        "author": "Madeleine L'Engle",
+        "where": "Madeleine L'Engle, page 1"
+      },
+      "mapping": {
+        "text": {
+          "from": "“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Madeleine L'Engle",
+          "steps": []
+        },
+        "where": {
+          "from": "Madeleine L'Engle, page 1",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 1,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami",
+            "Ernest Hemingway",
+            "J.D. Salinger",
+            "Mark Twain",
+            "Jane Austen",
+            "Madeleine L'Engle"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 10
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/page/2/",
+      "key": null,
+      "data": {
+        "text": "“... a mind needs books as a sword needs a whetstone, if it is to keep its edge.”",
+        "author": "George R.R. Martin",
+        "where": "George R.R. Martin, page 2",
+        "label": "outside the loop",
+        "page": 2,
+        "seen": 11
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "\n        <span class=\"text\" itemprop=\"text\">“... a mind needs books as a sword needs a whetstone, if it is to keep its edge.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">George R.R. Martin</small>\n        <a href=\"/author/George-R-R-Martin\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,mind\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/mind/page/1/\">mind</a>\n            \n        </div>\n    ",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami",
+          "Ernest Hemingway",
+          "J.D. Salinger",
+          "Mark Twain",
+          "Jane Austen",
+          "Madeleine L'Engle",
+          "George R.R. Martin"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/page/2/",
+          "number": 2
+        },
+        "quotes": [
+          "\n        <span class=\"text\" itemprop=\"text\">“... a mind needs books as a sword needs a whetstone, if it is to keep its edge.”</span>\n        <span>by <small class=\"author\" itemprop=\"author\">George R.R. Martin</small>\n        <a href=\"/author/George-R-R-Martin\">(about)</a>\n        </span>\n        <div class=\"tags\">\n            Tags:\n            <meta class=\"keywords\" itemprop=\"keywords\" content=\"books,mind\"> \n            \n            <a class=\"tag\" href=\"/tag/books/page/1/\">books</a>\n            \n            <a class=\"tag\" href=\"/tag/mind/page/1/\">mind</a>\n            \n        </div>\n    "
+        ],
+        "text": "“... a mind needs books as a sword needs a whetstone, if it is to keep its edge.”",
+        "author": "George R.R. Martin",
+        "where": "George R.R. Martin, page 2"
+      },
+      "mapping": {
+        "text": {
+          "from": "“... a mind needs books as a sword needs a whetstone, if it is to keep its edge.”",
+          "steps": []
+        },
+        "author": {
+          "from": "George R.R. Martin",
+          "steps": []
+        },
+        "where": {
+          "from": "George R.R. Martin, page 2",
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 2,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami",
+            "Ernest Hemingway",
+            "J.D. Salinger",
+            "Mark Twain",
+            "Jane Austen",
+            "Madeleine L'Engle",
+            "George R.R. Martin"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 11
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/tag/books/page/2/",
+      "key": null,
+      "data": {
+        "text": null,
+        "author": null,
+        "where": null,
+        "label": "outside the loop",
+        "page": 2,
+        "seen": 11
+      },
+      "scope": {
+        "vars": {
+          "tag": "books"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/"
+        },
+        "label": "outside the loop",
+        "quote": "no quote yet",
+        "authors": [
+          "Jane Austen",
+          "Mark Twain",
+          "Jorge Luis Borges",
+          "C.S. Lewis",
+          "Haruki Murakami",
+          "Ernest Hemingway",
+          "J.D. Salinger",
+          "Mark Twain",
+          "Jane Austen",
+          "Madeleine L'Engle",
+          "George R.R. Martin"
+        ],
+        "page": {
+          "url": "https://quotes.toscrape.com/tag/books/page/2/",
+          "number": 2
+        }
+      },
+      "mapping": {
+        "text": {
+          "steps": []
+        },
+        "author": {
+          "steps": []
+        },
+        "where": {
+          "steps": []
+        },
+        "label": {
+          "from": "outside the loop",
+          "steps": []
+        },
+        "page": {
+          "from": 2,
+          "steps": []
+        },
+        "seen": {
+          "from": [
+            "Jane Austen",
+            "Mark Twain",
+            "Jorge Luis Borges",
+            "C.S. Lewis",
+            "Haruki Murakami",
+            "Ernest Hemingway",
+            "J.D. Salinger",
+            "Mark Twain",
+            "Jane Austen",
+            "Madeleine L'Engle",
+            "George R.R. Martin"
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 11
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

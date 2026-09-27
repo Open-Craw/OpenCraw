@@ -1,0 +1,724 @@
+{
+  "scene": "data-table",
+  "summary": [
+    {
+      "recipeId": "hockey-table",
+      "emitted": 5,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ hockey-table (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://www.scrapethissite.com/pages/forms/?per_page=5",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract table  … ms",
+    "  · steps.2  set rows  … ms",
+    "  ✚ record [\"Boston Bruins\",1990]",
+    "  ✚ record [\"Buffalo Sabres\",1990]",
+    "  ✚ record [\"Calgary Flames\",1990]",
+    "  ✚ record [\"Chicago Blackhawks\",1990]",
+    "  ✚ record [\"Detroit Red Wings\",1990]",
+    "  · steps.3  forEach  … ms",
+    "■ hockey-table: 5 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+      "key": "[\"Boston Bruins\",1990]",
+      "data": {
+        "team": "Boston Bruins",
+        "year": 1990,
+        "wins": 44,
+        "losses": 24,
+        "otLosses": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5"
+        },
+        "table": {
+          "sheet": "table 1",
+          "title": "Team Name",
+          "header": [
+            "Team Name",
+            "Year",
+            "Wins",
+            "Losses",
+            "OT Losses",
+            "Win %",
+            "Goals For (GF)",
+            "Goals Against (GA)",
+            "+ / -"
+          ],
+          "rows": [
+            {
+              "team": "Boston Bruins",
+              "year": "1990",
+              "wins": "44",
+              "losses": "24",
+              "otLosses": ""
+            },
+            {
+              "team": "Buffalo Sabres",
+              "year": "1990",
+              "wins": "31",
+              "losses": "30",
+              "otLosses": ""
+            },
+            {
+              "team": "Calgary Flames",
+              "year": "1990",
+              "wins": "46",
+              "losses": "26",
+              "otLosses": ""
+            },
+            {
+              "team": "Chicago Blackhawks",
+              "year": "1990",
+              "wins": "49",
+              "losses": "23",
+              "otLosses": ""
+            },
+            {
+              "team": "Detroit Red Wings",
+              "year": "1990",
+              "wins": "34",
+              "losses": "38",
+              "otLosses": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "team": "Boston Bruins",
+            "year": "1990",
+            "wins": "44",
+            "losses": "24",
+            "otLosses": ""
+          },
+          {
+            "team": "Buffalo Sabres",
+            "year": "1990",
+            "wins": "31",
+            "losses": "30",
+            "otLosses": ""
+          },
+          {
+            "team": "Calgary Flames",
+            "year": "1990",
+            "wins": "46",
+            "losses": "26",
+            "otLosses": ""
+          },
+          {
+            "team": "Chicago Blackhawks",
+            "year": "1990",
+            "wins": "49",
+            "losses": "23",
+            "otLosses": ""
+          },
+          {
+            "team": "Detroit Red Wings",
+            "year": "1990",
+            "wins": "34",
+            "losses": "38",
+            "otLosses": ""
+          }
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+          "number": 1
+        },
+        "row": {
+          "team": "Boston Bruins",
+          "year": "1990",
+          "wins": "44",
+          "losses": "24",
+          "otLosses": ""
+        }
+      },
+      "mapping": {
+        "team": {
+          "from": "Boston Bruins",
+          "steps": []
+        },
+        "year": {
+          "from": "1990",
+          "steps": []
+        },
+        "wins": {
+          "from": "44",
+          "steps": []
+        },
+        "losses": {
+          "from": "24",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+      "key": "[\"Buffalo Sabres\",1990]",
+      "data": {
+        "team": "Buffalo Sabres",
+        "year": 1990,
+        "wins": 31,
+        "losses": 30,
+        "otLosses": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5"
+        },
+        "table": {
+          "sheet": "table 1",
+          "title": "Team Name",
+          "header": [
+            "Team Name",
+            "Year",
+            "Wins",
+            "Losses",
+            "OT Losses",
+            "Win %",
+            "Goals For (GF)",
+            "Goals Against (GA)",
+            "+ / -"
+          ],
+          "rows": [
+            {
+              "team": "Boston Bruins",
+              "year": "1990",
+              "wins": "44",
+              "losses": "24",
+              "otLosses": ""
+            },
+            {
+              "team": "Buffalo Sabres",
+              "year": "1990",
+              "wins": "31",
+              "losses": "30",
+              "otLosses": ""
+            },
+            {
+              "team": "Calgary Flames",
+              "year": "1990",
+              "wins": "46",
+              "losses": "26",
+              "otLosses": ""
+            },
+            {
+              "team": "Chicago Blackhawks",
+              "year": "1990",
+              "wins": "49",
+              "losses": "23",
+              "otLosses": ""
+            },
+            {
+              "team": "Detroit Red Wings",
+              "year": "1990",
+              "wins": "34",
+              "losses": "38",
+              "otLosses": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "team": "Boston Bruins",
+            "year": "1990",
+            "wins": "44",
+            "losses": "24",
+            "otLosses": ""
+          },
+          {
+            "team": "Buffalo Sabres",
+            "year": "1990",
+            "wins": "31",
+            "losses": "30",
+            "otLosses": ""
+          },
+          {
+            "team": "Calgary Flames",
+            "year": "1990",
+            "wins": "46",
+            "losses": "26",
+            "otLosses": ""
+          },
+          {
+            "team": "Chicago Blackhawks",
+            "year": "1990",
+            "wins": "49",
+            "losses": "23",
+            "otLosses": ""
+          },
+          {
+            "team": "Detroit Red Wings",
+            "year": "1990",
+            "wins": "34",
+            "losses": "38",
+            "otLosses": ""
+          }
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+          "number": 1
+        },
+        "row": {
+          "team": "Buffalo Sabres",
+          "year": "1990",
+          "wins": "31",
+          "losses": "30",
+          "otLosses": ""
+        }
+      },
+      "mapping": {
+        "team": {
+          "from": "Buffalo Sabres",
+          "steps": []
+        },
+        "year": {
+          "from": "1990",
+          "steps": []
+        },
+        "wins": {
+          "from": "31",
+          "steps": []
+        },
+        "losses": {
+          "from": "30",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+      "key": "[\"Calgary Flames\",1990]",
+      "data": {
+        "team": "Calgary Flames",
+        "year": 1990,
+        "wins": 46,
+        "losses": 26,
+        "otLosses": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5"
+        },
+        "table": {
+          "sheet": "table 1",
+          "title": "Team Name",
+          "header": [
+            "Team Name",
+            "Year",
+            "Wins",
+            "Losses",
+            "OT Losses",
+            "Win %",
+            "Goals For (GF)",
+            "Goals Against (GA)",
+            "+ / -"
+          ],
+          "rows": [
+            {
+              "team": "Boston Bruins",
+              "year": "1990",
+              "wins": "44",
+              "losses": "24",
+              "otLosses": ""
+            },
+            {
+              "team": "Buffalo Sabres",
+              "year": "1990",
+              "wins": "31",
+              "losses": "30",
+              "otLosses": ""
+            },
+            {
+              "team": "Calgary Flames",
+              "year": "1990",
+              "wins": "46",
+              "losses": "26",
+              "otLosses": ""
+            },
+            {
+              "team": "Chicago Blackhawks",
+              "year": "1990",
+              "wins": "49",
+              "losses": "23",
+              "otLosses": ""
+            },
+            {
+              "team": "Detroit Red Wings",
+              "year": "1990",
+              "wins": "34",
+              "losses": "38",
+              "otLosses": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "team": "Boston Bruins",
+            "year": "1990",
+            "wins": "44",
+            "losses": "24",
+            "otLosses": ""
+          },
+          {
+            "team": "Buffalo Sabres",
+            "year": "1990",
+            "wins": "31",
+            "losses": "30",
+            "otLosses": ""
+          },
+          {
+            "team": "Calgary Flames",
+            "year": "1990",
+            "wins": "46",
+            "losses": "26",
+            "otLosses": ""
+          },
+          {
+            "team": "Chicago Blackhawks",
+            "year": "1990",
+            "wins": "49",
+            "losses": "23",
+            "otLosses": ""
+          },
+          {
+            "team": "Detroit Red Wings",
+            "year": "1990",
+            "wins": "34",
+            "losses": "38",
+            "otLosses": ""
+          }
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+          "number": 1
+        },
+        "row": {
+          "team": "Calgary Flames",
+          "year": "1990",
+          "wins": "46",
+          "losses": "26",
+          "otLosses": ""
+        }
+      },
+      "mapping": {
+        "team": {
+          "from": "Calgary Flames",
+          "steps": []
+        },
+        "year": {
+          "from": "1990",
+          "steps": []
+        },
+        "wins": {
+          "from": "46",
+          "steps": []
+        },
+        "losses": {
+          "from": "26",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+      "key": "[\"Chicago Blackhawks\",1990]",
+      "data": {
+        "team": "Chicago Blackhawks",
+        "year": 1990,
+        "wins": 49,
+        "losses": 23,
+        "otLosses": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5"
+        },
+        "table": {
+          "sheet": "table 1",
+          "title": "Team Name",
+          "header": [
+            "Team Name",
+            "Year",
+            "Wins",
+            "Losses",
+            "OT Losses",
+            "Win %",
+            "Goals For (GF)",
+            "Goals Against (GA)",
+            "+ / -"
+          ],
+          "rows": [
+            {
+              "team": "Boston Bruins",
+              "year": "1990",
+              "wins": "44",
+              "losses": "24",
+              "otLosses": ""
+            },
+            {
+              "team": "Buffalo Sabres",
+              "year": "1990",
+              "wins": "31",
+              "losses": "30",
+              "otLosses": ""
+            },
+            {
+              "team": "Calgary Flames",
+              "year": "1990",
+              "wins": "46",
+              "losses": "26",
+              "otLosses": ""
+            },
+            {
+              "team": "Chicago Blackhawks",
+              "year": "1990",
+              "wins": "49",
+              "losses": "23",
+              "otLosses": ""
+            },
+            {
+              "team": "Detroit Red Wings",
+              "year": "1990",
+              "wins": "34",
+              "losses": "38",
+              "otLosses": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "team": "Boston Bruins",
+            "year": "1990",
+            "wins": "44",
+            "losses": "24",
+            "otLosses": ""
+          },
+          {
+            "team": "Buffalo Sabres",
+            "year": "1990",
+            "wins": "31",
+            "losses": "30",
+            "otLosses": ""
+          },
+          {
+            "team": "Calgary Flames",
+            "year": "1990",
+            "wins": "46",
+            "losses": "26",
+            "otLosses": ""
+          },
+          {
+            "team": "Chicago Blackhawks",
+            "year": "1990",
+            "wins": "49",
+            "losses": "23",
+            "otLosses": ""
+          },
+          {
+            "team": "Detroit Red Wings",
+            "year": "1990",
+            "wins": "34",
+            "losses": "38",
+            "otLosses": ""
+          }
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+          "number": 1
+        },
+        "row": {
+          "team": "Chicago Blackhawks",
+          "year": "1990",
+          "wins": "49",
+          "losses": "23",
+          "otLosses": ""
+        }
+      },
+      "mapping": {
+        "team": {
+          "from": "Chicago Blackhawks",
+          "steps": []
+        },
+        "year": {
+          "from": "1990",
+          "steps": []
+        },
+        "wins": {
+          "from": "49",
+          "steps": []
+        },
+        "losses": {
+          "from": "23",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+      "key": "[\"Detroit Red Wings\",1990]",
+      "data": {
+        "team": "Detroit Red Wings",
+        "year": 1990,
+        "wins": 34,
+        "losses": 38,
+        "otLosses": null
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5"
+        },
+        "table": {
+          "sheet": "table 1",
+          "title": "Team Name",
+          "header": [
+            "Team Name",
+            "Year",
+            "Wins",
+            "Losses",
+            "OT Losses",
+            "Win %",
+            "Goals For (GF)",
+            "Goals Against (GA)",
+            "+ / -"
+          ],
+          "rows": [
+            {
+              "team": "Boston Bruins",
+              "year": "1990",
+              "wins": "44",
+              "losses": "24",
+              "otLosses": ""
+            },
+            {
+              "team": "Buffalo Sabres",
+              "year": "1990",
+              "wins": "31",
+              "losses": "30",
+              "otLosses": ""
+            },
+            {
+              "team": "Calgary Flames",
+              "year": "1990",
+              "wins": "46",
+              "losses": "26",
+              "otLosses": ""
+            },
+            {
+              "team": "Chicago Blackhawks",
+              "year": "1990",
+              "wins": "49",
+              "losses": "23",
+              "otLosses": ""
+            },
+            {
+              "team": "Detroit Red Wings",
+              "year": "1990",
+              "wins": "34",
+              "losses": "38",
+              "otLosses": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "team": "Boston Bruins",
+            "year": "1990",
+            "wins": "44",
+            "losses": "24",
+            "otLosses": ""
+          },
+          {
+            "team": "Buffalo Sabres",
+            "year": "1990",
+            "wins": "31",
+            "losses": "30",
+            "otLosses": ""
+          },
+          {
+            "team": "Calgary Flames",
+            "year": "1990",
+            "wins": "46",
+            "losses": "26",
+            "otLosses": ""
+          },
+          {
+            "team": "Chicago Blackhawks",
+            "year": "1990",
+            "wins": "49",
+            "losses": "23",
+            "otLosses": ""
+          },
+          {
+            "team": "Detroit Red Wings",
+            "year": "1990",
+            "wins": "34",
+            "losses": "38",
+            "otLosses": ""
+          }
+        ],
+        "page": {
+          "url": "https://www.scrapethissite.com/pages/forms/?per_page=5",
+          "number": 1
+        },
+        "row": {
+          "team": "Detroit Red Wings",
+          "year": "1990",
+          "wins": "34",
+          "losses": "38",
+          "otLosses": ""
+        }
+      },
+      "mapping": {
+        "team": {
+          "from": "Detroit Red Wings",
+          "steps": []
+        },
+        "year": {
+          "from": "1990",
+          "steps": []
+        },
+        "wins": {
+          "from": "34",
+          "steps": []
+        },
+        "losses": {
+          "from": "38",
+          "steps": []
+        },
+        "otLosses": {
+          "from": "",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

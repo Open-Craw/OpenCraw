@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "student-numbers",
+  "version": 1,
+  "fields": {
+    "programme": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "lastYearActual": {
+      "type": "integer",
+      "nullable": true
+    },
+    "currentActual": {
+      "type": "integer",
+      "nullable": true
+    },
+    "budget": {
+      "type": "integer",
+      "nullable": true
+    },
+    "forecast": {
+      "type": "integer",
+      "nullable": true
+    },
+    "rag": {
+      "type": "enum",
+      "values": [
+        "Red",
+        "Amber",
+        "Green"
+      ],
+      "nullable": true
+    },
+    "implications": {
+      "type": "string",
+      "nullable": true
+    },
+    "slide": {
+      "type": "integer",
+      "required": true
+    }
+  }
+}

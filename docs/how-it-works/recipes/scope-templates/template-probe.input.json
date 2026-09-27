@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "template-probe",
+  "output": "quote-facts",
+  "mode": "api",
+  "vars": { "offset": "1", "tag": "thinking" },
+  "start": [{ "url": "https://quotes.toscrape.com/api/quotes?page=1" }],
+  "limits": { "delayMs": 300, "maxRecords": 1 },
+  "steps": [
+    { "type": "request", "id": "response", "url": "{{start.url}}" },
+    { "type": "set", "id": "quotes", "value": "{{response.quotes}}" },
+    { "type": "set", "id": "count", "value": "{{ len(quotes) }}" },
+    { "type": "set", "id": "countText", "value": "{{ len(quotes) }} quotes on page {{page.number}}" },
+    { "type": "forEach", "over": "quotes", "as": "item", "emit": true, "steps": [
+      { "type": "set", "id": "author", "value": "{{item.author.name}}" },
+      { "type": "set", "id": "tags", "value": "{{item.tags}}" },
+      { "type": "set", "id": "tagsInText", "value": "tags: {{item.tags}}" },
+      { "type": "set", "id": "tagLine", "value": "{{ join(item.tags, ', ') }}" },
+      { "type": "set", "id": "firstTag", "value": "{{ first(item.tags) }}" },
+      { "type": "set", "id": "hasTag", "value": "{{ contains(item.tags, vars.tag) }}" },
+      { "type": "set", "id": "words", "value": "{{ len(split(item.text, ' ')) }}" },
+      { "type": "set", "id": "size", "value": "{{ len(item.text) > 100 ? 'long' : 'short' }}" },
+      { "type": "set", "id": "shout", "value": "{{ upper(item.author.name) }}" },
+      { "type": "set", "id": "search", "value": "https://quotes.toscrape.com/search.aspx?author={{ urlEncode(item.author.name) }}" },
+      { "type": "set", "id": "card", "value": { "who": "{{item.author.name}}", "tagCount": "{{ len(item.tags) }}", "first": "{{ item.tags[0] }}" } },
+      { "type": "set", "id": "bornText", "value": "born: {{item.author.born}}" },
+      { "type": "set", "id": "bornOr", "value": "{{ item.author.born ?? 'unknown' }}" },
+      { "type": "set", "id": "bornDefault", "value": "{{ default(item.author.born, 'unknown') }}" },
+      { "type": "set", "id": "pathTrap", "value": "[{{page.number-1}}]" },
+      { "type": "set", "id": "minus", "value": "{{ page.number - 1 }}" },
+      { "type": "set", "id": "plusTrap", "value": "{{ vars.offset + 2 }}" },
+      { "type": "set", "id": "plus", "value": "{{ number(vars.offset) + 2 }}" },
+      { "type": "set", "id": "times", "value": "{{ vars.offset * 2 }}" },
+      { "type": "set", "id": "trueTrap", "value": "[{{true}}]" },
+      { "type": "set", "id": "trueExpr", "value": "[{{ true ? 'yes' : 'no' }}]" },
+      { "type": "if", "test": "{{true}}", "steps": [
+        { "type": "set", "id": "branch", "value": "then" }
+      ], "else": [
+        { "type": "set", "id": "branch", "value": "else" }
+      ]}
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "item.text" },
+    "author": { "from": "author" },
+    "words": { "from": "words" },
+    "tags": { "from": "tags" }
+  }
+}

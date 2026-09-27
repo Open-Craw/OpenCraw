@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "pokemon-species",
+  "version": 1,
+  "fields": {
+    "name": { "type": "string", "required": true, "key": true },
+    "genus": { "type": "string" },
+    "color": { "type": "string" },
+    "captureRate": { "type": "integer" },
+    "source": { "type": "url" }
+  }
+}

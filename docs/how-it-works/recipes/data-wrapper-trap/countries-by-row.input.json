@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "countries-by-row",
+  "output": "country",
+  "mode": "api",
+  "start": [{ "url": "https://www.scrapethissite.com/pages/simple/" }],
+  "limits": { "delayMs": 300, "maxRecords": 2 },
+  "steps": [
+    { "type": "request", "url": "{{start.url}}" },
+    { "type": "extract", "id": "countries", "selector": "div.country", "kind": "css", "take": "html", "many": true },
+    { "type": "extract", "id": "rows", "selector": "div.row:has(div.country)", "kind": "css", "take": "html", "many": true },
+    { "type": "set", "id": "counts", "value": { "rows": "{{ len(rows) }}", "countries": "{{ len(countries) }}" } },
+    { "type": "forEach", "over": "rows", "as": "row", "emit": true, "steps": [
+      { "type": "extract", "id": "name", "from": "row", "selector": "h3.country-name", "kind": "css" },
+      { "type": "extract", "id": "capital", "from": "row", "selector": ".country-capital", "kind": "css" },
+      { "type": "extract", "id": "population", "from": "row", "selector": ".country-population", "kind": "css", "many": true }
+    ]}
+  ],
+  "mapping": {
+    "name": { "from": "name" },
+    "capital": { "from": "capital" },
+    "population": { "from": "population" }
+  }
+}

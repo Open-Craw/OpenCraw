@@ -1,0 +1,3707 @@
+{
+  "scene": "doc-pptx-dfe",
+  "summary": [
+    {
+      "recipeId": "dfe-student-numbers-local",
+      "emitted": 7,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ dfe-student-numbers-local (api)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  hook file  … ms",
+    "  ⇢ page 1  file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+    "  · steps.1  request deck  … ms",
+    "  · steps.2  extract table  … ms",
+    "  · steps.3  set rows  … ms",
+    "  ✚ record [\"16-19 students\"]",
+    "  ✚ record [\"ASF (including devolved)\"]",
+    "  ✚ record [\"16-18 Apprenticeships\"]",
+    "  ✚ record [\"19+ Apprenticeships\"]",
+    "  ✚ record [\"HE: full-time\"]",
+    "  ✚ record [\"HE: part-time\"]",
+    "  ✚ record [\"Advanced Learner Loans\"]",
+    "  · steps.4  forEach  … ms",
+    "■ dfe-student-numbers-local: 7 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+      "key": "[\"16-19 students\"]",
+      "data": {
+        "programme": "16-19 students",
+        "lastYearActual": 2820,
+        "currentActual": 2780,
+        "budget": 2710,
+        "forecast": 2790,
+        "rag": "Green",
+        "implications": "Increase in lagged funding in 202X/2Y of circa £350,000",
+        "slide": 6
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx"
+        },
+        "file": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+        "deck": {
+          "kind": "deck",
+          "width": 960,
+          "height": 540,
+          "slides": [
+            {
+              "number": 1,
+              "title": "Weatherbury College\nManagement Accounts for the period to 31 January 202X",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.43,
+                  "y": 13.49,
+                  "width": 828,
+                  "height": 73.94,
+                  "text": "Weatherbury College\nManagement Accounts for the period to 31 January 202X",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Headlines",
+                      "Current Status",
+                      "Impact",
+                      "RAG",
+                      "Change"
+                    ],
+                    [
+                      "Operating surplus (deficit) to date",
+                      "Operating deficit to Jan 202X of £575,000",
+                      "£150,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Income vs budget to date",
+                      "Income to January 202X £10.147 million",
+                      "£202,000 (2%) adverse",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Pay costs vs budget to date",
+                      "Pay costs tracking £84,000 (1%) below budget",
+                      "",
+                      "Green",
+                      "Increased"
+                    ],
+                    [
+                      "Non-pay costs vs budget to date",
+                      "Non pay costs £28,000 (1%) over budget",
+                      "",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Forecast out-turn surplus (deficit)",
+                      "Forecast deficit for year of £262,000",
+                      "£242,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Forecast out-turn EBITDA",
+                      "Forecast EBITDA £655,000 (3.2% of turnover)",
+                      "£250,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Capital Programme",
+                      "All planned capital expenditure on track",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Asset Disposals",
+                      "No major asset disposals planned",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Cash vs forecast",
+                      "Projected year-end cash 38 cash days in hand",
+                      "£200,000 adverse",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Cash generation from operations",
+                      "Forecast £700,000 increase",
+                      "£207,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Covenant compliance",
+                      "Prospect of loan covenant breach",
+                      "Work ongoing",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Financial health",
+                      "Revised forecast 120 points (RI)",
+                      "Risk of inadequate FH",
+                      "Red",
+                      "Decreased"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 2,
+              "title": "Key Performance Indicators",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.41,
+                  "y": 32.26,
+                  "width": 828,
+                  "height": 27.76,
+                  "text": "Key Performance Indicators",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Indicator",
+                      "Actuals",
+                      "Forecast \n(full year)",
+                      "Budget / Target (full year)",
+                      "Variance",
+                      "RAG",
+                      "Movement"
+                    ],
+                    [
+                      "Turnover",
+                      "£10.15m",
+                      "£20.67m",
+                      "£21.03m",
+                      "(£0.36m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Operating Surplus/Deficit",
+                      "(£0.58m)",
+                      "(£0.26m)",
+                      "(£0.02m)",
+                      "(£0.24m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Operating Surplus/Deficit as % of Turnover",
+                      "(5.7%)",
+                      "(1.3%)",
+                      "(0.1%)",
+                      "(1.2%)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Education EBITDA",
+                      "(£0.04m)",
+                      "£0.66m",
+                      "£0.91m",
+                      "(£0.25m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Education EBITDA as % of Turnover",
+                      "(0.4%)",
+                      "3.2%",
+                      "4.3%",
+                      "(1.1%)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Cash Reserves",
+                      "£2.09m",
+                      "£2.08m",
+                      "£2.28m",
+                      "(£0.2m)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Cash Days in Hand",
+                      "38",
+                      "38",
+                      "41",
+                      "-3 days",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Loan balance",
+                      "£8.12m",
+                      "£7.92m",
+                      "£7.92m",
+                      "nil",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Debt service cover",
+                      "",
+                      "0.97",
+                      "1.26",
+                      "(0.29)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Staff Numbers (fte’s)",
+                      "329.2",
+                      "",
+                      "335.8",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Pay as % of Turnover",
+                      "69.7%",
+                      "68.2%",
+                      "68.1%",
+                      "(0.1%)",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Debtor Days",
+                      "15",
+                      "13",
+                      "14",
+                      "1",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Creditor Days",
+                      "31",
+                      "26",
+                      "26",
+                      "-",
+                      "Green",
+                      "No change"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 3,
+              "title": "Cash",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 15.27,
+                  "y": 7.45,
+                  "width": 408.13,
+                  "height": 36,
+                  "text": "Cash",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 507.49,
+                  "y": 43.45,
+                  "width": 353.14,
+                  "height": 46.05,
+                  "text": "Notes and assumptions"
+                },
+                {
+                  "x": 486,
+                  "y": 101.89,
+                  "width": 408.13,
+                  "height": 438.11,
+                  "text": "Actual cash at bank at 31 January is £2.09 million, equivalent to 38 cash days in hand.  This is marginally lower than forecast due to the adverse operating performance to date.\nCash balances are forecast to fall to a low-point of £1.5 million at the end of April 202X, equivalent to 27 cash days in hand (below the FEC benchmark of 40 cash days)\nCreditor payments are not falling behind.\nHowever, forecast EBITDA for the year of £655,000 is substantially less than the combined costs of debt servicing (£720,000) and the capital programme (£691,000).  This underlines the need to improve EBITDA going forward to avoid the continuing decline in cash reserves.\nDebt recovery actions are working well, with debtor days currently at 15 compared to the target of 14 for the year as a whole.",
+                  "placeholder": "obj"
+                },
+                {
+                  "x": 15.27,
+                  "y": 427.33,
+                  "width": 453.56,
+                  "height": 50.89,
+                  "text": "This is an illustrative example of a cashflow forecast as described under ‘notes and assumptions.’"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 4,
+              "title": "Loan Covenant Compliance",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.14,
+                  "y": 28.75,
+                  "width": 884.86,
+                  "height": 29.51,
+                  "text": "Loan Covenant Compliance",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 521.14,
+                  "y": 58.26,
+                  "width": 376.57,
+                  "height": 399.87,
+                  "text": "In order to avoid a covenant breach, EBITDA performance would need to improve by £199,000.\n\nGiven the prospect of a covenant breach, dialogue is ongoing with the bank to secure a waiver or agreement not to measure the covenants at year-end.  \n\nIn the event that agreement cannot be reached and the bank loan has to be re-classified as a current liability, this will impact adversely on the solvency ratio and almost certainly push the financial health autoscore to inadequate (headroom above inadequate is already as low as £37,000).\n\nThe DfE has been informed of this risk."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Not",
+                      "Forecast (full year)",
+                      "Budget (full year)",
+                      "Covenant Met?",
+                      "Head room"
+                    ],
+                    [
+                      "Debt service cover > 1.25",
+                      "0.97",
+                      "1.26",
+                      "NO",
+                      "Not met"
+                    ],
+                    [
+                      "Net borrowings: EBITDA < 7.0",
+                      "8.91",
+                      "6.23",
+                      "NO",
+                      "Not met"
+                    ],
+                    [
+                      "Net Assets (excluding pension liability) >0",
+                      "£3.17m",
+                      "£3.41m",
+                      "YES",
+                      "£3.17m"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 5,
+              "title": "Financial Health",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 32.86,
+                  "y": 19.92,
+                  "width": 828,
+                  "height": 21.54,
+                  "text": "Financial Health",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 603.43,
+                  "y": 147.96,
+                  "width": 313.14,
+                  "height": 233.19,
+                  "text": "In the event that agreement cannot be reached and the bank loan has to be re-classified as a current liability, this will impact adversely on the solvency ratio and almost certainly push the financial health autoscore to inadequate (headroom above inadequate is already as low as £37,000).\nThe DfE has been informed of this risk.",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Indicator",
+                      "Budget \n(full- year)",
+                      "Points",
+                      "Forecast \nOut-turn",
+                      "Points",
+                      "Move\nment"
+                    ],
+                    [
+                      "Solvency\n(adjusted current ratio)",
+                      "0.89",
+                      "40",
+                      "0.83",
+                      "40",
+                      "No change"
+                    ],
+                    [
+                      "Performance\n(EBITDA as % of adjusted income)",
+                      "4.3%",
+                      "40",
+                      "3.2%",
+                      "30",
+                      "Decreased"
+                    ],
+                    [
+                      "Borrowing\n(Loans as % of adjusted income)",
+                      "37.7%",
+                      "50",
+                      "38.3%",
+                      "50",
+                      "No change"
+                    ],
+                    [
+                      "Automated Financial \nHealth Grade",
+                      "RI",
+                      "130",
+                      "RI",
+                      "120",
+                      "Decreased"
+                    ],
+                    [
+                      "Self-Assessed\nFinancial Health Grade",
+                      "RI",
+                      "",
+                      "RI",
+                      "",
+                      ""
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 6,
+              "title": "Student Numbers",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 10,
+                  "y": 28.4,
+                  "width": 828,
+                  "height": 38.04,
+                  "text": "Student Numbers",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Headcount",
+                      "Full year\nactuals\n(last year)",
+                      "Actuals\n(current year)",
+                      "Full-year\nbudget",
+                      "Full-year\nforecast",
+                      "RAG",
+                      "Financial Implications"
+                    ],
+                    [
+                      "16-19 students",
+                      "2,820",
+                      "2,780",
+                      "2,710",
+                      "2,790",
+                      "Green",
+                      "Increase in lagged funding in 202X/2Y of circa £350,000"
+                    ],
+                    [
+                      "ASF (including devolved)",
+                      "1,120",
+                      "743",
+                      "1,230",
+                      "1,150",
+                      "Red",
+                      "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+                    ],
+                    [
+                      "16-18 Apprenticeships",
+                      "210",
+                      "115",
+                      "136",
+                      "128",
+                      "Red",
+                      "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+                    ],
+                    [
+                      "19+ Apprenticeships",
+                      "220",
+                      "123",
+                      "145",
+                      "135",
+                      "Red",
+                      "Forecast shortfall in income of £20,000"
+                    ],
+                    [
+                      "HE: full-time",
+                      "162",
+                      "128",
+                      "135",
+                      "125",
+                      "Red",
+                      "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+                    ],
+                    [
+                      "HE: part-time",
+                      "165",
+                      "160",
+                      "160",
+                      "155",
+                      "Amber",
+                      "Marginally behind budget (£7,000 shortfall forecast)"
+                    ],
+                    [
+                      "Advanced Learner Loans",
+                      "185",
+                      "155",
+                      "180",
+                      "180",
+                      "Green",
+                      "Broadly on budget"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 7,
+              "title": "Income and Expenditure Commentary",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 66,
+                  "y": 28.75,
+                  "width": 828,
+                  "height": 54.68,
+                  "text": "Income and Expenditure Commentary",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 66,
+                  "y": 83.43,
+                  "width": 828,
+                  "height": 342.63,
+                  "text": "Income \nAdult Skills Fund (ASF and devolved) performance tracking 6% behind budget to date, forecast shortfall at year-end £139,000 (therefore outside tolerance)\nApprenticeships income tracking £29,000 (6%) behind budget to date, forecast shortfall £56,000 (6%) at year-end\nHE loan income tracking £45,000 (5%) behind budget to date, forecast to increase to £92,000 shortfall (5%) by year-end\nOverall income performance for the period to 31 January is £202,000 (2%) below budget.  Full-year forecast income at £20.670m is £356,000 (2%) below budget.\nCompared with 202V/2W, forecast income is down 5% from £21.8m to £20.67m \nPay \nTeaching pay costs to date are £47,000 (1%) below budget to date, partly offset by an additional £33,000 on sessional staff.  Forecast outturn is a net underspend of £69,000 (1%) on teaching and sessional staffing\nNon-teaching pay costs are tracking £62,000 (2%) below budget to date, which is forecast to continue to year-end (underspend of £128,000 or 2%)\nOverall pay costs to date are £84,000 (1%) below budget to date, forecast to increase to an underspend of £216,000 (2%) by year end.\nDespite this pay costs as % of turnover are forecast to out-turn slightly above budget at 68.2% due to lower forecast turnover.  At 68.2% pay costs remain 3.2% above the FEC benchmark of 65%.",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 8,
+              "title": "Income and Expenditure Commentary (continued)",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 66,
+                  "y": 28.75,
+                  "width": 828,
+                  "height": 63.82,
+                  "text": "Income and Expenditure Commentary (continued)",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 66,
+                  "y": 105.46,
+                  "width": 828,
+                  "height": 342.63,
+                  "text": "Non-pay\nOverall non-pay expenditure to 31 January is tracking £28,000 over budget to date, with the main pressure points being other operating expenditure(£54,000 which includes £31,000 on student laptops); rent and lease costs(£33,000); estates(£30,000);\nThe forecast out-turn non-pay costs at £6.119m are £110,000 (2%) over budget despite a forecast underspend of £33,000 on education supplies and services\nSub-contracted Delivery\nSub-contracted delivery is budgeted at £300,000 for the year as a whole, representing under 2% of total delivery \nDelivery to date is marginally behind profile but forecast to hit the contracted volume by year-end.\nDirect costs of subcontracted delivery at £240,000 for the year equate to 80% of the value of the provision\nOverall Income and Expenditure Performance\nActual performance to date is behind budget giving rise to an operating deficit to date of -£575,000 and EBITDA of -£37,000\nThe forecast out-turn deficit of £262,000 is £242,000 higher than the budgeted deficit of £20,000 giving rise to EBITDA of £655,000 (3.2%).  This is substantially worse than the previous year out-turn surplus of £827,000 (EBITDA of £1.893m or 8.7%)",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 9,
+              "title": "Income and Expenditure Bridge",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 50.57,
+                  "y": 29.89,
+                  "width": 828,
+                  "height": 58.11,
+                  "text": "Income and Expenditure Bridge",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [],
+              "charts": [
+                {
+                  "type": "",
+                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)Income and Expenditure Forecast Variance to Budget (£’000)",
+                  "series": []
+                }
+              ],
+              "notes": ""
+            },
+            {
+              "number": 10,
+              "title": "Sensitivity testing",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 14.83,
+                  "y": 26.46,
+                  "width": 828,
+                  "height": 36.39,
+                  "text": "Sensitivity testing",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 14.83,
+                  "y": 53.1,
+                  "width": 378.86,
+                  "height": 433.8,
+                  "text": "The table opposite indicates three scenarios for the forecast out-turn reflecting three key variables (see numbers highlighted in boxes):\nASF income (full achievement of allocations under best case and shortfall of 10% worst case)\nFE / Full cost fees potential additional shortfall of £50,000 (worst case)\nAchievement in-year of £82,000 savings in pay costs and £160,000 non-pay costs (best case)\n\nThe best case scenario would result in an operating surplus of £119,000 i.e. marginally better than budget.\nThe base case scenario (most likely outcome) results in a operating deficit of £262,000 which will trigger a covenant breach, which needs to be discussed with the DfE.  If a waiver can be secured financial health will remain requires improvement.\nThe worst case scenario results in an operating deficit of £472,000 and covenant breach.  Even if a waiver is secured, the financial health autoscore would fall to inadequate to a lower EBITDA and a weaker adjusted current ratio."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Forecast Out-turn (£’000)",
+                      "Base case",
+                      "Best case",
+                      "Worst case"
+                    ],
+                    [
+                      "16-19 Grant Income",
+                      "13,022",
+                      "13,022",
+                      "13,022"
+                    ],
+                    [
+                      "Adult Skills Fund",
+                      "2,848",
+                      "2,987",
+                      "2,688"
+                    ],
+                    [
+                      "Other Grants / LA Income",
+                      "653",
+                      "653",
+                      "653"
+                    ],
+                    [
+                      "Apprenticeships",
+                      "855",
+                      "855",
+                      "855"
+                    ],
+                    [
+                      "Higher Education Grants / Fees",
+                      "2,126",
+                      "2,126",
+                      "2,126"
+                    ],
+                    [
+                      "Adv Learner Loans, FE and Full Cost Fees",
+                      "849",
+                      "849",
+                      "799"
+                    ],
+                    [
+                      "Other Income",
+                      "317",
+                      "317",
+                      "317"
+                    ],
+                    [
+                      "Total Income",
+                      "20,670",
+                      "20,809",
+                      "20,460"
+                    ],
+                    [
+                      "Pay Costs (excluding staff restructuring)",
+                      "13,896",
+                      "13,814",
+                      "13,896"
+                    ],
+                    [
+                      "Staff Restructuring Costs",
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    [
+                      "Other Non-Pay Costs",
+                      "6,119",
+                      "5,959",
+                      "6,119"
+                    ],
+                    [
+                      "Total Operating Expenditure",
+                      "20,015",
+                      "19,773",
+                      "20,015"
+                    ],
+                    [
+                      "Education EBITDA",
+                      "655",
+                      "1,036",
+                      "445"
+                    ],
+                    [
+                      "Release of Capital Grants",
+                      "102",
+                      "102",
+                      "102"
+                    ],
+                    [
+                      "Investment Income",
+                      "12",
+                      "12",
+                      "12"
+                    ],
+                    [
+                      "Depreciation",
+                      "(715)",
+                      "(715)",
+                      "(715)"
+                    ],
+                    [
+                      "Interest",
+                      "(316)",
+                      "(316)",
+                      "(316)"
+                    ],
+                    [
+                      "Operating Surplus / Deficit",
+                      "(262)",
+                      "119",
+                      "(472)"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 11,
+              "title": "Capital expenditure",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 13.43,
+                  "y": 29.23,
+                  "width": 828,
+                  "height": 22.2,
+                  "text": "Capital expenditure",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 0,
+                  "y": 486.44,
+                  "width": 960,
+                  "height": 70.28,
+                  "text": "Notes:  All capital projects are proceeding to plan.  Overall capex for the year is forecast to be £10,000 below the full-year budget."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Capital Budget",
+                      "Year to date \nactual \n£’000",
+                      "Committed\n\n\n£’000",
+                      "Total (actual + committed) \n£’000",
+                      "Full year\nbudget \n\n£’000",
+                      "Forecast Full Year\n\n£’000",
+                      "Forecast under/(overspend)\n£’000"
+                    ],
+                    [
+                      "Server upgrades",
+                      "34",
+                      "15",
+                      "49",
+                      "60",
+                      "60",
+                      "0"
+                    ],
+                    [
+                      "New HR system",
+                      "10",
+                      "34",
+                      "44",
+                      "40",
+                      "45",
+                      "(5)"
+                    ],
+                    [
+                      "Replacement PCs",
+                      "141",
+                      "22",
+                      "163",
+                      "250",
+                      "237",
+                      "13"
+                    ],
+                    [
+                      "Curriculum equipment",
+                      "32",
+                      "28",
+                      "60",
+                      "60",
+                      "67",
+                      "(7)"
+                    ],
+                    [
+                      "Relocation of electrical",
+                      "20",
+                      "0",
+                      "20",
+                      "160",
+                      "140",
+                      "20"
+                    ],
+                    [
+                      "Refectory upgrade",
+                      "88",
+                      "29",
+                      "117",
+                      "131",
+                      "142",
+                      "(11)"
+                    ],
+                    [
+                      "Total",
+                      "325",
+                      "128",
+                      "453",
+                      "701",
+                      "691",
+                      "10"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 12,
+              "title": "Summary of Key Financial Risks",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 15.71,
+                  "y": 20.6,
+                  "width": 828,
+                  "height": 52.19,
+                  "text": "Summary of Key Financial Risks",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Ref",
+                      "Risk",
+                      "RAG rating"
+                    ],
+                    [
+                      "1",
+                      "Failure to achieve budget targets for 202W/2X leads to a breach of loan covenants that could trigger a decline in  financial health to inadequate",
+                      "Red"
+                    ],
+                    [
+                      "2",
+                      "Failure to  improve the underlying financial sustainability, including forward cashflows, of the college leading to a possible case for structural change",
+                      "Red"
+                    ],
+                    [
+                      "3",
+                      "Failure to secure agreement with the bank regarding waiver of the forecast covenant breach and/or to revised covenant terms, leading to requirement to report to DfE",
+                      "Red"
+                    ],
+                    [
+                      "4",
+                      "Cash days of 27 days in April 202X  (low point for year), decreasing to 17 days in January 202Y",
+                      "Amber"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 13,
+              "title": "Issues for further review",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 8,
+                  "y": 12.75,
+                  "width": 828,
+                  "height": 104.38,
+                  "text": "Issues for further review",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Ref",
+                      "Issue",
+                      "Timescale"
+                    ],
+                    [
+                      "1",
+                      "Monitoring of forecast loan covenant breach and progress with securing waiver before year-end.  Inform DfE of potential breach.",
+                      "July 202X"
+                    ],
+                    [
+                      "2",
+                      "Monitoring of potential for decline in forecast financial health grade for 202W/2X to inadequate (linked to covenant breach).  Inform DfE of potential decline.",
+                      "July 202X"
+                    ],
+                    [
+                      "3",
+                      "Confirmation of cost reduction actions aimed at achieving target in-year savings of circa £242,000",
+                      "April 202X (actions agreed)\nJuly 202X (actions implemented)"
+                    ],
+                    [
+                      "4",
+                      "Confirmation of strategies to achieve ASF budget targets for 202W/2X i.e. closing projected shortfall of £139,000",
+                      "April 202X (actions confirmed)\nJuly 202X (actions implemented)"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            }
+          ]
+        },
+        "table": {
+          "slide": 6,
+          "slideTitle": "Student Numbers",
+          "title": "Headcount",
+          "header": [
+            "Headcount",
+            "Full year actuals (last year)",
+            "Actuals (current year)",
+            "Full-year budget",
+            "Full-year forecast",
+            "RAG",
+            "Financial Implications"
+          ],
+          "rows": [
+            {
+              "programme": "16-19 students",
+              "last": "2,820",
+              "current": "2,780",
+              "budget": "2,710",
+              "forecast": "2,790",
+              "rag": "Green",
+              "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+            },
+            {
+              "programme": "ASF (including devolved)",
+              "last": "1,120",
+              "current": "743",
+              "budget": "1,230",
+              "forecast": "1,150",
+              "rag": "Red",
+              "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+            },
+            {
+              "programme": "16-18 Apprenticeships",
+              "last": "210",
+              "current": "115",
+              "budget": "136",
+              "forecast": "128",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+            },
+            {
+              "programme": "19+ Apprenticeships",
+              "last": "220",
+              "current": "123",
+              "budget": "145",
+              "forecast": "135",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £20,000"
+            },
+            {
+              "programme": "HE: full-time",
+              "last": "162",
+              "current": "128",
+              "budget": "135",
+              "forecast": "125",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+            },
+            {
+              "programme": "HE: part-time",
+              "last": "165",
+              "current": "160",
+              "budget": "160",
+              "forecast": "155",
+              "rag": "Amber",
+              "implications": "Marginally behind budget (£7,000 shortfall forecast)"
+            },
+            {
+              "programme": "Advanced Learner Loans",
+              "last": "185",
+              "current": "155",
+              "budget": "180",
+              "forecast": "180",
+              "rag": "Green",
+              "implications": "Broadly on budget"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "programme": "16-19 students",
+            "last": "2,820",
+            "current": "2,780",
+            "budget": "2,710",
+            "forecast": "2,790",
+            "rag": "Green",
+            "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+          },
+          {
+            "programme": "ASF (including devolved)",
+            "last": "1,120",
+            "current": "743",
+            "budget": "1,230",
+            "forecast": "1,150",
+            "rag": "Red",
+            "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+          },
+          {
+            "programme": "16-18 Apprenticeships",
+            "last": "210",
+            "current": "115",
+            "budget": "136",
+            "forecast": "128",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+          },
+          {
+            "programme": "19+ Apprenticeships",
+            "last": "220",
+            "current": "123",
+            "budget": "145",
+            "forecast": "135",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £20,000"
+          },
+          {
+            "programme": "HE: full-time",
+            "last": "162",
+            "current": "128",
+            "budget": "135",
+            "forecast": "125",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+          },
+          {
+            "programme": "HE: part-time",
+            "last": "165",
+            "current": "160",
+            "budget": "160",
+            "forecast": "155",
+            "rag": "Amber",
+            "implications": "Marginally behind budget (£7,000 shortfall forecast)"
+          },
+          {
+            "programme": "Advanced Learner Loans",
+            "last": "185",
+            "current": "155",
+            "budget": "180",
+            "forecast": "180",
+            "rag": "Green",
+            "implications": "Broadly on budget"
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+          "number": 1
+        },
+        "row": {
+          "programme": "16-19 students",
+          "last": "2,820",
+          "current": "2,780",
+          "budget": "2,710",
+          "forecast": "2,790",
+          "rag": "Green",
+          "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+        }
+      },
+      "mapping": {
+        "programme": {
+          "from": "16-19 students",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "16-19 students"
+            }
+          ]
+        },
+        "lastYearActual": {
+          "from": "2,820",
+          "steps": [
+            {
+              "op": "number",
+              "value": 2820
+            }
+          ]
+        },
+        "currentActual": {
+          "from": "2,780",
+          "steps": [
+            {
+              "op": "number",
+              "value": 2780
+            }
+          ]
+        },
+        "budget": {
+          "from": "2,710",
+          "steps": [
+            {
+              "op": "number",
+              "value": 2710
+            }
+          ]
+        },
+        "forecast": {
+          "from": "2,790",
+          "steps": [
+            {
+              "op": "number",
+              "value": 2790
+            }
+          ]
+        },
+        "rag": {
+          "from": "Green",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "Green"
+            }
+          ]
+        },
+        "implications": {
+          "from": "Increase in lagged funding in 202X/2Y of circa £350,000",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "Increase in lagged funding in 202X/2Y of circa £350,000"
+            }
+          ]
+        },
+        "slide": {
+          "from": 6,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+      "key": "[\"ASF (including devolved)\"]",
+      "data": {
+        "programme": "ASF (including devolved)",
+        "lastYearActual": 1120,
+        "currentActual": 743,
+        "budget": 1230,
+        "forecast": 1150,
+        "rag": "Red",
+        "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances",
+        "slide": 6
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx"
+        },
+        "file": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+        "deck": {
+          "kind": "deck",
+          "width": 960,
+          "height": 540,
+          "slides": [
+            {
+              "number": 1,
+              "title": "Weatherbury College\nManagement Accounts for the period to 31 January 202X",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.43,
+                  "y": 13.49,
+                  "width": 828,
+                  "height": 73.94,
+                  "text": "Weatherbury College\nManagement Accounts for the period to 31 January 202X",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Headlines",
+                      "Current Status",
+                      "Impact",
+                      "RAG",
+                      "Change"
+                    ],
+                    [
+                      "Operating surplus (deficit) to date",
+                      "Operating deficit to Jan 202X of £575,000",
+                      "£150,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Income vs budget to date",
+                      "Income to January 202X £10.147 million",
+                      "£202,000 (2%) adverse",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Pay costs vs budget to date",
+                      "Pay costs tracking £84,000 (1%) below budget",
+                      "",
+                      "Green",
+                      "Increased"
+                    ],
+                    [
+                      "Non-pay costs vs budget to date",
+                      "Non pay costs £28,000 (1%) over budget",
+                      "",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Forecast out-turn surplus (deficit)",
+                      "Forecast deficit for year of £262,000",
+                      "£242,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Forecast out-turn EBITDA",
+                      "Forecast EBITDA £655,000 (3.2% of turnover)",
+                      "£250,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Capital Programme",
+                      "All planned capital expenditure on track",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Asset Disposals",
+                      "No major asset disposals planned",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Cash vs forecast",
+                      "Projected year-end cash 38 cash days in hand",
+                      "£200,000 adverse",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Cash generation from operations",
+                      "Forecast £700,000 increase",
+                      "£207,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Covenant compliance",
+                      "Prospect of loan covenant breach",
+                      "Work ongoing",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Financial health",
+                      "Revised forecast 120 points (RI)",
+                      "Risk of inadequate FH",
+                      "Red",
+                      "Decreased"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 2,
+              "title": "Key Performance Indicators",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.41,
+                  "y": 32.26,
+                  "width": 828,
+                  "height": 27.76,
+                  "text": "Key Performance Indicators",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Indicator",
+                      "Actuals",
+                      "Forecast \n(full year)",
+                      "Budget / Target (full year)",
+                      "Variance",
+                      "RAG",
+                      "Movement"
+                    ],
+                    [
+                      "Turnover",
+                      "£10.15m",
+                      "£20.67m",
+                      "£21.03m",
+                      "(£0.36m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Operating Surplus/Deficit",
+                      "(£0.58m)",
+                      "(£0.26m)",
+                      "(£0.02m)",
+                      "(£0.24m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Operating Surplus/Deficit as % of Turnover",
+                      "(5.7%)",
+                      "(1.3%)",
+                      "(0.1%)",
+                      "(1.2%)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Education EBITDA",
+                      "(£0.04m)",
+                      "£0.66m",
+                      "£0.91m",
+                      "(£0.25m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Education EBITDA as % of Turnover",
+                      "(0.4%)",
+                      "3.2%",
+                      "4.3%",
+                      "(1.1%)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Cash Reserves",
+                      "£2.09m",
+                      "£2.08m",
+                      "£2.28m",
+                      "(£0.2m)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Cash Days in Hand",
+                      "38",
+                      "38",
+                      "41",
+                      "-3 days",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Loan balance",
+                      "£8.12m",
+                      "£7.92m",
+                      "£7.92m",
+                      "nil",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Debt service cover",
+                      "",
+                      "0.97",
+                      "1.26",
+                      "(0.29)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Staff Numbers (fte’s)",
+                      "329.2",
+                      "",
+                      "335.8",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Pay as % of Turnover",
+                      "69.7%",
+                      "68.2%",
+                      "68.1%",
+                      "(0.1%)",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Debtor Days",
+                      "15",
+                      "13",
+                      "14",
+                      "1",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Creditor Days",
+                      "31",
+                      "26",
+                      "26",
+                      "-",
+                      "Green",
+                      "No change"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 3,
+              "title": "Cash",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 15.27,
+                  "y": 7.45,
+                  "width": 408.13,
+                  "height": 36,
+                  "text": "Cash",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 507.49,
+                  "y": 43.45,
+                  "width": 353.14,
+                  "height": 46.05,
+                  "text": "Notes and assumptions"
+                },
+                {
+                  "x": 486,
+                  "y": 101.89,
+                  "width": 408.13,
+                  "height": 438.11,
+                  "text": "Actual cash at bank at 31 January is £2.09 million, equivalent to 38 cash days in hand.  This is marginally lower than forecast due to the adverse operating performance to date.\nCash balances are forecast to fall to a low-point of £1.5 million at the end of April 202X, equivalent to 27 cash days in hand (below the FEC benchmark of 40 cash days)\nCreditor payments are not falling behind.\nHowever, forecast EBITDA for the year of £655,000 is substantially less than the combined costs of debt servicing (£720,000) and the capital programme (£691,000).  This underlines the need to improve EBITDA going forward to avoid the continuing decline in cash reserves.\nDebt recovery actions are working well, with debtor days currently at 15 compared to the target of 14 for the year as a whole.",
+                  "placeholder": "obj"
+                },
+                {
+                  "x": 15.27,
+                  "y": 427.33,
+                  "width": 453.56,
+                  "height": 50.89,
+                  "text": "This is an illustrative example of a cashflow forecast as described under ‘notes and assumptions.’"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 4,
+              "title": "Loan Covenant Compliance",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.14,
+                  "y": 28.75,
+                  "width": 884.86,
+                  "height": 29.51,
+                  "text": "Loan Covenant Compliance",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 521.14,
+                  "y": 58.26,
+                  "width": 376.57,
+                  "height": 399.87,
+                  "text": "In order to avoid a covenant breach, EBITDA performance would need to improve by £199,000.\n\nGiven the prospect of a covenant breach, dialogue is ongoing with the bank to secure a waiver or agreement not to measure the covenants at year-end.  \n\nIn the event that agreement cannot be reached and the bank loan has to be re-classified as a current liability, this will impact adversely on the solvency ratio and almost certainly push the financial health autoscore to inadequate (headroom above inadequate is already as low as £37,000).\n\nThe DfE has been informed of this risk."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Not",
+                      "Forecast (full year)",
+                      "Budget (full year)",
+                      "Covenant Met?",
+                      "Head room"
+                    ],
+                    [
+                      "Debt service cover > 1.25",
+                      "0.97",
+                      "1.26",
+                      "NO",
+                      "Not met"
+                    ],
+                    [
+                      "Net borrowings: EBITDA < 7.0",
+                      "8.91",
+                      "6.23",
+                      "NO",
+                      "Not met"
+                    ],
+                    [
+                      "Net Assets (excluding pension liability) >0",
+                      "£3.17m",
+                      "£3.41m",
+                      "YES",
+                      "£3.17m"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 5,
+              "title": "Financial Health",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 32.86,
+                  "y": 19.92,
+                  "width": 828,
+                  "height": 21.54,
+                  "text": "Financial Health",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 603.43,
+                  "y": 147.96,
+                  "width": 313.14,
+                  "height": 233.19,
+                  "text": "In the event that agreement cannot be reached and the bank loan has to be re-classified as a current liability, this will impact adversely on the solvency ratio and almost certainly push the financial health autoscore to inadequate (headroom above inadequate is already as low as £37,000).\nThe DfE has been informed of this risk.",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Indicator",
+                      "Budget \n(full- year)",
+                      "Points",
+                      "Forecast \nOut-turn",
+                      "Points",
+                      "Move\nment"
+                    ],
+                    [
+                      "Solvency\n(adjusted current ratio)",
+                      "0.89",
+                      "40",
+                      "0.83",
+                      "40",
+                      "No change"
+                    ],
+                    [
+                      "Performance\n(EBITDA as % of adjusted income)",
+                      "4.3%",
+                      "40",
+                      "3.2%",
+                      "30",
+                      "Decreased"
+                    ],
+                    [
+                      "Borrowing\n(Loans as % of adjusted income)",
+                      "37.7%",
+                      "50",
+                      "38.3%",
+                      "50",
+                      "No change"
+                    ],
+                    [
+                      "Automated Financial \nHealth Grade",
+                      "RI",
+                      "130",
+                      "RI",
+                      "120",
+                      "Decreased"
+                    ],
+                    [
+                      "Self-Assessed\nFinancial Health Grade",
+                      "RI",
+                      "",
+                      "RI",
+                      "",
+                      ""
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 6,
+              "title": "Student Numbers",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 10,
+                  "y": 28.4,
+                  "width": 828,
+                  "height": 38.04,
+                  "text": "Student Numbers",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Headcount",
+                      "Full year\nactuals\n(last year)",
+                      "Actuals\n(current year)",
+                      "Full-year\nbudget",
+                      "Full-year\nforecast",
+                      "RAG",
+                      "Financial Implications"
+                    ],
+                    [
+                      "16-19 students",
+                      "2,820",
+                      "2,780",
+                      "2,710",
+                      "2,790",
+                      "Green",
+                      "Increase in lagged funding in 202X/2Y of circa £350,000"
+                    ],
+                    [
+                      "ASF (including devolved)",
+                      "1,120",
+                      "743",
+                      "1,230",
+                      "1,150",
+                      "Red",
+                      "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+                    ],
+                    [
+                      "16-18 Apprenticeships",
+                      "210",
+                      "115",
+                      "136",
+                      "128",
+                      "Red",
+                      "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+                    ],
+                    [
+                      "19+ Apprenticeships",
+                      "220",
+                      "123",
+                      "145",
+                      "135",
+                      "Red",
+                      "Forecast shortfall in income of £20,000"
+                    ],
+                    [
+                      "HE: full-time",
+                      "162",
+                      "128",
+                      "135",
+                      "125",
+                      "Red",
+                      "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+                    ],
+                    [
+                      "HE: part-time",
+                      "165",
+                      "160",
+                      "160",
+                      "155",
+                      "Amber",
+                      "Marginally behind budget (£7,000 shortfall forecast)"
+                    ],
+                    [
+                      "Advanced Learner Loans",
+                      "185",
+                      "155",
+                      "180",
+                      "180",
+                      "Green",
+                      "Broadly on budget"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 7,
+              "title": "Income and Expenditure Commentary",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 66,
+                  "y": 28.75,
+                  "width": 828,
+                  "height": 54.68,
+                  "text": "Income and Expenditure Commentary",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 66,
+                  "y": 83.43,
+                  "width": 828,
+                  "height": 342.63,
+                  "text": "Income \nAdult Skills Fund (ASF and devolved) performance tracking 6% behind budget to date, forecast shortfall at year-end £139,000 (therefore outside tolerance)\nApprenticeships income tracking £29,000 (6%) behind budget to date, forecast shortfall £56,000 (6%) at year-end\nHE loan income tracking £45,000 (5%) behind budget to date, forecast to increase to £92,000 shortfall (5%) by year-end\nOverall income performance for the period to 31 January is £202,000 (2%) below budget.  Full-year forecast income at £20.670m is £356,000 (2%) below budget.\nCompared with 202V/2W, forecast income is down 5% from £21.8m to £20.67m \nPay \nTeaching pay costs to date are £47,000 (1%) below budget to date, partly offset by an additional £33,000 on sessional staff.  Forecast outturn is a net underspend of £69,000 (1%) on teaching and sessional staffing\nNon-teaching pay costs are tracking £62,000 (2%) below budget to date, which is forecast to continue to year-end (underspend of £128,000 or 2%)\nOverall pay costs to date are £84,000 (1%) below budget to date, forecast to increase to an underspend of £216,000 (2%) by year end.\nDespite this pay costs as % of turnover are forecast to out-turn slightly above budget at 68.2% due to lower forecast turnover.  At 68.2% pay costs remain 3.2% above the FEC benchmark of 65%.",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 8,
+              "title": "Income and Expenditure Commentary (continued)",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 66,
+                  "y": 28.75,
+                  "width": 828,
+                  "height": 63.82,
+                  "text": "Income and Expenditure Commentary (continued)",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 66,
+                  "y": 105.46,
+                  "width": 828,
+                  "height": 342.63,
+                  "text": "Non-pay\nOverall non-pay expenditure to 31 January is tracking £28,000 over budget to date, with the main pressure points being other operating expenditure(£54,000 which includes £31,000 on student laptops); rent and lease costs(£33,000); estates(£30,000);\nThe forecast out-turn non-pay costs at £6.119m are £110,000 (2%) over budget despite a forecast underspend of £33,000 on education supplies and services\nSub-contracted Delivery\nSub-contracted delivery is budgeted at £300,000 for the year as a whole, representing under 2% of total delivery \nDelivery to date is marginally behind profile but forecast to hit the contracted volume by year-end.\nDirect costs of subcontracted delivery at £240,000 for the year equate to 80% of the value of the provision\nOverall Income and Expenditure Performance\nActual performance to date is behind budget giving rise to an operating deficit to date of -£575,000 and EBITDA of -£37,000\nThe forecast out-turn deficit of £262,000 is £242,000 higher than the budgeted deficit of £20,000 giving rise to EBITDA of £655,000 (3.2%).  This is substantially worse than the previous year out-turn surplus of £827,000 (EBITDA of £1.893m or 8.7%)",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 9,
+              "title": "Income and Expenditure Bridge",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 50.57,
+                  "y": 29.89,
+                  "width": 828,
+                  "height": 58.11,
+                  "text": "Income and Expenditure Bridge",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [],
+              "charts": [
+                {
+                  "type": "",
+                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)Income and Expenditure Forecast Variance to Budget (£’000)",
+                  "series": []
+                }
+              ],
+              "notes": ""
+            },
+            {
+              "number": 10,
+              "title": "Sensitivity testing",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 14.83,
+                  "y": 26.46,
+                  "width": 828,
+                  "height": 36.39,
+                  "text": "Sensitivity testing",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 14.83,
+                  "y": 53.1,
+                  "width": 378.86,
+                  "height": 433.8,
+                  "text": "The table opposite indicates three scenarios for the forecast out-turn reflecting three key variables (see numbers highlighted in boxes):\nASF income (full achievement of allocations under best case and shortfall of 10% worst case)\nFE / Full cost fees potential additional shortfall of £50,000 (worst case)\nAchievement in-year of £82,000 savings in pay costs and £160,000 non-pay costs (best case)\n\nThe best case scenario would result in an operating surplus of £119,000 i.e. marginally better than budget.\nThe base case scenario (most likely outcome) results in a operating deficit of £262,000 which will trigger a covenant breach, which needs to be discussed with the DfE.  If a waiver can be secured financial health will remain requires improvement.\nThe worst case scenario results in an operating deficit of £472,000 and covenant breach.  Even if a waiver is secured, the financial health autoscore would fall to inadequate to a lower EBITDA and a weaker adjusted current ratio."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Forecast Out-turn (£’000)",
+                      "Base case",
+                      "Best case",
+                      "Worst case"
+                    ],
+                    [
+                      "16-19 Grant Income",
+                      "13,022",
+                      "13,022",
+                      "13,022"
+                    ],
+                    [
+                      "Adult Skills Fund",
+                      "2,848",
+                      "2,987",
+                      "2,688"
+                    ],
+                    [
+                      "Other Grants / LA Income",
+                      "653",
+                      "653",
+                      "653"
+                    ],
+                    [
+                      "Apprenticeships",
+                      "855",
+                      "855",
+                      "855"
+                    ],
+                    [
+                      "Higher Education Grants / Fees",
+                      "2,126",
+                      "2,126",
+                      "2,126"
+                    ],
+                    [
+                      "Adv Learner Loans, FE and Full Cost Fees",
+                      "849",
+                      "849",
+                      "799"
+                    ],
+                    [
+                      "Other Income",
+                      "317",
+                      "317",
+                      "317"
+                    ],
+                    [
+                      "Total Income",
+                      "20,670",
+                      "20,809",
+                      "20,460"
+                    ],
+                    [
+                      "Pay Costs (excluding staff restructuring)",
+                      "13,896",
+                      "13,814",
+                      "13,896"
+                    ],
+                    [
+                      "Staff Restructuring Costs",
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    [
+                      "Other Non-Pay Costs",
+                      "6,119",
+                      "5,959",
+                      "6,119"
+                    ],
+                    [
+                      "Total Operating Expenditure",
+                      "20,015",
+                      "19,773",
+                      "20,015"
+                    ],
+                    [
+                      "Education EBITDA",
+                      "655",
+                      "1,036",
+                      "445"
+                    ],
+                    [
+                      "Release of Capital Grants",
+                      "102",
+                      "102",
+                      "102"
+                    ],
+                    [
+                      "Investment Income",
+                      "12",
+                      "12",
+                      "12"
+                    ],
+                    [
+                      "Depreciation",
+                      "(715)",
+                      "(715)",
+                      "(715)"
+                    ],
+                    [
+                      "Interest",
+                      "(316)",
+                      "(316)",
+                      "(316)"
+                    ],
+                    [
+                      "Operating Surplus / Deficit",
+                      "(262)",
+                      "119",
+                      "(472)"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 11,
+              "title": "Capital expenditure",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 13.43,
+                  "y": 29.23,
+                  "width": 828,
+                  "height": 22.2,
+                  "text": "Capital expenditure",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 0,
+                  "y": 486.44,
+                  "width": 960,
+                  "height": 70.28,
+                  "text": "Notes:  All capital projects are proceeding to plan.  Overall capex for the year is forecast to be £10,000 below the full-year budget."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Capital Budget",
+                      "Year to date \nactual \n£’000",
+                      "Committed\n\n\n£’000",
+                      "Total (actual + committed) \n£’000",
+                      "Full year\nbudget \n\n£’000",
+                      "Forecast Full Year\n\n£’000",
+                      "Forecast under/(overspend)\n£’000"
+                    ],
+                    [
+                      "Server upgrades",
+                      "34",
+                      "15",
+                      "49",
+                      "60",
+                      "60",
+                      "0"
+                    ],
+                    [
+                      "New HR system",
+                      "10",
+                      "34",
+                      "44",
+                      "40",
+                      "45",
+                      "(5)"
+                    ],
+                    [
+                      "Replacement PCs",
+                      "141",
+                      "22",
+                      "163",
+                      "250",
+                      "237",
+                      "13"
+                    ],
+                    [
+                      "Curriculum equipment",
+                      "32",
+                      "28",
+                      "60",
+                      "60",
+                      "67",
+                      "(7)"
+                    ],
+                    [
+                      "Relocation of electrical",
+                      "20",
+                      "0",
+                      "20",
+                      "160",
+                      "140",
+                      "20"
+                    ],
+                    [
+                      "Refectory upgrade",
+                      "88",
+                      "29",
+                      "117",
+                      "131",
+                      "142",
+                      "(11)"
+                    ],
+                    [
+                      "Total",
+                      "325",
+                      "128",
+                      "453",
+                      "701",
+                      "691",
+                      "10"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 12,
+              "title": "Summary of Key Financial Risks",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 15.71,
+                  "y": 20.6,
+                  "width": 828,
+                  "height": 52.19,
+                  "text": "Summary of Key Financial Risks",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Ref",
+                      "Risk",
+                      "RAG rating"
+                    ],
+                    [
+                      "1",
+                      "Failure to achieve budget targets for 202W/2X leads to a breach of loan covenants that could trigger a decline in  financial health to inadequate",
+                      "Red"
+                    ],
+                    [
+                      "2",
+                      "Failure to  improve the underlying financial sustainability, including forward cashflows, of the college leading to a possible case for structural change",
+                      "Red"
+                    ],
+                    [
+                      "3",
+                      "Failure to secure agreement with the bank regarding waiver of the forecast covenant breach and/or to revised covenant terms, leading to requirement to report to DfE",
+                      "Red"
+                    ],
+                    [
+                      "4",
+                      "Cash days of 27 days in April 202X  (low point for year), decreasing to 17 days in January 202Y",
+                      "Amber"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 13,
+              "title": "Issues for further review",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 8,
+                  "y": 12.75,
+                  "width": 828,
+                  "height": 104.38,
+                  "text": "Issues for further review",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Ref",
+                      "Issue",
+                      "Timescale"
+                    ],
+                    [
+                      "1",
+                      "Monitoring of forecast loan covenant breach and progress with securing waiver before year-end.  Inform DfE of potential breach.",
+                      "July 202X"
+                    ],
+                    [
+                      "2",
+                      "Monitoring of potential for decline in forecast financial health grade for 202W/2X to inadequate (linked to covenant breach).  Inform DfE of potential decline.",
+                      "July 202X"
+                    ],
+                    [
+                      "3",
+                      "Confirmation of cost reduction actions aimed at achieving target in-year savings of circa £242,000",
+                      "April 202X (actions agreed)\nJuly 202X (actions implemented)"
+                    ],
+                    [
+                      "4",
+                      "Confirmation of strategies to achieve ASF budget targets for 202W/2X i.e. closing projected shortfall of £139,000",
+                      "April 202X (actions confirmed)\nJuly 202X (actions implemented)"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            }
+          ]
+        },
+        "table": {
+          "slide": 6,
+          "slideTitle": "Student Numbers",
+          "title": "Headcount",
+          "header": [
+            "Headcount",
+            "Full year actuals (last year)",
+            "Actuals (current year)",
+            "Full-year budget",
+            "Full-year forecast",
+            "RAG",
+            "Financial Implications"
+          ],
+          "rows": [
+            {
+              "programme": "16-19 students",
+              "last": "2,820",
+              "current": "2,780",
+              "budget": "2,710",
+              "forecast": "2,790",
+              "rag": "Green",
+              "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+            },
+            {
+              "programme": "ASF (including devolved)",
+              "last": "1,120",
+              "current": "743",
+              "budget": "1,230",
+              "forecast": "1,150",
+              "rag": "Red",
+              "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+            },
+            {
+              "programme": "16-18 Apprenticeships",
+              "last": "210",
+              "current": "115",
+              "budget": "136",
+              "forecast": "128",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+            },
+            {
+              "programme": "19+ Apprenticeships",
+              "last": "220",
+              "current": "123",
+              "budget": "145",
+              "forecast": "135",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £20,000"
+            },
+            {
+              "programme": "HE: full-time",
+              "last": "162",
+              "current": "128",
+              "budget": "135",
+              "forecast": "125",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+            },
+            {
+              "programme": "HE: part-time",
+              "last": "165",
+              "current": "160",
+              "budget": "160",
+              "forecast": "155",
+              "rag": "Amber",
+              "implications": "Marginally behind budget (£7,000 shortfall forecast)"
+            },
+            {
+              "programme": "Advanced Learner Loans",
+              "last": "185",
+              "current": "155",
+              "budget": "180",
+              "forecast": "180",
+              "rag": "Green",
+              "implications": "Broadly on budget"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "programme": "16-19 students",
+            "last": "2,820",
+            "current": "2,780",
+            "budget": "2,710",
+            "forecast": "2,790",
+            "rag": "Green",
+            "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+          },
+          {
+            "programme": "ASF (including devolved)",
+            "last": "1,120",
+            "current": "743",
+            "budget": "1,230",
+            "forecast": "1,150",
+            "rag": "Red",
+            "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+          },
+          {
+            "programme": "16-18 Apprenticeships",
+            "last": "210",
+            "current": "115",
+            "budget": "136",
+            "forecast": "128",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+          },
+          {
+            "programme": "19+ Apprenticeships",
+            "last": "220",
+            "current": "123",
+            "budget": "145",
+            "forecast": "135",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £20,000"
+          },
+          {
+            "programme": "HE: full-time",
+            "last": "162",
+            "current": "128",
+            "budget": "135",
+            "forecast": "125",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+          },
+          {
+            "programme": "HE: part-time",
+            "last": "165",
+            "current": "160",
+            "budget": "160",
+            "forecast": "155",
+            "rag": "Amber",
+            "implications": "Marginally behind budget (£7,000 shortfall forecast)"
+          },
+          {
+            "programme": "Advanced Learner Loans",
+            "last": "185",
+            "current": "155",
+            "budget": "180",
+            "forecast": "180",
+            "rag": "Green",
+            "implications": "Broadly on budget"
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+          "number": 1
+        },
+        "row": {
+          "programme": "ASF (including devolved)",
+          "last": "1,120",
+          "current": "743",
+          "budget": "1,230",
+          "forecast": "1,150",
+          "rag": "Red",
+          "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+        }
+      },
+      "mapping": {
+        "programme": {
+          "from": "ASF (including devolved)",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "ASF (including devolved)"
+            }
+          ]
+        },
+        "lastYearActual": {
+          "from": "1,120",
+          "steps": [
+            {
+              "op": "number",
+              "value": 1120
+            }
+          ]
+        },
+        "currentActual": {
+          "from": "743",
+          "steps": [
+            {
+              "op": "number",
+              "value": 743
+            }
+          ]
+        },
+        "budget": {
+          "from": "1,230",
+          "steps": [
+            {
+              "op": "number",
+              "value": 1230
+            }
+          ]
+        },
+        "forecast": {
+          "from": "1,150",
+          "steps": [
+            {
+              "op": "number",
+              "value": 1150
+            }
+          ]
+        },
+        "rag": {
+          "from": "Red",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "Red"
+            }
+          ]
+        },
+        "implications": {
+          "from": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+            }
+          ]
+        },
+        "slide": {
+          "from": 6,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+      "key": "[\"16-18 Apprenticeships\"]",
+      "data": {
+        "programme": "16-18 Apprenticeships",
+        "lastYearActual": 210,
+        "currentActual": 115,
+        "budget": 136,
+        "forecast": 128,
+        "rag": "Red",
+        "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year",
+        "slide": 6
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx"
+        },
+        "file": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+        "deck": {
+          "kind": "deck",
+          "width": 960,
+          "height": 540,
+          "slides": [
+            {
+              "number": 1,
+              "title": "Weatherbury College\nManagement Accounts for the period to 31 January 202X",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.43,
+                  "y": 13.49,
+                  "width": 828,
+                  "height": 73.94,
+                  "text": "Weatherbury College\nManagement Accounts for the period to 31 January 202X",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Headlines",
+                      "Current Status",
+                      "Impact",
+                      "RAG",
+                      "Change"
+                    ],
+                    [
+                      "Operating surplus (deficit) to date",
+                      "Operating deficit to Jan 202X of £575,000",
+                      "£150,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Income vs budget to date",
+                      "Income to January 202X £10.147 million",
+                      "£202,000 (2%) adverse",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Pay costs vs budget to date",
+                      "Pay costs tracking £84,000 (1%) below budget",
+                      "",
+                      "Green",
+                      "Increased"
+                    ],
+                    [
+                      "Non-pay costs vs budget to date",
+                      "Non pay costs £28,000 (1%) over budget",
+                      "",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Forecast out-turn surplus (deficit)",
+                      "Forecast deficit for year of £262,000",
+                      "£242,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Forecast out-turn EBITDA",
+                      "Forecast EBITDA £655,000 (3.2% of turnover)",
+                      "£250,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Capital Programme",
+                      "All planned capital expenditure on track",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Asset Disposals",
+                      "No major asset disposals planned",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Cash vs forecast",
+                      "Projected year-end cash 38 cash days in hand",
+                      "£200,000 adverse",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Cash generation from operations",
+                      "Forecast £700,000 increase",
+                      "£207,000 adverse",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Covenant compliance",
+                      "Prospect of loan covenant breach",
+                      "Work ongoing",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Financial health",
+                      "Revised forecast 120 points (RI)",
+                      "Risk of inadequate FH",
+                      "Red",
+                      "Decreased"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 2,
+              "title": "Key Performance Indicators",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.41,
+                  "y": 32.26,
+                  "width": 828,
+                  "height": 27.76,
+                  "text": "Key Performance Indicators",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Indicator",
+                      "Actuals",
+                      "Forecast \n(full year)",
+                      "Budget / Target (full year)",
+                      "Variance",
+                      "RAG",
+                      "Movement"
+                    ],
+                    [
+                      "Turnover",
+                      "£10.15m",
+                      "£20.67m",
+                      "£21.03m",
+                      "(£0.36m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Operating Surplus/Deficit",
+                      "(£0.58m)",
+                      "(£0.26m)",
+                      "(£0.02m)",
+                      "(£0.24m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Operating Surplus/Deficit as % of Turnover",
+                      "(5.7%)",
+                      "(1.3%)",
+                      "(0.1%)",
+                      "(1.2%)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Education EBITDA",
+                      "(£0.04m)",
+                      "£0.66m",
+                      "£0.91m",
+                      "(£0.25m)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Education EBITDA as % of Turnover",
+                      "(0.4%)",
+                      "3.2%",
+                      "4.3%",
+                      "(1.1%)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Cash Reserves",
+                      "£2.09m",
+                      "£2.08m",
+                      "£2.28m",
+                      "(£0.2m)",
+                      "Red",
+                      "No change"
+                    ],
+                    [
+                      "Cash Days in Hand",
+                      "38",
+                      "38",
+                      "41",
+                      "-3 days",
+                      "Amber",
+                      "Decreased"
+                    ],
+                    [
+                      "Loan balance",
+                      "£8.12m",
+                      "£7.92m",
+                      "£7.92m",
+                      "nil",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Debt service cover",
+                      "",
+                      "0.97",
+                      "1.26",
+                      "(0.29)",
+                      "Red",
+                      "Decreased"
+                    ],
+                    [
+                      "Staff Numbers (fte’s)",
+                      "329.2",
+                      "",
+                      "335.8",
+                      "",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Pay as % of Turnover",
+                      "69.7%",
+                      "68.2%",
+                      "68.1%",
+                      "(0.1%)",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Debtor Days",
+                      "15",
+                      "13",
+                      "14",
+                      "1",
+                      "Green",
+                      "No change"
+                    ],
+                    [
+                      "Creditor Days",
+                      "31",
+                      "26",
+                      "26",
+                      "-",
+                      "Green",
+                      "No change"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 3,
+              "title": "Cash",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 15.27,
+                  "y": 7.45,
+                  "width": 408.13,
+                  "height": 36,
+                  "text": "Cash",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 507.49,
+                  "y": 43.45,
+                  "width": 353.14,
+                  "height": 46.05,
+                  "text": "Notes and assumptions"
+                },
+                {
+                  "x": 486,
+                  "y": 101.89,
+                  "width": 408.13,
+                  "height": 438.11,
+                  "text": "Actual cash at bank at 31 January is £2.09 million, equivalent to 38 cash days in hand.  This is marginally lower than forecast due to the adverse operating performance to date.\nCash balances are forecast to fall to a low-point of £1.5 million at the end of April 202X, equivalent to 27 cash days in hand (below the FEC benchmark of 40 cash days)\nCreditor payments are not falling behind.\nHowever, forecast EBITDA for the year of £655,000 is substantially less than the combined costs of debt servicing (£720,000) and the capital programme (£691,000).  This underlines the need to improve EBITDA going forward to avoid the continuing decline in cash reserves.\nDebt recovery actions are working well, with debtor days currently at 15 compared to the target of 14 for the year as a whole.",
+                  "placeholder": "obj"
+                },
+                {
+                  "x": 15.27,
+                  "y": 427.33,
+                  "width": 453.56,
+                  "height": 50.89,
+                  "text": "This is an illustrative example of a cashflow forecast as described under ‘notes and assumptions.’"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 4,
+              "title": "Loan Covenant Compliance",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 9.14,
+                  "y": 28.75,
+                  "width": 884.86,
+                  "height": 29.51,
+                  "text": "Loan Covenant Compliance",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 521.14,
+                  "y": 58.26,
+                  "width": 376.57,
+                  "height": 399.87,
+                  "text": "In order to avoid a covenant breach, EBITDA performance would need to improve by £199,000.\n\nGiven the prospect of a covenant breach, dialogue is ongoing with the bank to secure a waiver or agreement not to measure the covenants at year-end.  \n\nIn the event that agreement cannot be reached and the bank loan has to be re-classified as a current liability, this will impact adversely on the solvency ratio and almost certainly push the financial health autoscore to inadequate (headroom above inadequate is already as low as £37,000).\n\nThe DfE has been informed of this risk."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Not",
+                      "Forecast (full year)",
+                      "Budget (full year)",
+                      "Covenant Met?",
+                      "Head room"
+                    ],
+                    [
+                      "Debt service cover > 1.25",
+                      "0.97",
+                      "1.26",
+                      "NO",
+                      "Not met"
+                    ],
+                    [
+                      "Net borrowings: EBITDA < 7.0",
+                      "8.91",
+                      "6.23",
+                      "NO",
+                      "Not met"
+                    ],
+                    [
+                      "Net Assets (excluding pension liability) >0",
+                      "£3.17m",
+                      "£3.41m",
+                      "YES",
+                      "£3.17m"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 5,
+              "title": "Financial Health",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 32.86,
+                  "y": 19.92,
+                  "width": 828,
+                  "height": 21.54,
+                  "text": "Financial Health",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 603.43,
+                  "y": 147.96,
+                  "width": 313.14,
+                  "height": 233.19,
+                  "text": "In the event that agreement cannot be reached and the bank loan has to be re-classified as a current liability, this will impact adversely on the solvency ratio and almost certainly push the financial health autoscore to inadequate (headroom above inadequate is already as low as £37,000).\nThe DfE has been informed of this risk.",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Indicator",
+                      "Budget \n(full- year)",
+                      "Points",
+                      "Forecast \nOut-turn",
+                      "Points",
+                      "Move\nment"
+                    ],
+                    [
+                      "Solvency\n(adjusted current ratio)",
+                      "0.89",
+                      "40",
+                      "0.83",
+                      "40",
+                      "No change"
+                    ],
+                    [
+                      "Performance\n(EBITDA as % of adjusted income)",
+                      "4.3%",
+                      "40",
+                      "3.2%",
+                      "30",
+                      "Decreased"
+                    ],
+                    [
+                      "Borrowing\n(Loans as % of adjusted income)",
+                      "37.7%",
+                      "50",
+                      "38.3%",
+                      "50",
+                      "No change"
+                    ],
+                    [
+                      "Automated Financial \nHealth Grade",
+                      "RI",
+                      "130",
+                      "RI",
+                      "120",
+                      "Decreased"
+                    ],
+                    [
+                      "Self-Assessed\nFinancial Health Grade",
+                      "RI",
+                      "",
+                      "RI",
+                      "",
+                      ""
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 6,
+              "title": "Student Numbers",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 10,
+                  "y": 28.4,
+                  "width": 828,
+                  "height": 38.04,
+                  "text": "Student Numbers",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Headcount",
+                      "Full year\nactuals\n(last year)",
+                      "Actuals\n(current year)",
+                      "Full-year\nbudget",
+                      "Full-year\nforecast",
+                      "RAG",
+                      "Financial Implications"
+                    ],
+                    [
+                      "16-19 students",
+                      "2,820",
+                      "2,780",
+                      "2,710",
+                      "2,790",
+                      "Green",
+                      "Increase in lagged funding in 202X/2Y of circa £350,000"
+                    ],
+                    [
+                      "ASF (including devolved)",
+                      "1,120",
+                      "743",
+                      "1,230",
+                      "1,150",
+                      "Red",
+                      "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+                    ],
+                    [
+                      "16-18 Apprenticeships",
+                      "210",
+                      "115",
+                      "136",
+                      "128",
+                      "Red",
+                      "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+                    ],
+                    [
+                      "19+ Apprenticeships",
+                      "220",
+                      "123",
+                      "145",
+                      "135",
+                      "Red",
+                      "Forecast shortfall in income of £20,000"
+                    ],
+                    [
+                      "HE: full-time",
+                      "162",
+                      "128",
+                      "135",
+                      "125",
+                      "Red",
+                      "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+                    ],
+                    [
+                      "HE: part-time",
+                      "165",
+                      "160",
+                      "160",
+                      "155",
+                      "Amber",
+                      "Marginally behind budget (£7,000 shortfall forecast)"
+                    ],
+                    [
+                      "Advanced Learner Loans",
+                      "185",
+                      "155",
+                      "180",
+                      "180",
+                      "Green",
+                      "Broadly on budget"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 7,
+              "title": "Income and Expenditure Commentary",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 66,
+                  "y": 28.75,
+                  "width": 828,
+                  "height": 54.68,
+                  "text": "Income and Expenditure Commentary",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 66,
+                  "y": 83.43,
+                  "width": 828,
+                  "height": 342.63,
+                  "text": "Income \nAdult Skills Fund (ASF and devolved) performance tracking 6% behind budget to date, forecast shortfall at year-end £139,000 (therefore outside tolerance)\nApprenticeships income tracking £29,000 (6%) behind budget to date, forecast shortfall £56,000 (6%) at year-end\nHE loan income tracking £45,000 (5%) behind budget to date, forecast to increase to £92,000 shortfall (5%) by year-end\nOverall income performance for the period to 31 January is £202,000 (2%) below budget.  Full-year forecast income at £20.670m is £356,000 (2%) below budget.\nCompared with 202V/2W, forecast income is down 5% from £21.8m to £20.67m \nPay \nTeaching pay costs to date are £47,000 (1%) below budget to date, partly offset by an additional £33,000 on sessional staff.  Forecast outturn is a net underspend of £69,000 (1%) on teaching and sessional staffing\nNon-teaching pay costs are tracking £62,000 (2%) below budget to date, which is forecast to continue to year-end (underspend of £128,000 or 2%)\nOverall pay costs to date are £84,000 (1%) below budget to date, forecast to increase to an underspend of £216,000 (2%) by year end.\nDespite this pay costs as % of turnover are forecast to out-turn slightly above budget at 68.2% due to lower forecast turnover.  At 68.2% pay costs remain 3.2% above the FEC benchmark of 65%.",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 8,
+              "title": "Income and Expenditure Commentary (continued)",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 66,
+                  "y": 28.75,
+                  "width": 828,
+                  "height": 63.82,
+                  "text": "Income and Expenditure Commentary (continued)",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 66,
+                  "y": 105.46,
+                  "width": 828,
+                  "height": 342.63,
+                  "text": "Non-pay\nOverall non-pay expenditure to 31 January is tracking £28,000 over budget to date, with the main pressure points being other operating expenditure(£54,000 which includes £31,000 on student laptops); rent and lease costs(£33,000); estates(£30,000);\nThe forecast out-turn non-pay costs at £6.119m are £110,000 (2%) over budget despite a forecast underspend of £33,000 on education supplies and services\nSub-contracted Delivery\nSub-contracted delivery is budgeted at £300,000 for the year as a whole, representing under 2% of total delivery \nDelivery to date is marginally behind profile but forecast to hit the contracted volume by year-end.\nDirect costs of subcontracted delivery at £240,000 for the year equate to 80% of the value of the provision\nOverall Income and Expenditure Performance\nActual performance to date is behind budget giving rise to an operating deficit to date of -£575,000 and EBITDA of -£37,000\nThe forecast out-turn deficit of £262,000 is £242,000 higher than the budgeted deficit of £20,000 giving rise to EBITDA of £655,000 (3.2%).  This is substantially worse than the previous year out-turn surplus of £827,000 (EBITDA of £1.893m or 8.7%)",
+                  "placeholder": "obj"
+                }
+              ],
+              "tables": [],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 9,
+              "title": "Income and Expenditure Bridge",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 50.57,
+                  "y": 29.89,
+                  "width": 828,
+                  "height": 58.11,
+                  "text": "Income and Expenditure Bridge",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [],
+              "charts": [
+                {
+                  "type": "",
+                  "title": "Income and Expenditure Forecast Variance to Budget (£’000)Income and Expenditure Forecast Variance to Budget (£’000)",
+                  "series": []
+                }
+              ],
+              "notes": ""
+            },
+            {
+              "number": 10,
+              "title": "Sensitivity testing",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 14.83,
+                  "y": 26.46,
+                  "width": 828,
+                  "height": 36.39,
+                  "text": "Sensitivity testing",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 14.83,
+                  "y": 53.1,
+                  "width": 378.86,
+                  "height": 433.8,
+                  "text": "The table opposite indicates three scenarios for the forecast out-turn reflecting three key variables (see numbers highlighted in boxes):\nASF income (full achievement of allocations under best case and shortfall of 10% worst case)\nFE / Full cost fees potential additional shortfall of £50,000 (worst case)\nAchievement in-year of £82,000 savings in pay costs and £160,000 non-pay costs (best case)\n\nThe best case scenario would result in an operating surplus of £119,000 i.e. marginally better than budget.\nThe base case scenario (most likely outcome) results in a operating deficit of £262,000 which will trigger a covenant breach, which needs to be discussed with the DfE.  If a waiver can be secured financial health will remain requires improvement.\nThe worst case scenario results in an operating deficit of £472,000 and covenant breach.  Even if a waiver is secured, the financial health autoscore would fall to inadequate to a lower EBITDA and a weaker adjusted current ratio."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Forecast Out-turn (£’000)",
+                      "Base case",
+                      "Best case",
+                      "Worst case"
+                    ],
+                    [
+                      "16-19 Grant Income",
+                      "13,022",
+                      "13,022",
+                      "13,022"
+                    ],
+                    [
+                      "Adult Skills Fund",
+                      "2,848",
+                      "2,987",
+                      "2,688"
+                    ],
+                    [
+                      "Other Grants / LA Income",
+                      "653",
+                      "653",
+                      "653"
+                    ],
+                    [
+                      "Apprenticeships",
+                      "855",
+                      "855",
+                      "855"
+                    ],
+                    [
+                      "Higher Education Grants / Fees",
+                      "2,126",
+                      "2,126",
+                      "2,126"
+                    ],
+                    [
+                      "Adv Learner Loans, FE and Full Cost Fees",
+                      "849",
+                      "849",
+                      "799"
+                    ],
+                    [
+                      "Other Income",
+                      "317",
+                      "317",
+                      "317"
+                    ],
+                    [
+                      "Total Income",
+                      "20,670",
+                      "20,809",
+                      "20,460"
+                    ],
+                    [
+                      "Pay Costs (excluding staff restructuring)",
+                      "13,896",
+                      "13,814",
+                      "13,896"
+                    ],
+                    [
+                      "Staff Restructuring Costs",
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    [
+                      "Other Non-Pay Costs",
+                      "6,119",
+                      "5,959",
+                      "6,119"
+                    ],
+                    [
+                      "Total Operating Expenditure",
+                      "20,015",
+                      "19,773",
+                      "20,015"
+                    ],
+                    [
+                      "Education EBITDA",
+                      "655",
+                      "1,036",
+                      "445"
+                    ],
+                    [
+                      "Release of Capital Grants",
+                      "102",
+                      "102",
+                      "102"
+                    ],
+                    [
+                      "Investment Income",
+                      "12",
+                      "12",
+                      "12"
+                    ],
+                    [
+                      "Depreciation",
+                      "(715)",
+                      "(715)",
+                      "(715)"
+                    ],
+                    [
+                      "Interest",
+                      "(316)",
+                      "(316)",
+                      "(316)"
+                    ],
+                    [
+                      "Operating Surplus / Deficit",
+                      "(262)",
+                      "119",
+                      "(472)"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 11,
+              "title": "Capital expenditure",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 13.43,
+                  "y": 29.23,
+                  "width": 828,
+                  "height": 22.2,
+                  "text": "Capital expenditure",
+                  "placeholder": "title"
+                },
+                {
+                  "x": 0,
+                  "y": 486.44,
+                  "width": 960,
+                  "height": 70.28,
+                  "text": "Notes:  All capital projects are proceeding to plan.  Overall capex for the year is forecast to be £10,000 below the full-year budget."
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Capital Budget",
+                      "Year to date \nactual \n£’000",
+                      "Committed\n\n\n£’000",
+                      "Total (actual + committed) \n£’000",
+                      "Full year\nbudget \n\n£’000",
+                      "Forecast Full Year\n\n£’000",
+                      "Forecast under/(overspend)\n£’000"
+                    ],
+                    [
+                      "Server upgrades",
+                      "34",
+                      "15",
+                      "49",
+                      "60",
+                      "60",
+                      "0"
+                    ],
+                    [
+                      "New HR system",
+                      "10",
+                      "34",
+                      "44",
+                      "40",
+                      "45",
+                      "(5)"
+                    ],
+                    [
+                      "Replacement PCs",
+                      "141",
+                      "22",
+                      "163",
+                      "250",
+                      "237",
+                      "13"
+                    ],
+                    [
+                      "Curriculum equipment",
+                      "32",
+                      "28",
+                      "60",
+                      "60",
+                      "67",
+                      "(7)"
+                    ],
+                    [
+                      "Relocation of electrical",
+                      "20",
+                      "0",
+                      "20",
+                      "160",
+                      "140",
+                      "20"
+                    ],
+                    [
+                      "Refectory upgrade",
+                      "88",
+                      "29",
+                      "117",
+                      "131",
+                      "142",
+                      "(11)"
+                    ],
+                    [
+                      "Total",
+                      "325",
+                      "128",
+                      "453",
+                      "701",
+                      "691",
+                      "10"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 12,
+              "title": "Summary of Key Financial Risks",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 15.71,
+                  "y": 20.6,
+                  "width": 828,
+                  "height": 52.19,
+                  "text": "Summary of Key Financial Risks",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Ref",
+                      "Risk",
+                      "RAG rating"
+                    ],
+                    [
+                      "1",
+                      "Failure to achieve budget targets for 202W/2X leads to a breach of loan covenants that could trigger a decline in  financial health to inadequate",
+                      "Red"
+                    ],
+                    [
+                      "2",
+                      "Failure to  improve the underlying financial sustainability, including forward cashflows, of the college leading to a possible case for structural change",
+                      "Red"
+                    ],
+                    [
+                      "3",
+                      "Failure to secure agreement with the bank regarding waiver of the forecast covenant breach and/or to revised covenant terms, leading to requirement to report to DfE",
+                      "Red"
+                    ],
+                    [
+                      "4",
+                      "Cash days of 27 days in April 202X  (low point for year), decreasing to 17 days in January 202Y",
+                      "Amber"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            },
+            {
+              "number": 13,
+              "title": "Issues for further review",
+              "hidden": false,
+              "shapes": [
+                {
+                  "x": 8,
+                  "y": 12.75,
+                  "width": 828,
+                  "height": 104.38,
+                  "text": "Issues for further review",
+                  "placeholder": "title"
+                }
+              ],
+              "tables": [
+                {
+                  "name": "table 1",
+                  "rows": [
+                    [
+                      "Ref",
+                      "Issue",
+                      "Timescale"
+                    ],
+                    [
+                      "1",
+                      "Monitoring of forecast loan covenant breach and progress with securing waiver before year-end.  Inform DfE of potential breach.",
+                      "July 202X"
+                    ],
+                    [
+                      "2",
+                      "Monitoring of potential for decline in forecast financial health grade for 202W/2X to inadequate (linked to covenant breach).  Inform DfE of potential decline.",
+                      "July 202X"
+                    ],
+                    [
+                      "3",
+                      "Confirmation of cost reduction actions aimed at achieving target in-year savings of circa £242,000",
+                      "April 202X (actions agreed)\nJuly 202X (actions implemented)"
+                    ],
+                    [
+                      "4",
+                      "Confirmation of strategies to achieve ASF budget targets for 202W/2X i.e. closing projected shortfall of £139,000",
+                      "April 202X (actions confirmed)\nJuly 202X (actions implemented)"
+                    ]
+                  ],
+                  "merges": []
+                }
+              ],
+              "charts": [],
+              "notes": ""
+            }
+          ]
+        },
+        "table": {
+          "slide": 6,
+          "slideTitle": "Student Numbers",
+          "title": "Headcount",
+          "header": [
+            "Headcount",
+            "Full year actuals (last year)",
+            "Actuals (current year)",
+            "Full-year budget",
+            "Full-year forecast",
+            "RAG",
+            "Financial Implications"
+          ],
+          "rows": [
+            {
+              "programme": "16-19 students",
+              "last": "2,820",
+              "current": "2,780",
+              "budget": "2,710",
+              "forecast": "2,790",
+              "rag": "Green",
+              "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+            },
+            {
+              "programme": "ASF (including devolved)",
+              "last": "1,120",
+              "current": "743",
+              "budget": "1,230",
+              "forecast": "1,150",
+              "rag": "Red",
+              "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+            },
+            {
+              "programme": "16-18 Apprenticeships",
+              "last": "210",
+              "current": "115",
+              "budget": "136",
+              "forecast": "128",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+            },
+            {
+              "programme": "19+ Apprenticeships",
+              "last": "220",
+              "current": "123",
+              "budget": "145",
+              "forecast": "135",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £20,000"
+            },
+            {
+              "programme": "HE: full-time",
+              "last": "162",
+              "current": "128",
+              "budget": "135",
+              "forecast": "125",
+              "rag": "Red",
+              "implications": "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+            },
+            {
+              "programme": "HE: part-time",
+              "last": "165",
+              "current": "160",
+              "budget": "160",
+              "forecast": "155",
+              "rag": "Amber",
+              "implications": "Marginally behind budget (£7,000 shortfall forecast)"
+            },
+            {
+              "programme": "Advanced Learner Loans",
+              "last": "185",
+              "current": "155",
+              "budget": "180",
+              "forecast": "180",
+              "rag": "Green",
+              "implications": "Broadly on budget"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "programme": "16-19 students",
+            "last": "2,820",
+            "current": "2,780",
+            "budget": "2,710",
+            "forecast": "2,790",
+            "rag": "Green",
+            "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+          },
+          {
+            "programme": "ASF (including devolved)",
+            "last": "1,120",
+            "current": "743",
+            "budget": "1,230",
+            "forecast": "1,150",
+            "rag": "Red",
+            "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+          },
+          {
+            "programme": "16-18 Apprenticeships",
+            "last": "210",
+            "current": "115",
+            "budget": "136",
+            "forecast": "128",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+          },
+          {
+            "programme": "19+ Apprenticeships",
+            "last": "220",
+            "current": "123",
+            "budget": "145",
+            "forecast": "135",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £20,000"
+          },
+          {
+            "programme": "HE: full-time",
+            "last": "162",
+            "current": "128",
+            "budget": "135",
+            "forecast": "125",
+            "rag": "Red",
+            "implications": "Forecast shortfall in income of £85,000\nSubstantial decline from previous year"
+          },
+          {
+            "programme": "HE: part-time",
+            "last": "165",
+            "current": "160",
+            "budget": "160",
+            "forecast": "155",
+            "rag": "Amber",
+            "implications": "Marginally behind budget (£7,000 shortfall forecast)"
+          },
+          {
+            "programme": "Advanced Learner Loans",
+            "last": "185",
+            "current": "155",
+            "budget": "180",
+            "forecast": "180",
+            "rag": "Green",
+            "implications": "Broadly on budget"
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx",
+          "number": 1
+        },
+        "row": {
+          "programme": "16-18 Apprenticeships",
+          "last": "210",
+          "current": "115",
+          "budget": "136",
+          "forecast": "128",
+          "rag": "Red",
+          "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+        }
+      },
+      "mapping": {
+        "programme": {
+          "from": "16-18 Apprenticeships",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "16-18 Apprenticeships"
+            }
+          ]
+        },
+        "lastYearActual": {
+          "from": "210",
+          "steps": [
+            {
+              "op": "number",
+              "value": 210
+            }
+          ]
+        },
+        "currentActual": {
+          "from": "115",
+          "steps": [
+            {
+              "op": "number",
+              "value": 115
+            }
+          ]
+        },
+        "budget": {
+          "from": "136",
+          "steps": [
+            {
+              "op": "number",
+              "value": 136
+            }
+          ]
+        },
+        "forecast": {
+          "from": "128",
+          "steps": [
+            {
+              "op": "number",
+              "value": 128
+            }
+          ]
+        },
+        "rag": {
+          "from": "Red",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "Red"
+            }
+          ]
+        },
+        "implications": {
+          "from": "Forecast shortfall in income of £36,000.  Substantial decline from previous year",
+          "steps": [
+            {
+              "op": "trim",
+              "value": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+            }
+          ]
+        },
+        "slide": {
+          "from": 6,
+          "steps": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-foreach",
+  "output": "quote-tags",
+  "mode": "api",
+  "start": [{ "url": "https://quotes.toscrape.com/api/quotes?page=1" }],
+  "limits": { "delayMs": 300, "maxRecords": 3 },
+  "steps": [
+    { "type": "request", "id": "list", "url": "{{start.url}}" },
+    { "type": "extract", "id": "quotes", "selector": "$.quotes[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "set", "id": "seen", "value": [] },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "author", "from": "quote", "selector": "$.author.name", "kind": "jsonpath" },
+      { "type": "set", "id": "tags", "value": "{{quote.tags}}" },
+      { "type": "forEach", "over": "tags", "as": "tag", "steps": [
+        { "type": "collect", "into": "seen", "value": "{{tag}}" }
+      ]},
+      { "type": "set", "id": "tagCount", "value": "{{ len(tags) }}" },
+      { "type": "set", "id": "seenCount", "value": "{{ len(seen) }}" }
+    ]}
+  ],
+  "mapping": {
+    "author": { "from": "author" },
+    "tagCount": { "from": "tagCount" },
+    "tagsSoFar": { "from": "seenCount" }
+  }
+}

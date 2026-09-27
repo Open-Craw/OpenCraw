@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "export",
+  "output": "row",
+  "mode": "web",
+  "description": "No practice site has an export button, so the recipe adds one to the page (a link to a CSV of the quotes shown), then clicks it and reads the file it downloads.",
+  "start": [
+    {
+      "url": "https://quotes.toscrape.com/"
+    }
+  ],
+  "limits": {
+    "delayMs": 300,
+    "maxRecords": 3
+  },
+  "steps": [
+    {
+      "type": "goto",
+      "url": "{{start.url}}"
+    },
+    {
+      "type": "evaluate",
+      "id": "rowsWritten",
+      "script": "(() => { const rows = [...document.querySelectorAll(\".quote\")].map(quote => [quote.querySelector(\".text\").textContent, quote.querySelector(\".author\").textContent]); const csv = [\"text,author\", ...rows.map(row => row.map(cell => `\"${cell.replaceAll(\"\\\"\", \"\\\"\\\"\")}\"`).join(\",\"))].join(\"\\n\"); const link = document.createElement(\"a\"); link.id = \"export\"; link.download = \"quotes.csv\"; link.textContent = \"Export CSV\"; link.href = URL.createObjectURL(new Blob([csv], { type: \"text/csv\" })); document.querySelector(\".header-box p\").append(\" \", link); return rows.length })()"
+    },
+    {
+      "type": "click",
+      "id": "export",
+      "selector": "#export",
+      "download": {}
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "from": "export",
+      "kind": "table",
+      "selector": "^text$",
+      "columns": {
+        "text": "^text$",
+        "author": "^author$"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "text": {
+      "from": "row.text"
+    },
+    "author": {
+      "from": "row.author"
+    }
+  }
+}

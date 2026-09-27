@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "pokeapi-next",
+  "output": "pokemon",
+  "mode": "api",
+  "start": [{ "url": "https://pokeapi.co/api/v2/pokemon?limit=4" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "paginate", "next": { "jsonpath": "$.next" }, "maxPages": 2, "steps": [
+      { "type": "request", "id": "list", "url": "{{page.url}}" },
+      { "type": "extract", "id": "results", "selector": "$.results[*]", "kind": "jsonpath", "take": "json", "many": true },
+      { "type": "forEach", "over": "results", "as": "mon", "emit": true, "steps": [] }
+    ]}
+  ],
+  "mapping": {
+    "name": { "from": "mon.name" },
+    "url": { "from": "mon.url" },
+    "page": { "from": "page.number" }
+  }
+}

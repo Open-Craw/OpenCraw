@@ -1,0 +1,708 @@
+{
+  "scene": "flow-paginate-url",
+  "summary": [
+    {
+      "recipeId": "quotes-api-pages",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2
+    }
+  ],
+  "trace": [
+    "▶ quotes-api-pages (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/api/quotes?page=9",
+    "    · steps.0.steps.0  request list  … ms",
+    "  ✚ record [9]",
+    "    · steps.0.steps.1  emit  … ms",
+    "  ⇢ page 2  https://quotes.toscrape.com/api/quotes?page=10",
+    "    · steps.0.steps.0  request list  … ms",
+    "  ✚ record [10]",
+    "    · steps.0.steps.1  emit  … ms",
+    "  · steps.0  paginate  … ms",
+    "■ quotes-api-pages: 2 emitted, 0 rejected, 0 duplicates, 2 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=9",
+      "key": "[9]",
+      "data": {
+        "apiPage": 9,
+        "pageNumber": 1,
+        "url": "https://quotes.toscrape.com/api/quotes?page=9",
+        "quotes": 10,
+        "hasNext": true
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=9"
+        },
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=9",
+          "number": 1
+        },
+        "list": {
+          "has_next": true,
+          "page": 9,
+          "quotes": [
+            {
+              "author": {
+                "goodreads_link": "/author/show/9810.Albert_Einstein",
+                "name": "Albert Einstein",
+                "slug": "Albert-Einstein"
+              },
+              "tags": [
+                "mistakes"
+              ],
+              "text": "“Anyone who has never made a mistake has never tried anything new.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1265.Jane_Austen",
+                "name": "Jane Austen",
+                "slug": "Jane-Austen"
+              },
+              "tags": [
+                "humor",
+                "love",
+                "romantic",
+                "women"
+              ],
+              "text": "“A lady's imagination is very rapid; it jumps from admiration to love, from love to matrimony in a moment.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1077326.J_K_Rowling",
+                "name": "J.K. Rowling",
+                "slug": "J-K-Rowling"
+              },
+              "tags": [
+                "integrity"
+              ],
+              "text": "“Remember, if the time should come when you have to make a choice between what is right and what is easy, remember what happened to a boy who was good, and kind, and brave, because he strayed across the path of Lord Voldemort. Remember Cedric Diggory.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1265.Jane_Austen",
+                "name": "Jane Austen",
+                "slug": "Jane-Austen"
+              },
+              "tags": [
+                "books",
+                "library",
+                "reading"
+              ],
+              "text": "“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1265.Jane_Austen",
+                "name": "Jane Austen",
+                "slug": "Jane-Austen"
+              },
+              "tags": [
+                "elizabeth-bennet",
+                "jane-austen"
+              ],
+              "text": "“There are few people whom I really love, and still fewer of whom I think well. The more I see of the world, the more am I dissatisfied with it; and every day confirms my belief of the inconsistency of all human characters, and of the little dependence that can be placed on the appearance of merit or sense.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1069006.C_S_Lewis",
+                "name": "C.S. Lewis",
+                "slug": "C-S-Lewis"
+              },
+              "tags": [
+                "age",
+                "fairytales",
+                "growing-up"
+              ],
+              "text": "“Some day you will be old enough to start reading fairy tales again.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1069006.C_S_Lewis",
+                "name": "C.S. Lewis",
+                "slug": "C-S-Lewis"
+              },
+              "tags": [
+                "god"
+              ],
+              "text": "“We are not necessarily doubting that God will do the best for us; we are wondering how painful the best will turn out to be.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1244.Mark_Twain",
+                "name": "Mark Twain",
+                "slug": "Mark-Twain"
+              },
+              "tags": [
+                "death",
+                "life"
+              ],
+              "text": "“The fear of death follows from the fear of life. A man who lives fully is prepared to die at any time.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1244.Mark_Twain",
+                "name": "Mark Twain",
+                "slug": "Mark-Twain"
+              },
+              "tags": [
+                "misattributed-mark-twain",
+                "truth"
+              ],
+              "text": "“A lie can travel half way around the world while the truth is putting on its shoes.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1069006.C_S_Lewis",
+                "name": "C.S. Lewis",
+                "slug": "C-S-Lewis"
+              },
+              "tags": [
+                "christianity",
+                "faith",
+                "religion",
+                "sun"
+              ],
+              "text": "“I believe in Christianity as I believe that the sun has risen: not only because I see it, but because by it I see everything else.”"
+            }
+          ],
+          "tag": null,
+          "top_ten_tags": [
+            [
+              "love",
+              14
+            ],
+            [
+              "inspirational",
+              13
+            ],
+            [
+              "life",
+              13
+            ],
+            [
+              "humor",
+              12
+            ],
+            [
+              "books",
+              11
+            ],
+            [
+              "reading",
+              7
+            ],
+            [
+              "friendship",
+              5
+            ],
+            [
+              "friends",
+              4
+            ],
+            [
+              "truth",
+              4
+            ],
+            [
+              "simile",
+              3
+            ]
+          ]
+        }
+      },
+      "mapping": {
+        "apiPage": {
+          "from": 9,
+          "steps": []
+        },
+        "pageNumber": {
+          "from": 1,
+          "steps": []
+        },
+        "url": {
+          "from": "https://quotes.toscrape.com/api/quotes?page=9",
+          "steps": []
+        },
+        "quotes": {
+          "from": [
+            {
+              "author": {
+                "goodreads_link": "/author/show/9810.Albert_Einstein",
+                "name": "Albert Einstein",
+                "slug": "Albert-Einstein"
+              },
+              "tags": [
+                "mistakes"
+              ],
+              "text": "“Anyone who has never made a mistake has never tried anything new.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1265.Jane_Austen",
+                "name": "Jane Austen",
+                "slug": "Jane-Austen"
+              },
+              "tags": [
+                "humor",
+                "love",
+                "romantic",
+                "women"
+              ],
+              "text": "“A lady's imagination is very rapid; it jumps from admiration to love, from love to matrimony in a moment.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1077326.J_K_Rowling",
+                "name": "J.K. Rowling",
+                "slug": "J-K-Rowling"
+              },
+              "tags": [
+                "integrity"
+              ],
+              "text": "“Remember, if the time should come when you have to make a choice between what is right and what is easy, remember what happened to a boy who was good, and kind, and brave, because he strayed across the path of Lord Voldemort. Remember Cedric Diggory.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1265.Jane_Austen",
+                "name": "Jane Austen",
+                "slug": "Jane-Austen"
+              },
+              "tags": [
+                "books",
+                "library",
+                "reading"
+              ],
+              "text": "“I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1265.Jane_Austen",
+                "name": "Jane Austen",
+                "slug": "Jane-Austen"
+              },
+              "tags": [
+                "elizabeth-bennet",
+                "jane-austen"
+              ],
+              "text": "“There are few people whom I really love, and still fewer of whom I think well. The more I see of the world, the more am I dissatisfied with it; and every day confirms my belief of the inconsistency of all human characters, and of the little dependence that can be placed on the appearance of merit or sense.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1069006.C_S_Lewis",
+                "name": "C.S. Lewis",
+                "slug": "C-S-Lewis"
+              },
+              "tags": [
+                "age",
+                "fairytales",
+                "growing-up"
+              ],
+              "text": "“Some day you will be old enough to start reading fairy tales again.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1069006.C_S_Lewis",
+                "name": "C.S. Lewis",
+                "slug": "C-S-Lewis"
+              },
+              "tags": [
+                "god"
+              ],
+              "text": "“We are not necessarily doubting that God will do the best for us; we are wondering how painful the best will turn out to be.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1244.Mark_Twain",
+                "name": "Mark Twain",
+                "slug": "Mark-Twain"
+              },
+              "tags": [
+                "death",
+                "life"
+              ],
+              "text": "“The fear of death follows from the fear of life. A man who lives fully is prepared to die at any time.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1244.Mark_Twain",
+                "name": "Mark Twain",
+                "slug": "Mark-Twain"
+              },
+              "tags": [
+                "misattributed-mark-twain",
+                "truth"
+              ],
+              "text": "“A lie can travel half way around the world while the truth is putting on its shoes.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1069006.C_S_Lewis",
+                "name": "C.S. Lewis",
+                "slug": "C-S-Lewis"
+              },
+              "tags": [
+                "christianity",
+                "faith",
+                "religion",
+                "sun"
+              ],
+              "text": "“I believe in Christianity as I believe that the sun has risen: not only because I see it, but because by it I see everything else.”"
+            }
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 10
+            }
+          ]
+        },
+        "hasNext": {
+          "from": true,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=10",
+      "key": "[10]",
+      "data": {
+        "apiPage": 10,
+        "pageNumber": 2,
+        "url": "https://quotes.toscrape.com/api/quotes?page=10",
+        "quotes": 10,
+        "hasNext": false
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=9"
+        },
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=10",
+          "number": 2
+        },
+        "list": {
+          "has_next": false,
+          "page": 10,
+          "quotes": [
+            {
+              "author": {
+                "goodreads_link": "/author/show/1077326.J_K_Rowling",
+                "name": "J.K. Rowling",
+                "slug": "J-K-Rowling"
+              },
+              "tags": [
+                "truth"
+              ],
+              "text": "“The truth.\" Dumbledore sighed. \"It is a beautiful and terrible thing, and should therefore be treated with great caution.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/7268.Jimi_Hendrix",
+                "name": "Jimi Hendrix",
+                "slug": "Jimi-Hendrix"
+              },
+              "tags": [
+                "death",
+                "life"
+              ],
+              "text": "“I'm the one that's got to die when it's time for me to die, so let me live my life the way I want to.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/5255014.J_M_Barrie",
+                "name": "J.M. Barrie",
+                "slug": "J-M-Barrie"
+              },
+              "tags": [
+                "adventure",
+                "love"
+              ],
+              "text": "“To die will be an awfully big adventure.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/10547.E_E_Cummings",
+                "name": "E.E. Cummings",
+                "slug": "E-E-Cummings"
+              },
+              "tags": [
+                "courage"
+              ],
+              "text": "“It takes courage to grow up and become who you really are.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/569.Khaled_Hosseini",
+                "name": "Khaled Hosseini",
+                "slug": "Khaled-Hosseini"
+              },
+              "tags": [
+                "life"
+              ],
+              "text": "“But better to get hurt by the truth than comforted with a lie.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1825.Harper_Lee",
+                "name": "Harper Lee",
+                "slug": "Harper-Lee"
+              },
+              "tags": [
+                "better-life-empathy"
+              ],
+              "text": "“You never really understand a person until you consider things from his point of view... Until you climb inside of his skin and walk around in it.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/106.Madeleine_L_Engle",
+                "name": "Madeleine L'Engle",
+                "slug": "Madeleine-LEngle"
+              },
+              "tags": [
+                "books",
+                "children",
+                "difficult",
+                "grown-ups",
+                "write",
+                "writers",
+                "writing"
+              ],
+              "text": "“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1244.Mark_Twain",
+                "name": "Mark Twain",
+                "slug": "Mark-Twain"
+              },
+              "tags": [
+                "truth"
+              ],
+              "text": "“Never tell the truth to people who are not worthy of it.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/61105.Dr_Seuss",
+                "name": "Dr. Seuss",
+                "slug": "Dr-Seuss"
+              },
+              "tags": [
+                "inspirational"
+              ],
+              "text": "“A person's a person, no matter how small.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/346732.George_R_R_Martin",
+                "name": "George R.R. Martin",
+                "slug": "George-R-R-Martin"
+              },
+              "tags": [
+                "books",
+                "mind"
+              ],
+              "text": "“... a mind needs books as a sword needs a whetstone, if it is to keep its edge.”"
+            }
+          ],
+          "tag": null,
+          "top_ten_tags": [
+            [
+              "love",
+              14
+            ],
+            [
+              "inspirational",
+              13
+            ],
+            [
+              "life",
+              13
+            ],
+            [
+              "humor",
+              12
+            ],
+            [
+              "books",
+              11
+            ],
+            [
+              "reading",
+              7
+            ],
+            [
+              "friendship",
+              5
+            ],
+            [
+              "friends",
+              4
+            ],
+            [
+              "truth",
+              4
+            ],
+            [
+              "simile",
+              3
+            ]
+          ]
+        }
+      },
+      "mapping": {
+        "apiPage": {
+          "from": 10,
+          "steps": []
+        },
+        "pageNumber": {
+          "from": 2,
+          "steps": []
+        },
+        "url": {
+          "from": "https://quotes.toscrape.com/api/quotes?page=10",
+          "steps": []
+        },
+        "quotes": {
+          "from": [
+            {
+              "author": {
+                "goodreads_link": "/author/show/1077326.J_K_Rowling",
+                "name": "J.K. Rowling",
+                "slug": "J-K-Rowling"
+              },
+              "tags": [
+                "truth"
+              ],
+              "text": "“The truth.\" Dumbledore sighed. \"It is a beautiful and terrible thing, and should therefore be treated with great caution.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/7268.Jimi_Hendrix",
+                "name": "Jimi Hendrix",
+                "slug": "Jimi-Hendrix"
+              },
+              "tags": [
+                "death",
+                "life"
+              ],
+              "text": "“I'm the one that's got to die when it's time for me to die, so let me live my life the way I want to.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/5255014.J_M_Barrie",
+                "name": "J.M. Barrie",
+                "slug": "J-M-Barrie"
+              },
+              "tags": [
+                "adventure",
+                "love"
+              ],
+              "text": "“To die will be an awfully big adventure.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/10547.E_E_Cummings",
+                "name": "E.E. Cummings",
+                "slug": "E-E-Cummings"
+              },
+              "tags": [
+                "courage"
+              ],
+              "text": "“It takes courage to grow up and become who you really are.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/569.Khaled_Hosseini",
+                "name": "Khaled Hosseini",
+                "slug": "Khaled-Hosseini"
+              },
+              "tags": [
+                "life"
+              ],
+              "text": "“But better to get hurt by the truth than comforted with a lie.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1825.Harper_Lee",
+                "name": "Harper Lee",
+                "slug": "Harper-Lee"
+              },
+              "tags": [
+                "better-life-empathy"
+              ],
+              "text": "“You never really understand a person until you consider things from his point of view... Until you climb inside of his skin and walk around in it.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/106.Madeleine_L_Engle",
+                "name": "Madeleine L'Engle",
+                "slug": "Madeleine-LEngle"
+              },
+              "tags": [
+                "books",
+                "children",
+                "difficult",
+                "grown-ups",
+                "write",
+                "writers",
+                "writing"
+              ],
+              "text": "“You have to write the book that wants to be written. And if the book will be too difficult for grown-ups, then you write it for children.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1244.Mark_Twain",
+                "name": "Mark Twain",
+                "slug": "Mark-Twain"
+              },
+              "tags": [
+                "truth"
+              ],
+              "text": "“Never tell the truth to people who are not worthy of it.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/61105.Dr_Seuss",
+                "name": "Dr. Seuss",
+                "slug": "Dr-Seuss"
+              },
+              "tags": [
+                "inspirational"
+              ],
+              "text": "“A person's a person, no matter how small.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/346732.George_R_R_Martin",
+                "name": "George R.R. Martin",
+                "slug": "George-R-R-Martin"
+              },
+              "tags": [
+                "books",
+                "mind"
+              ],
+              "text": "“... a mind needs books as a sword needs a whetstone, if it is to keep its edge.”"
+            }
+          ],
+          "steps": [
+            {
+              "op": "count",
+              "value": 10
+            }
+          ]
+        },
+        "hasNext": {
+          "from": false,
+          "steps": []
+        }
+      }
+    }
+  ]
+}

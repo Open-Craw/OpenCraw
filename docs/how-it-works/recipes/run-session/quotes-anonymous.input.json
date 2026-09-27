@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-anonymous",
+  "output": "quote",
+  "mode": "api",
+  "description": "The same steps with no bootstrap: the HTTP session has no cookies, so the page has no Logout link.",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "limits": { "delayMs": 300, "maxRecords": 2 },
+  "steps": [
+    { "type": "request", "id": "home", "url": "{{start.url}}", "as": "html" },
+    { "type": "extract", "id": "logout", "selector": "a[href='/logout']", "kind": "css", "take": "text" },
+    { "type": "extract", "id": "quotes", "selector": "div.quote", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": "span.text", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": "small.author", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "goodreads", "from": "quote", "selector": "a[href*='goodreads.com']", "kind": "css", "take": "attr:href" }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "goodreads": { "from": "goodreads" }
+  }
+}

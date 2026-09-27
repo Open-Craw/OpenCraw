@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "search",
+  "output": "quote",
+  "mode": "web",
+  "description": "The ViewState search: picking an author posts the form back and the page returns with that author's tags; pick a tag, then search.",
+  "start": [{ "url": "https://quotes.toscrape.com/search.aspx" }],
+  "vars": { "author": "Albert Einstein", "tag": "life" },
+  "limits": { "delayMs": 300, "timeoutMs": 15000 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "select", "selector": "#author", "value": "{{vars.author}}" },
+    { "type": "select", "selector": "#tag", "values": ["{{vars.tag}}"] },
+    { "type": "click", "selector": "input[name=submit_button]" },
+    { "type": "wait", "selector": ".results .quote" },
+    { "type": "extract", "id": "quotes", "selector": ".results .quote", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": ".content", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": ".author", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "tag", "from": "quote", "selector": ".tag", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "tag": { "from": "tag" }
+  }
+}

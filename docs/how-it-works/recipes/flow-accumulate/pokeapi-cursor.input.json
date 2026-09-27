@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "pokeapi-cursor",
+  "output": "name-list",
+  "mode": "api",
+  "start": [{ "url": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=5" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "set", "id": "names", "value": [] },
+    { "type": "paginate", "next": { "jsonpath": "$.next", "as": "cursor" }, "maxPages": 3, "steps": [
+      { "type": "request", "id": "list", "url": "{{ cursor ?? start.url }}" },
+      { "type": "extract", "id": "batch", "selector": "$.results[*].name", "kind": "jsonpath", "many": true },
+      { "type": "collect", "into": "names", "value": "{{batch}}" }
+    ]},
+    { "type": "set", "id": "count", "value": "{{ len(names) }}" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "count": { "from": "count" },
+    "names": { "from": "names" },
+    "pagesRead": { "from": "page.number" },
+    "pageUrl": { "from": "page.url" }
+  }
+}

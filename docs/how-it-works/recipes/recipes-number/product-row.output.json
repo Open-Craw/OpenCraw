@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "product-row",
+  "version": 1,
+  "fields": {
+    "row": { "type": "string", "required": true },
+    "text": { "type": "string" },
+    "number": { "type": "number" },
+    "integer": { "type": "integer" },
+    "boolean": { "type": "boolean" }
+  }
+}

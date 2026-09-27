@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "missing-blocked",
+  "output": "book",
+  "mode": "web",
+  "description": "The same page with every layer on: 404 retried as a transport error, then counted as a block, one rotation, and a step retry.",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/no-such-book_0/index.html" }],
+  "session": {
+    "blockedWhen": { "status": [404] },
+    "onBlock": { "rotate": true, "attempts": 1 }
+  },
+  "limits": { "delayMs": 300, "retry": { "attempts": 2, "backoffMs": 500, "statuses": [404] } },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}", "onError": { "policy": "retry", "attempts": 2, "backoffMs": 1000 } },
+    { "type": "extract", "id": "title", "selector": "div.product_main h1", "kind": "css", "take": "text" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "url": { "from": "page.url" },
+    "title": { "from": "title" }
+  }
+}

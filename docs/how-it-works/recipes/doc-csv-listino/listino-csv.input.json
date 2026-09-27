@@ -1,0 +1,81 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "listino-csv",
+  "output": "list-price",
+  "mode": "api",
+  "description": "The repository's CSV fixture: Windows-1252 with no charset, semicolons with decimal commas, a title line and a blank line above the header, a quoted field holding a semicolon and a line break, a brand and a model written once over two versions, and a total line.",
+  "start": [
+    {
+      "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+    }
+  ],
+  "steps": [
+    {
+      "type": "hook",
+      "id": "file",
+      "name": "repoFile",
+      "args": {
+        "url": "{{start.url}}"
+      }
+    },
+    {
+      "type": "request",
+      "id": "listino",
+      "url": "{{file}}"
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "selector": "^Marca Modello",
+      "kind": "table",
+      "until": "^Totale",
+      "fillDown": [
+        "brand",
+        "model"
+      ],
+      "columns": {
+        "brand": "^Marca$",
+        "model": "^Modello$",
+        "version": "^Versione$",
+        "price": "^Prezzo",
+        "discount": "^Sconto"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "brand": {
+      "from": "row.brand"
+    },
+    "model": {
+      "from": "row.model"
+    },
+    "version": {
+      "from": "row.version"
+    },
+    "price": {
+      "from": "row.price"
+    },
+    "discount": {
+      "from": "row.discount",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    }
+  }
+}

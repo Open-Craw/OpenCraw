@@ -1,0 +1,103 @@
+{
+  "scene": "run-concurrency",
+  "summary": [
+    {
+      "recipeId": "travel-details",
+      "emitted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 2,
+      "error": "step steps.2.steps.0 (goto) failed: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\", waiting until \"load\"\u001b[22m\n"
+    }
+  ],
+  "trace": [
+    "▶ travel-details (web)",
+    "  ⇄ access direct (direct)",
+    "  ↺ https://books.toscrape.com/catalogue/category/books/travel_2/index.html: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+    "  · steps.0  goto  … ms",
+    "  · steps.1  extract links  … ms",
+    "  ↺ https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html: Timeout 30000ms exceeded, try 2 in … ms",
+    "  ↺ https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html: Timeout 30000ms exceeded, try 2 in … ms",
+    "  ↺ https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html: Timeout 30000ms exceeded, try 2 in … ms",
+    "  ↺ https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html: net::ERR_TOO_MANY_RETRIES, try 3 in … ms",
+    "  ↺ https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html: net::ERR_TOO_MANY_RETRIES, try 3 in … ms",
+    "  ↺ https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html: Timeout 30000ms exceeded, try 3 in … ms",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+    "    · steps.2.steps.0  goto  … ms",
+    "    · steps.2.steps.1  extract title  … ms",
+    "    · steps.2.steps.2  extract price  … ms",
+    "    · steps.2.steps.3  extract upc  … ms",
+    "  ✚ record [\"https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"]",
+    "  ✖ step steps.2.steps.0 (goto) failed: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\", waiting until \"load\"\u001b[22m\n",
+    "■ travel-details: 1 emitted, 0 rejected, 0 duplicates, 2 pages, … ms\n  ✖ stopped: step steps.2.steps.0 (goto) failed: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+      "key": "[\"https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html\"]",
+      "data": {
+        "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+        "title": "See America: A Celebration of Our National Parks & Treasured Sites",
+        "price": {
+          "amount": 48.87,
+          "currency": "GBP"
+        },
+        "upc": "f9705c362f070608"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+        },
+        "links": [
+          "../../../its-only-the-himalayas_981/index.html",
+          "../../../full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html",
+          "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "../../../vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html",
+          "../../../under-the-tuscan-sun_504/index.html",
+          "../../../a-summer-in-europe_458/index.html",
+          "../../../the-great-railway-bazaar_446/index.html",
+          "../../../a-year-in-provence-provence-1_421/index.html",
+          "../../../the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html",
+          "../../../neither-here-nor-there-travels-in-europe_198/index.html",
+          "../../../1000-places-to-see-before-you-die_1/index.html"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "number": 1
+        },
+        "link": "../../../see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+        "title": "See America: A Celebration of Our National Parks & Treasured Sites",
+        "price": "£48.87",
+        "upc": "f9705c362f070608"
+      },
+      "mapping": {
+        "url": {
+          "from": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html",
+          "steps": []
+        },
+        "title": {
+          "from": "See America: A Celebration of Our National Parks & Treasured Sites",
+          "steps": []
+        },
+        "price": {
+          "from": "£48.87",
+          "steps": [
+            {
+              "op": "currency",
+              "value": {
+                "amount": 48.87,
+                "currency": "GBP"
+              }
+            }
+          ]
+        },
+        "upc": {
+          "from": "f9705c362f070608",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

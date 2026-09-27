@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "book-title",
+  "version": 1,
+  "fields": {
+    "title": { "type": "string", "required": true, "key": true },
+    "page": { "type": "integer" }
+  }
+}

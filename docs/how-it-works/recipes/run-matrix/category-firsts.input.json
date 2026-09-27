@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "category-firsts",
+  "output": "book",
+  "mode": "api",
+  "description": "The first two books of each category the matrix lists: one run per variant.",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/category/books/" }],
+  "vars": { "category": "Travel", "slug": "travel_2" },
+  "matrix": [
+    { "category": "Travel", "slug": "travel_2" },
+    { "category": "Poetry", "slug": "poetry_23" }
+  ],
+  "limits": { "delayMs": 300, "maxRecords": 2 },
+  "steps": [
+    { "type": "request", "id": "listing", "url": "{{vars.slug}}/index.html", "as": "html" },
+    { "type": "extract", "id": "books", "selector": "article.product_pod", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "books", "as": "book", "emit": true, "steps": [
+      { "type": "extract", "id": "title", "from": "book", "selector": "h3 a", "kind": "css", "take": "attr:title" },
+      { "type": "extract", "id": "link", "from": "book", "selector": "h3 a", "kind": "css", "take": "attr:href" },
+      { "type": "extract", "id": "price", "from": "book", "selector": ".price_color", "kind": "css", "take": "text" }
+    ]}
+  ],
+  "mapping": {
+    "url": { "from": "link", "transform": [{ "op": "absoluteUrl" }] },
+    "title": { "from": "title" },
+    "price": { "from": "price", "transform": [{ "op": "currency" }] },
+    "category": { "from": "vars.category" }
+  }
+}

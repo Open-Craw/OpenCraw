@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "scroll-twice",
+  "output": "quote",
+  "mode": "web",
+  "description": "Scroll to the bottom twice: each scroll that reaches the bottom makes the page fetch ten more quotes.",
+  "start": [{ "url": "https://quotes.toscrape.com/scroll" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "wait", "selector": ".quote" },
+    { "type": "scroll", "to": "bottom", "times": 2 },
+    { "type": "extract", "id": "quotes", "selector": ".quote", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": ".text", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": ".author", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "tags", "from": "quote", "selector": ".tag", "kind": "css", "take": "text", "many": true }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "tags": { "from": "tags" }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "login",
+  "output": "quote",
+  "mode": "web",
+  "description": "Log in (the site takes any name and password), go to page 2, and read the Goodreads links only a logged-in visitor sees.",
+  "start": [{ "url": "https://quotes.toscrape.com/login" }],
+  "vars": { "user": "scraper", "password": "practice" },
+  "limits": { "delayMs": 300, "maxRecords": 3 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "fill", "selector": "#username", "value": "{{vars.user}}" },
+    { "type": "fill", "selector": "#password", "value": "{{vars.password}}" },
+    { "type": "press", "selector": "#password", "key": "Enter" },
+    { "type": "wait", "selector": "a[href='/logout']" },
+    { "type": "click", "selector": "li.next a" },
+    { "type": "wait", "selector": ".quote" },
+    { "type": "screenshot", "path": "docs/assets/how-it-works/page-login-step.png" },
+    { "type": "extract", "id": "quotes", "selector": ".quote", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": ".text", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": ".author", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "goodreads", "from": "quote", "selector": "a[href*='goodreads.com']", "kind": "css", "take": "attr:href", "many": true }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "goodreads": { "from": "goodreads[0]" },
+    "pageUrl": { "from": "page.url" },
+    "page": { "from": "page.number" }
+  }
+}

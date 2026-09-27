@@ -1,0 +1,459 @@
+{
+  "scene": "scope-templates",
+  "summary": [
+    {
+      "recipeId": "template-probe",
+      "emitted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ template-probe (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/api/quotes?page=1",
+    "  · steps.0  request response  … ms",
+    "  · steps.1  set quotes  … ms",
+    "  · steps.2  set count  … ms",
+    "  · steps.3  set countText  … ms",
+    "    · steps.4.steps.0  set author  … ms",
+    "    · steps.4.steps.1  set tags  … ms",
+    "    · steps.4.steps.2  set tagsInText  … ms",
+    "    · steps.4.steps.3  set tagLine  … ms",
+    "    · steps.4.steps.4  set firstTag  … ms",
+    "    · steps.4.steps.5  set hasTag  … ms",
+    "    · steps.4.steps.6  set words  … ms",
+    "    · steps.4.steps.7  set size  … ms",
+    "    · steps.4.steps.8  set shout  … ms",
+    "    · steps.4.steps.9  set search  … ms",
+    "    · steps.4.steps.10  set card  … ms",
+    "    · steps.4.steps.11  set bornText  … ms",
+    "    · steps.4.steps.12  set bornOr  … ms",
+    "    · steps.4.steps.13  set bornDefault  … ms",
+    "    · steps.4.steps.14  set pathTrap  … ms",
+    "    · steps.4.steps.15  set minus  … ms",
+    "    · steps.4.steps.16  set plusTrap  … ms",
+    "    · steps.4.steps.17  set plus  … ms",
+    "    · steps.4.steps.18  set times  … ms",
+    "    · steps.4.steps.19  set trueTrap  … ms",
+    "    · steps.4.steps.20  set trueExpr  … ms",
+    "    ⑂ steps.4.steps.21  else",
+    "      · steps.4.steps.21.else.0  set branch  … ms",
+    "    · steps.4.steps.21  if  … ms",
+    "  ✚ record [\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+    "  · steps.4  forEach  … ms",
+    "■ template-probe: 1 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://quotes.toscrape.com/api/quotes?page=1",
+      "key": "[\"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"]",
+      "data": {
+        "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+        "author": "Albert Einstein",
+        "words": 21,
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ]
+      },
+      "scope": {
+        "vars": {
+          "offset": "1",
+          "tag": "thinking"
+        },
+        "start": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=1"
+        },
+        "response": {
+          "has_next": true,
+          "page": 1,
+          "quotes": [
+            {
+              "author": {
+                "goodreads_link": "/author/show/9810.Albert_Einstein",
+                "name": "Albert Einstein",
+                "slug": "Albert-Einstein"
+              },
+              "tags": [
+                "change",
+                "deep-thoughts",
+                "thinking",
+                "world"
+              ],
+              "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1077326.J_K_Rowling",
+                "name": "J.K. Rowling",
+                "slug": "J-K-Rowling"
+              },
+              "tags": [
+                "abilities",
+                "choices"
+              ],
+              "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/9810.Albert_Einstein",
+                "name": "Albert Einstein",
+                "slug": "Albert-Einstein"
+              },
+              "tags": [
+                "inspirational",
+                "life",
+                "live",
+                "miracle",
+                "miracles"
+              ],
+              "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/1265.Jane_Austen",
+                "name": "Jane Austen",
+                "slug": "Jane-Austen"
+              },
+              "tags": [
+                "aliteracy",
+                "books",
+                "classic",
+                "humor"
+              ],
+              "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/82952.Marilyn_Monroe",
+                "name": "Marilyn Monroe",
+                "slug": "Marilyn-Monroe"
+              },
+              "tags": [
+                "be-yourself",
+                "inspirational"
+              ],
+              "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/9810.Albert_Einstein",
+                "name": "Albert Einstein",
+                "slug": "Albert-Einstein"
+              },
+              "tags": [
+                "adulthood",
+                "success",
+                "value"
+              ],
+              "text": "“Try not to become a man of success. Rather become a man of value.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/7617.Andr_Gide",
+                "name": "André Gide",
+                "slug": "Andre-Gide"
+              },
+              "tags": [
+                "life",
+                "love"
+              ],
+              "text": "“It is better to be hated for what you are than to be loved for what you are not.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/3091287.Thomas_A_Edison",
+                "name": "Thomas A. Edison",
+                "slug": "Thomas-A-Edison"
+              },
+              "tags": [
+                "edison",
+                "failure",
+                "inspirational",
+                "paraphrased"
+              ],
+              "text": "“I have not failed. I've just found 10,000 ways that won't work.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/44566.Eleanor_Roosevelt",
+                "name": "Eleanor Roosevelt",
+                "slug": "Eleanor-Roosevelt"
+              },
+              "tags": [
+                "misattributed-eleanor-roosevelt"
+              ],
+              "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”"
+            },
+            {
+              "author": {
+                "goodreads_link": "/author/show/7103.Steve_Martin",
+                "name": "Steve Martin",
+                "slug": "Steve-Martin"
+              },
+              "tags": [
+                "humor",
+                "obvious",
+                "simile"
+              ],
+              "text": "“A day without sunshine is like, you know, night.”"
+            }
+          ],
+          "tag": null,
+          "top_ten_tags": [
+            [
+              "love",
+              14
+            ],
+            [
+              "inspirational",
+              13
+            ],
+            [
+              "life",
+              13
+            ],
+            [
+              "humor",
+              12
+            ],
+            [
+              "books",
+              11
+            ],
+            [
+              "reading",
+              7
+            ],
+            [
+              "friendship",
+              5
+            ],
+            [
+              "friends",
+              4
+            ],
+            [
+              "truth",
+              4
+            ],
+            [
+              "simile",
+              3
+            ]
+          ]
+        },
+        "quotes": [
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "change",
+              "deep-thoughts",
+              "thinking",
+              "world"
+            ],
+            "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1077326.J_K_Rowling",
+              "name": "J.K. Rowling",
+              "slug": "J-K-Rowling"
+            },
+            "tags": [
+              "abilities",
+              "choices"
+            ],
+            "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "inspirational",
+              "life",
+              "live",
+              "miracle",
+              "miracles"
+            ],
+            "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/1265.Jane_Austen",
+              "name": "Jane Austen",
+              "slug": "Jane-Austen"
+            },
+            "tags": [
+              "aliteracy",
+              "books",
+              "classic",
+              "humor"
+            ],
+            "text": "“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/82952.Marilyn_Monroe",
+              "name": "Marilyn Monroe",
+              "slug": "Marilyn-Monroe"
+            },
+            "tags": [
+              "be-yourself",
+              "inspirational"
+            ],
+            "text": "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/9810.Albert_Einstein",
+              "name": "Albert Einstein",
+              "slug": "Albert-Einstein"
+            },
+            "tags": [
+              "adulthood",
+              "success",
+              "value"
+            ],
+            "text": "“Try not to become a man of success. Rather become a man of value.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/7617.Andr_Gide",
+              "name": "André Gide",
+              "slug": "Andre-Gide"
+            },
+            "tags": [
+              "life",
+              "love"
+            ],
+            "text": "“It is better to be hated for what you are than to be loved for what you are not.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/3091287.Thomas_A_Edison",
+              "name": "Thomas A. Edison",
+              "slug": "Thomas-A-Edison"
+            },
+            "tags": [
+              "edison",
+              "failure",
+              "inspirational",
+              "paraphrased"
+            ],
+            "text": "“I have not failed. I've just found 10,000 ways that won't work.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/44566.Eleanor_Roosevelt",
+              "name": "Eleanor Roosevelt",
+              "slug": "Eleanor-Roosevelt"
+            },
+            "tags": [
+              "misattributed-eleanor-roosevelt"
+            ],
+            "text": "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”"
+          },
+          {
+            "author": {
+              "goodreads_link": "/author/show/7103.Steve_Martin",
+              "name": "Steve Martin",
+              "slug": "Steve-Martin"
+            },
+            "tags": [
+              "humor",
+              "obvious",
+              "simile"
+            ],
+            "text": "“A day without sunshine is like, you know, night.”"
+          }
+        ],
+        "count": 10,
+        "countText": "10 quotes on page 1",
+        "page": {
+          "url": "https://quotes.toscrape.com/api/quotes?page=1",
+          "number": 1
+        },
+        "item": {
+          "author": {
+            "goodreads_link": "/author/show/9810.Albert_Einstein",
+            "name": "Albert Einstein",
+            "slug": "Albert-Einstein"
+          },
+          "tags": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+          ],
+          "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+        },
+        "author": "Albert Einstein",
+        "tags": [
+          "change",
+          "deep-thoughts",
+          "thinking",
+          "world"
+        ],
+        "tagsInText": "tags: [\"change\",\"deep-thoughts\",\"thinking\",\"world\"]",
+        "tagLine": "change, deep-thoughts, thinking, world",
+        "firstTag": "change",
+        "hasTag": true,
+        "words": 21,
+        "size": "long",
+        "shout": "ALBERT EINSTEIN",
+        "search": "https://quotes.toscrape.com/search.aspx?author=Albert%20Einstein",
+        "card": {
+          "who": "Albert Einstein",
+          "tagCount": 4,
+          "first": "change"
+        },
+        "bornText": "born: ",
+        "bornOr": "unknown",
+        "bornDefault": "unknown",
+        "pathTrap": "[]",
+        "minus": 0,
+        "plusTrap": "12",
+        "plus": 3,
+        "times": 2,
+        "trueTrap": "[]",
+        "trueExpr": "[yes]",
+        "branch": "else"
+      },
+      "mapping": {
+        "text": {
+          "from": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "steps": []
+        },
+        "author": {
+          "from": "Albert Einstein",
+          "steps": []
+        },
+        "words": {
+          "from": 21,
+          "steps": []
+        },
+        "tags": {
+          "from": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+          ],
+          "steps": []
+        }
+      }
+    }
+  ]
+}

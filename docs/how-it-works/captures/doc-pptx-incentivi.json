@@ -1,0 +1,302 @@
+{
+  "scene": "doc-pptx-incentivi",
+  "summary": [
+    {
+      "recipeId": "incentivi-pptx",
+      "emitted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ incentivi-pptx (api)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  hook file  … ms",
+    "  ⇢ page 1  file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+    "  · steps.1  request  … ms",
+    "  · steps.2  extract native  … ms",
+    "  · steps.3  extract chart  … ms",
+    "  · steps.4  extract validity  … ms",
+    "  · steps.5  extract table  … ms",
+    "  · steps.6  set rows  … ms",
+    "  ✚ record [\"Avenger\"]",
+    "  ✚ record [\"Compass\"]",
+    "  · steps.7  forEach  … ms",
+    "■ incentivi-pptx: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+      "key": "[\"Avenger\"]",
+      "data": {
+        "model": "Avenger",
+        "price": "24.950 €",
+        "discount": "8%",
+        "slide": 2
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
+        },
+        "file": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+        "native": {
+          "slide": 1,
+          "slideTitle": "Incentivi giugno",
+          "title": "Modello",
+          "header": [
+            "Modello",
+            "Prezzo Listino",
+            "Prezzo Netto",
+            "Sconto"
+          ],
+          "rows": [
+            {
+              "Modello": "Pandina",
+              "Prezzo Listino": "15.950 €",
+              "Prezzo Netto": "13.955 €",
+              "Sconto": "12,5%"
+            },
+            {
+              "Modello": "Pandina Cross",
+              "Prezzo Listino": "17.950 €",
+              "Prezzo Netto": "15.706 €",
+              "Sconto": "12,5%"
+            }
+          ]
+        },
+        "chart": {
+          "type": "bar",
+          "title": "Immatricolazioni",
+          "series": [
+            {
+              "name": "Pandina",
+              "categories": [
+                "Aprile",
+                "Maggio",
+                "Giugno"
+              ],
+              "values": [
+                1200,
+                1350.5,
+                1410
+              ]
+            },
+            {
+              "name": "600e",
+              "categories": [
+                "Aprile",
+                "Maggio",
+                "Giugno"
+              ],
+              "values": [
+                300,
+                null,
+                410
+              ]
+            }
+          ]
+        },
+        "validity": "Validi fino al 30 giugno.",
+        "table": {
+          "slide": 2,
+          "slideTitle": "Griglia prezzi Jeep",
+          "title": "Modello",
+          "header": [
+            "Modello",
+            "Prezzo",
+            "Sconto"
+          ],
+          "rows": [
+            {
+              "model": "Avenger",
+              "price": "24.950 €",
+              "discount": "8%"
+            },
+            {
+              "model": "Compass",
+              "price": "39.900 €",
+              "discount": "10%"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "Avenger",
+            "price": "24.950 €",
+            "discount": "8%"
+          },
+          {
+            "model": "Compass",
+            "price": "39.900 €",
+            "discount": "10%"
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+          "number": 1
+        },
+        "row": {
+          "model": "Avenger",
+          "price": "24.950 €",
+          "discount": "8%"
+        }
+      },
+      "mapping": {
+        "model": {
+          "from": "Avenger",
+          "steps": []
+        },
+        "price": {
+          "from": "24.950 €",
+          "steps": []
+        },
+        "discount": {
+          "from": "8%",
+          "steps": []
+        },
+        "slide": {
+          "from": 2,
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+      "key": "[\"Compass\"]",
+      "data": {
+        "model": "Compass",
+        "price": "39.900 €",
+        "discount": "10%",
+        "slide": 2
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
+        },
+        "file": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+        "native": {
+          "slide": 1,
+          "slideTitle": "Incentivi giugno",
+          "title": "Modello",
+          "header": [
+            "Modello",
+            "Prezzo Listino",
+            "Prezzo Netto",
+            "Sconto"
+          ],
+          "rows": [
+            {
+              "Modello": "Pandina",
+              "Prezzo Listino": "15.950 €",
+              "Prezzo Netto": "13.955 €",
+              "Sconto": "12,5%"
+            },
+            {
+              "Modello": "Pandina Cross",
+              "Prezzo Listino": "17.950 €",
+              "Prezzo Netto": "15.706 €",
+              "Sconto": "12,5%"
+            }
+          ]
+        },
+        "chart": {
+          "type": "bar",
+          "title": "Immatricolazioni",
+          "series": [
+            {
+              "name": "Pandina",
+              "categories": [
+                "Aprile",
+                "Maggio",
+                "Giugno"
+              ],
+              "values": [
+                1200,
+                1350.5,
+                1410
+              ]
+            },
+            {
+              "name": "600e",
+              "categories": [
+                "Aprile",
+                "Maggio",
+                "Giugno"
+              ],
+              "values": [
+                300,
+                null,
+                410
+              ]
+            }
+          ]
+        },
+        "validity": "Validi fino al 30 giugno.",
+        "table": {
+          "slide": 2,
+          "slideTitle": "Griglia prezzi Jeep",
+          "title": "Modello",
+          "header": [
+            "Modello",
+            "Prezzo",
+            "Sconto"
+          ],
+          "rows": [
+            {
+              "model": "Avenger",
+              "price": "24.950 €",
+              "discount": "8%"
+            },
+            {
+              "model": "Compass",
+              "price": "39.900 €",
+              "discount": "10%"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "Avenger",
+            "price": "24.950 €",
+            "discount": "8%"
+          },
+          {
+            "model": "Compass",
+            "price": "39.900 €",
+            "discount": "10%"
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
+          "number": 1
+        },
+        "row": {
+          "model": "Compass",
+          "price": "39.900 €",
+          "discount": "10%"
+        }
+      },
+      "mapping": {
+        "model": {
+          "from": "Compass",
+          "steps": []
+        },
+        "price": {
+          "from": "39.900 €",
+          "steps": []
+        },
+        "discount": {
+          "from": "10%",
+          "steps": []
+        },
+        "slide": {
+          "from": 2,
+          "steps": []
+        }
+      }
+    }
+  ]
+}

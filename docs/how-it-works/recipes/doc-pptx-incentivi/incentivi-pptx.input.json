@@ -1,0 +1,87 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "incentivi-pptx",
+  "output": "grid-price",
+  "mode": "api",
+  "description": "The office-reader deck fixture, read four ways: a native table under a two-row merged header, a price grid of text boxes in a scaled group (shapes: true), a bar chart by jsonpath, the notes by regex.",
+  "start": [
+    {
+      "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
+    }
+  ],
+  "steps": [
+    {
+      "type": "hook",
+      "id": "file",
+      "name": "repoFile",
+      "args": {
+        "url": "{{start.url}}"
+      }
+    },
+    {
+      "type": "request",
+      "url": "{{file}}"
+    },
+    {
+      "type": "extract",
+      "id": "native",
+      "selector": "^Modello Prezzo",
+      "kind": "table",
+      "slide": "^Incentivi",
+      "headerRows": 2
+    },
+    {
+      "type": "extract",
+      "id": "chart",
+      "selector": "$.slides[?(@.title=='Vendite')].charts[0]",
+      "kind": "jsonpath",
+      "take": "json"
+    },
+    {
+      "type": "extract",
+      "id": "validity",
+      "selector": "Notes: [^\\n]*\\n(Validi[^\\n]*)",
+      "kind": "regex"
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "selector": "^Modello Prezzo",
+      "kind": "table",
+      "slide": "^Griglia",
+      "shapes": true,
+      "columns": {
+        "model": "^Modello$",
+        "price": "^Prezzo$",
+        "discount": "^Sconto$"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "model": {
+      "from": "row.model"
+    },
+    "price": {
+      "from": "row.price"
+    },
+    "discount": {
+      "from": "row.discount"
+    },
+    "slide": {
+      "from": "table.slide"
+    }
+  }
+}

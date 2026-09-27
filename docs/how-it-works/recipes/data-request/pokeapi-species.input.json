@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "pokeapi-species",
+  "output": "pokemon-species",
+  "mode": "api",
+  "vars": { "limit": 3 },
+  "start": [{ "url": "https://pokeapi.co/api/v2/pokemon" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "id": "list", "url": "{{start.url}}", "query": { "limit": "{{vars.limit}}", "offset": "0" } },
+    { "type": "extract", "id": "results", "selector": "$.results[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "forEach", "over": "results", "as": "mon", "emit": true, "steps": [
+      { "type": "request", "id": "species", "url": "/api/v2/pokemon-species/{{mon.name}}/", "as": "json" },
+      { "type": "extract", "id": "genus", "selector": "$.genera[?(@.language.name=='en')].genus", "kind": "jsonpath" },
+      { "type": "extract", "id": "color", "selector": "$.color.name", "kind": "jsonpath" },
+      { "type": "extract", "id": "captureRate", "selector": "$.capture_rate", "kind": "jsonpath", "take": "json" }
+    ]}
+  ],
+  "mapping": {
+    "name": { "from": "mon.name" },
+    "genus": { "from": "genus" },
+    "color": { "from": "color" },
+    "captureRate": { "from": "captureRate" },
+    "source": { "from": "page.url" }
+  }
+}

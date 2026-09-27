@@ -1,0 +1,107 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "listino-md",
+  "output": "markdown-price",
+  "mode": "api",
+  "description": "The repository's Markdown fixture: YAML front matter, a GitHub table with an escaped pipe and a short row, a task list, raw HTML with a table and a script.",
+  "start": [
+    {
+      "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+    }
+  ],
+  "steps": [
+    {
+      "type": "hook",
+      "id": "file",
+      "name": "repoFile",
+      "args": {
+        "url": "{{start.url}}"
+      }
+    },
+    {
+      "type": "request",
+      "url": "{{file}}"
+    },
+    {
+      "type": "extract",
+      "id": "front",
+      "selector": "script[data-front-matter]",
+      "kind": "css",
+      "take": "text"
+    },
+    {
+      "type": "extract",
+      "id": "updated",
+      "from": "front",
+      "selector": "$.updated",
+      "kind": "jsonpath"
+    },
+    {
+      "type": "extract",
+      "id": "accessories",
+      "selector": "section[data-heading='Accessori'] li",
+      "kind": "css",
+      "many": true
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "selector": "^Modello Versione",
+      "kind": "table",
+      "columns": {
+        "model": "^Modello$",
+        "version": "^Versione$",
+        "price": "^Prezzo$",
+        "note": "^Note$"
+      }
+    },
+    {
+      "type": "set",
+      "id": "rows",
+      "value": "{{table.rows}}"
+    },
+    {
+      "type": "forEach",
+      "over": "rows",
+      "as": "row",
+      "emit": true,
+      "steps": []
+    }
+  ],
+  "mapping": {
+    "model": {
+      "from": "row.model"
+    },
+    "version": {
+      "from": "row.version",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "price": {
+      "from": "row.price",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "note": {
+      "from": "row.note",
+      "transform": [
+        {
+          "op": "default",
+          "value": null
+        }
+      ]
+    },
+    "updated": {
+      "from": "updated"
+    }
+  }
+}

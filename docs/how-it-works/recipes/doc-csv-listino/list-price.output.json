@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "list-price",
+  "version": 1,
+  "description": "One version of a price list, its cells as the file writes them.",
+  "onMissing": "null",
+  "fields": {
+    "brand": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "model": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "version": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "price": {
+      "type": "string"
+    },
+    "discount": {
+      "type": "string"
+    }
+  }
+}

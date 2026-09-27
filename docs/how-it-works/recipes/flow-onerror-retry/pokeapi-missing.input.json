@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "pokeapi-missing",
+  "output": "pokemon-entry",
+  "mode": "api",
+  "start": [{ "url": "https://pokeapi.co/api/v2/pokemon/missingno" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "request", "id": "mon", "url": "{{start.url}}", "onError": { "policy": "retry", "attempts": 3, "backoffMs": 500 } },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "name": { "from": "mon.name" },
+    "height": { "from": "mon.height" }
+  }
+}

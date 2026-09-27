@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "per-diem-rate",
+  "version": 1,
+  "fields": {
+    "state": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "destination": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "counties": {
+      "type": "string",
+      "nullable": true
+    },
+    "seasonBegin": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "seasonEnd": {
+      "type": "string",
+      "nullable": true
+    },
+    "lodgingUsd": {
+      "type": "number",
+      "required": true
+    },
+    "mealsUsd": {
+      "type": "number",
+      "required": true
+    }
+  }
+}

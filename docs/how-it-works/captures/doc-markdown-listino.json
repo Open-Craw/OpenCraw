@@ -1,0 +1,394 @@
+{
+  "scene": "doc-markdown-listino",
+  "summary": [
+    {
+      "recipeId": "listino-md",
+      "emitted": 3,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ listino-md (api)",
+    "  ⇄ access direct (direct)",
+    "  · steps.0  hook file  … ms",
+    "  ⇢ page 1  file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+    "  · steps.1  request  … ms",
+    "  · steps.2  extract front  … ms",
+    "  · steps.3  extract updated  … ms",
+    "  · steps.4  extract accessories  … ms",
+    "  · steps.5  extract table  … ms",
+    "  · steps.6  set rows  … ms",
+    "  ✚ record [\"Pandina\"]",
+    "  ✚ record [\"600e\"]",
+    "  ✚ record [\"Solo due celle\"]",
+    "  · steps.7  forEach  … ms",
+    "■ listino-md: 3 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+      "key": "[\"Pandina\"]",
+      "data": {
+        "model": "Pandina",
+        "version": "1.0 Hybrid",
+        "price": "15.950 €",
+        "note": "con | pipe",
+        "updated": "2026-06-01"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+        },
+        "file": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+        "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
+        "updated": "2026-06-01",
+        "accessories": [
+          "Ruotino",
+          "Gancio traino"
+        ],
+        "table": {
+          "sheet": "table 1",
+          "title": "Modello",
+          "header": [
+            "Modello",
+            "Versione",
+            "Prezzo",
+            "Note"
+          ],
+          "rows": [
+            {
+              "model": "Pandina",
+              "version": "1.0 Hybrid",
+              "price": "15.950 €",
+              "note": "con | pipe"
+            },
+            {
+              "model": "600e",
+              "version": "La Prima",
+              "price": "36.950 €",
+              "note": "bold link"
+            },
+            {
+              "model": "Solo due celle",
+              "version": "x",
+              "price": "",
+              "note": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "Pandina",
+            "version": "1.0 Hybrid",
+            "price": "15.950 €",
+            "note": "con | pipe"
+          },
+          {
+            "model": "600e",
+            "version": "La Prima",
+            "price": "36.950 €",
+            "note": "bold link"
+          },
+          {
+            "model": "Solo due celle",
+            "version": "x",
+            "price": "",
+            "note": ""
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+          "number": 1
+        },
+        "row": {
+          "model": "Pandina",
+          "version": "1.0 Hybrid",
+          "price": "15.950 €",
+          "note": "con | pipe"
+        }
+      },
+      "mapping": {
+        "model": {
+          "from": "Pandina",
+          "steps": []
+        },
+        "version": {
+          "from": "1.0 Hybrid",
+          "steps": [
+            {
+              "op": "default",
+              "value": "1.0 Hybrid"
+            }
+          ]
+        },
+        "price": {
+          "from": "15.950 €",
+          "steps": [
+            {
+              "op": "default",
+              "value": "15.950 €"
+            }
+          ]
+        },
+        "note": {
+          "from": "con | pipe",
+          "steps": [
+            {
+              "op": "default",
+              "value": "con | pipe"
+            }
+          ]
+        },
+        "updated": {
+          "from": "2026-06-01",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+      "key": "[\"600e\"]",
+      "data": {
+        "model": "600e",
+        "version": "La Prima",
+        "price": "36.950 €",
+        "note": "bold link",
+        "updated": "2026-06-01"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+        },
+        "file": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+        "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
+        "updated": "2026-06-01",
+        "accessories": [
+          "Ruotino",
+          "Gancio traino"
+        ],
+        "table": {
+          "sheet": "table 1",
+          "title": "Modello",
+          "header": [
+            "Modello",
+            "Versione",
+            "Prezzo",
+            "Note"
+          ],
+          "rows": [
+            {
+              "model": "Pandina",
+              "version": "1.0 Hybrid",
+              "price": "15.950 €",
+              "note": "con | pipe"
+            },
+            {
+              "model": "600e",
+              "version": "La Prima",
+              "price": "36.950 €",
+              "note": "bold link"
+            },
+            {
+              "model": "Solo due celle",
+              "version": "x",
+              "price": "",
+              "note": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "Pandina",
+            "version": "1.0 Hybrid",
+            "price": "15.950 €",
+            "note": "con | pipe"
+          },
+          {
+            "model": "600e",
+            "version": "La Prima",
+            "price": "36.950 €",
+            "note": "bold link"
+          },
+          {
+            "model": "Solo due celle",
+            "version": "x",
+            "price": "",
+            "note": ""
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+          "number": 1
+        },
+        "row": {
+          "model": "600e",
+          "version": "La Prima",
+          "price": "36.950 €",
+          "note": "bold link"
+        }
+      },
+      "mapping": {
+        "model": {
+          "from": "600e",
+          "steps": []
+        },
+        "version": {
+          "from": "La Prima",
+          "steps": [
+            {
+              "op": "default",
+              "value": "La Prima"
+            }
+          ]
+        },
+        "price": {
+          "from": "36.950 €",
+          "steps": [
+            {
+              "op": "default",
+              "value": "36.950 €"
+            }
+          ]
+        },
+        "note": {
+          "from": "bold link",
+          "steps": [
+            {
+              "op": "default",
+              "value": "bold link"
+            }
+          ]
+        },
+        "updated": {
+          "from": "2026-06-01",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+      "key": "[\"Solo due celle\"]",
+      "data": {
+        "model": "Solo due celle",
+        "version": "x",
+        "price": null,
+        "note": null,
+        "updated": "2026-06-01"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+        },
+        "file": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+        "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
+        "updated": "2026-06-01",
+        "accessories": [
+          "Ruotino",
+          "Gancio traino"
+        ],
+        "table": {
+          "sheet": "table 1",
+          "title": "Modello",
+          "header": [
+            "Modello",
+            "Versione",
+            "Prezzo",
+            "Note"
+          ],
+          "rows": [
+            {
+              "model": "Pandina",
+              "version": "1.0 Hybrid",
+              "price": "15.950 €",
+              "note": "con | pipe"
+            },
+            {
+              "model": "600e",
+              "version": "La Prima",
+              "price": "36.950 €",
+              "note": "bold link"
+            },
+            {
+              "model": "Solo due celle",
+              "version": "x",
+              "price": "",
+              "note": ""
+            }
+          ]
+        },
+        "rows": [
+          {
+            "model": "Pandina",
+            "version": "1.0 Hybrid",
+            "price": "15.950 €",
+            "note": "con | pipe"
+          },
+          {
+            "model": "600e",
+            "version": "La Prima",
+            "price": "36.950 €",
+            "note": "bold link"
+          },
+          {
+            "model": "Solo due celle",
+            "version": "x",
+            "price": "",
+            "note": ""
+          }
+        ],
+        "page": {
+          "url": "file:///home/user/open.craw/packages/core/src/markdown-document/fixtures/listino.md",
+          "number": 1
+        },
+        "row": {
+          "model": "Solo due celle",
+          "version": "x",
+          "price": "",
+          "note": ""
+        }
+      },
+      "mapping": {
+        "model": {
+          "from": "Solo due celle",
+          "steps": []
+        },
+        "version": {
+          "from": "x",
+          "steps": [
+            {
+              "op": "default",
+              "value": "x"
+            }
+          ]
+        },
+        "price": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "note": {
+          "from": "",
+          "steps": [
+            {
+              "op": "default",
+              "value": null
+            }
+          ]
+        },
+        "updated": {
+          "from": "2026-06-01",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

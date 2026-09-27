@@ -1,0 +1,381 @@
+{
+  "scene": "data-fragments",
+  "summary": [
+    {
+      "recipeId": "book-specs",
+      "emitted": 7,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1
+    }
+  ],
+  "trace": [
+    "▶ book-specs (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract book  … ms",
+    "  · steps.2  extract rows  … ms",
+    "    · steps.3.steps.0  extract name  … ms",
+    "    · steps.3.steps.1  extract value  … ms",
+    "    · steps.3.steps.2  extract valueByXpath  … ms",
+    "  ✚ record [\"Sharp Objects\",\"UPC\"]",
+    "    · steps.3.steps.0  extract name  … ms",
+    "    · steps.3.steps.1  extract value  … ms",
+    "    · steps.3.steps.2  extract valueByXpath  … ms",
+    "  ✚ record [\"Sharp Objects\",\"Product Type\"]",
+    "    · steps.3.steps.0  extract name  … ms",
+    "    · steps.3.steps.1  extract value  … ms",
+    "    · steps.3.steps.2  extract valueByXpath  … ms",
+    "  ✚ record [\"Sharp Objects\",\"Price (excl. tax)\"]",
+    "    · steps.3.steps.0  extract name  … ms",
+    "    · steps.3.steps.1  extract value  … ms",
+    "    · steps.3.steps.2  extract valueByXpath  … ms",
+    "  ✚ record [\"Sharp Objects\",\"Price (incl. tax)\"]",
+    "    · steps.3.steps.0  extract name  … ms",
+    "    · steps.3.steps.1  extract value  … ms",
+    "    · steps.3.steps.2  extract valueByXpath  … ms",
+    "  ✚ record [\"Sharp Objects\",\"Tax\"]",
+    "    · steps.3.steps.0  extract name  … ms",
+    "    · steps.3.steps.1  extract value  … ms",
+    "    · steps.3.steps.2  extract valueByXpath  … ms",
+    "  ✚ record [\"Sharp Objects\",\"Availability\"]",
+    "    · steps.3.steps.0  extract name  … ms",
+    "    · steps.3.steps.1  extract value  … ms",
+    "    · steps.3.steps.2  extract valueByXpath  … ms",
+    "  ✚ record [\"Sharp Objects\",\"Number of reviews\"]",
+    "  · steps.3  forEach  … ms",
+    "■ book-specs: 7 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"Sharp Objects\",\"UPC\"]",
+      "data": {
+        "book": "Sharp Objects",
+        "name": "UPC",
+        "value": "e00eb4fd7b871a48"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+        },
+        "book": "Sharp Objects",
+        "rows": [
+          "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "row": "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+        "name": "UPC",
+        "value": "e00eb4fd7b871a48",
+        "valueByXpath": "e00eb4fd7b871a48"
+      },
+      "mapping": {
+        "book": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "name": {
+          "from": "UPC",
+          "steps": []
+        },
+        "value": {
+          "from": "e00eb4fd7b871a48",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"Sharp Objects\",\"Product Type\"]",
+      "data": {
+        "book": "Sharp Objects",
+        "name": "Product Type",
+        "value": "Books"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+        },
+        "book": "Sharp Objects",
+        "rows": [
+          "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "row": "\n            <th>Product Type</th><td>Books</td>\n        ",
+        "name": "Product Type",
+        "value": "Books",
+        "valueByXpath": "Books"
+      },
+      "mapping": {
+        "book": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "name": {
+          "from": "Product Type",
+          "steps": []
+        },
+        "value": {
+          "from": "Books",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"Sharp Objects\",\"Price (excl. tax)\"]",
+      "data": {
+        "book": "Sharp Objects",
+        "name": "Price (excl. tax)",
+        "value": "£47.82"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+        },
+        "book": "Sharp Objects",
+        "rows": [
+          "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "row": "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+        "name": "Price (excl. tax)",
+        "value": "£47.82",
+        "valueByXpath": "£47.82"
+      },
+      "mapping": {
+        "book": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "name": {
+          "from": "Price (excl. tax)",
+          "steps": []
+        },
+        "value": {
+          "from": "£47.82",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"Sharp Objects\",\"Price (incl. tax)\"]",
+      "data": {
+        "book": "Sharp Objects",
+        "name": "Price (incl. tax)",
+        "value": "£47.82"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+        },
+        "book": "Sharp Objects",
+        "rows": [
+          "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "row": "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+        "name": "Price (incl. tax)",
+        "value": "£47.82",
+        "valueByXpath": "£47.82"
+      },
+      "mapping": {
+        "book": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "name": {
+          "from": "Price (incl. tax)",
+          "steps": []
+        },
+        "value": {
+          "from": "£47.82",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"Sharp Objects\",\"Tax\"]",
+      "data": {
+        "book": "Sharp Objects",
+        "name": "Tax",
+        "value": "£0.00"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+        },
+        "book": "Sharp Objects",
+        "rows": [
+          "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "row": "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+        "name": "Tax",
+        "value": "£0.00",
+        "valueByXpath": "£0.00"
+      },
+      "mapping": {
+        "book": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "name": {
+          "from": "Tax",
+          "steps": []
+        },
+        "value": {
+          "from": "£0.00",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"Sharp Objects\",\"Availability\"]",
+      "data": {
+        "book": "Sharp Objects",
+        "name": "Availability",
+        "value": "In stock (20 available)"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+        },
+        "book": "Sharp Objects",
+        "rows": [
+          "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "row": "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+        "name": "Availability",
+        "value": "In stock (20 available)",
+        "valueByXpath": "In stock (20 available)"
+      },
+      "mapping": {
+        "book": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "name": {
+          "from": "Availability",
+          "steps": []
+        },
+        "value": {
+          "from": "In stock (20 available)",
+          "steps": []
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+      "key": "[\"Sharp Objects\",\"Number of reviews\"]",
+      "data": {
+        "book": "Sharp Objects",
+        "name": "Number of reviews",
+        "value": "0"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+        },
+        "book": "Sharp Objects",
+        "rows": [
+          "\n            <th>UPC</th><td>e00eb4fd7b871a48</td>\n        ",
+          "\n            <th>Product Type</th><td>Books</td>\n        ",
+          "\n                <th>Price (excl. tax)</th><td>£47.82</td>\n            ",
+          "\n                    <th>Price (incl. tax)</th><td>£47.82</td>\n                ",
+          "\n                    <th>Tax</th><td>£0.00</td>\n                ",
+          "\n                <th>Availability</th>\n                <td>In stock (20 available)</td>\n            ",
+          "\n                <th>Number of reviews</th>\n                <td>0</td>\n            "
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+          "number": 1
+        },
+        "row": "\n                <th>Number of reviews</th>\n                <td>0</td>\n            ",
+        "name": "Number of reviews",
+        "value": "0",
+        "valueByXpath": "0"
+      },
+      "mapping": {
+        "book": {
+          "from": "Sharp Objects",
+          "steps": []
+        },
+        "name": {
+          "from": "Number of reviews",
+          "steps": []
+        },
+        "value": {
+          "from": "0",
+          "steps": []
+        }
+      }
+    }
+  ]
+}

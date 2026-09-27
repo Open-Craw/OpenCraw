@@ -1,0 +1,193 @@
+{
+  "scene": "recipes-rejects",
+  "summary": [
+    {
+      "recipeId": "reject-currency",
+      "emitted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "reject-date",
+      "emitted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "reject-enum",
+      "emitted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "reject-string",
+      "emitted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "reject-url",
+      "emitted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "pages": 1
+    },
+    {
+      "recipeId": "url-without-policy",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step steps.2 (emit) failed: mapping failed: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
+    }
+  ],
+  "trace": [
+    "▶ reject-currency (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract value  … ms",
+    "  ✖ record rejected: amount: amount: no currency: set \"currency\" on the field or use the currency transform",
+    "  · steps.2  emit  … ms",
+    "■ reject-currency: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ reject-date (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract value  … ms",
+    "  ✖ record rejected: availableOn: availableOn: transform \"date\": cannot read \"In stock (22 available)\" as a date",
+    "  · steps.2  emit  … ms",
+    "■ reject-date: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ reject-enum (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract value  … ms",
+    "  ✖ record rejected: kind: kind: \"Books\" is not one of book, ebook",
+    "  · steps.2  emit  … ms",
+    "■ reject-enum: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ reject-string (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract value  … ms",
+    "  ✖ record rejected: section: section: expected text, got a list",
+    "  · steps.2  emit  … ms",
+    "■ reject-string: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ reject-url (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract value  … ms",
+    "  ✖ record rejected: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)",
+    "  · steps.2  emit  … ms",
+    "■ reject-url: 0 emitted, 1 rejected, 0 duplicates, 1 pages, … ms",
+    "▶ url-without-policy (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "  · steps.0  request  … ms",
+    "  · steps.1  extract value  … ms",
+    "  ✖ step steps.2 (emit) failed: mapping failed: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)",
+    "■ url-without-policy: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step steps.2 (emit) failed: mapping failed: image: image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
+  ],
+  "records": [
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "rejected": {
+        "field": "amount",
+        "reason": "amount: no currency: set \"currency\" on the field or use the currency transform"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "value": "0",
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "rejected": {
+        "field": "availableOn",
+        "reason": "availableOn: transform \"date\": cannot read \"In stock (22 available)\" as a date"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "value": "In stock (22 available)",
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "rejected": {
+        "field": "kind",
+        "reason": "kind: \"Books\" is not one of book, ebook"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "value": "Books",
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "rejected": {
+        "field": "section",
+        "reason": "section: expected text, got a list"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "value": [
+          "Home",
+          "Books",
+          "Poetry"
+        ],
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        }
+      }
+    },
+    {
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "rejected": {
+        "field": "image",
+        "reason": "image: \"../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg\" is not an absolute URL (use the absoluteUrl transform)"
+      },
+      "scope": {
+        "vars": {},
+        "start": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+        },
+        "value": "../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg",
+        "page": {
+          "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+          "number": 1
+        }
+      }
+    }
+  ]
+}

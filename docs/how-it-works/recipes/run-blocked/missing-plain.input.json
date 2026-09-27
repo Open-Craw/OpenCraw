@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "missing-plain",
+  "output": "book",
+  "mode": "web",
+  "description": "A book page that does not exist, with the default block rule: the 404 page loads like any other, and the next extract finds nothing.",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/no-such-book_0/index.html" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "goto", "url": "{{start.url}}" },
+    { "type": "extract", "id": "title", "selector": "div.product_main h1", "kind": "css", "take": "text" },
+    { "type": "emit" }
+  ],
+  "mapping": {
+    "url": { "from": "page.url" },
+    "title": { "from": "title" }
+  }
+}

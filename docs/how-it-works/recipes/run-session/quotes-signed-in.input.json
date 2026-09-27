@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-signed-in",
+  "output": "quote",
+  "mode": "api",
+  "description": "Logs in in a browser (the site takes any name and password), keeps the cookies, then reads the quotes over plain HTTP as the logged-in visitor.",
+  "start": [{ "url": "https://quotes.toscrape.com/" }],
+  "vars": { "user": "reader", "password": "any-password-works" },
+  "session": {
+    "bootstrap": {
+      "keep": ["cookies"],
+      "steps": [
+        { "type": "goto", "url": "https://quotes.toscrape.com/login" },
+        { "type": "fill", "selector": "#username", "value": "{{vars.user}}" },
+        { "type": "fill", "selector": "#password", "value": "{{vars.password}}" },
+        { "type": "click", "selector": "input[type=submit]" },
+        { "type": "wait", "selector": "a[href='/logout']" }
+      ]
+    }
+  },
+  "limits": { "delayMs": 300, "maxRecords": 2 },
+  "steps": [
+    { "type": "request", "id": "home", "url": "{{start.url}}", "as": "html" },
+    { "type": "extract", "id": "logout", "selector": "a[href='/logout']", "kind": "css", "take": "text" },
+    { "type": "extract", "id": "quotes", "selector": "div.quote", "kind": "css", "take": "html", "many": true },
+    { "type": "forEach", "over": "quotes", "as": "quote", "emit": true, "steps": [
+      { "type": "extract", "id": "text", "from": "quote", "selector": "span.text", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "author", "from": "quote", "selector": "small.author", "kind": "css", "take": "text" },
+      { "type": "extract", "id": "goodreads", "from": "quote", "selector": "a[href*='goodreads.com']", "kind": "css", "take": "attr:href" }
+    ]}
+  ],
+  "mapping": {
+    "text": { "from": "text" },
+    "author": { "from": "author" },
+    "goodreads": { "from": "goodreads" }
+  }
+}

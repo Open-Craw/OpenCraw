@@ -1,0 +1,25 @@
+{
+  "scene": "recipes-session",
+  "summary": [
+    {
+      "recipeId": "quotes-signed-in",
+      "emitted": 0,
+      "rejected": 0,
+      "duplicates": 0,
+      "pages": 1,
+      "error": "step session.bootstrap.steps.4 (wait) failed: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a[href=\\'/logout\\']').first() to be visible\u001b[22m\n"
+    }
+  ],
+  "trace": [
+    "▶ quotes-signed-in (api)",
+    "  ⇄ access direct (direct)",
+    "  ⇢ page 1  https://quotes.toscrape.com/login",
+    "  · session.bootstrap.steps.0  goto  … ms",
+    "  · session.bootstrap.steps.1  fill  … ms",
+    "  · session.bootstrap.steps.2  fill  … ms",
+    "  · session.bootstrap.steps.3  click  … ms",
+    "  ✖ step session.bootstrap.steps.4 (wait) failed: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a[href=\\'/logout\\']').first() to be visible\u001b[22m\n",
+    "■ quotes-signed-in: 0 emitted, 0 rejected, 0 duplicates, 1 pages, … ms\n  ✖ stopped: step session.bootstrap.steps.4 (wait) failed: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a[href=\\'/logout\\']').first() to be visible\u001b[22m\n"
+  ],
+  "records": []
+}

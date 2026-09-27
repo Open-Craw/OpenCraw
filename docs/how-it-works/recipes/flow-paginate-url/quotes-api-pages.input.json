@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "kind": "input",
+  "id": "quotes-api-pages",
+  "output": "quotes-page",
+  "mode": "api",
+  "start": [{ "url": "https://quotes.toscrape.com/api/quotes?page=9" }],
+  "limits": { "delayMs": 300 },
+  "steps": [
+    { "type": "paginate", "next": { "url": "?page={{ list.page + 1 }}" }, "until": "{{ !list.has_next }}", "maxPages": 5, "steps": [
+      { "type": "request", "id": "list", "url": "{{page.url}}" },
+      { "type": "emit" }
+    ]}
+  ],
+  "mapping": {
+    "apiPage": { "from": "list.page" },
+    "pageNumber": { "from": "page.number" },
+    "url": { "from": "page.url" },
+    "quotes": { "from": "list.quotes", "transform": [{ "op": "count" }] },
+    "hasNext": { "from": "list.has_next" }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "name-list",
+  "version": 1,
+  "fields": {
+    "count": { "type": "integer", "required": true },
+    "names": { "type": "array", "items": { "type": "string" } },
+    "pagesRead": { "type": "integer" },
+    "pageUrl": { "type": "url" }
+  }
+}
