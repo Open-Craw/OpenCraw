@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # @opencraw/azure-durable
 
-[OpenCraw](../../README.md) over HTTP, on Azure Durable Functions. One deployed Function App holds the browser,
+[OpenCraw](https://github.com/russoedu/open.craw/blob/main/README.md) over HTTP, on Azure Durable Functions. One deployed Function App holds the browser,
 the captcha readers and the proxies; every crawler calls it with recipes instead of bundling Playwright itself.
 
 ```sh
@@ -113,13 +117,13 @@ is nothing to install.
 | `publish` | Saves recipes that load as a new version, as a **draft**. A version, once published, never changes. |
 
 No tool takes a file path: recipes travel inline, and nothing on the host's disk can be read. Production (`/crawl`
-by name, `/jobs`) refuses a draft until someone `canPromote` allows calls
-`POST /api/recipes/{name}/{version}/promote`. So an agent publishes, and a person decides what runs.
+by name, `/jobs`) refuses a draft until a caller that `canPromote` allows
+calls `POST /api/recipes/{name}/{version}/promote`. So an agent publishes, and a person decides what runs.
 
 The endpoint refuses to start without authentication: keep `authLevel: 'function'`, or put the app behind App
 Service authentication and set `identify`.
 
 ## Deploy it
 
-See [docs/recipes/azure-durable.md](../../docs/recipes/azure-durable.md): the Dockerfile, `host.json`, the plan,
+See [docs/recipes/azure-durable.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/azure-durable.md): the Dockerfile, `host.json`, the plan,
 and the rules a warm pool needs (one instance per singleton job, enough activity slots).

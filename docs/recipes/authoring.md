@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Authoring a recipe: the reference
 
 A crawl is described by JSON files, never code. **One output recipe** declares the records you want.
@@ -50,13 +54,13 @@ typo never silently does nothing.
 |---|---|
 | `type` | `string`, `number`, `integer`, `boolean`, `date`, `datetime`, `currency`, `url`, `enum`, `array`, `object`, `json`. |
 | `required` | Missing value fails the recipe (unless a policy says otherwise). Default `false`. |
-| `nullable` | A missing value becomes `null` instead of failing. |
+| `nullable` | Allows `null` on a `required` field when the resolved policy is `null` (§7). A field that is not required is `null` when missing anyway. |
 | `default` | Used when the value is missing and the resolved policy is `default` (it is, automatically, when a default exists and nothing else is said). |
 | `onMissing` | Per-field policy: `fail`, `skip-record`, `null`, `default`. |
 | `key` | Part of the record identity. All `key` fields together form the key; repeated keys are dropped as duplicates. |
 | `generated` | `now` (ISO instant), `uuid`, `sourceUrl` (the page the record was emitted from), `recipeId`. Engine-supplied; mapping it is a binding error. |
 | `format` | Input format for `date` / `datetime` (tokens `YYYY MM DD HH mm ss`); output is always ISO 8601. |
-| `currency` | ISO 4217 code for `currency` fields. Fills in when the value carries none. |
+| `currency` | ISO 4217 code for `currency` fields. When set, it overrides any code or symbol in the value. |
 | `values` | Allowed values for `enum`. |
 | `items` | Element spec for `array`. |
 | `fields` | Member specs for `object`. A `json` field takes none. |
@@ -74,7 +78,7 @@ text is predictable, strict where a wrong value would poison the data.
 | `string` | text, numbers, booleans | text. A list is an error: extract one value or `join` it. |
 | `number` | text with a number in it (`"1.299,00 €"`, `"$1,299"`), numbers | a number. Without a `locale` transform the decimal separator is guessed: the last separator followed by 1 or 2 digits. |
 | `integer` | as `number` | truncated. |
-| `boolean` | booleans, numbers, text | `true` for `yes`, `true`, `1`, `on`, `in stock`, `available` (substring, case-insensitive); use the `boolean` transform with `truthy` for other phrases. |
+| `boolean` | booleans, numbers, text | `true` when the whole text is `true`, `yes`, `y`, `1` or `on`, or it contains the words `in stock` or `available` (case-insensitive). So `"none"`, `"2021"` and `"unavailable"` are `false`. Negation is not read: `"not available"` is `true`. For other phrases, use the `boolean` transform with `truthy`. |
 | `date` | ISO text, `Date.parse`-able text, epoch ms, or text matching `format` | `YYYY-MM-DD` (UTC). |
 | `datetime` | same | ISO 8601 instant. |
 | `currency` | text with amount and symbol or code, a number, or `{ amount, currency }` | `{ "amount": 1299, "currency": "EUR" }`. Needs a code from the text, the transform or the field, else an error. |
@@ -144,9 +148,9 @@ fields is never de-duplicated. Duplicates are reported (`record:duplicate`) and 
 | `start` | One or more start points `{ url, vars? }`. Each runs the whole step list from a fresh scope with `start.url` and its `vars`. |
 | `vars` | Values templates read as `{{vars.name}}`. Start-point `vars` override recipe `vars`. |
 | `window` | Worker mode only ([worker-mode.md](./worker-mode.md)): `{ check?, maxItems? }`. `check` is an element a reused window's page must still show before an item runs on it, else the window is replaced; after `maxItems` items the window is replaced anyway. |
-| `matrix` | Runs the recipe once per set of vars, each run with its own report. An object of lists runs every combination, the first var slowest: `{ "state": ["Delhi", "Goa"], "year": [2025, 2026] }` is four runs. A list of objects runs those sets as given: `[{ "state": "Delhi" }, { "state": "Goa", "year": 2026 }]`. Each set overrides `vars`, so every name must be declared in `vars` (with the value a run without the matrix uses). The runs of one recipe go one after the other; `parallel` spreads different recipes. Reports and the trace name each run's vars (`▶ report [state=Delhi, year=2025]`). |
+| `matrix` | Runs the recipe once per set of vars, each run with its own report. An object of lists runs every combination, the first var slowest: `{ "state": ["Delhi", "Goa"], "year": [2025, 2026] }` is four runs. A list of objects runs those sets as given: `[{ "state": "Delhi" }, { "state": "Goa", "year": 2026 }]`. Each set overrides `vars`, so every name must be declared in `vars` (with the value a run without the matrix uses). The runs of one recipe go one after the other; `parallel` spreads different recipes. Reports and the trace name each run's vars (`▶ report [state=Delhi, year=2025] (web)`). |
 | `session` | §2.2. |
-| `limits` | `maxRecords` stops the walk after that many records, exactly, whatever runs in parallel. `delayMs` is the minimum interval between two request starts across the recipe. `timeoutMs` bounds navigations, requests and `wait` steps. `concurrency` (default `1`) is how many `forEach` iterations may run at once in `api` mode (§3.9). `retry` sends a request that fails in passing again (§7; on by default). |
+| `limits` | `maxRecords` stops the walk after that many records, exactly, whatever runs in parallel. `delayMs` is the minimum interval between two request starts across the recipe. `timeoutMs` bounds navigations, requests and `wait` steps. `concurrency` (default `1`) is how many `forEach` iterations over a list may run at once: requests in `api` mode, tabs in `web` mode (§3.9). `retry` sends a request that fails in passing again (§7; on by default). |
 | `onError` | The default policy for every step. §7. |
 | `steps` | The acquisition recipe. §3. |
 | `mapping` | Output field → mapping rule. §5. |
@@ -169,7 +173,7 @@ steps in its bootstrap** to obtain a session (§2.2).
 | `cookies` | Cookies to start with (Playwright's shape: `name`, `value`, `domain`, `path?`, ...). |
 | `viewport` | `{ width, height }`, web mode. |
 | `storageStatePath` | A file saved by a previous bootstrap (`saveTo`); the recipe starts from it and skips the bootstrap. |
-| `bootstrap` | `{ steps, keep, saveTo? }`. Runs `steps` in a browser **before** the crawl, then captures what `keep` lists (`cookies`, `localStorage`). A `web` recipe starts its page from that state; an `api` recipe sends those cookies with every request. Bootstrap steps are web steps only and never emit. |
+| `bootstrap` | `{ steps, keep, saveTo? }`. Runs `steps` in a browser **before** the crawl, then captures what `keep` lists (`cookies`, `localStorage`). A `web` recipe starts its page from that state; an `api` recipe sends those cookies with every request. Bootstrap steps run in a browser, with the steps a `web` recipe allows, and never emit. |
 | `access` | `{ profile?, country?, sticky? }`: what the site needs from the network. `profile` names a profile of the runner's access config (its default when omitted), `country` is a two-letter code for profiles that target by country, `sticky: false` lets the provider change IP per request. Never credentials: those live in the access config. See [access.md](./access.md). |
 | `blockedWhen` | `{ status?, header?, text? }`: what counts as the site refusing the crawl, checked on every navigation and request. Default: 403, 429, or an AWS WAF challenge header. A block fails the step with the URL and reason instead of a later selector miss. |
 | `onBlock` | `{ rotate?, solve?, attempts? }`. `rotate: true`: on a block, take a new access lease (a new IP), reopen the session (re-running the bootstrap) and retry the step, up to `attempts` times per run (default 2). `solve: true` (web mode, needs `captcha`): a block page showing a captcha is solved on the spot; rotation, if on, applies only when solving fails. |
@@ -196,7 +200,7 @@ Every step has `type`, and may have:
 
 | Key | Meaning |
 |---|---|
-| `id` | The name of the value the step produces. A word: letters, digits, underscores. Unique along any path. |
+| `id` | The name of the value the step produces. A word: letters, digits and underscores, not starting with a digit. Unique along any path. |
 | `onError` | `{ "policy": "fail" }`, `{ "policy": "skip" }` or `{ "policy": "retry", "attempts": 3, "backoffMs": 500 }`. §7. |
 | `when` | A template; the step runs only when it renders truthy (§3.4). |
 | `keep` | Worker mode only ([worker-mode.md](./worker-mode.md)): the window remembers the step as it last ran it and skips it on the next item while it would do the same. A kept step that runs again makes the window forget the kept steps after it. Top-level page actions (`goto`, `click`, `fill`, `press`, `select`, `scroll`, `wait`, `evaluate`) without an `id`. |
@@ -274,10 +278,10 @@ body is sent as JSON:
 | `extract` | `selector`, `kind` (`css`, `xpath`, `jsonpath`, `regex`, `table`), `take?`, `many?`, `from?`; `namespaces?`, `ignoreNamespaces?` (`xpath` on XML) | §4. |
 | `set` | `value` | A literal, or a template when it is a string. In an object or list every string, at any depth, is a template (a lone placeholder keeps its type), as in a request `body`. |
 | `collect` | `into` (an id), `value` | Appends `value` (a literal, or a template when it is a string, rendered all the way down like `set`) to the list `into` holds, in whichever enclosing scope binds it; a list value is appended item by item, a missing one adds nothing. `into` must be bound first, usually `{ "type": "set", "id": "all", "value": [] }` before the loop: the binding validator checks. The way to carry values out of `forEach` iterations or `paginate` pages (§3.6). |
-| `forEach` | `over` (a list id) **or** `selector` (web), `as` (variable), `steps`, `emit?` | Runs `steps` once per item in a fresh child scope with the item bound as `as`. `emit: true` produces one record per iteration. `over` may name a single value; it is treated as a one-item list. `selector` iterates the live elements it matches (§3.7). |
+| `forEach` | `over` (a list id) **or** `selector` (web), `as` (variable), `steps`, `emit?` (`true`, or `{ output }` naming this recipe's output) | Runs `steps` once per item in a fresh child scope with the item bound as `as`. `emit: true` produces one record per iteration. `over` may name a single value; it is treated as a one-item list. `selector` iterates the live elements it matches (§3.7). |
 | `if` | `test` (template), `steps`, `else?` | Runs `steps` when `test` renders truthy, otherwise `else`, **in the current scope**: ids bound in a branch are visible after it. §3.8. |
 | `paginate` | `next`, `until?` (template), `maxPages?`, `steps` | Runs `steps` per page in a fresh child scope, then follows `next`. §3.6. |
-| `emit` | – | Produces a record from everything in scope. |
+| `emit` | `output?` (must be this recipe's output id) | Produces a record from everything in scope. |
 | `hook` | `name`, `args?` | Calls the registered hook; `args` strings are templates. The result is bound under `id`. |
 
 ### 3.4 Templates
@@ -296,7 +300,7 @@ A placeholder may also be an **expression** over such paths:
 | comparison | `== != < <= > >=`. `==` is loose (`3 == '3'`, `null == missing`); ordering is numeric when both sides are numbers, else textual. |
 | logic | `&& || !` with recipe truthiness (below); `a ?? b` gives `b` only when `a` is missing (`null` / undefined) |
 | choice | `test ? a : b` |
-| functions | `upper(s)`, `lower(s)`, `trim(s)`, `len(list or text)`, `default(v, fallback)` (missing or blank), `round(n, digits?)`, `number(text)`, `join(list, sep?)`, `first(list)`, `last(list)`, `replace(s, pattern, replacement)` (a regular expression, global), `contains(list or text, needle)`, `split(text, sep?)` (pieces trimmed, blank ones dropped: a blank text gives `[]`, so a `forEach` over it runs no iteration), `urlEncode(s)` (percent-encodes one URL component: `{{start.url}}/config/{{urlEncode(id)}}` turns `#` into `%23`, a space into `%20`), `entries(object)` (`[{ key, value }]` in key order: rows keyed by name become a list `forEach` walks; a list gives its indexes), `keys(object)`, `values(object)` |
+| functions | `upper(s)`, `lower(s)`, `trim(s)`, `len(list or text)`, `default(v, fallback)` (missing or `''`), `round(n, digits?)`, `number(text)`, `join(list, sep?)`, `first(list)`, `last(list)`, `replace(s, pattern, replacement)` (a regular expression, global), `contains(list or text, needle)`, `split(text, sep?)` (pieces trimmed, blank ones dropped: a blank text gives `[]`, so a `forEach` over it runs no iteration), `urlEncode(s)` (percent-encodes one URL component: `{{start.url}}/config/{{urlEncode(id)}}` turns `#` into `%23`, a space into `%20`), `entries(object)` (`[{ key, value }]` in key order: rows keyed by name become a list `forEach` walks; a list gives its indexes), `keys(object)`, `values(object)` |
 
 ```json
 { "type": "set", "id": "next_url", "value": "{{ start.url }}?page={{ page.number + 1 }}" },
@@ -314,8 +318,9 @@ Rules that keep this safe and predictable:
   the position.
 - Deep nesting and very long expressions are refused (64 levels, 512 tokens).
 
-Truthiness for `when`, `until`, `test` and the logical operators: `false`, `0`, `""`, `"false"`, `"0"`,
-`"null"`, `null`, `undefined` and an empty list are false; everything else is true.
+Truthiness for `when`, `until`, `test` and the logical operators: `false`, `0`, `null`, `undefined`, an empty list,
+and text that is, trimmed and in any case, `""`, `"false"`, `"0"`, `"null"` or `"undefined"` are false; everything else
+is true.
 
 ### 3.5 Scope: what a step can see
 
@@ -341,7 +346,7 @@ Truthiness for `when`, `until`, `test` and the logical operators: `false`, `0`, 
 | `next` | Mode | Behaviour |
 |---|---|---|
 | `{ "selector": "a.next" }` | web | Clicks it. If the body navigated away (a `forEach` visiting every item), the engine returns to the listing page first. No visible element within 2 s means no next page. |
-| `{ "url": "{{start.url}}?page={{page.number}}" }` | both | The rendered value is the next `page.url` (web mode navigates to it). Empty means no next page. |
+| `{ "url": "{{start.url}}?page={{ page.number + 1 }}" }` | both | The rendered value is the next `page.url` (web mode navigates to it). Empty means no next page. |
 | `{ "jsonpath": "$.nextPage" }` | api, web (on a `request`'s JSON) | Evaluated on the current document; the value is the next URL, relative allowed. `null`, `false` or empty means no next page. |
 | `{ "jsonpath": "$.cursor", "as": "cursor" }` | api, web (on a `request`'s JSON) | The value is bound under `cursor` in the next page's scope and the body builds the URL itself (`?cursor={{cursor}}`); on page 1 it is unset. |
 
@@ -508,7 +513,7 @@ with its number. JSON Lines served as `application/json` fail with a hint to use
 
 Valid JSON is always read as it is: a wrapper is only removed when the text does not parse, and what is inside
 must be strict JSON. Nothing is evaluated, so a JavaScript literal (`{ a: undefined }`, unquoted keys) still
-fails: read it with `regex`, or a hook. The common JSON-LD pattern, both sites in the examples use it:
+fails: read it with `regex`, or a hook. The common JSON-LD pattern, which both example sites use:
 
 ```json
 { "type": "extract", "id": "ld", "selector": "script[type=\"application/ld+json\"]", "kind": "css", "take": "text", "many": true },
@@ -568,8 +573,6 @@ A selector that matches an ancestor first returns the ancestor's whole inner HTM
 descendant. Extracting "the first title" from that wrapper gives the right title and "the first role" gives
 the *next* row's role: a shifted field, no error. When a site nests tables or lists, select the innermost
 repeating element (`table.credit_group tr`, not `tr`) and check the first record by hand.
-
----
 
 ### 4.6 PDFs
 
@@ -896,10 +899,10 @@ reaches the missing-value policy untouched.
 | `nth` | `index` (negative from the end) | list | one item |
 | `slice` | `start`, `end?` | list | a sub-list |
 | `coalesce` | – | list | the first item that is not missing or blank |
-| `default` | `value` | list | replaces a missing or blank value |
+| `default` | `value` | list | replaces `undefined`, `null` or `''` |
 | `number` | `locale?` | scalar | parse (`"1.299,00"` with `de-DE` → 1299) |
 | `integer` | – | scalar | parse and truncate |
-| `boolean` | `truthy?` | scalar | substring match against the phrases |
+| `boolean` | `truthy?` | scalar | `truthy`: `true` when the text contains a phrase (substring, case-insensitive). Without it, the field type's default phrases (§1.2). |
 | `currency` | `locale?`, `currency?` | scalar | `{ amount, currency }`; the code from the arg, else the text's symbol or code |
 | `date` | `format?`, `timezone?` | scalar | a Date; `format` tokens `YYYY MM DD HH mm ss`; `timezone` an IANA zone for text without an offset |
 | `absoluteUrl` | `base?` | scalar | resolve against `base`, else `page.url` |
@@ -1051,7 +1054,7 @@ What happens:
 attempt; `verify.selector` is required, and `verify.failure` names the refusal message. The solver fills the
 field and returns `solved` (or `{ status: 'solved', submitted: true }` when it, or a person, posted the form);
 its optional `verdict` hook hears the page's answer. `"solver": "manual"` is built in: a person solves it in a
-headed browser. [captcha.md](captcha.md#form-captchas-checked-when-the-form-is-posted).
+headed browser. See [captcha.md](captcha.md#form-captchas-checked-when-the-form-is-posted).
 
 Solvers get the access `lease`: token services solve faster, and more often correctly, through the same proxy
 as the browser. Api recipes cannot solve (there is no page): with `session.captcha`, a fetched page showing a
@@ -1071,7 +1074,7 @@ CapSolver, the costs, and when not to.
 |---|---|
 | `fail` | The recipe stops with a `StepFailure` naming the step path. The next input recipe still runs unless the crawler was created with `onRecipeError: 'stop'`. |
 | `skip` | The id stays unset, the walk continues, a `step:skip` event is reported. |
-| `retry` | The step is re-run up to `attempts` times with linear `backoffMs`, then treated as `fail`. |
+| `retry` | The step is tried up to `attempts` times in all, the first included, waiting `backoffMs`, then 2 × `backoffMs`, and so on (linear) between tries; then it is treated as `fail`. |
 
 **A request fails in passing** (a dropped connection, a timeout, a 503, a 429). Before any of the above, the
 engine sends the same request again: that is `limits.retry`, and it is **on by default**.
@@ -1219,7 +1222,8 @@ Everything the engine does is an event: `recipe:start` / `recipe:finish`, `page:
 `access:lease` / `access:blocked` / `access:rotate`, `request:retry`, `captcha:detected` / `captcha:solve` / `captcha:solved` /
 `captcha:failed` / `captcha:budget`, `step:start` /
 `step:finish` / `step:retry` / `step:skip` (with the step type, its id and its path such as
-`steps.8.steps.2`), `step:branch`, `record:emit` / `record:reject` / `record:duplicate` / `record:skipped`,
+`steps.8.steps.2`), `step:branch`, `step:kept`, in worker mode `window:open` / `window:close` / `windows:change` /
+`browser:restart` / `item:finish`, `record:emit` / `record:reject` / `record:duplicate` / `record:skipped`,
 `warning`, `error`. `traceLine`
 turns an event into one indented line, so a recipe's route reads as a tree:
 
@@ -1246,7 +1250,7 @@ The example runners print it with `--trace`.
 A quick way to see where a site's data lives before writing selectors by hand: `@opencraw/cli`'s
 `opencraw probe <url>` (add `--browser` to also watch the JSON a script fetches after load) lists JSON-LD
 blocks, inline JSON objects, `.json` URLs, script hosts and API-looking links found in the page.
-`@opencraw/mcp` gives an agent the same `probe`, plus `validate`, `run` and `list_recipes`, as MCP tools
+`@opencraw/mcp` gives an agent the same `probe`, plus `validate`, `run`, `list_recipes` and `diff`, as MCP tools
 instead of a terminal command.
 
 1. **Find the data before the markup.** Fetch the page with a browser user agent and look for

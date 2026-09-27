@@ -1,7 +1,10 @@
 import { describe } from './string.algorithm'
 import { TransformError } from './transform.error'
 
-const DEFAULT_TRUTHY = ['true', 'yes', 'y', '1', 'on', 'in stock', 'available']
+/** Short default phrases: `true` only when they are the whole text, so "none" or "2021" stay `false`. */
+const DEFAULT_TRUTHY_WORDS = new Set(['true', 'yes', 'y', '1', 'on'])
+/** Longer default phrases: `true` anywhere in the text, as whole words ("In stock (3 left)", not "unavailable"). */
+const DEFAULT_TRUTHY_PHRASES = [/\bin stock\b/, /\bavailable\b/]
 
 /**
  * The decimal and group separators a locale uses.
@@ -66,15 +69,18 @@ export function parseInteger (value: unknown, locale?: string): number {
  * Reads a boolean the way a recipe means it.
  *
  * @param value - Any value.
- * @param truthy - Phrases that mean `true` (case-insensitive, matched as a substring); default: yes/true/1/on/in stock/available.
+ * @param truthy - Phrases that mean `true` (case-insensitive, matched as a substring). Without it:
+ * the whole text is `true`, `yes`, `y`, `1` or `on`, or it contains the words `in stock` or `available`.
  * @returns The boolean.
  */
-export function parseBoolean (value: unknown, truthy: readonly string[] = DEFAULT_TRUTHY): boolean {
+export function parseBoolean (value: unknown, truthy?: readonly string[]): boolean {
   if (typeof value === 'boolean') return value
   if (typeof value === 'number') return value !== 0
   if (value === null || value === undefined) return false
   const text = String(value).trim().toLowerCase()
   if (text === '') return false
 
-  return truthy.some(phrase => text.includes(phrase.toLowerCase()))
+  if (truthy !== undefined) return truthy.some(phrase => text.includes(phrase.toLowerCase()))
+
+  return DEFAULT_TRUTHY_WORDS.has(text) || DEFAULT_TRUTHY_PHRASES.some(phrase => phrase.test(text))
 }

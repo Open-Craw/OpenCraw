@@ -1,13 +1,17 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # @opencraw/cli
 
-Command-line tools for [`@opencraw/core`](../core): probe a page for scrapable data, validate recipes,
+Command-line tools for [`@opencraw/core`](https://github.com/russoedu/open.craw/blob/main/packages/core): probe a page for scrapable data, validate recipes,
 and run a crawl from the terminal.
 
 ## Install
 
 ```sh
 npm install -g @opencraw/cli
-# or, inside this workspace: node packages/cli/bin/opencraw.mjs <command>
+# or, inside this workspace, after `npm run cli:build`: node packages/cli/bin/opencraw.mjs <command>
 ```
 
 ## Commands
@@ -16,6 +20,7 @@ npm install -g @opencraw/cli
 opencraw validate <recipe files or directories...>
 opencraw run <recipe files or directories...> [options]
 opencraw probe <url> [options]
+opencraw diff <previous.jsonl> <current.jsonl> [--key a,b] [--ignore a,b] [--changes <file>]
 ```
 
 ### `validate`
@@ -43,11 +48,11 @@ input recipes) and reports what happened.
 | `--dry-run` | One record per input recipe, printed with the scope it was mapped from — for checking a recipe under construction without a full run. |
 | `--trace` | Print the crawl trace to stderr. |
 | `--headed` | Show the browser instead of running headless. |
-| `--parallel <n>` | Run this many input recipes at once (default 1). Iterations inside a recipe follow its `limits.concurrency`. See [§3.9 of the authoring guide](../../docs/recipes/authoring.md#39-concurrency). |
-| `--retries <n>` | Tries per request that fails in passing (a dropped connection, a timeout, a 429, a 5xx), for recipes whose `limits.retry` says nothing. Default 3; `1` turns retrying off. See [§7 of the authoring guide](../../docs/recipes/authoring.md#7-policies-what-happens-when-something-is-missing-or-fails). |
-| `--profiles <dir>` | Where the persistent browser profiles of `session.browserProfile` live (or `OPENCRAW_PROFILES`; default `.opencraw/profiles`). See [access.md](../../docs/recipes/access.md#persistent-browser-profiles). |
-| `--host-delay <ms>`, `--host-concurrency <n>` | Per-site politeness across every recipe: at least `ms` between two requests to one site, at most `n` in flight. They override the access config's `throttle` defaults. See [access.md](../../docs/recipes/access.md#throttling-per-site). |
-| `--plugins <file>` (or `--hooks`) | A plugins module: named exports `hooks` (the recipes' hook steps and transforms), `accessPlugins` (for `{ kind: "plugin" }` access profiles) and `captchaSolvers`. A module whose default export is `{ name: function }` is read as hooks alone. `OPENCRAW_PLUGINS` / `OPENCRAW_HOOKS` when not given; `probe` reads it too. It runs as your code; load only files you trust. See [§6 of the authoring guide](../../docs/recipes/authoring.md#6-hooks). |
+| `--parallel <n>` | Run this many input recipes at once (default 1). Iterations inside a recipe follow its `limits.concurrency`. See [§3.9 of the authoring guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/authoring.md#39-concurrency). |
+| `--retries <n>` | Tries per request that fails in passing (a dropped connection, a timeout, a 429, a 5xx), for recipes whose `limits.retry` says nothing. Default 3; `1` turns retrying off. See [§7 of the authoring guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/authoring.md#7-policies-what-happens-when-something-is-missing-or-fails). |
+| `--profiles <dir>` | Where the persistent browser profiles of `session.browserProfile` live (or `OPENCRAW_PROFILES`; default `.opencraw/profiles`). See [access.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/access.md#persistent-browser-profiles). |
+| `--host-delay <ms>`, `--host-concurrency <n>` | Per-site politeness across every recipe: at least `ms` between two requests to one site, at most `n` in flight. They override the access config's `throttle` defaults. See [access.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/access.md#throttling-per-site). |
+| `--plugins <file>` (or `--hooks`) | A plugins module: named exports `hooks` (the recipes' hook steps and transforms), `accessPlugins` (for `{ kind: "plugin" }` access profiles) and `captchaSolvers`. A module whose default export is `{ name: function }` is read as hooks alone. `OPENCRAW_PLUGINS` / `OPENCRAW_HOOKS` when not given; `probe` reads it too. It runs as your code; load only files you trust. See [§6 of the authoring guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/authoring.md#6-hooks). |
 
 ```sh
 opencraw run recipes/ --out out/products.jsonl --trace
@@ -113,7 +118,7 @@ opencraw probe ./decks/incentivi.pptx
 ```
 
 Use it before writing an input recipe, to find the shape a site's data actually takes (§9 of
-[the authoring guide](../../docs/recipes/authoring.md)).
+[the authoring guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/authoring.md)).
 
 ### Options common to `run` and `probe`
 
@@ -121,7 +126,7 @@ Use it before writing an input recipe, to find the shape a site's data actually 
 |---|---|
 | `--browser-path <path>` | A browser binary other than the one Playwright installed (or `OPENCRAW_CHROMIUM`). |
 | `--insecure-tls` | Accept an intercepting proxy's certificate (or `OPENCRAW_INSECURE_TLS=1`). |
-| `--access <file>` | An access config: proxy profiles, with credentials as `{{env.NAME}}` (or `OPENCRAW_ACCESS`). See [access.md](../../docs/recipes/access.md). |
+| `--access <file>` | An access config: proxy profiles, with credentials as `{{env.NAME}}` (or `OPENCRAW_ACCESS`). See [access.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/access.md). |
 | `--access-profile <name>` | The profile used by recipes that name none, overriding the config's `default`. `probe` uses it for its fetch. |
 | `--user-agent <ua>` | The user agent to send. |
 

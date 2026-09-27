@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Every version and configuration of one model: BYD UK and Kia UK
 
 One output, two manufacturers, two very different routes to the same records: version, trim, price,

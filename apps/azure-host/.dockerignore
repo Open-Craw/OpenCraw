@@ -1,0 +1,10 @@
+# Only the pruned output and host.json go into the image.
+*
+!host.json
+!dist/package.json
+!dist/package-lock.json
+!dist/workspace_modules
+!dist/*.js
+!dist/functions
+!dist/assets
+dist/**/*.map

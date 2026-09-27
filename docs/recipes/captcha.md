@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Captchas
 
 A captcha is the site asking whether a human is there. OpenCraw can hand the question to a **solver** you
@@ -23,7 +27,7 @@ a solver:
 - **Log in, if the data is behind an account.** A `session.bootstrap` login, solved once and saved with
   `saveTo`, costs one solve instead of one per page.
 
-## The three places a challenge appears
+## The four places a challenge appears
 
 | Where | Recipe | What the engine does |
 |---|---|---|

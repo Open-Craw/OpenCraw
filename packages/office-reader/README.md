@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # @opencraw/office-reader
 
 Reads Office files into plain objects:
@@ -215,7 +219,7 @@ skips headers, footers and notes) and `limits`.
 - **Links:** external links by URL, internal ones as `#bookmark`.
 
 Tested against the 130 documents of Apache POI's test corpus. It reads 115 of them (1,500 paragraphs, 5,115
-tables, 352 links) and refuses the other 15, fuzzer cases and truncated zips, with an `OfficeReadError`.
+tables of which 5,000 are one stress-test file, 352 links) and refuses the other 15, fuzzer cases and truncated zips, with an `OfficeReadError`.
 
 ## How it compares
 
@@ -242,7 +246,7 @@ Tested against the 367 workbooks of Apache POI's test corpus, real files and fuz
 
 - **Writing files.**
 - **Evaluating formulas, and applying display formats.** A percentage stays `0.125` and a price stays `15950`.
-- **Legacy `.xls`, `.ppt`, `.doc`, `.xlsb` and OpenDocument `.ods` / `.odp` / `.odt`.** These are refused with a code.
+- **Legacy `.xls`, `.ppt`, `.doc`, OpenDocument `.ods` / `.odp` / `.odt`, and binary `.xlsb`.** These are refused with a code.
 - **In workbooks:** charts, pivot tables, images, comments and data validation.
 - **In presentations:** SmartArt text, text inside images (no OCR), animations and themes.
 - **In documents:** comments, formatting (bold, colours, fonts), images, equations, and the text of charts.

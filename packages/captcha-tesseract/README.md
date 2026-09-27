@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # @opencraw/captcha-tesseract
 
-A captcha reader for [OpenCraw](../../README.md): it reads the code in an image captcha with Tesseract and fills
+A captcha reader for [OpenCraw](https://github.com/russoedu/open.craw/blob/main/README.md): it reads the code in an image captcha with Tesseract and fills
 the form's answer field. The engine then posts the form, checks the page and retries.
 
 It is meant for simple image captchas: a short code drawn in a clean font, like the public Vahan registrations
@@ -11,7 +15,8 @@ widget solver instead.
 npm install @opencraw/captcha-tesseract
 ```
 
-Tesseract runs in WebAssembly, and the English model ships in the package, so nothing is downloaded at run time.
+Tesseract runs in WebAssembly, and the English model comes with it (the `@tesseract.js-data/eng` dependency), so
+nothing is downloaded at run time.
 
 ## Use
 
@@ -124,7 +129,7 @@ load lost), or **refused** (refreshed for free, never submitted):
 | The site's charset, no cross-check | 78 | 6 | 16 |
 | `A-Za-z0-9`, no cross-check | 71 | 12 | 17 |
 
-- **Name the charset the site really uses.** In 600 labelled characters, 16 never appear: `0 I O` and the
+- **Name the charset the site really uses.** In 588 labelled characters, 17 never appear: `0 I O` and the
   lowercase letters that look like capitals or like other glyphs (`c i j k l m o p s v w x y z`). Allowing
   them doubles the wrong reads: `1` read as `l`, `J` as `j`.
 - **Keep the cross-check.** It turns 5 of the 6 remaining wrong reads into refreshes. The one left is an image
@@ -140,5 +145,5 @@ load lost), or **refused** (refreshed for free, never submitted):
 of both cases. Over 80 codes, with the cross-check, 75% are right, 16% refused, 9% wrong. The misses are the
 letters mixed case makes ambiguous (`j`/`J`, `s`/`S`, `y`/`Y`): both reads agree on the wrong case.
 
-Solving a site's captcha can break its terms of service. Read OpenCraw's [captcha guide](../../docs/recipes/captcha.md)
+Solving a site's captcha can break its terms of service. Read OpenCraw's [captcha guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/captcha.md)
 first.

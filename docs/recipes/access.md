@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Access: proxies and where traffic goes
 
 Some sites block the network a crawl runs from before any recipe logic matters. IMDb answered this
@@ -190,7 +194,7 @@ templates, no code. Any provider can also be written as a raw `proxy` profile wi
 
   ```text
   ▶ imdb (web)
-    ⇄ access residential (proxy http://brd.superproxy.io:44445, session k3v9x0q2ma)
+    ⇄ access residential (proxy https://brd.superproxy.io:44445, session k3v9x0q2ma)
   ```
 
 - **A recipe that asks for a country with no profile applying** runs direct and gets a `warning` event rather
@@ -234,11 +238,11 @@ contexts stay open until the run ends, so requests still in flight on them finis
 The trace shows the route:
 
 ```text
-  ⇄ access residential (proxy http://brd.superproxy.io:44445, session k3v9x0q2ma)
+  ⇄ access residential (proxy https://brd.superproxy.io:44445, session k3v9x0q2ma)
   ⇢ page 1  https://www.imdb.com/chart/top/  [403]
   ⛔ blocked https://www.imdb.com/chart/top/: HTTP 403
   ↻ new access lease (attempt 2)
-  ⇄ access residential (proxy http://brd.superproxy.io:44445, session 0p2wq7x1ze)
+  ⇄ access residential (proxy https://brd.superproxy.io:44445, session 0p2wq7x1ze)
   ⇢ page 1  https://www.imdb.com/chart/top/
 ```
 

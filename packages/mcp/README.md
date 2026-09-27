@@ -1,14 +1,18 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # @opencraw/mcp
 
-An MCP (Model Context Protocol) server exposing [`@opencraw/core`](../core) as tools an agent can call
-directly: probe a page, validate recipes, run a crawl, list what's already authored. Local transport only
-(stdio) — the host launches it as a subprocess, the same shape as the [`opencraw` cli](../cli).
+An MCP (Model Context Protocol) server exposing [`@opencraw/core`](https://github.com/russoedu/open.craw/blob/main/packages/core) as tools an agent can call
+directly: probe a page, validate recipes, run a crawl, list what's already authored, compare two runs. Local transport only
+(stdio) — the host launches it as a subprocess, the same shape as the [`opencraw` cli](https://github.com/russoedu/open.craw/blob/main/packages/cli).
 
 For a shared, remote endpoint that authors recipes where they will run (and publishes them to a crawl host), see
-[`@opencraw/azure-durable`](../azure-durable/README.md#write-recipes-over-mcp)'s `/mcp`.
+[`@opencraw/azure-durable`](https://github.com/russoedu/open.craw/blob/main/packages/azure-durable/README.md#write-recipes-over-mcp)'s `/mcp`.
 
-This does **not** auto-author recipes from a sentence. The four tools are the same primitives the
-`opencraw` cli gives a terminal; the calling agent still writes the JSON recipes, using `probe` and
+This does **not** auto-author recipes from a sentence. The five tools are, `list_recipes` aside, the same
+primitives the `opencraw` cli gives a terminal; the calling agent still writes the JSON recipes, using `probe` and
 `validate` to iterate, the same way this project's own example recipes were built by hand. An agent that
 can write files passes their `paths`; one that can't (a chat-only host) passes the `recipes` inline.
 
@@ -36,7 +40,7 @@ a module whose default export is `{ name: function }` is read as hooks alone. On
 names it, never a tool call, so an agent can run recipes that use your plugins but can't make the server load
 a module of its choosing.
 
-`OPENCRAW_ACCESS` points at an access config ([access.md](../../docs/recipes/access.md)): proxy profiles, with
+`OPENCRAW_ACCESS` points at an access config ([access.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/access.md)): proxy profiles, with
 credentials as `{{env.NAME}}` read from the server's environment. The `probe` and `run` tools then take an
 `access` argument naming a profile. The file and the credentials never pass through a tool call.
 
@@ -66,8 +70,8 @@ spreadsheet type or `text/csv`, or a local `.xlsx`, `.csv` or `.tsv` path) it ad
 `workbook: { csv?: { encoding, delimiter }, sheets, rows, headers }`. For a presentation it adds
 `deck: { width, height, slides, headers, charts, grids }`, and for JSON, JSON Lines or YAML
 `json: { format, type, tree, lists }`: the structure, and every list of records with its path. An HTML page
-adds `html: { tables, outline?, frontMatter? }`: its tables' header rows, and for Markdown its sections and
-front matter keys.
+adds `html: { tables, outline?, frontMatter? }`: its tables' header rows, and for Markdown or a Word document its
+sections and front matter keys. XML (a feed, a sitemap) adds `xml: { root, namespaces, lists, tree, sitemap? }`.
 
 ### `validate`
 

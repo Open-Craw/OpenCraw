@@ -1,4 +1,5 @@
-// Runs the example recipes against the e2e fixture shop. From the repo root:
+// Runs the example recipes against the e2e fixture shop, which must be listening on 127.0.0.1:4545
+// (startFixtureSite() in packages/core/e2e/fixture-site.ts; the core e2e suite starts it). From the repo root:
 //   npm run core:build && node examples/run.mjs
 // The web recipe needs a browser: `npm run playwright:install` once.
 import { createCrawler, jsonLinesSink, loadRecipeSet } from '@opencraw/core'

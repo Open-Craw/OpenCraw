@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Worked example: vehicle configurations
 
 Goal: for one model per manufacturer, every version and every priced configuration, with make, model,
@@ -80,7 +84,7 @@ everything that distinguishes a record; the report's `duplicates` count is the t
 set      make, fuel
 request  spec_page     /specification/
 extract  boot          regex Luggage compartment capacity, seats upright, litres</td>\s*<td[^>]*>\s*([0-9,]+)
-extract  motor         regex Electric Engine</td>\s*<td[^>]*>\s*([^<]+?)\s*</td>
+extract  motor         regex Electric Engine\s*</td>\s*<td[^>]*>\s*([^<]+?)\s*</td>
 request  model_page    /
 extract  model_name    regex "name":"([^"]+)","position":3          the breadcrumb
 extract  colour_data   css [data-vrdata], attr:data-vrdata, many     JSON texts, one per trim
@@ -107,7 +111,7 @@ skips, the price rule rejects that record, and the recipe carries on.
 BYD SEAL | Design     | £46,830 | Indigo Grey / Tahiti Blue interior / 19 inch wheels | Rear Wheel Drive | boot - | 6 colours
 BYD SEAL | Design     | £45,730 | Atlantis Blue / Tahiti Blue interior / 19 inch wheels | Rear Wheel Drive | boot - | 6 colours
 BYD SEAL | Design     | £46,830 | Obsidian Black / Black interior / 19 inch wheels | Rear Wheel Drive | boot - | 6 colours
-  ... 21 more BYD combinations ...
+  ... 20 more BYD combinations ...
 BYD SEAL | Excellence | £49,830 | Ruby Red / Tahiti Blue interior / 19 inch wheels | 530 PS (390 kW) | boot - | 6 colours
 Kia EV3 | Air SR     | £33,055 | Air SR 58.3kWh 201bhp 1-Speed Auto (FWD) | Permanent Magnet Synchorous Motor (PMSM), 58.3kWh 201bhp 1-Speed Auto (FWD) | boot 460 | 5 colours
 Kia EV3 | Air        | £36,055 | Air 81.4kWh 201bhp 1-Speed Auto (FWD) | Permanent Magnet Synchorous Motor (PMSM), 81.4kWh 201bhp 1-Speed Auto (FWD) | boot 460 | 5 colours

@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "OPENCRAW_ALLOWED_HOSTS": "books.toscrape.com",
+    "OPENCRAW_MCP": "true",
+    "OPENCRAW_PROMOTERS": "",
+    "OPENCRAW_MAX_WINDOWS": "4",
+    "OPENCRAW_POOL_IDLE_MINUTES": "10",
+    "OPENCRAW_ACCESS": ""
+  }
+}

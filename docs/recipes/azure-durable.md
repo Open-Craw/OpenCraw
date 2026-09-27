@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Running OpenCraw as an Azure Durable Functions app
 
 `@opencraw/azure-durable` turns a Function App into an OpenCraw service: callers send recipes (or the name of a
@@ -40,24 +44,35 @@ my-crawler-host/
   holds an activity slot, so with fewer slots than windows a pool can never fill. The host warns at startup when
   it sees fewer.
 - **`overridableExistingInstanceStates: NonRunningStates`**: an item id can run again once it has finished (a
-  `neutral` item sent back), but a second start while it runs is refused. The starter checks this too.
+  `neutral` item sent back), and the starter answers a second start while it runs with that instance's status, so the item runs once.
 - **`functionTimeout: -1`**: activities run as long as a crawl needs. The Consumption plan caps them at 10
   minutes and can't run Chromium anyway.
 
 ## 3. The container
+
+[`apps/azure-host`](../../apps/azure-host/README.md) is a complete app built this way. Its
+[Dockerfile](../../apps/azure-host/Dockerfile) installs the pruned build (`npx nx run @opencraw/azure-host:prune`:
+the app's own `package.json`, lockfile and the workspace packages it uses) on the Functions Node 22 image, then
+Chromium:
 
 ```dockerfile
 FROM mcr.microsoft.com/azure-functions/node:4-node22
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-COPY . /home/site/wwwroot
 WORKDIR /home/site/wwwroot
-RUN npm ci --omit=dev && npx playwright install --with-deps chromium && npm run build
+COPY dist/package.json dist/package-lock.json ./
+COPY dist/workspace_modules ./workspace_modules
+RUN npm ci --omit=dev --ignore-scripts && npx playwright install --with-deps chromium
+COPY host.json ./
+COPY dist/*.js ./dist/
+COPY dist/functions ./dist/functions
+COPY dist/assets ./dist/assets
 ```
 
-Run it on an **Elastic Premium** or **App Service** plan (Linux, custom container). Chromium needs about 150 to
-300 MB per window: size the plan for `maxWindows` windows plus the host.
+The build happens before the image, so the image needs no compiler. Run it on an **Elastic Premium** or
+**App Service** plan (Linux, custom container). Chromium needs about 150 to 300 MB per window: size the plan for
+`maxWindows` windows plus the host.
 
 ## 4. Scale: one pool per instance
 
@@ -100,7 +115,7 @@ registerOpenCraw({
 })
 ```
 
-`publish` stores a draft, which production refuses. Someone `canPromote` allows promotes it with
+`publish` stores a draft, which production refuses. Someone whom `canPromote` allows then promotes it with
 `POST /api/recipes/{name}/{version}/promote`. A version never changes once written; the next change is the next
 version. A pool running version 3 keeps running it until it closes.
 

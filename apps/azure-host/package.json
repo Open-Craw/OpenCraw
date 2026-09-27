@@ -1,0 +1,145 @@
+{
+  "name": "@opencraw/azure-host",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A deployable Azure Functions app serving OpenCraw over HTTP (Durable Functions) with the recipe-authoring MCP endpoint.",
+  "type": "module",
+  "main": "dist/main.js",
+  "dependencies": {
+    "@azure/functions": "^4.16.5",
+    "@opencraw/azure-durable": ">=0.0.1",
+    "@opencraw/captcha-tesseract": ">=0.0.1",
+    "@opencraw/core": ">=0.0.1",
+    "durable-functions": "^3.5.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "apps/azure-host/dist",
+          "format": [
+            "esm"
+          ],
+          "bundle": false,
+          "main": "apps/azure-host/src/main.ts",
+          "tsConfig": "apps/azure-host/tsconfig.app.json",
+          "assets": [
+            {
+              "input": "apps/azure-host/src/assets",
+              "glob": "**/*",
+              "output": "assets"
+            }
+          ],
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            }
+          }
+        }
+      },
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/azure-host/dist/package.json",
+          "{workspaceRoot}/apps/azure-host/dist/package-lock.json"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/azure-host/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@opencraw/azure-host:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@opencraw/azure-host:build:development"
+          },
+          "production": {
+            "buildTarget": "@opencraw/azure-host:build:production"
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      },
+      "package": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/drop/node-function-app-azure-host.zip"
+        ],
+        "options": {
+          "command": "node -e \"const fs=require('node:fs');fs.mkdirSync('dist/drop',{recursive:true});const A=require('adm-zip');const z=new A();z.addLocalFolder('apps/azure-host/dist','dist');z.addLocalFile('apps/azure-host/host.json');z.addLocalFile('apps/azure-host/package.json');z.writeZip('dist/drop/node-function-app-azure-host.zip')\""
+        }
+      },
+      "start": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build"
+        ],
+        "continuous": true,
+        "options": {
+          "command": "func start",
+          "cwd": "apps/azure-host"
+        }
+      }
+    }
+  }
+}

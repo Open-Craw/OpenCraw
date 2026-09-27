@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # Worker mode: a pool of windows working through a queue
 
 `crawler.run` crawls a recipe set and stops. **Worker mode** is for long crawls of one site with thousands of
@@ -68,7 +72,7 @@ The pool asks a **work source** for items, from several windows at once, and tel
 ```ts
 interface WorkItem   { id: string, vars: Record<string, string | number | boolean>, recipe?: string }
 interface WorkSource {
-  next (): Promise<WorkItem | undefined>            // may wait (a refill); undefined = no more work
+  next (options?: { signal }): Promise<WorkItem | undefined>  // may wait (a refill); undefined = no more work
   done? (item, report, records): Promise<void>      // succeeded: its records are written, and given here too
   failed? (item, report, outcome): Promise<void>    // 'failure' or 'neutral'; nothing of it was written
 }
@@ -147,7 +151,7 @@ One `run` or `work` at a time per crawler: they share its sink.
 | Setting | Default | What it does |
 |---|---|---|
 | `windows: 4` | 1 | A fixed pool of four. |
-| `min`, `max` | 1, `min` | The bounds. |
+| `min`, `max` | 1, `min` (or `start` when higher) | The bounds. |
 | `start` | `min` | Where the pool starts. |
 | `grow.after` | 10 | One more window after this many successes in a row, counted only while every window is busy: with a window waiting for work, another would only wait too. |
 | `shrink` | `half` | On a failure: half the windows (`half`) or one fewer (`one`). |

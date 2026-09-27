@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+</p>
+
 # A CapSolver captcha solver
 
 `capsolver.mjs` is a working `CaptchaSolver` for [CapSolver](https://docs.capsolver.com). It sits outside

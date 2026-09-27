@@ -1,0 +1,24 @@
+{
+  "kind": "input",
+  "id": "catalogue",
+  "output": "book",
+  "mode": "api",
+  "start": [{ "url": "https://books.toscrape.com/catalogue/page-1.html" }],
+  "limits": { "delayMs": 250, "timeoutMs": 20000 },
+  "steps": [
+    { "type": "paginate", "next": { "url": "{{ default(nextPage, '') }}" }, "maxPages": 60, "steps": [
+      { "type": "request", "id": "listing", "url": "{{ page.url }}", "as": "html" },
+      { "type": "extract", "id": "books", "from": "listing", "selector": "article.product_pod", "kind": "css", "take": "html", "many": true },
+      { "type": "extract", "id": "nextHref", "from": "listing", "selector": "li.next a", "kind": "css", "take": "attr:href", "onError": { "policy": "skip" } },
+      { "type": "set", "id": "nextPage", "value": "{{ nextHref ? replace(page.url, '/[^/]+$', '/' + nextHref) : '' }}" },
+      { "type": "forEach", "over": "books", "as": "book", "emit": true, "steps": [] }
+    ]}
+  ],
+  "mapping": {
+    "url":     { "from": "book", "transform": [{ "op": "regex", "pattern": "<h3><a href=\"(?:\\.\\./)*(?:catalogue/)?([^\"]+)\"" }, { "op": "replace", "pattern": "^", "replacement": "https://books.toscrape.com/catalogue/" }] },
+    "title":   { "from": "book", "transform": [{ "op": "regex", "pattern": "<h3><a [^>]*title=\"([^\"]+)\"" }, { "op": "hook", "name": "decodeHtml" }] },
+    "price":   { "from": "book", "transform": [{ "op": "regex", "pattern": "class=\"price_color\">£?([\\d.]+)" }, { "op": "number" }] },
+    "inStock": { "from": "book", "transform": [{ "op": "regex", "pattern": "class=\"instock availability\">[\\s\\S]*?(In stock|Out of stock)" }, { "op": "boolean", "truthy": ["in stock"] }] },
+    "rating":  { "from": "book", "transform": [{ "op": "regex", "pattern": "star-rating (\\w+)" }, { "op": "hook", "name": "stars" }] }
+  }
+}
