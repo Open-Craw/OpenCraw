@@ -36,6 +36,18 @@ const report = {
   mapping: { row: { from: 'row' } },
 }
 
+/** A makers search over the API: one request per item. */
+const makers = {
+  kind:    'input',
+  id:      'makers',
+  output:  'row',
+  mode:    'api',
+  vars:    { q: '' },
+  start:   [{ url: `${FIXTURE_BASE}/widgets/makers` }],
+  steps:   [{ type: 'request', id: 'found', url: '{{ start.url }}?search={{ vars.q }}', as: 'json' }, { type: 'forEach', over: 'found', as: 'row', emit: true, steps: [] }],
+  mapping: { row: { from: 'row' } },
+}
+
 function item (state: string, rto: string, group = ''): WorkItem {
   return { id: `${state}-${rto}-${group || 'all'}`, vars: { state, rto, group } }
 }
@@ -167,16 +179,6 @@ describe('worker mode', () => {
   }, 60_000)
 
   it('runs api recipes the same way, one HTTP session per window', async () => {
-    const makers = {
-      kind:    'input',
-      id:      'makers',
-      output:  'row',
-      mode:    'api',
-      vars:    { q: '' },
-      start:   [{ url: `${FIXTURE_BASE}/widgets/makers` }],
-      steps:   [{ type: 'request', id: 'found', url: '{{ start.url }}?search={{ vars.q }}', as: 'json' }, { type: 'forEach', over: 'found', as: 'row', emit: true, steps: [] }],
-      mapping: { row: { from: 'row' } },
-    }
     const sink = memorySink()
     const crawler = createCrawler({ sink })
     try {
@@ -187,7 +189,30 @@ describe('worker mode', () => {
       await crawler.close()
     }
   }, 30_000)
+
+  it('de-duplicates within an item by default: the same key in two items is each item\'s record', async () => {
+    const perItem = await workMakers({})
+    expect(perItem).toEqual([
+      'TATA: TATA MOTORS LTD', 'TATA: TATA MOTORS PASSENGER VEHICLES LTD',
+      'MOTOR: EICHER MOTORS', 'MOTOR: TATA MOTORS LTD', 'MOTOR: TATA MOTORS PASSENGER VEHICLES LTD', 'MOTOR: TVS MOTOR',
+    ])
+    // An explicit `run` still spans the whole work call.
+    expect(await workMakers({ dedupe: 'run' })).toEqual(['TATA: TATA MOTORS LTD', 'TATA: TATA MOTORS PASSENGER VEHICLES LTD', 'MOTOR: EICHER MOTORS', 'MOTOR: TVS MOTOR'])
+  }, 30_000)
 })
+
+/** Runs the makers search for `TATA` then `MOTOR` on one window. */
+async function workMakers (options: { dedupe?: 'run' }): Promise<string[]> {
+  const sink = memorySink()
+  const crawler = createCrawler({ sink, ...options })
+  try {
+    await crawler.work(await loadRecipes([output, makers]), workFrom(['TATA', 'MOTOR'].map(q => ({ id: q, vars: { q } }))), { windows: 1 })
+  } finally {
+    await crawler.close()
+  }
+
+  return sink.records.map(({ source, data }) => `${source.item}: ${String(data.row)}`)
+}
 
 /** Kills the browsers this test process launched, as a crash would. */
 function killBrowsers (): void {

@@ -86,7 +86,8 @@ HTTP session in api mode, tabs of the recipe's browser context in web mode (`Ste
 rotation by forking again from the new runner). Loops over live elements stay sequential.
 `CrawlOptions.parallel` (CLI `--parallel`, MCP `parallel`) runs that many input recipes of a set at once, each
 with its own context or session; reports keep the set's order; `onRecipeError: 'stop'` stops those not yet
-started. `dedupe: 'recipe'` keeps a key set per recipe run; `run` shares one.
+started. `dedupe: 'recipe'` keeps a key set per recipe run; `run` shares one. Worker mode defaults to `recipe`,
+one key set per item.
 
 **Retries.** A request that fails in passing is sent again before the step's error policy sees it:
 `limits.retry: { attempts?, backoffMs?, maxDelayMs?, statuses?, forMs? }`, over `CrawlOptions.retry` (CLI `--retries`),

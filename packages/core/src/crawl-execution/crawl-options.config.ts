@@ -16,7 +16,12 @@ export interface CrawlOptions {
   /** Where records go; default: kept in memory and returned in the report. */
   sink?:            RecordSink
   onEvent?:         CrawlListener
-  /** Default `run`: a key seen once is dropped for the rest of the run. */
+  /**
+   * Default `run`: a key seen once is dropped for the rest of the run. In
+   * worker mode (`work`) the default is `recipe`, which there means one item:
+   * a key seen twice within an item is a duplicate, the same key in another
+   * item is not. `run` across a `work` call spans every item.
+   */
   dedupe?:          DedupeScope
   /**
    * How many input recipes of a set run at once; default 1, one after

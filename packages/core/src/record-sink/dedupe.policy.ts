@@ -1,6 +1,6 @@
 import type { OutputRecord } from '../output-mapping'
 
-/** How far de-duplication reaches: the whole run, one input recipe, or not at all. */
+/** How far de-duplication reaches: the whole run, one input recipe (one item in worker mode), or not at all. */
 export type DedupeScope = 'run' | 'recipe' | 'off'
 
 /** One input recipe's view of de-duplication: whether a record repeats a key already seen. */

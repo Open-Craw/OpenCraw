@@ -1139,7 +1139,7 @@ const recipes = await loadRecipeSet({ output: 'recipes/movie.output.json', input
 const crawler = createCrawler({
   sink:    jsonLinesSink('out/movies.jsonl'),          // default: memorySink()
   hooks:   { positive: input => Number(input) > 0 },
-  dedupe:  'run',                                       // 'run' | 'recipe' | 'off'
+  dedupe:  'run',                                       // 'run' | 'recipe' | 'off'; worker mode defaults to 'recipe' (per item)
   onRecipeError: 'continue',                            // or 'stop'
   browser: { headless: true },                          // Playwright launch settings
   onEvent: event => { const line = traceLine(event); if (line) console.log(line) },

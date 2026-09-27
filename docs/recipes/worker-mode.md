@@ -86,6 +86,11 @@ the sink see them only when the whole item succeeded. A failed item therefore wr
 key behind, so running it again later is safe. `done` receives the records, for a source that files one
 document per item.
 
+**De-duplication is per item.** A key seen twice within one item is a duplicate. The same key in another item
+is that item's record: two state reports that both list the same maker each keep their row. This is the
+`recipe` scope, since each item is one run of its recipe. Pass `dedupe: 'run'` to `createCrawler` to drop a
+key for the rest of the `work` call, or `'off'` to keep everything.
+
 ## 3. Running it
 
 ```ts
