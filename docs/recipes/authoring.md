@@ -148,7 +148,7 @@ fields is never de-duplicated. Duplicates are reported (`record:duplicate`) and 
 | `id` | Lowercase letters, digits, hyphens; unique in a run. Also the value of `generated: "recipeId"`. |
 | `output` | The output recipe id this recipe feeds. Loading fails if it does not match. |
 | `mode` | `web`: a real browser page (Playwright). `api`: HTTP requests through Playwright's request context, no browser. See §2.1. |
-| `start` | One or more start points `{ url, vars? }`. Each runs the whole step list from a fresh scope with `start.url` and its `vars`. |
+| `start` | One or more start points `{ url, vars? }`. Each runs the whole step list from a fresh scope with `start.url` and its `vars`. A start `url` must be absolute (`https://…`, or a `file:` URL, §3.2): there is no page before it to resolve a relative one against, so `./listino.csv` fails loading with a message saying so. |
 | `vars` | Values templates read as `{{vars.name}}`. Start-point `vars` override recipe `vars`. |
 | `window` | Worker mode only ([worker-mode.md](./worker-mode.md)): `{ check?, maxItems? }`. `check` is an element a reused window's page must still show before an item runs on it, else the window is replaced; after `maxItems` items the window is replaced anyway. |
 | `matrix` | Runs the recipe once per set of vars, each run with its own report. An object of lists runs every combination, the first var slowest: `{ "state": ["Delhi", "Goa"], "year": [2025, 2026] }` is four runs. A list of objects runs those sets as given: `[{ "state": "Delhi" }, { "state": "Goa", "year": 2026 }]`. Each set overrides `vars`, so every name must be declared in `vars` (with the value a run without the matrix uses). The runs of one recipe go one after the other; `parallel` spreads different recipes. Reports and the trace name each run's vars (`▶ report [state=Delhi, year=2025] (web)`). |
@@ -213,7 +213,7 @@ Every step has `type`, and may have:
 | Step | Fields | Notes |
 |---|---|---|
 | `goto` | `url` (template), `waitUntil?` (`load`, `domcontentloaded`, `networkidle`, `commit`), `ready?` | Relative URLs resolve against the current page. Records `page.url`. `ready: { selector, timeoutMs?, reloads? }` is an element the page must show: a site that sometimes serves its shell without the content is loaded again, up to `reloads` times (default 2), each reload reported as `request:retry`. |
-| `click` | `selector` or `target`, `optional?`, `download?` | First match. With `optional: true` a missing element is skipped after a 2 s wait. With `download: { as?, saveTo?, encoding?, delimiter?, timeoutMs? }` the click downloads a file (an "Export to Excel" button): it is read like a fetched document (CSV, spreadsheet, PDF, Word, JSON…, by `as` or the file's name), becomes the current document, and the step `id` holds it; `saveTo` (a template) keeps a copy. Read it with `from: <id>` (a `table` extract without `from` reads the page's HTML). |
+| `click` | `selector` or `target`, `optional?`, `download?` | First match. With `optional: true` a missing element is skipped after a 2 s wait. With `download: { as?, saveTo?, encoding?, delimiter?, timeoutMs? }` the click downloads a file (an "Export to Excel" button): it is read like a fetched document (CSV, spreadsheet, PDF, Word, JSON…, by `as`, else the file's name, else its bytes), becomes the current document, and the step `id` holds it; `saveTo` (a template) keeps a copy. Read it with `from: <id>` (a `table` extract without `from` reads the page's HTML). |
 | `fill` | `selector` or `target`, `value` (template) | |
 | `press` | `key`, `selector?` or `target?` | A key on an element, or on the page. |
 | `select` | `selector` or `target`, one of `value`, `label`, `index`, `values`; `multiple?`, `force?`, `ignoreCase?`, `timeoutMs?` | Picks an option of a `<select>`; `value` and `label` are templates. Fires the page's `change` handlers. `values` picks several, each matched by value or label (an item rendering a list, `{{ split(vars.states) }}`, adds each); `multiple` adds to what is chosen. `force` sets the options on the element itself, visible or not, and fires `input` and `change`: a hidden `<select multiple>` behind a script-built widget, when the page listens to the select (it usually does: that is how the widget's choice reaches the form). The step waits up to `timeoutMs` (`limits.timeoutMs`, else 30 s) for options the page loads after another pick, then names what matched nothing. `values` that render to nothing (a blank filter var) leave the control alone. `clear: true` makes `values` that render to nothing clear the control instead (a worker window reused for the next item must not keep the last item's filter). `search: { input, open?, close? }` is for a widget that loads its options as you type (a maker list of thousands): each value missing from the options is typed into `input` key by key (after clicking `open` when the box is hidden), picked once the page lists it, and the picks add up; `close` is clicked at the end. A search usually replaces the widget's list, so check that earlier picks survive a later search on the site at hand. |
@@ -239,7 +239,24 @@ call their JSON endpoints: a report whose table the page reads from an API is re
 
 | Step | Fields | Notes |
 |---|---|---|
-| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`), `encoding?`, `delimiter?`, `scalars?` | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13). A `file:` URL reads a local file, its kind from `as` or the extension (`.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.jsonl`, `.ndjson`, `.md`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`). 4xx/5xx fail the step. |
+| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`), `encoding?`, `delimiter?`, `scalars?` | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page; one with no page to resolve against fails with a message saying so. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13); a type that says nothing (below) is sniffed. A `file:` URL reads a local file, its kind from `as`, else the extension (`.pdf`, `.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.json`, `.jsonl`, `.ndjson`, `.md`, `.html`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`), else its bytes; a relative one (`file:data/listino.csv`) is read from the recipe file's folder (below). 4xx/5xx fail the step. |
+
+**A body served as anything** (`application/octet-stream`, `binary/octet-stream`, `text/plain`, `application/zip`
+and the like, or no content type: a file behind a bucket or a CDN, a download link, a raw file) is read by what it
+is. Its first bytes decide: `%PDF-` is a PDF; a zip whose parts are under `xl/`, `ppt/` or `word/` is a workbook,
+a deck or a Word document; gzip is a sitemap when the URL ends `.xml.gz`. Otherwise the URL path's extension
+decides, as for a `file:` URL, and only then is it text. So a GitHub raw `.csv` or `.json` (served as
+`text/plain`) reads as a CSV or JSON. An error page (4xx/5xx) is not sniffed by its URL's extension. `as` wins
+over all of it; a specific content type wins over the bytes. A local file or a download with no known extension is
+sniffed the same way.
+
+**Local files.** `file:///srv/listini/listino.csv` reads that file. A relative `file:` URL
+(`file:data/listino.csv`, `file:./x.pdf`, `file:../shared/x.xlsx`) is read from **the folder of the recipe file**
+that names it, when the recipe was loaded from a file (`loadRecipeSet`, `loadRecipes`, the cli), so a recipe and
+its documents move together. That holds for start URLs, start and recipe `vars`, `matrix` values, and every step's
+`url` (a template keeps its placeholders: `file:data/{{vars.month}}.csv`). A recipe given as an object or text,
+and a URL that only a template makes relative, read from the process working directory. `allowedHosts` refuses
+every `file:` URL, relative or not (§8).
 
 Text bodies are decoded from, in order: a byte-order mark, `encoding` (any WHATWG label: `windows-1252`,
 `iso-8859-15`, `shift_jis`), the charset the server declares, UTF-8, and Windows-1252 for text that is not
@@ -500,8 +517,8 @@ Parallel is only faster if the site lets it be. Pair it with the per-site `throt
 | `from` | Web mode | Api mode |
 |---|---|---|
 | absent | the live page | the last `request`'s response (nearest scope that has one) |
-| an id holding **text** | with `css`: the text as HTML (a fragment such as a `<tr>` is parsed as a fragment, so cells survive); with `jsonpath`: the text parsed as JSON | same |
-| an id holding a **list of texts** | with `jsonpath`: every entry that parses as JSON becomes one element of an array and the path runs over the array | same |
+| an id holding **text** | with `css`: the text as HTML (a fragment such as a `<tr>` is parsed as a fragment, so cells survive); with `table`: the HTML's `<table>`s (a Word or Markdown document, a page a `request` fetched: §4.11); with `jsonpath`: the text parsed as JSON | same |
+| an id holding a **list of texts** | with `jsonpath`: every entry that parses as JSON becomes one element of an array and the path runs over the array; with `table`: the tables of every fragment (`take: "html"`, `many: true`) | same |
 | an id holding **data** (an object, a list of objects) | with `jsonpath` | same |
 | an id holding a **read PDF** (a `request` with `as: "pdf"`) | with `table`, `regex` or `jsonpath` (§4.6) | same |
 | an id holding a **read workbook** (a spreadsheet or a CSV) | with `table`, `regex` or `jsonpath` (§4.7) | same |
@@ -796,12 +813,14 @@ the Markdown source instead, request it with `as: "text"`.
 
 ### 4.11 HTML tables
 
-`table` also reads an HTML document's `<table>`s: a fetched page, rendered Markdown, or, in web mode, the live
-page. Every table becomes a grid: `thead`, `tbody` and `tfoot` rows in order, `th` and `td` alike, cell text
-with whitespace collapsed (a `<br>` or a paragraph inside a cell reads as a space: `2659<br>$560` is
-`2659 $560`), and `colspan` / `rowspan` as merged ranges. From there it is the grid table of §4.7:
-the `selector` matches the header row, merged cells are filled, `headerRows` joins a header over two rows,
-`fillDown` and `columns` work the same. A table inside a table is read on its own.
+`table` also reads an HTML document's `<table>`s: a fetched page, rendered Markdown, a Word document, or, in web
+mode, the live page. With `from`, it reads the HTML an id holds: a Word or Markdown document fetched earlier, or,
+in web mode, a page a `request` returned (without `from`, a web recipe's `table` reads the live page). Every table
+becomes a grid: `thead`, `tbody` and `tfoot` rows in order, `th` and `td` alike, cell text with whitespace
+collapsed (a `<br>` or a paragraph inside a cell reads as a space: `2659<br>$560` is `2659 $560`), and `colspan` /
+`rowspan` as merged ranges. From there it is the grid table of §4.7: the `selector` matches the header row, merged
+cells are filled, `headerRows` joins a header over two rows, `fillDown` and `columns` work the same. A table
+inside a table is read on its own.
 
 ```json
 { "type": "extract", "id": "table", "kind": "table", "selector": "^Model Version", "headerRows": 2,
@@ -865,8 +884,9 @@ and handed to the recipe as **HTML**, built like rendered Markdown (§4.10), so 
 { "type": "extract", "id": "conditions", "selector": "section[data-heading='Condizioni'] li", "kind": "css", "many": true }
 ```
 
-Tracked changes read as accepted (insertions in, deletions out). A legacy `.doc` is refused with what to do: save
-it as `.docx`, or export it as PDF (§4.6). `probe` lists a document's sections and tables.
+Its `id` holds the HTML, so `table` with `from: <id>` reads its tables after another `request` has replaced the
+current document. Tracked changes read as accepted (insertions in, deletions out). A legacy `.doc` is refused with
+what to do: save it as `.docx`, or export it as PDF (§4.6). `probe` lists a document's sections and tables.
 
 ## 5. Mapping
 
@@ -1201,7 +1221,8 @@ const crawler = createCrawler({ allowedHosts: ['example.com', '*.shop.example', 
 - A pattern is a host, `*.host` (its subdomains and the host itself), `host:port`, or `*` for any host.
 - It holds wherever a request leaves: navigations, the page's own requests (a script's `fetch`, images,
   frames), web sockets, `request` steps, and every redirect hop, which is checked before it is followed.
-- `file:` is refused whatever the list says; `data:`, `blob:` and `about:` never leave the page and pass.
+- `file:` is refused whatever the list says, a relative `file:` URL too (after it resolves); `data:`, `blob:` and
+  `about:` never leave the page and pass.
 - Service workers are blocked, since their requests would bypass the check. A remote browser's own service
   workers (`cdp` profiles) can't be blocked.
 - A refused request fails the step: `HostNotAllowedError` in api mode, `net::ERR_BLOCKED_BY_CLIENT` in a
@@ -1288,7 +1309,7 @@ instead of a terminal command.
 | `no match for <selector>` on the first extract of a page | wrong selector, or the page is a challenge / login wall | print `page:visit` URLs; fetch the page and look; on a bot wall switch to `web` or run through a proxy ([access.md](./access.md)) |
 | `none of the N texts bound to "x" is JSON` | the scripts are not JSON-LD, or hold JavaScript | check the block; `evaluate` in web mode is the fallback |
 | a field carries the *next* row's value | the row selector matched a wrapper element first | select the innermost repeating element (§4.5) |
-| `"…" is not a URL and no page is known` | a relative URL before any navigation | make the first step `goto` / `request` with `{{start.url}}` |
+| `"…" is not an absolute URL, and there is no page to resolve it against` | a relative URL before any navigation, or a start URL that is a plain path | make the first step `goto` / `request` with `{{start.url}}`; give a start point a full URL, or `file:` for a local file (§3.2) |
 | `mapping.x.from: "y" does not start with a known id` | typo in an id, or the id is bound only in a bootstrap | ids are per recipe; bootstraps produce a session, not ids |
 | `record rejected: title: missing` on every record | the id is bound in a sibling scope, not the emitting one | extract inside the `forEach` body, or before it |
 | the crawl stops after page 1 in web mode | the body navigated away and `next.selector` is not on the page | the engine returns to the listing page; if the listing is itself reached by clicking, use `next.url` |

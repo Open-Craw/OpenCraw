@@ -1,4 +1,6 @@
 import type { Server } from 'node:http'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { createCrawler, loadRecipes, memorySink } from '../src/index'
 import type { RecipeReport } from '../src/index'
 import { browserConfig, FIXTURE_BASE, FIXTURE_PORT, startFixtureSite, stopFixtureSite } from './fixture-site'
@@ -43,6 +45,11 @@ describe('allowedHosts', () => {
     expect(redirected.report.error).toContain(`${OTHER}/allow/data is outside the allowed hosts`)
     const file = await crawl('api', 'file:///etc/hostname', [{ type: 'request', id: 'found', url: '{{ start.url }}', as: 'text' }, { type: 'emit' }], { value: { from: 'found' } })
     expect(file.report.errorKind).toBe('host')
+    // A relative file: URL resolves first, then is refused like any other.
+    const relative = await crawl('api', 'file:package.json', [{ type: 'request', id: 'found', url: '{{ start.url }}', as: 'text' }, { type: 'emit' }], { value: { from: 'found' } })
+    expect(relative.report.errorKind).toBe('host')
+    const resolved = pathToFileURL(join(process.cwd(), 'package.json')).href
+    expect(relative.report.error).toContain(`${resolved} is outside the allowed hosts`)
   }, 30_000)
 
   it('in a browser, lets the page reach its own host but not another one, by fetch or web socket', async () => {

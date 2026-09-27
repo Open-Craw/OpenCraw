@@ -45,7 +45,7 @@ map or named functions.
 | `id` | Lowercase letters, digits, hyphens. Unique within a run. |
 | `output` | The output recipe id this recipe feeds. |
 | `mode` | `web` (Playwright browser page) or `api` (Playwright request context, no browser). |
-| `start` | One or more `{ url, vars? }`; each start point runs the whole step list. |
+| `start` | One or more `{ url, vars? }`; each start point runs the whole step list. A start `url` is absolute (`http(s):`, `file:`…): a plain path fails validation with why. |
 | `vars` | Recipe-level variables, read in templates as `{{vars.name}}`. |
 | `matrix` | Sets of vars to run the recipe with, once each: an object of lists (every combination) or a list of objects. Names must be declared in `vars`. Each run is reported with its `variant`. |
 | `session` | Headers, cookies, user agent, viewport, a saved `storageStatePath`, a `bootstrap`, `access` (`{ profile?, country?, sticky? }`), `blockedWhen`, `onBlock`, `captcha` and `browserProfile` (section 2.1). |
@@ -157,7 +157,7 @@ steps; section 5).
 | `evaluate` | web | value | `script`, JavaScript run in the page; `args?`. Trusted recipes only. |
 | `screenshot` | web | – | `path` |
 | `captcha` | web | – | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; for form captchas `image`, `refresh?`, `field`, `submit`; defaults from `session.captcha` |
-| `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
+| `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`; relative to the current page, else a clear error), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
 | `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
 | `set` | both | value | `value` (template or literal) |
 | `collect` | both | – | `into` (a list id bound in an enclosing scope), `value` (template or literal); appends, so values outlive the `forEach` iteration or `paginate` page that found them |
@@ -166,6 +166,18 @@ steps; section 5).
 | `paginate` | both | – | `next`, `until?` (template), `maxPages?`, `steps` |
 | `emit` | both | record | `output?` |
 | `hook` | both | value | `name`, `args?` |
+
+**Choosing the reader.** `as` wins. Else a response's content type decides, unless it says nothing
+(`application/octet-stream`, `binary/octet-stream`, `text/plain`, `application/zip` and kin, none): then the
+body's first bytes decide (`%PDF-` a PDF; a zip with parts under `xl/`, `ppt/` or `word/` a workbook, a deck or a
+Word document, read from the zip's directory without inflating; gzip XML when the URL ends `.xml.gz`), else the
+URL path's extension (skipped for a 4xx/5xx body), else text. A local file or a download goes by its extension,
+else its bytes, else text.
+
+**Local files.** A `file:` URL reads a file. A relative one (`file:data/x.csv`, `file:./x.pdf`) resolves against
+the folder of the recipe file that names it when the recipe is read from a file (start URLs, start and recipe
+`vars`, `matrix` values, every step `url`; a template's placeholders are kept), else against the process working
+directory. `allowedHosts` refuses `file:` URLs, relative or not.
 
 A PDF (`as: 'pdf'`) is read into pages of rows of positioned cells (pdf.js, text layer only; a scan fails).
 `table` finds tables by their header row and returns `{ page, title, header, rows }`, rows keyed by column:
@@ -207,12 +219,13 @@ prefix (`)]}'`, `while(1);`, `for(;;);`), a JSONP call or a script assignment; t
 `probe` on JSON, JSON Lines or YAML shows the structure (four levels, a sample per leaf) and every array of
 objects with its path and shared keys.
 
-Markdown (`as: 'markdown'`, `text/markdown`, `.md`) is rendered with `marked` (GFM) into an HTML document:
-each heading and its content wrapped in `<section data-heading data-level>` (nesting by level), headings
-slugged, a leading YAML front matter parsed (YAML 1.2) into `<script type="application/json"
-data-front-matter>` in the head, raw HTML kept (parsed, never run). `table` reads an HTML document's
-`<table>`s (fetched, rendered Markdown, or the live page in web mode) as grids — rows in order, `th`/`td`
-alike, `colspan`/`rowspan` as merged ranges, nested tables on their own — through the grid table reader.
+Markdown (`as: 'markdown'`, `text/markdown`, `.md`) is rendered with `marked` (GFM) into an HTML document: each
+heading and its content wrapped in `<section data-heading data-level>` (nesting by level), headings slugged, a
+leading YAML front matter parsed (YAML 1.2) into `<script type="application/json" data-front-matter>` in the head,
+raw HTML kept (parsed, never run). `table` reads an HTML document's `<table>`s (fetched, rendered Markdown or
+Word, the live page in web mode, or with `from` the HTML text an id holds: a Word or Markdown document, a page a
+web-mode `request` fetched, a list of fragments) as grids — rows in order, `th`/`td` alike, `colspan`/`rowspan` as
+merged ranges, nested tables on their own — through the grid table reader.
 
 `take` is `text` (default), `html`, `value`, `json` or `attr:<name>`. `xpath` (XPath 1.0, `xpath` +
 `@xmldom/xmldom`) reads live pages, fetched XML and fetched HTML (parsed with the HTML5 parser, then queried

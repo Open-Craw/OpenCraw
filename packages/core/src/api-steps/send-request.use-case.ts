@@ -1,6 +1,6 @@
 import type { EventBus } from '../crawl-events'
 import type { ExtractionScope } from '../extraction-scope'
-import { HttpError } from '../http-session'
+import { HttpError, resolveRequestUrl } from '../http-session'
 import type { HttpBody, HttpResponse, HttpSender } from '../http-session'
 import type { InputRecipe, RequestStep } from '../recipe-schema'
 import { deckText } from '../deck-document'
@@ -30,7 +30,8 @@ export async function sendRequest (step: RequestStep, scope: ExtractionScope, cl
   if (formBody === undefined && step.form !== undefined) throw new Error('a form body is read from a live page: this recipe runs in api mode')
   const lookup = (path: string): unknown => scope.lookup(path)
   const headers = step.headers === undefined ? undefined : renderMap(step.headers, lookup)
-  const url = resolveUrl(renderText(step.url, lookup), scope.pageState?.url)
+  // A relative `file:` URL left after rendering (a recipe given as an object, a URL built by a template) reads from the working directory.
+  const url = resolveRequestUrl(renderText(step.url, lookup), scope.pageState?.url, process.cwd())
   const request = {
     method:    step.method,
     url,
@@ -87,22 +88,6 @@ function bodyText (body: HttpBody): string {
 
 function renderMap (map: Record<string, string>, lookup: (path: string) => unknown): Record<string, string> {
   return Object.fromEntries(Object.entries(map).map(([key, value]) => [key, renderText(value, lookup)]))
-}
-
-/**
- * A request URL relative to the current page (`/person/1158`, `?page=2`) resolves
- * against it, the way a browser resolves a link.
- *
- * @param target - The rendered URL.
- * @param base - The current page URL, if any.
- * @returns An absolute URL.
- */
-function resolveUrl (target: string, base: string | undefined): string {
-  try {
-    return new URL(target, base === '' ? undefined : base).href
-  } catch {
-    throw new Error(`"${target}" is not a URL${base === undefined || base === '' ? ' and no page is known to resolve it against' : ` and cannot be resolved against ${base}`}`)
-  }
 }
 
 /** What a step id holds for a document: parsed JSON, the read PDF, workbook or deck, or the markup / text. */

@@ -196,7 +196,12 @@ const varName = z.string().regex(/^[A-Za-z_]\w*$/)
 const vars = z.record(varName, scalar)
 const matrixSchema: z.ZodType<RecipeMatrix> = z.union([z.record(varName, z.array(scalar).min(1)), z.array(vars).min(1)])
 
-export const startPointSchema: z.ZodType<StartPoint> = z.strictObject({ url: z.string().min(1), vars: vars.optional() })
+/** A start point has no page before it to resolve a relative URL against. A relative `file:` URL is absolute enough: it names a local file. */
+const startUrl = z.string().min(1).refine(url => URL.canParse(url), {
+  error: issue => `"${String(issue.input)}" is not an absolute URL, and a start point has no page to resolve it against: give a full URL (https://…), or a file: URL for a local file (file:data/listino.csv reads from the recipe file's folder)`,
+})
+
+export const startPointSchema: z.ZodType<StartPoint> = z.strictObject({ url: startUrl, vars: vars.optional() })
 
 const cookieSchema: z.ZodType<RecipeCookie> = z.strictObject({
   name:     z.string().min(1),
