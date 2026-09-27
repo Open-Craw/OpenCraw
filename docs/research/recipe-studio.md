@@ -189,7 +189,7 @@ packages/studio/                 @opencraw/studio: the server, published; bin `o
     document-view/               PDF cells, workbook grid and deck view models from core's documents
     page-inspector/              DOM tree, data in the page, responses seen (from the cli's probe)
     flow-recording/              (phase 5) the headed browser, recorded actions to steps
-apps/studio/                     the React UI (Vite, Chakra UI); built into packages/studio/dist/ui
+apps/studio-ui/                  the React UI (Vite, Chakra UI); built into packages/studio/dist/ui
   src/
     app/                         shell: toolbar, split layout, preview strip
     content-pane/                snapshot iframe, picker overlay, canvases (tree, pdf, grid, deck)
@@ -211,7 +211,7 @@ it that you could not before. Sizes: S (days), M (a week or two), L (more).
 
 ### Phase 0: the walking skeleton (M, [#89](https://github.com/russoedu/open.craw/issues/89))
 
-- Scaffold `packages/studio` and `apps/studio`; the server serves the UI; the token; the WebSocket.
+- Scaffold `packages/studio` and `apps/studio-ui` (Nx names a project from its folder, and `studio` collides with the server package); the server serves the UI; the token; the WebSocket.
 - `recipe-workspace`: open a folder, list its recipes, validate them with core's loader, show issues.
 - `sample-run`: run one input recipe with a budget (`maxRecords`, `maxPages`, a time cap) and `debug: true`,
   stream `traceLine` output and records.
