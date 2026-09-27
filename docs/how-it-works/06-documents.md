@@ -123,11 +123,11 @@ A table in a Word or Markdown document is read from the current document, withou
 
 ### 1.3 Which `extract` kind reads which document
 
-([`extract-from-document.use-case.ts:29-87`](../../packages/core/src/api-steps/extract-from-document.use-case.ts#L29-L87))
+([`extract-from-document.use-case.ts:29-79`](../../packages/core/src/api-steps/extract-from-document.use-case.ts#L29-L79))
 
 | Kind | pdf | workbook | deck | html | xml | json | text |
 |---|---|---|---|---|---|---|---|
-| `table` | ✓ positions (§2) | ✓ grid (§3.5) | ✓ grid or positions (§4) | ✓ grid (§6) | – | – | – |
+| `table` | ✓ positions (§2) | ✓ grid (§3.4) | ✓ grid or positions (§4) | ✓ grid (§6) | – | – | – |
 | `jsonpath` | the object | the object | the object | – | – | the data | – |
 | `css` | – | – | – | ✓ | ✓ (cheerio, XML mode) | – | – |
 | `xpath` | – | – | – | ✓ (parsed as a browser does) | ✓ | – | ✓ (parsed as XML) |
@@ -163,9 +163,13 @@ orange. Here is page 1 of the September 2026 sheet, 1008 × 1427 points, read by
 [`recipes/pdf-discounts/`](recipes/pdf-discounts), a copy of the Stellantis example:
 
 <!-- capture:pdf-discounts screenshot alt=Page_1_of_the_ENPAM_sheet,_every_cell_readPdf_found_outlined,_header_rows_filled -->
+![Page 1 of the ENPAM sheet, every cell readPdf found outlined, header rows filled](../assets/how-it-works/pdf-discounts.png)
 <!-- /capture -->
 
 <!-- capture:pdf-discounts summary -->
+```text
+stellantis-it: 147 emitted, 0 rejected, 0 duplicates, 1 pages
+```
 <!-- /capture -->
 
 ### 2.1 What pdf.js gives, and what is kept
@@ -176,8 +180,8 @@ orange. Here is page 1 of the September 2026 sheet, 1008 × 1427 points, read by
 2. Calls `getDocument` with a **copy** of the bytes (pdf.js takes ownership of the buffer it gets, and refuses a
    Node `Buffer`) and `verbosity: 0`, `disableFontFace: true`, `useSystemFonts: false`, `stopAtErrors: true`.
    Nothing is rendered, no font is loaded, no script runs. A load failure becomes
-   `PdfReadError("<source>: not a readable PDF (<pdf.js message>)")`. No password is ever passed, so an
-   encrypted PDF fails here.
+   `PdfReadError("<source>: not a readable PDF (<pdf.js message>)")`. No password is ever passed, so a PDF
+   that needs one to open fails here (one encrypted with an owner password only opens).
 3. For each page, `getViewport({ scale: 1 })` gives its width and height in points, and `getTextContent()` its
    text items. Items without a `str` (marked-content markers) are dropped.
 4. Each item becomes a **run** (`runOf`, `:48-52`):
@@ -203,7 +207,7 @@ its `bottom` its lowest baseline, and its `text` the cells joined by a tab.
 
 A run is whatever pdf.js emitted as one string: a word, part of a word, a whole line. A cell is text that
 reads as one unit. `joinCells`
-([`row-assembly.algorithm.ts:110-131`](../../packages/core/src/pdf-document/row-assembly.algorithm.ts#L110-L131)):
+([`row-assembly.algorithm.ts:58-79`](../../packages/core/src/pdf-document/row-assembly.algorithm.ts#L58-L79)):
 
 1. **Drop whitespace runs.** pdf.js emits the gap between two table columns as one wide `" "` run, which would
    bridge the columns.
@@ -225,7 +229,7 @@ A unit test pins it: `PANDA` and `(model 319)` 2 pt apart at 7 pt become `PANDA 
 
 ### 2.3 Cells to rows: overlap, not baselines
 
-`rowsOfCells` (`:88-108`) sorts the cells by their vertical middle (`y + height / 2`), top first, then by `x`,
+`rowsOfCells` (`:36-56`) sorts the cells by their vertical middle (`y + height / 2`), top first, then by `x`,
 and walks them keeping one current row. A cell joins the current row when
 
 ```text
@@ -233,9 +237,9 @@ overlap = min(cell.y + cell.height, row.top) − max(cell.y, row.bottom)   ≥  
 ```
 
 and the row's extent grows to cover it; otherwise the cell starts a new row. A cell is only compared with the
-**current** row, never with an earlier one. Each row's cells are then sorted left to right (`rowOf`, `:133-142`).
+**current** row, never with an earlier one. Each row's cells are then sorted left to right (`rowOf`, `:81-90`).
 
-Why overlap and not equal baselines (the doc comment, `:67-71`): *"a table that centres its cells vertically puts a
+Why overlap and not equal baselines (the doc comment, `:15-19`): *"a table that centres its cells vertically puts a
 one-line value a few points above or below its two-line label, and a row built from equal baselines would pair
 the value with the wrong label."* The fixture reproduces it: `MINI (model 103)` sits on baseline 759 and its
 `0,0%` on 762, 3 pt higher. At 7 pt the same-baseline tolerance is 1.4 pt, so the two are on different lines;
@@ -250,7 +254,7 @@ regroups them.
 
 ### 2.4 The constants, in points
 
-All are shares of the font size, except the three fixed tolerances at the end. The fixture is 7 pt, ENPAM's
+All are shares of the font size or cell height, except the last two, which are fixed. The fixture is 7 pt, ENPAM's
 sheet about 10 pt (pdf.js reports 9.97).
 
 | Constant | Where | Value | 7 pt | 9 pt | 10 pt | What it decides |
@@ -258,7 +262,7 @@ sheet about 10 pt (pdf.js reports 9.97).
 | `SAME_BASELINE` | `row-assembly.algorithm.ts:8` | 0.2 × size | 1.4 | 1.8 | 2.0 | Two runs are on one line. |
 | `JOIN_GAP` | `:4` | 0.35 × size | 2.45 | 3.15 | 3.5 | Two runs on a line join into one cell. |
 | `SPACE_GAP` | `:6` | 0.1 × size | 0.7 | 0.9 | 1.0 | A joined gap wider than this gets a space. |
-| overlap allowed on join | `:120` | 1 × size | 7 | 9 | 10 | A run may start this far inside the previous one. |
+| overlap allowed on join | `:68` | 1 × size | 7 | 9 | 10 | A run may start this far inside the previous one. |
 | `ROW_OVERLAP` | `:10` | 0.4 × cell height | 2.8 | 3.6 | 4.0 | A cell joins the current row. |
 | band tolerance | `pdf-table.algorithm.ts:179` | max(3, 0.6 × median cell height) | 4.2 | 5.4 | 6.0 | Left edges closer than this to a band's start are one column. |
 | band slack | `:186`, `:243` | 0.5 pt | | | | A cell belongs to a band whose start is at most 0.5 pt right of it. |
@@ -288,6 +292,7 @@ page without the header is not part of any table.
 `until` matters more than it looks. The sheet ends each brand's table with a note:
 
 <!-- capture:doc-pdf-enpam screenshot n=2 alt=The_end_of_the_Fiat_table:_a_note_row,_then_the_Abarth_header -->
+![The end of the Fiat table: a note row, then the Abarth header](../assets/how-it-works/doc-pdf-enpam-2.png)
 <!-- /capture -->
 
 The note is one wide cell starting at x 85.2, inside the model column. Without `until`, it would be a line with
@@ -297,12 +302,33 @@ with `until: "^(NOTE|\\*)"` and without. The second pass repeats ten rows (the k
 and adds two:
 
 <!-- capture:doc-pdf-fixture record record=12 -->
+```json
+{
+  "table": "MODELS ALPHA",
+  "model": "COUPE (model 105) NOTE: invoices dated before 01/07/2025 are excluded",
+  "discount": "11,0%",
+  "excluded": null,
+  "extra": null
+}
+```
 <!-- /capture -->
 
 <!-- capture:doc-pdf-fixture record record=13 -->
+```json
+{
+  "table": "MODELS GAMMA",
+  "model": "G3 BEV *Discounts apply to the base list price",
+  "discount": "5,0%",
+  "excluded": null,
+  "extra": "+ Eu 1000 trade-in _ Eu 1500 stock until 30/09/26"
+}
+```
 <!-- /capture -->
 
 <!-- capture:doc-pdf-fixture summary -->
+```text
+fixture-tables: 14 emitted, 0 rejected, 10 duplicates, 1 pages
+```
 <!-- /capture -->
 
 A **narrow selector** needs the same care. The [`doc-pdf-enpam`](recipes/doc-pdf-enpam) recipe reads four
@@ -316,18 +342,31 @@ A header is a poor guide to where its column is. On this sheet every header is c
 column's cells are left-aligned:
 
 <!-- capture:doc-pdf-enpam screenshot n=1 alt=The_Fiat_table:_headers_centred,_cells_left-aligned -->
+![The Fiat table: headers centred, cells left-aligned](../assets/how-it-works/doc-pdf-enpam.png)
 <!-- /capture -->
 
 `MODELLI FIAT` spans x 187.6–245.8; the model names start at 85.4. `Azione Extra *` spans 717.9–776.8; the extras
 start at 572.5, 145 points to its left, closer to the end of `Versioni escluse/note` (547.7) than to their own
-header. So columns come from the body (`bandsOf`, `:176-193`):
+header. The first four Fiat records, read by the full Stellantis recipe:
+
+<!-- capture:pdf-discounts records n=4 -->
+```json
+{"month":"2026-09","brand":"FIAT","channel":null,"model":"PANDA (modello 319-390)","discountPercent":22,"excludedVersions":null,"extraIncentive":"+2% premio targa","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"FIAT","channel":null,"model":"GRANDE PANDA (modello 325) con data fattura fino al 21-12-25","discountPercent":5,"excludedVersions":null,"extraIncentive":"+3% premio targa (esclusi 325.1HK-1HL-1MK)","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"FIAT","channel":null,"model":"GRANDE PANDA (modello 325) con data fattura dal 22-12-25","discountPercent":8,"excludedVersions":null,"extraIncentive":"+3% premio targa (esclusi 325.1HK-1HL-1MK)","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"FIAT","channel":null,"model":"500 Hybrid (mod. 302)","discountPercent":12,"excludedVersions":"302.E14.0","extraIncentive":"+2% premio targa","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+```
+<!-- /capture -->
+
+Placed by distance from the header cells, the extras would land under `Versioni escluse/note`, the header
+they are nearest. So columns come from the body (`bandsOf`, `:176-193`):
 
 1. Take every cell of every body row.
 2. `tolerance = max(3, median cell height × 0.6)`: 6.0 pt here.
 3. Sort the cells' left edges. Walk them: an edge more than `tolerance` right of the **current band's start**
    opens a new band. (Measured from the start, not from the previous edge, so a slow drift of edges cannot chain
    into one wide band.)
-4. A band spans from its start to the right edge of its widest cell, capped at the next band's start: *"a band
+4. A band spans from its start to the furthest right edge of its cells, capped at the next band's start: *"a band
    spans what its cells cover, not the gap up to the next band"*. A cell belongs to a band when
    `start − 0.5 ≤ x < next start − 0.5`.
 
@@ -360,16 +399,18 @@ band `i` on header `h`, reached from any `table[i−1][h′]` with `h′ ≤ h`;
 For *b* bands and *n* headers the work is O(*b* · *n*²), a few hundred steps for a real table.
 
 For the Fiat table, the programme gives bands 1 → `MODELLI FIAT` (overlap 58.2), 2 → `Sconto %*` (24.8), 3 and
-4 → `Versioni escluse/note` (8.9 and 31.7), and 5 → `Azione Extra *` (37.6). Band 5 overlaps its header by only
-the 37.6 pt between 717.9 and 755.5, but monotonicity leaves it nothing else: every header left of it is taken.
+4 → `Versioni escluse/note` (8.9 and 32.2), and 5 → `Azione Extra *` (37.6). Band 5 overlaps its header by only
+the 37.6 pt between 717.9 and 755.5, but the first priority settles it: with band 5 anywhere else, a header
+would go unused.
 The freedom left after "use every header" is exactly which neighbours share one: two bands under one header (a
 column whose cells start at two edges, as here), or one header over two columns.
 
 The fixture's DELTA table has the second case, a header `(PROMO ONLY AT DEALERS)` over the discount column and
-a column of `M1/M2` codes; the two bands share it and each row reads `18,0% M1/M2`. ENPAM's off-line Fiat
+a column of `M1/M2` codes; the two bands share it and the first row reads `18,0% M1/M2`. ENPAM's off-line Fiat
 Professional table has the variant the Stellantis recipe matches with `"discount": "^(Sconto|\\(PROMO)"`:
 
 <!-- capture:doc-pdf-enpam screenshot n=5 alt=The_(PROMO_VALIDA…)_header,_over_the_discount_column_and_the_empty_notes_column -->
+![The (PROMO VALIDA…) header, over the discount column and the empty notes column](../assets/how-it-works/doc-pdf-enpam-5.png)
 <!-- /capture -->
 
 Three headers here, and three bands: 85.4–251.7, 379.8–404.9 and 572.5–744.5. `(PROMO VALIDA SOLO IN
@@ -378,12 +419,55 @@ CONCESSIONARIA off-line)` spans 350.9–568.7, over the discounts and the empty 
 as the step binds it, rows cut short:
 
 <!-- capture:doc-pdf-enpam scope ids=table record=17 -->
+```json
+{
+  "table": {
+    "page": 1,
+    "title": "MODELLI FIAT PROFESSIONAL (OFF LINE)",
+    "header": [
+      "MODELLI FIAT PROFESSIONAL (OFF LINE)",
+      "(PROMO VALIDA SOLO IN CONCESSIONARIA off-line)",
+      "Azione Extra *"
+    ],
+    "rows": [
+      {
+        "model": "PANDA VAN - 590 serie 0-1",
+        "discount": "8,0%",
+        "extra": ""
+      },
+      {
+        "model": "PANDA VAN - 519 serie 9",
+        "discount": "8,0%",
+        "extra": ""
+      },
+      {
+        "model": "DOBLO' VAN ICE - 510 serie 1",
+        "discount": "12,0%",
+        "extra": "Extra 2% in caso di permuta/ rottamazione"
+      },
+      "… 10 more"
+    ]
+  }
+}
+```
 <!-- /capture -->
 
 The header has no `Versioni…` cell, so the `excluded` pattern of `columns` matches nothing and rows have no
 `excluded` key; the mapping's `default` turns the missing value into `null`:
 
 <!-- capture:doc-pdf-enpam record record=19 -->
+```json
+{
+  "month": "2026-09",
+  "brand": "FIAT PROFESSIONAL",
+  "channel": "offline",
+  "model": "DOBLO' VAN ICE - 510 serie 1",
+  "discountPercent": 12,
+  "excludedVersions": null,
+  "extraIncentive": "Extra 2% in caso di permuta/ rottamazione",
+  "sheet": "https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"
+}
+```
 <!-- /capture -->
 
 ### 2.8 Placing values
@@ -433,19 +517,31 @@ The fixture has the textbook cases: `SEDAN`'s excluded versions on the line abov
 values on the middle one, a nameless anchor that switches ALPHA to centred mode:
 
 <!-- capture:doc-pdf-fixture screenshot alt=The_fixture's_ALPHA,_BETA_and_DELTA_tables,_each_row_in_one_colour -->
+![The fixture's ALPHA, BETA and DELTA tables, each row in one colour](../assets/how-it-works/doc-pdf-fixture.png)
 <!-- /capture -->
 
 <!-- capture:doc-pdf-fixture records n=6 -->
+```json
+{"table":"MODELS ALPHA","model":"CITY (model 101)","discount":"19,0%","excluded":null,"extra":"+3% registration bonus"}
+{"table":"MODELS ALPHA","model":"CITY EV (model 102)","discount":"3,0%","excluded":null,"extra":null}
+{"table":"MODELS ALPHA","model":"MINI (model 103)","discount":"0,0%","excluded":null,"extra":"1000 euro scrappage bonus"}
+{"table":"MODELS ALPHA","model":"SEDAN (model 104)","discount":"16,0%","excluded":"Special 100 edition 104.8RU-Top Sport 104.LRU","extra":null}
+{"table":"MODELS ALPHA","model":"WAGON base series 1 (104.E23 without OPT JFS-JFR)","discount":"12,0%","excluded":null,"extra":"3% stock bonus"}
+{"table":"MODELS ALPHA","model":"COUPE (model 105)","discount":"11,0%","excluded":null,"extra":null}
+```
 <!-- /capture -->
 
 `WAGON`'s first line lies between `SEDAN` and the nameless anchor; `SEDAN` took no name line above it, so it takes
 none below, and the anchor gets it. `OPT JFS-JFR)` follows the anchor, which took one line above, so it takes one
-below. BETA's extras start at x 314, left of their header `Extras*` (390) and overlapping nothing, and still
-land under it: after `Discount %*` there is only one header left.
+below. `Special 100 edition` is 2 pt from `MINI` and 2 pt from `SEDAN`, a tie, so it goes to `SEDAN`, below.
+BETA's extras band (314.0–355.8) overlaps `Discount %*` (278.0–316.1) by 2.1 pt and is 34 pt short of its own
+header `Extras*` (390): a per-band "most overlap" rule would put the extras under the discount. Three bands and
+three headers map one to one, so they land under `Extras*`.
 
 **The Alfa Romeo table**: notes wrapped over two and three lines, the name and the discount centred beside them.
 
 <!-- capture:doc-pdf-enpam screenshot n=3 alt=The_Alfa_Romeo_table:_notes_wrapped_around_names_and_discounts_centred_beside_them -->
+![The Alfa Romeo table: notes wrapped around names and discounts centred beside them](../assets/how-it-works/doc-pdf-enpam-3.png)
 <!-- /capture -->
 
 No line here is a nameless anchor, so `auto` places lines by distance. The numbers, from the rows `readPdf`
@@ -459,11 +555,20 @@ built:
 | `QV Ultima 620.XRU` · `Romeo) cumula solo con il tan 4,75%` | 0.0 (`620 - Giulia`) | 25.6 (`630 - Stelvio`) | Giulia |
 
 <!-- capture:doc-pdf-enpam records n=6 -->
+```json
+{"month":"2026-09","brand":"ALFA ROMEO","channel":null,"model":"626 - Junior Ibrida serie 0-1","discountPercent":14,"excludedVersions":null,"extraIncentive":"2% PREMIO LOYALTY / PERMUTA ROTTAMAZIONE (solo con P/R di vetture Alfa Romeo)","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"ALFA ROMEO","channel":null,"model":"627 - Junior elettrica serie 0-1","discountPercent":11,"excludedVersions":null,"extraIncentive":null,"sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"ALFA ROMEO","channel":null,"model":"622 - Tonale ICE serie 1-2-3","discountPercent":13,"excludedVersions":null,"extraIncentive":"3% Premio targa - 5% PREMIO LOYALTY / PERMUTA ROTTAMAZIONE (solo con P/R di vetture Alfa Romeo) Su Tonale il premio Loyalty è alternativo ai finanziamenti pr…","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"ALFA ROMEO","channel":null,"model":"638 Tonale PHEV serie 1-2- 3","discountPercent":18,"excludedVersions":null,"extraIncentive":null,"sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"ALFA ROMEO","channel":null,"model":"620 - Giulia","discountPercent":18,"excludedVersions":"Quadrifoglio Super Sport 620.LRU e QV Ultima 620.XRU","extraIncentive":"5% PREMIO LOYALTY / PERMUTA ROTTAMAZIONE (solo con P/R di vetture Alfa Romeo) cumula solo con il tan 4,75%","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+{"month":"2026-09","brand":"ALFA ROMEO","channel":null,"model":"630 - Stelvio","discountPercent":19,"excludedVersions":"Quadrifoglio Super Sport 630.LAU e QV Ultima 630.XAU","extraIncentive":"'5% PREMIO LOYALTY / PERMUTA ROTTAMAZIONE (solo con P/R di vetture Alfa Romeo) cumula solo con il tan 4,75%","sheet":"https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"}
+```
 <!-- /capture -->
 
 **The Jeep table**: a nameless anchor, so the whole table is read in centred mode.
 
 <!-- capture:doc-pdf-enpam screenshot n=4 alt=The_Jeep_table:_420_AVENGER_BEV's_discount_sits_on_the_line_below_its_name -->
+![The Jeep table: 420 AVENGER BEV's discount sits on the line below its name](../assets/how-it-works/doc-pdf-enpam-4.png)
 <!-- /capture -->
 
 `420 AVENGER BEV` (baseline 585.9) and its `5,0%` (578.7) are 7.2 pt apart, with the two lines of its extra at
@@ -473,17 +578,42 @@ anchors `619 AVENGER serie 4…` and `5,0%`; the upper one took no name line abo
 lower one. The extra's first line is 4.9 pt from the anchor above and 3.1 pt from `5,0%`, so it joins too:
 
 <!-- capture:doc-pdf-enpam record record=11 -->
+```json
+{
+  "month": "2026-09",
+  "brand": "JEEP",
+  "channel": null,
+  "model": "420 AVENGER BEV",
+  "discountPercent": 5,
+  "excludedVersions": null,
+  "extraIncentive": "Premio ocf \"ALL IN\" Eu 5.500 Longitude - Eu 6.000 Altitude - Eu 7.000 Summit e Black ed. - Premio targa \"ALL IN\" Eu 3.000 (iniziativa automatica AJH26823)",
+  "sheet": "https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"
+}
+```
 <!-- /capture -->
 
 `434 NEW COMPASS BEV` has a name and an extra on one line, so it is an ordinary anchor; the extra's lines above
 (2.4 pt against 6.9) and below (3.1 against 5.7) join it. It has no discount, and the record says so:
 
 <!-- capture:doc-pdf-enpam record record=14 -->
+```json
+{
+  "month": "2026-09",
+  "brand": "JEEP",
+  "channel": null,
+  "model": "434 NEW COMPASS BEV",
+  "discountPercent": null,
+  "excludedVersions": null,
+  "extraIncentive": "Eu 5000 OCF \"ALL IN\" - Eu 3000 premio targa \"ALL IN\" (su new Compass BEV premio targa alternativo al tan 2,99% e al 3,99-4,99-5,99% E-Drive - su Avenger bev …",
+  "sheet": "https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"
+}
+```
 <!-- /capture -->
 
 **The DS table** (page 2, 1214 × 1718 points): every extra is two lines, the first **between** two rows.
 
 <!-- capture:doc-pdf-enpam screenshot n=6 alt=The_DS_table:_each_extra's_first_line_sits_halfway_between_two_rows -->
+![The DS table: each extra's first line sits halfway between two rows](../assets/how-it-works/doc-pdf-enpam-6.png)
 <!-- /capture -->
 
 The first line of `DS 3 (BEV)`'s extra, `+ Eu 800 permuta/rottamazione…`, is 2.7 pt below `DS 3 MHEV` and 2.7 pt
@@ -491,10 +621,35 @@ above `DS 3 (BEV)`. The gaps tie, so the line goes to the anchor below. Without 
 three lines and `DS 3 (BEV)` half an extra. The fixture's GAMMA table is built to the same pattern
 ([`pdf-table.algorithm.test.ts:52`](../../packages/core/src/pdf-document/pdf-table.algorithm.test.ts#L52)).
 
-<!-- capture:doc-pdf-enpam records n=32 -->
+<!-- capture:doc-pdf-enpam record record=30 -->
+```json
+{
+  "month": "2026-09",
+  "brand": "DS",
+  "channel": null,
+  "model": "DS 3 MHEV",
+  "discountPercent": 7,
+  "excludedVersions": null,
+  "extraIncentive": "+ Eu 800 permuta/rottamazione (non disponibile su on - line) _ Eu 1500 stock con immatricolazioni entro 30/09/26",
+  "sheet": "https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"
+}
+```
 <!-- /capture -->
 
-The last two lines above are the DS table's first two rows, records 30 and 31 of the scene.
+<!-- capture:doc-pdf-enpam record record=31 -->
+```json
+{
+  "month": "2026-09",
+  "brand": "DS",
+  "channel": null,
+  "model": "DS 3 (BEV)",
+  "discountPercent": 7,
+  "excludedVersions": null,
+  "extraIncentive": "+ Eu 800 permuta/rottamazione (non disponibile su on - line) _ Eu 1500 stock con immatricolazioni entro 30/09/26",
+  "sheet": "https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-promo_mese-09-2026.pdf"
+}
+```
+<!-- /capture -->
 
 ### 2.10 Naming the columns, and `fillDown`
 
@@ -506,15 +661,15 @@ The last two lines above are the DS table's first two rows, records 30 and 31 of
   pattern matches no header is absent (the `excluded` above); a header no pattern names is dropped.
 
 Every value is a string: a cell's lines joined by spaces, `''` when empty. `fillDown` runs after, on PDF tables
-as on workbooks ([`extract-from-document.use-case.ts:127`](../../packages/core/src/api-steps/extract-from-document.use-case.ts#L127),
-§3.5): a value printed once for a group of rows is copied down to the rows below it that have none.
+as on workbooks ([`extract-from-document.use-case.ts:128`](../../packages/core/src/api-steps/extract-from-document.use-case.ts#L128),
+§3.4): a value printed once for a group of rows is copied down to the rows below it that have none.
 
 ### 2.11 What fails, and why
 
 | Case | What happens | Why |
 |---|---|---|
 | A scanned page | No rows on it. If every page is a scan, the read fails. | pdf.js reads the text layer; there is no OCR. |
-| Encrypted PDF | The read fails at load. | No password is passed to `getDocument`. |
+| Password-protected PDF | The read fails at load. | No password is passed to `getDocument`. |
 | Rotated or vertical text | Rows and columns come out wrong. | Only the origin and `width`/`height` are kept; every stage assumes horizontal, left-to-right baselines. A page with `/Rotate` reports its rotated size, but the item coordinates are not transformed. |
 | Two columns closer than `JOIN_GAP` | They merge into one cell (3.5 pt at 10 pt). | Nothing but the gap separates two runs on a line. |
 | A column whose left edges spread over more than the tolerance | Several bands; usually harmless, as the monotone mapping gives them to one header (Fiat's excluded versions). A right-aligned number column with widths differing by more than 6 pt splits the same way. | Bands cluster left edges. |
@@ -559,8 +714,8 @@ line breaks are literal and `""` is a quote; an unterminated quote runs to the e
 literal character (`1.0 Hybrid "Cross"`). CRLF, LF and a lone CR end a record. Nothing is trimmed, ragged rows
 stay ragged, a blank line is the row `['']`, and a trailing line break adds no row.
 
-`detectDelimiter` (`:65-78`) parses the first 64 KiB with each of `,` `;` tab `|` and scores the first 100
-non-blank rows: the most common width above 1 (the larger on a tie), and
+`detectDelimiter` (`:65-78`) parses the first 64 KiB with each of `,` `;` tab `|` and scores the non-blank rows
+among the first 100 (the last one dropped when the sample cuts the file): the most common width above 1 (the larger on a tie), and
 `agreeing rows / rows × 1000 + width`. The highest score wins; on equal scores the earlier candidate; with none
 above 0, `,`. The repository's [`listino.csv`](../../packages/core/src/workbook-document/fixtures/listino.csv)
 fixture is Windows-1252 with CRLF, a title line and a blank line above the header, `;` with decimal commas, and a
@@ -578,6 +733,37 @@ and fails strict UTF-8 (`ë`, `€` and `–` are single bytes), so it decodes a
 the workbook, with what was detected:
 
 <!-- capture:doc-csv-listino scope ids=listino -->
+```json
+{
+  "listino": {
+    "kind": "workbook",
+    "sheets": [
+      {
+        "name": "listino",
+        "rows": [
+          [
+            "Listino prezzi autoveicoli – settembre 2026"
+          ],
+          [
+            ""
+          ],
+          [
+            "Marca",
+            "Modello",
+            "Versione",
+            "… 2 more"
+          ],
+          "… 6 more"
+        ]
+      }
+    ],
+    "csv": {
+      "encoding": "windows-1252",
+      "delimiter": ";"
+    }
+  }
+}
+```
 <!-- /capture -->
 
 A CSV is a one-sheet workbook named after the file (`sheetNameOf`, the last path segment without its extension),
@@ -660,6 +846,12 @@ The CSV fixture writes `Fiat` and `Pandina` once over two versions, and ends wit
 `"fillDown": ["brand", "model"]` and `"until": "^Totale"`:
 
 <!-- capture:doc-csv-listino records n=4 -->
+```json
+{"brand":"Fiat","model":"Pandina","version":"1.0 Hybrid \"Cross\"","price":"15.950,00","discount":"12,5"}
+{"brand":"Fiat","model":"Pandina","version":"1.0 Hybrid Icon","price":"16.450,00","discount":"12,5"}
+{"brand":"Citroën","model":"C3","version":"Plus; automatica\nnuova","price":"19.300,00","discount":"8"}
+{"brand":"Peugeot","model":"208","version":"Allure","price":"21.450,00","discount":null}
+```
 <!-- /capture -->
 
 The office-reader fixture [`incentivi.xlsx`](../../packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx)
@@ -670,11 +862,62 @@ two models (`A5:A6`), a formula (`C5*(1-E5)`, cached `13955.625`), a percentage,
 `"until": "^Consegna"`, the table the step binds (keys from `columns`):
 
 <!-- capture:doc-xlsx-incentivi scope ids=table -->
+```json
+{
+  "table": {
+    "sheet": "Incentivi giugno",
+    "title": "Marca",
+    "header": [
+      "Marca",
+      "Modello",
+      "Prezzo Listino",
+      "… 5 more"
+    ],
+    "rows": [
+      {
+        "brand": "Fiat",
+        "model": "Pandina",
+        "list": 15950,
+        "net": 13955.625,
+        "discount": 0.125,
+        "from": "2026-06-01",
+        "active": true,
+        "note": "Solo rottamazione"
+      },
+      {
+        "brand": "Fiat",
+        "model": "Pandina Cross",
+        "list": 17950,
+        "net": 15706.25,
+        "discount": 0.125,
+        "from": "2026-06-01T09:30:00",
+        "active": false,
+        "note": "#DIV/0!"
+      },
+      {
+        "brand": "Jeep",
+        "model": "Avenger",
+        "list": 24950.5,
+        "net": "",
+        "discount": "",
+        "from": "",
+        "active": "",
+        "note": ""
+      }
+    ]
+  }
+}
+```
 <!-- /capture -->
 
 `Fiat` fills `Pandina Cross` from the merge, the hidden row is gone, and the types survive into the records:
 
 <!-- capture:doc-xlsx-incentivi records n=3 -->
+```json
+{"brand":"Fiat","model":"Pandina","listPrice":15950,"netPrice":13955.625,"discount":0.125,"validFrom":"2026-06-01","active":true,"note":"Solo rottamazione"}
+{"brand":"Fiat","model":"Pandina Cross","listPrice":17950,"netPrice":15706.25,"discount":0.125,"validFrom":"2026-06-01T09:30:00","active":false,"note":"#DIV/0!"}
+{"brand":"Jeep","model":"Avenger","listPrice":24950.5,"netPrice":null,"discount":null,"validFrom":null,"active":null,"note":null}
+```
 <!-- /capture -->
 
 **A real workbook.** The GSA's FY2026 per diem rates
@@ -685,9 +928,17 @@ single space; `clean` makes it `''`, so columns I to K have neither header nor d
 Lodging and meal rates arrive as numbers.
 
 <!-- capture:doc-xlsx-gsa records n=3 -->
+```json
+{"rejected":{"field":"state","reason":"missing"}}
+{"state":"AL","destination":"Birmingham","counties":"Jefferson","seasonBegin":"all year","seasonEnd":null,"lodgingUsd":126,"mealsUsd":80}
+{"state":"AL","destination":"Gulf Shores","counties":"Baldwin","seasonBegin":"October 1","seasonEnd":"February 28","lodgingUsd":134,"mealsUsd":74}
+```
 <!-- /capture -->
 
 <!-- capture:doc-xlsx-gsa summary -->
+```text
+gsa-per-diem-local: 649 emitted, 1 rejected, 0 duplicates, 1 pages
+```
 <!-- /capture -->
 
 What the grid reader does not do: two tables side by side on one sheet read as one wide table (no column range
@@ -724,6 +975,51 @@ slide without a title placeholder has the title `''`. The DfE's model board pack
 `"slide": "^Student Numbers$"` picks slide 6 by its title, and `selector` its table by the header row:
 
 <!-- capture:doc-pptx-dfe scope ids=table -->
+```json
+{
+  "table": {
+    "slide": 6,
+    "slideTitle": "Student Numbers",
+    "title": "Headcount",
+    "header": [
+      "Headcount",
+      "Full year actuals (last year)",
+      "Actuals (current year)",
+      "… 4 more"
+    ],
+    "rows": [
+      {
+        "programme": "16-19 students",
+        "last": "2,820",
+        "current": "2,780",
+        "budget": "2,710",
+        "forecast": "2,790",
+        "rag": "Green",
+        "implications": "Increase in lagged funding in 202X/2Y of circa £350,000"
+      },
+      {
+        "programme": "ASF (including devolved)",
+        "last": "1,120",
+        "current": "743",
+        "budget": "1,230",
+        "forecast": "1,150",
+        "rag": "Red",
+        "implications": "Forecast shortfall of £139,000 in 202W/2X which is outside tolerances"
+      },
+      {
+        "programme": "16-18 Apprenticeships",
+        "last": "210",
+        "current": "115",
+        "budget": "136",
+        "forecast": "128",
+        "rag": "Red",
+        "implications": "Forecast shortfall in income of £36,000.  Substantial decline from previous year"
+      },
+      "… 4 more"
+    ]
+  }
+}
+```
 <!-- /capture -->
 
 The header cells hold line breaks (`Full year\nactuals\n(last year)`); keys are cleaned, so the key is
@@ -732,10 +1028,23 @@ The header cells hold line breaks (`Full year\nactuals\n(last year)`); keys are 
 `"locale": "en-GB"`:
 
 <!-- capture:doc-pptx-dfe record -->
+```json
+{
+  "programme": "16-19 students",
+  "lastYearActual": 2820,
+  "currentActual": 2780,
+  "budget": 2710,
+  "forecast": 2790,
+  "rag": "Green",
+  "implications": "Increase in lagged funding in 202X/2Y of circa £350,000",
+  "slide": 6
+}
+```
 <!-- /capture -->
 
 The deck's one chart, a waterfall on slide 9, is not read: it is a `chartEx` part (the chart types Office added
-in 2016), which the reader finds but does not parse, so it reports `type: ""` and no series.
+in 2016), which the reader finds but does not parse, so it reports `type: ""` and no series (and its title twice
+over, run together).
 
 **Text-box grids** read with `shapes: true` (`shapeTables`, `:53-72`). Each selected slide becomes a pseudo-PDF
 page: each shape a cell, with `y` flipped to the PDF convention (`slide height − y − height`, the box's bottom
@@ -751,9 +1060,75 @@ reads four ways in one recipe: a native table under a two-row merged header on s
 boxes inside a group scaled by the group's transform:
 
 <!-- capture:doc-pptx-incentivi scope ids=native,chart,validity -->
+```json
+{
+  "native": {
+    "slide": 1,
+    "slideTitle": "Incentivi giugno",
+    "title": "Modello",
+    "header": [
+      "Modello",
+      "Prezzo Listino",
+      "Prezzo Netto",
+      "Sconto"
+    ],
+    "rows": [
+      {
+        "Modello": "Pandina",
+        "Prezzo Listino": "15.950 €",
+        "Prezzo Netto": "13.955 €",
+        "Sconto": "12,5%"
+      },
+      {
+        "Modello": "Pandina Cross",
+        "Prezzo Listino": "17.950 €",
+        "Prezzo Netto": "15.706 €",
+        "Sconto": "12,5%"
+      }
+    ]
+  },
+  "chart": {
+    "type": "bar",
+    "title": "Immatricolazioni",
+    "series": [
+      {
+        "name": "Pandina",
+        "categories": [
+          "Aprile",
+          "Maggio",
+          "Giugno"
+        ],
+        "values": [
+          1200,
+          1350.5,
+          1410
+        ]
+      },
+      {
+        "name": "600e",
+        "categories": [
+          "Aprile",
+          "Maggio",
+          "Giugno"
+        ],
+        "values": [
+          300,
+          null,
+          410
+        ]
+      }
+    ]
+  },
+  "validity": "Validi fino al 30 giugno."
+}
+```
 <!-- /capture -->
 
 <!-- capture:doc-pptx-incentivi records n=2 -->
+```json
+{"model":"Avenger","price":"24.950 €","discount":"8%","slide":2}
+{"model":"Compass","price":"39.900 €","discount":"10%","slide":2}
+```
 <!-- /capture -->
 
 ## 5. Word
@@ -804,6 +1179,7 @@ holding an address table, before a body of paragraphs and tables. Its radio-stat
 builds it:
 
 <!-- capture:doc-docx-fcc screenshot alt=The_FCC_fee_table_as_HTML:_a_title_merged_across_seven_columns,_two_paragraphs_in_each_header_and_value_cell -->
+![The FCC fee table as HTML: a title merged across seven columns, two paragraphs in each header and value cell](../assets/how-it-works/doc-docx-fcc.png)
 <!-- /capture -->
 
 ```html
@@ -814,14 +1190,71 @@ builds it:
 
 Each header and value cell is two Word paragraphs. The HTML table reader (§6) reads `<br>` as a space, so
 `FM Classes<br>A, B1 &amp; C3` is the key `FM Classes A, B1 & C3` and `2659<br>$560` the value `2659 $560`.
-Because tables are numbered in document order and the page header holds one, this is `table 2`:
+The HTML table reader numbers tables in document order and the page header holds one, so this is `table 2`
+(its `data-name` is `table 1`: the Word reader numbers each part's tables on their own):
 
 <!-- capture:doc-docx-fcc scope ids=table -->
+```json
+{
+  "table": {
+    "sheet": "table 2",
+    "title": "Population Served",
+    "header": [
+      "Population Served",
+      "AM Class A",
+      "AM Class B",
+      "… 4 more"
+    ],
+    "rows": [
+      {
+        "population": "<=10,000",
+        "amClassA": "2659 $560",
+        "amClassB": "2660 $405",
+        "amClassC": "2661 $350",
+        "amClassD": "2662 $385",
+        "fmClassesA": "2663 $615",
+        "fmClassesB": "2664 $700"
+      },
+      {
+        "population": "10,001 – 25,000",
+        "amClassA": "2617 $935",
+        "amClassB": "2623 $675",
+        "amClassC": "2629 $585",
+        "amClassD": "2635 $645",
+        "fmClassesA": "2641 $1,025",
+        "fmClassesB": "2647 $1,170"
+      },
+      {
+        "population": "25,001 – 75,000",
+        "amClassA": "2618 $1,405",
+        "amClassB": "2624 $1,015",
+        "amClassC": "2630 $880",
+        "amClassD": "2636 $970",
+        "fmClassesA": "2642 $1,540",
+        "fmClassesB": "2648 $1,755"
+      },
+      "… 6 more"
+    ]
+  }
+}
+```
 <!-- /capture -->
 
-The mapping splits each value into the payment type code and the fee with two `regex` transforms:
+The mapping splits each value into the payment type code and the fee with a `regex` transform each:
 
-<!-- capture:doc-docx-fcc record -->
+<!-- capture:doc-docx-fcc mapping fields=populationServed,fmClassesA.paymentTypeCode,fmClassesA.feeUsd -->
+| Field | Step | Value |
+|---|---|---|
+| `populationServed` | read | `"<=10,000"` |
+| | `trim` | `"<=10,000"` |
+| | **field** | `"<=10,000"` |
+| `fmClassesA.paymentTypeCode` | read | `"2663 $615"` |
+| | `regex` | `"2663"` |
+| | **field** | `"2663"` |
+| `fmClassesA.feeUsd` | read | `"2663 $615"` |
+| | `regex` | `"615"` |
+| | `number` | `615` |
+| | **field** | `615` |
 <!-- /capture -->
 
 ## 6. HTML tables
@@ -862,7 +1295,7 @@ This rule is the table reader's own. A `css` extract with `take: "text"` and `xp
    slug `id` (lower case, punctuation dropped, spaces to hyphens, `-1`, `-2` for repeats). Headings nested
    inside other elements are not sectioned.
 4. **Output**: `<!doctype html><html><head><script type="application/json" data-front-matter>…</script></head><body>…`,
-   `<` in the JSON escaped as `<` so a value holding `</script>` cannot close the element.
+   `<` in the JSON escaped as `\u003c` so a value holding `</script>` cannot close the element.
 
 The document is `html`, so `css`, `table` (§6), `xpath` and `regex` read it. The repository's
 [`listino.md`](../../packages/core/src/markdown-document/fixtures/listino.md) has front matter with
@@ -870,12 +1303,27 @@ The document is `html`, so `css`, `table` (§6), `xpath` and `regex` read it. Th
 the way JSON-LD is, `css` then `jsonpath` with `from`; the task list through its section:
 
 <!-- capture:doc-markdown-listino scope ids=front,updated,accessories -->
+```json
+{
+  "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
+  "updated": "2026-06-01",
+  "accessories": [
+    "Ruotino",
+    "Gancio traino"
+  ]
+}
+```
 <!-- /capture -->
 
 `market: NO` stays the string `"NO"` (YAML 1.2). In the table, `con \| pipe` keeps its pipe and the row with two
 cells is padded:
 
 <!-- capture:doc-markdown-listino records n=3 -->
+```json
+{"model":"Pandina","version":"1.0 Hybrid","price":"15.950 €","note":"con | pipe","updated":"2026-06-01"}
+{"model":"600e","version":"La Prima","price":"36.950 €","note":"bold link","updated":"2026-06-01"}
+{"model":"Solo due celle","version":"x","price":null,"note":null,"updated":"2026-06-01"}
+```
 <!-- /capture -->
 
 ## 8. YAML

@@ -23,7 +23,9 @@ const hooks = {
     const url = String(args.url)
     if (!url.startsWith(BLOB)) throw new Error(`repoFile reads files of this repository, under ${BLOB}: not ${url}`)
 
-    return pathToFileURL(join(REPO, decodeURIComponent(url.slice(BLOB.length)))).href
+    const path = join(REPO, decodeURIComponent(url.slice(BLOB.length)))
+
+    return pathToFileURL(path).href
   },
 }
 
@@ -52,7 +54,9 @@ async function wordHtml (path) {
     // The engine's HTML has no styles: a few make the figure readable, the table's structure stays as built.
     const style = '<style>body{font:14px/1.45 system-ui,sans-serif;margin:24px;max-width:1100px}td{border:1px solid #bbb;padding:3px 6px;vertical-align:top}table{border-collapse:collapse;margin:8px 0}</style>'
 
-    return `data:text/html;charset=utf-8;base64,${Buffer.from(response.body.html.replace('<head>', `<head>${style}`)).toString('base64')}`
+    const html = response.body.html.replace('<head>', () => `<head>${style}`)
+
+    return `data:text/html;charset=utf-8;base64,${Buffer.from(html).toString('base64')}`
   } finally {
     await client.dispose()
   }
