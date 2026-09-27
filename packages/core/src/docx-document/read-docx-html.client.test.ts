@@ -26,8 +26,9 @@ describe('readDocxHtml', () => {
     expect(table.find('tr').eq(2).text()).toBe('Pandina15.95013.95512,5%')
   })
 
-  it('puts headers, footers and notes after the body, outside its sections', async () => {
+  it('puts page headers before the body, footers and notes after it, all outside its sections', async () => {
     const $ = load(await readDocxHtml(bytes, 'incentivi.docx'))
+    expect([...$('body').children()].map(element => $(element).attr('data-part') ?? 'body')).toEqual(['header', ...Array.from({ length: $('body').children().length - 3 }, () => 'body'), 'footer', 'notes'])
     expect($('body > header[data-part="header"]').text()).toBe('Stellantis Italia – riservato')
     expect($('body > footer[data-part="footer"]').text()).toBe('Pagina')
     expect($('body > aside[data-part="notes"] li#footnote-1').text()).toBe('Prezzi chiavi in mano, IPT esclusa.')

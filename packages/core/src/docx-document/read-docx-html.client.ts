@@ -11,8 +11,9 @@ import { sectioned } from '../markdown-document'
  * - tables become `<table>`s with their merged cells as `colspan` / `rowspan`,
  *   so a `table` extract reads them like any HTML table;
  * - a paragraph keeps its style as `data-style` and its links as `<a href>`;
- * - headers, footers and notes follow the body, in `<header>`, `<footer>`
- *   and `<aside data-part="notes">`; the title goes to `<title>`.
+ * - page headers come before the body, in `<header>`; footers and notes
+ *   after it, in `<footer>` and `<aside data-part="notes">`; the title goes
+ *   to `<title>`.
  *
  * The reader is imported on first use.
  *

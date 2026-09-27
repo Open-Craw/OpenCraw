@@ -847,7 +847,7 @@ and handed to the recipe as **HTML**, built like rendered Markdown (§4.10), so 
 - tables become `<table>`s with merged cells as `colspan` / `rowspan`, so a `table` extract reads a two-row
   header (`headerRows: 2`) the way it reads a spreadsheet's (§4.11);
 - links become `<a href>`, a paragraph's Word style is `data-style` (`p[data-style='Prezzo']`);
-- headers, footers and notes come after the body: `header[data-part=header]`, `footer[data-part=footer]`,
+- page headers come before the body, footers and notes after it: `header[data-part=header]`, `footer[data-part=footer]`,
   `aside[data-part=notes] li#footnote-1`; the document's title is `<title>`.
 
 ```json
