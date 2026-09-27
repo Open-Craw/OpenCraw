@@ -1,3 +1,4 @@
+import type { HostAllowlist } from '../host-allowlist'
 import { AccessConfigError, redactEndpoint } from '../access'
 import type { AccessBroker, AccessLease } from '../access'
 import { ApiStepRunner } from '../api-steps'
@@ -45,6 +46,8 @@ export interface RecipeRunDependencies {
   profiles?:          BrowserProfiles
   /** The crawler's retry rule, under each recipe's `limits.retry`. */
   retry?:             RetryRule
+  /** The hosts every request may reach, when the crawler limits them. */
+  allowedHosts?:      HostAllowlist
 }
 
 /** What every runner of one recipe run shares. */
@@ -334,7 +337,7 @@ async function openRunner (input: InputRecipe, deps: RecipeRunDependencies, cont
   if (input.mode === 'web' && input.session?.browserProfile !== undefined) return openProfileRunner(input, deps, context, lease, captcha)
   const storageState = await resolveStorageState(input, deps, lease, captcha, context)
   const session = input.session
-  const access = accessOptions(lease, session?.headers)
+  const access = accessOptions(lease, session?.headers, deps.allowedHosts)
   if (input.mode === 'web') {
     const browser = await deps.browser()
     const browserSession = await browser.newSession({ storageState, cookies: session?.cookies, userAgent: session?.userAgent, viewport: session?.viewport, ...access })
@@ -348,6 +351,7 @@ async function openRunner (input: InputRecipe, deps: RecipeRunDependencies, cont
     timeoutMs:         input.limits?.timeoutMs,
     ignoreHTTPSErrors: deps.ignoreHTTPSErrors === true || access.ignoreHTTPSErrors === true,
     proxy:             access.proxy,
+    allowedHosts:      access.allowedHosts,
   })
 
   return new ApiStepRunner(client, input, deps.events, gate)
@@ -382,7 +386,7 @@ async function openRemoteRunner (input: InputRecipe, deps: RecipeRunDependencies
   if (input.session?.browserProfile !== undefined) throw new AccessConfigError(`recipe "${input.id}" uses browser profile "${input.session.browserProfile}", which needs a local browser, but access profile "${lease.profile}" is a remote browser`)
   const session = input.session
   const storageState = await readSavedState(input, deps)
-  const browserSession = await BrowserClient.connectOverCDP(cdp, { storageState, cookies: session?.cookies, viewport: session?.viewport, ...accessOptions(lease, session?.headers) }, input.limits?.timeoutMs)
+  const browserSession = await BrowserClient.connectOverCDP(cdp, { storageState, cookies: session?.cookies, viewport: session?.viewport, ...accessOptions(lease, session?.headers, deps.allowedHosts) }, input.limits?.timeoutMs)
   try {
     if (storageState === undefined && session?.bootstrap !== undefined) await runBootstrap(input, browserSession, deps, captcha)
   } catch (error) {

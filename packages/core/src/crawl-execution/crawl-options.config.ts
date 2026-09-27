@@ -69,4 +69,13 @@ export interface CrawlOptions {
   accessPlugins?:   AccessPlugin[]
   /** Solvers recipes name in `session.captcha.solver` and `captcha` steps. */
   captchaSolvers?:  CaptchaSolver[]
+  /**
+   * The only hosts the crawler may reach, for recipes it does not trust
+   * (a service running other people's recipes): `example.com`,
+   * `*.example.com` (subdomains and the host), `host:port`, or `*`. Enforced on
+   * every request: navigations, a page's own requests and web sockets,
+   * `request` steps and each redirect hop. `file:` is refused whatever the
+   * list. Default: no limit.
+   */
+  allowedHosts?:    string[]
 }

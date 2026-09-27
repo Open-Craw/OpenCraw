@@ -183,7 +183,7 @@ What makes the pool safe to leave running overnight:
 | `neutral` | a captcha the solver could not get past; the browser closed under the item | The pool does not move; fresh window; `failed(…, 'neutral')`: put it back as it was. |
 
 `report.errorKind` says why a run stopped (`captcha`, `blocked`, `browser`, `http`, `timeout`, `network`,
-`step`, `mapping`, `error`). Write your own `classify` from it, for instance to treat `step` failures (a
+`step`, `mapping`, `host`, `error`). Write your own `classify` from it, for instance to treat `step` failures (a
 selector that matched nothing: a recipe problem, not the site's health) as `neutral`.
 
 ## 5. Watching it

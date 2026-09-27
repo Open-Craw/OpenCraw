@@ -77,6 +77,7 @@ export class BrowserProfiles {
       userAgent:         options.userAgent,
       viewport:          options.viewport,
       ignoreHTTPSErrors: this.config.ignoreHTTPSErrors === true || options.ignoreHTTPSErrors === true,
+      ...(options.allowedHosts !== undefined && { serviceWorkers: 'block' as const }),
     })
   }
 
@@ -130,7 +131,7 @@ export class BrowserProfiles {
         await unlock()
         this.free(name)
       }
-    })
+    }, options.allowedHosts)
     this.held.set(name, { owner, session })
 
     return session

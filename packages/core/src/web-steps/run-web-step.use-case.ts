@@ -96,7 +96,7 @@ export class WebStepRunner implements StepRunner {
       case 'evaluate': { await evaluateScript(step, this.page, scope); break
       }
       case 'request': {
-        this.requests ??= HttpClient.over(this.page.context().request, this.recipe.limits?.timeoutMs)
+        this.requests ??= HttpClient.over(this.page.context().request, this.recipe.limits?.timeoutMs, this.session.allowedHosts)
         await sendPageRequest(step, this.page, scope, this.requests, this.recipe, this.gate, this.events)
         break
       }

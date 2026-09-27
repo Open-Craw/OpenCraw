@@ -1,3 +1,4 @@
+import type { HostAllowlist } from '../host-allowlist'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import type { AccessLease } from '../access'
@@ -21,6 +22,8 @@ export interface BootstrapDependencies {
   hosts?:           HostThrottle
   /** The runner's persistent browser profiles, for `session.browserProfile`. */
   profiles?:        BrowserProfiles
+  /** The hosts the bootstrap's browser may reach, when the crawler limits them. */
+  allowedHosts?:    HostAllowlist
 }
 
 /**
@@ -29,12 +32,13 @@ export interface BootstrapDependencies {
  *
  * @param lease - The lease, if any.
  * @param headers - The recipe's `session.headers`.
+ * @param allowedHosts - The crawler's allowed hosts, when it limits them.
  * @returns Options for `BrowserClient.newSession`.
  */
-export function accessOptions (lease: AccessLease | undefined, headers: Record<string, string> | undefined): Pick<SessionOptions, 'proxy' | 'ignoreHTTPSErrors' | 'blockResources' | 'headers'> {
+export function accessOptions (lease: AccessLease | undefined, headers: Record<string, string> | undefined, allowedHosts?: HostAllowlist): Pick<SessionOptions, 'proxy' | 'ignoreHTTPSErrors' | 'blockResources' | 'headers' | 'allowedHosts'> {
   const merged = { ...lease?.headers, ...headers }
 
-  return { proxy: lease?.proxy, ignoreHTTPSErrors: lease?.ignoreHTTPSErrors, blockResources: lease?.blockResources, headers: Object.keys(merged).length === 0 ? undefined : merged }
+  return { proxy: lease?.proxy, ignoreHTTPSErrors: lease?.ignoreHTTPSErrors, blockResources: lease?.blockResources, headers: Object.keys(merged).length === 0 ? undefined : merged, allowedHosts }
 }
 
 /**
@@ -71,7 +75,7 @@ export async function resolveStorageState (recipe: InputRecipe, deps: BootstrapD
   if (session?.bootstrap === undefined) return undefined
 
   const browser = await deps.browser()
-  const browserSession = await browser.newSession({ cookies: session.cookies, userAgent: session.userAgent, viewport: session.viewport, ...accessOptions(lease, session.headers) })
+  const browserSession = await browser.newSession({ cookies: session.cookies, userAgent: session.userAgent, viewport: session.viewport, ...accessOptions(lease, session.headers, deps.allowedHosts) })
   try {
     return await runBootstrap(recipe, browserSession, deps, captcha)
   } finally {
@@ -89,12 +93,12 @@ export async function resolveStorageState (recipe: InputRecipe, deps: BootstrapD
  * @param owner - The recipe run.
  * @returns The session in the profile.
  */
-export async function openBrowserProfile (recipe: InputRecipe, deps: Pick<BootstrapDependencies, 'profiles'>, lease: AccessLease | undefined, owner: object): Promise<BrowserSession> {
+export async function openBrowserProfile (recipe: InputRecipe, deps: Pick<BootstrapDependencies, 'profiles' | 'allowedHosts'>, lease: AccessLease | undefined, owner: object): Promise<BrowserSession> {
   const session = recipe.session
   const name = session?.browserProfile ?? ''
   if (deps.profiles === undefined) throw new Error(`recipe "${recipe.id}" uses browser profile "${name}", but this crawler has no profiles directory (CrawlOptions.profilesDir)`)
 
-  return deps.profiles.open(name, { cookies: session?.cookies, userAgent: session?.userAgent, viewport: session?.viewport, ...accessOptions(lease, session?.headers) }, owner)
+  return deps.profiles.open(name, { cookies: session?.cookies, userAgent: session?.userAgent, viewport: session?.viewport, ...accessOptions(lease, session?.headers, deps.allowedHosts) }, owner)
 }
 
 /**

@@ -4,6 +4,7 @@ import { BrowserClient, BrowserProfiles } from '../browser-session'
 import { CaptchaSolverRegistry } from '../captcha'
 import { EventBus } from '../crawl-events'
 import { HookRegistry } from '../hooks'
+import { HostAllowlist } from '../host-allowlist'
 import type { RecipeSet } from '../recipe-loading'
 import { DedupePolicy, memorySink } from '../record-sink'
 import type { DedupeScope } from '../record-sink'
@@ -38,7 +39,7 @@ export interface Crawler {
  * @param options - Hooks, sink, events, browser settings, access, captcha solvers, policies.
  * @returns The crawler.
  * @throws AccessConfigError when the access config cannot work.
- * @throws Error when two captcha solvers share a name.
+ * @throws Error when two captcha solvers share a name, or an allowed host is not a host pattern.
  */
 export function createCrawler (options: CrawlOptions = {}): Crawler {
   const sink = options.sink ?? memorySink()
@@ -49,6 +50,7 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
   const hosts = new HostThrottle(options.throttle ?? options.access?.throttle)
   const profiles = new BrowserProfiles(options.profilesDir ?? resolve(options.storageStateDir ?? '.', '.opencraw', 'profiles'), options.browser)
   const events = new EventBus(options.onEvent)
+  const allowedHosts = HostAllowlist.of(options.allowedHosts)
   let browser: Promise<BrowserClient> | undefined
   let launched: BrowserClient | undefined
   const start = async (): Promise<BrowserClient> => {
@@ -98,6 +100,7 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
     hosts,
     profiles,
     retry:           options.retry,
+    allowedHosts,
 
     ignoreHTTPSErrors: options.browser?.ignoreHTTPSErrors,
   })

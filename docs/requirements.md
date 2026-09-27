@@ -89,6 +89,12 @@ with its own context or session; reports keep the set's order; `onRecipeError: '
 started. `dedupe: 'recipe'` keeps a key set per recipe run; `run` shares one. Worker mode defaults to `recipe`,
 one key set per item.
 
+**Allowed hosts.** `CrawlOptions.allowedHosts` (`host`, `*.host`, `host:port`, `*`) limits every request:
+browser contexts route every request and web socket through the list (a refused one aborts with
+`ERR_BLOCKED_BY_CLIENT`; service workers are blocked), and the HTTP client checks each target and follows
+redirects one checked hop at a time (`HostNotAllowedError`). `file:` is refused, `data:`/`blob:`/`about:` pass.
+Both report `errorKind: 'host'`. The check is by host name, not resolved address.
+
 **Retries.** A request that fails in passing is sent again before the step's error policy sees it:
 `limits.retry: { attempts?, backoffMs?, maxDelayMs?, statuses?, forMs? }`, over `CrawlOptions.retry` (CLI `--retries`),
 over the default of 3 tries, 1 s doubling with ±25 % jitter, capped at 30 s, statuses 408, 425, 429, 500, 502,

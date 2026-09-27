@@ -1,4 +1,5 @@
 import { CaptchaError } from '../captcha'
+import { HostNotAllowedError } from '../host-allowlist'
 import { HttpError } from '../http-session'
 import { MappingFailedError } from '../output-mapping'
 import { BlockedError, NoMatchError, StepFailure, transientError } from '../step-flow'
@@ -12,9 +13,10 @@ import { BlockedError, NoMatchError, StepFailure, transientError } from '../step
  * - `timeout`, `network`: the site too slow, or the connection failing, after the retries;
  * - `step`: a step failed on the page itself (a selector that matched nothing, a script that threw);
  * - `mapping`: a record could not be mapped at all;
+ * - `host`: a request to a host outside the crawler's `allowedHosts`;
  * - `error`: anything else.
  */
-export type ErrorKind = 'captcha' | 'blocked' | 'browser' | 'http' | 'timeout' | 'network' | 'step' | 'mapping' | 'error'
+export type ErrorKind = 'captcha' | 'blocked' | 'browser' | 'http' | 'timeout' | 'network' | 'step' | 'mapping' | 'host' | 'error'
 
 const CLOSED = /target (?:page, context or browser )?(?:has been )?closed|browser has been closed|browser has disconnected|context (?:has been )?closed|page (?:has been )?closed/i
 const TIMEOUT = /Timeout \d+ms exceeded|net::ERR_TIMED_OUT|ETIMEDOUT/
@@ -30,6 +32,8 @@ export function errorKindOf (error: unknown): ErrorKind {
   if (chain.some(entry => entry instanceof CaptchaError)) return 'captcha'
   if (chain.some(entry => entry instanceof BlockedError)) return 'blocked'
   const messages = chain.map(entry => (entry instanceof Error ? entry.message : String(entry)))
+  // The browser refuses a host outside the list with ERR_BLOCKED_BY_CLIENT; the HTTP client throws its own error.
+  if (chain.some(entry => entry instanceof HostNotAllowedError) || messages.some(message => message.includes('net::ERR_BLOCKED_BY_CLIENT'))) return 'host'
   if (messages.some(message => CLOSED.test(message))) return 'browser'
   if (chain.some(entry => entry instanceof HttpError)) return 'http'
   if (messages.some(message => TIMEOUT.test(message))) return 'timeout'
