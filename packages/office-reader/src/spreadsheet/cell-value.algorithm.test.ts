@@ -24,6 +24,18 @@ describe('typedValue', () => {
     expect(typedValue(cell('44712', 'n', 'date'), { ...context, date1904: true })).toEqual(new Date('2026-06-01T00:00:00Z'))
     // 1900 counts a 29 February that never was: serials before it are a day early.
     expect(typedValue(cell('1', 'n', 'date'), context)).toEqual(new Date('1900-01-01T00:00:00Z'))
+    expect(typedValue(cell('59', 'n', 'date'), context)).toEqual(new Date('1900-02-28T00:00:00Z'))
+    expect(typedValue(cell('61', 'n', 'date'), context)).toEqual(new Date('1900-03-01T00:00:00Z'))
+  })
+
+  it('reads serial 60 in the 1900 system as the text Excel shows, 1900-02-29, a day no Date holds', () => {
+    expect(typedValue(cell('60', 'n', 'date'), context)).toBe('1900-02-29')
+    expect(typedValue(cell('60.75', 'n', 'date'), context)).toBe('1900-02-29T18:00:00')
+    expect(textValue(cell('60', 'n', 'date'), context)).toBe('1900-02-29')
+    expect(typedValue(cell('60.9999999999', 'n', 'date'), context)).toEqual(new Date('1900-03-01T00:00:00Z'))
+    // In the 1904 system, 60 is an ordinary day; as a plain number, an ordinary number.
+    expect(typedValue(cell('60', 'n', 'date'), { ...context, date1904: true })).toEqual(new Date('1904-03-01T00:00:00Z'))
+    expect(typedValue(cell('60'), context)).toBe(60)
   })
 })
 
@@ -34,6 +46,8 @@ describe('textValue', () => {
     expect(textValue(cell('46174', 'n', 'date'), context)).toBe('2026-06-01')
     expect(textValue(cell('46174.5', 'n', 'date'), context)).toBe('2026-06-01T12:00:00')
     expect(textValue(cell('0.5', 'n', 'time'), context)).toBe('12:00:00')
+    expect(textValue(cell('0.5', 'n', 'time'), { ...context, date1904: true })).toBe('12:00:00')
+    expect(textValue(cell('1.5', 'n', 'time'), { ...context, date1904: true })).toBe('1904-01-02T12:00:00')
     expect(textValue(cell('0', 'b'), context)).toBe('false')
     expect(textValue(cell('#REF!', 'e'), context)).toBe('#REF!')
     expect(textValue(cell(''), context)).toBe('')

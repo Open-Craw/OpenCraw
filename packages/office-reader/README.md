@@ -78,7 +78,7 @@ It never fetches: pass `await (await fetch(url)).arrayBuffer()` or `response.bod
 |---|---|---|
 | `sheets` | all | A name, a `RegExp`, or `({ name, hidden }) => boolean`. Unselected sheets are never inflated. |
 | `values` | `'typed'` | `'typed'` or `'text'` (below). |
-| `limits` | 256 MiB per entry, 512 MiB per file | `{ entryBytes, totalBytes }`: what the zip entries may declare. |
+| `limits` | 256 MiB per entry, 512 MiB per file | `{ entryBytes, totalBytes }`: what the zip entries may declare. A part read twice counts once. |
 
 ### Values
 
@@ -88,7 +88,8 @@ It never fetches: pass `await (await fetch(url)).arrayBuffer()` or `response.bod
 | number | `13955.625` | `'13955.625'` (shortest round-trip form: `78.6`, not `78.599999999999994`) |
 | percentage | `0.125` (display formats are not applied) | `'0.125'` |
 | date / date-time | `Date` holding the wall-clock time as UTC | `'2026-06-01'` / `'2026-06-01T09:30:00'` |
-| time of day | `Date` on Excel's day zero (`1899-12-30T12:00Z`) | `'12:00:00'` |
+| time of day (a serial under 1) | `Date` on the date system's day zero (`1899-12-30T12:00Z`, or `1904-01-01T12:00Z` in a 1904 workbook) | `'12:00:00'` |
+| serial 60 in the 1900 system | `'1900-02-29'`, the day Excel shows, as text (below) | same |
 | boolean | `true` | `'true'` |
 | error | `{ error: '#DIV/0!' }` | `'#DIV/0!'` |
 | formula | its cached value, as above | same |
@@ -96,6 +97,11 @@ It never fetches: pass `await (await fetch(url)).arrayBuffer()` or `response.bod
 
 Spreadsheets have no time zones, so a `Date` carries the wall-clock time in its UTC fields. Read it with
 `getUTCHours()` or `toISOString()`, not `getHours()`.
+
+The 1900 date system counts a 29 February 1900 that never was (Lotus 1-2-3's bug, which Excel kept). Serials
+before it read a day earlier than their count, as Excel shows them, and serial 60 itself, which Excel shows as
+29/02/1900, reads as the text `'1900-02-29'` (`'1900-02-29T18:00:00'` with a time): no `Date` can hold it, and
+28 February is serial 59's.
 
 ### Sheets
 
@@ -168,6 +174,13 @@ What each slide holds:
   cell inside a merge is `''`.
 - **`charts`:** the type, the title and each series' name, categories and values, from the data the chart
   caches next to its formulas. The embedded workbook is not needed.
+  - The title is its text once: its rich text runs, or, for a title linked to a cell, the cell's cached text
+    (never the reference). A title Office generates (no text of its own) is left out, and so are axis titles.
+  - The chart types Office added in 2016 (`chartEx` parts: waterfall, treemap, sunburst, histogram and Pareto,
+    box and whisker, funnel, region map) are read too. Their `type` is the series' layout (`waterfall`,
+    `treemap`, `sunburst`, `clusteredColumn` for a histogram, `boxWhisker`, `funnel`, `regionMap`), their
+    categories are the leaves of a hierarchy, and their values the `val` points (a region map's `colorVal`, a
+    treemap's `size`).
 - **`notes`:** the speaker notes.
 - **`hidden`:** hidden in a slideshow.
 
@@ -212,7 +225,8 @@ skips headers, footers and notes) and `limits`.
   numbered (`1.`, `a)`, `i.`) or bulleted.
 - **Tables:** grids like a workbook's sheets. A cell spanning columns (`gridSpan`) fills the columns after it
   with `''`; a cell merged down (`vMerge`) leaves `''` below it; both are listed in `merges`. A table inside a
-  cell is a block of its own, and its text is in the cell too.
+  cell is a block of its own, and its text is in the cell too. Tables are named `table 1`, `table 2`… once over
+  the whole document, headers first, then the body, the footers and the notes, so no two share a name.
 - **Text:** tabs as `\t`, line breaks as `\n`. Tracked insertions read as text, deletions do not. Field codes
   are left out, their results kept. A text box's paragraphs follow the paragraph that holds it, once (Word
   also writes a fallback copy for old readers, which is skipped).

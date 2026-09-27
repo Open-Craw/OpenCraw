@@ -53,7 +53,10 @@ describe('readXlsx', () => {
   it('reads the 1904 date system, prefixed elements and backslashed entry names', async () => {
     const bytes = readFileSync(join(__dirname, 'fixtures', 'date1904.xlsx'))
     const book = await readXlsx(new Blob([bytes]))
-    expect(book).toEqual({ date1904: true, sheets: [{ name: 'd', hidden: false, rows: [[new Date('2026-06-01T00:00:00Z')]], hiddenRows: [], merges: [] }] })
+    expect(book).toEqual({ date1904: true, sheets: [{ name: 'd', hidden: false, rows: [[new Date('2026-06-01T00:00:00Z'), new Date('1904-01-01T12:00:00Z')]], hiddenRows: [], merges: [] }] })
+    // A time of day is a serial under 1, in either system: 0.5 is noon, not 1 January 1904 at noon.
+    const text = await readXlsx(bytes, { values: 'text' })
+    expect(text.sheets[0].rows).toEqual([['2026-06-01', '12:00:00']])
   })
 
   it('refuses what is not a workbook, saying what it is', async () => {

@@ -1,5 +1,6 @@
 import { walkXml } from '../ooxml-package'
 import type { ValueMode } from '../spreadsheet'
+import { chartTitle } from './chart-text.mapper'
 import type { SlideChart } from './deck.model'
 
 interface OpenSeries {
@@ -13,7 +14,8 @@ type Target = 'name' | 'categories' | 'values'
 /**
  * Reads a chart part: its type, title and series, from the values the chart
  * caches next to its formulas (`c:strCache`, `c:numCache`), so the embedded
- * workbook is never needed.
+ * workbook is never needed. The title is its text once: its rich text runs,
+ * or for a title linked to a cell the cached value, never the reference.
  *
  * @param xml - The chart part.
  * @param mode - `typed`: values as numbers (`null` where missing); `text`: as text.
@@ -21,20 +23,19 @@ type Target = 'name' | 'categories' | 'values'
  */
 export function readChart (xml: string, mode: ValueMode): SlideChart<number | null | string> {
   let type = ''
-  let title: string | undefined
+  const title = chartTitle()
   const series: OpenSeries[] = []
   let current: OpenSeries | undefined
   let target: Target | undefined
   let point = 0
   let capturing = false
   let inPlotArea = false
-  let titleText: string | undefined
   walkXml(xml, {
     open: (name, attributes) => {
+      // Axis titles sit in the plot area: only the chart's own title is read.
+      if (!inPlotArea && title.open(name)) return
       if (name === 'plotArea') {
         inPlotArea = true
-      } else if (!inPlotArea && name === 'title' && title === undefined) {
-        titleText = ''
       } else if (inPlotArea && type === '' && name.endsWith('Chart')) {
         type = name.slice(0, -'Chart'.length)
       } else if (name === 'ser') {
@@ -56,15 +57,15 @@ export function readChart (xml: string, mode: ValueMode): SlideChart<number | nu
       }
     },
     text: (text) => {
-      if (titleText !== undefined) titleText += text
-      else if (capturing && current !== undefined && target !== undefined) current[target][point] += text
+      if (title.text(text)) return
+      if (capturing && current !== undefined && target !== undefined) current[target][point] += text
     },
     close: (name) => {
+      if (title.close(name)) return
       if (name === 'v') {
         capturing = false
-      } else if (name === 'title' && titleText !== undefined) {
-        title = titleText.trim()
-        titleText = undefined
+      } else if (name === 'plotArea') {
+        inPlotArea = false
       } else if (name === 'ser' && current !== undefined) {
         series.push(current)
         current = undefined
@@ -74,10 +75,12 @@ export function readChart (xml: string, mode: ValueMode): SlideChart<number | nu
     },
   })
 
+  const text = title.value()
+
   return {
     type,
-    ...(!(title === undefined || title === '') && { title }),
-    series: series.map(open => ({ name: open.name.join('').trim(), categories: Array.from(open.categories, text => text ?? ''), values: Array.from(open.values, text => valueOf(text, mode)) })),
+    ...(text !== undefined && { title: text }),
+    series: series.map(open => ({ name: open.name.join('').trim(), categories: Array.from(open.categories, text => text ?? ''), values: Array.from(open.values, text => chartValue(text, mode)) })),
   }
 }
 
@@ -89,7 +92,14 @@ function targetOf (name: string): Target | undefined {
   return name === 'val' || name === 'yVal' ? 'values' : undefined
 }
 
-function valueOf (text: string | undefined, mode: ValueMode): number | null | string {
+/**
+ * A cached point as a chart value.
+ *
+ * @param text - The point's text; `undefined` for a point left out of the cache.
+ * @param mode - `typed`: a number, `null` where missing or not a number; `text`: the shortest round-trip text, `''` where missing.
+ * @returns The value.
+ */
+export function chartValue (text: string | undefined, mode: ValueMode): number | null | string {
   const number = text === undefined || text.trim() === '' ? NaN : Number(text)
   if (mode === 'text') return Number.isNaN(number) ? (text ?? '') : String(number)
 

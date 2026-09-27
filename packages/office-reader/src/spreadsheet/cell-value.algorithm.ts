@@ -24,6 +24,8 @@ const MS_PER_DAY = 86_400_000
 const UNIX_EPOCH_SERIAL = 25_569
 /** Days between the 1900 and the 1904 systems' day zero. */
 const DAYS_1904 = 1462
+/** The 1900 system's serial for 29 February 1900, a day that never was. */
+const PHANTOM_LEAP_DAY = 60
 
 /**
  * A stored cell as a typed value.
@@ -57,7 +59,9 @@ export function typedValue (cell: StoredCell, context: CellContext): CellValue {
       const number = Number(cell.value)
       if (Number.isNaN(number)) return cell.value
 
-      return cell.format === 'number' ? number : dateOf(number, context.date1904)
+      if (cell.format === 'number') return number
+
+      return !context.date1904 && Math.floor(number) === PHANTOM_LEAP_DAY ? phantomLeapDay(number) : dateOf(number, context.date1904)
     }
   }
 }
@@ -98,6 +102,7 @@ export function cellValue (cell: StoredCell, context: CellContext, mode: ValueMo
  * A serial date as a `Date` holding the wall-clock time as UTC, rounded to the
  * second. The 1900 system counts the 29th of February 1900 that never was
  * (Lotus's bug, kept for compatibility): serials before it are a day early.
+ * Serial 60 itself is {@link phantomLeapDay}'s.
  */
 function dateOf (serial: number, date1904: boolean): Date {
   let days = date1904 ? serial + DAYS_1904 : serial
@@ -105,6 +110,20 @@ function dateOf (serial: number, date1904: boolean): Date {
   const seconds = Math.round((days - UNIX_EPOCH_SERIAL) * (MS_PER_DAY / 1000))
 
   return new Date(seconds * 1000)
+}
+
+/**
+ * Serial 60 in the 1900 system: Excel shows 29 February 1900, which no `Date`
+ * can hold. It reads as that text (`1900-02-29`, with its time when it has
+ * one), in both modes, rather than as 28 February, serial 59's day.
+ */
+function phantomLeapDay (serial: number): Date | string {
+  const seconds = Math.round((serial - PHANTOM_LEAP_DAY) * (MS_PER_DAY / 1000))
+  // Rounded up to midnight: 1 March.
+  if (seconds >= MS_PER_DAY / 1000) return dateOf(serial, false)
+  const time = new Date(seconds * 1000).toISOString().slice(11, 19)
+
+  return time === '00:00:00' ? '1900-02-29' : `1900-02-29T${time}`
 }
 
 function isoText (date: Date, timeOfDay: boolean): string {
