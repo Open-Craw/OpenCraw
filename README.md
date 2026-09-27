@@ -17,6 +17,7 @@ Several input recipes can feed one output; a run processes them one after anothe
 | [`@opencraw/mcp`](./packages/mcp) | The same probe/validate/run/list primitives as an MCP server, for an agent instead of a terminal. |
 | [`@opencraw/office-reader`](./packages/office-reader) | Reads `.xlsx` workbooks and `.pptx` presentations into plain objects, in Node or a browser. Standalone: core uses it, it depends on nothing of OpenCraw. |
 | [`@opencraw/captcha-tesseract`](./packages/captcha-tesseract) | Reads image captchas with Tesseract for form captchas: refreshes the image instead of submitting a doubtful read, fills the answer field, and audits every read with the site's verdict. |
+| [`@opencraw/azure-durable`](./packages/azure-durable) | OpenCraw as an HTTP service on Azure Durable Functions: run recipes with one call, or send items one at a time to warm worker pools that keep their windows. Hooks, solvers and secrets stay in the host; recipes can only reach the hosts it allows. |
 
 ## Quick start
 

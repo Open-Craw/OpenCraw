@@ -8,6 +8,7 @@
 | [vehicles-example.md](./vehicles-example.md) | You want the harder case: configurator data behind an inline `carPath`, three pages per model, nested loops emitting one record per priced combination, and the two engine features it forced (`regex` extracts, templated selectors). |
 | [access.md](./access.md) | A site blocks the network you crawl from: proxies, provider presets, where credentials go, and the plugin seam. |
 | [worker-mode.md](./worker-mode.md) | You crawl thousands of items (one report per date, region and filter set) from a queue: windows that stay busy, keep their page between items, and grow or shrink with the site's health. |
+| [azure-durable.md](./azure-durable.md) | You want one OpenCraw service every crawler calls over HTTP: the Azure Durable Functions host, its container, `host.json`, scaling, security, and a caller that keeps a warm pool busy. |
 | [captcha.md](./captcha.md) | A site shows a captcha: whether to solve it, the three places a challenge appears, the solve loop, the budget, and writing a solver. |
 | [../requirements.md](../requirements.md) | You need the specification the engine is checked against. |
 
