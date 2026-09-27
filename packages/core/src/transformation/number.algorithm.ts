@@ -20,49 +20,103 @@ export function separatorsOf (locale: string): { decimal: string, group: string 
   return { decimal, group }
 }
 
+/** Spaces and apostrophes that group thousands (`1 234`, `1 234` in French, `1'234` in Swiss German): only before three digits. */
+const GROUP_SPACE = String.raw`[ \u{A0}\u{202F}'’]`
 /**
- * Parses a number from text, tolerating currency symbols, spaces and locale separators.
+ * One number in a text: an optional sign not glued to a word (`item-22` holds 22), then digits with `.` or `,`
+ * between them (a space or apostrophe only before a group of three), or a separator then digits (`.5`).
+ */
+const NUMBER = new RegExp(String.raw`(?:(?<![\p{L}\p{N}])[-+−])?(?:\d+(?:(?:[.,]|${GROUP_SPACE}(?=\d{3}(?!\d)))\d+)*|(?<![\p{L}\p{N}.,])[.,]\d+)`, 'gu')
+
+/**
+ * Parses the one number in a text, tolerating a sign, currency symbols and codes, words around it, and
+ * locale separators. A text holding two numbers or more (`"2 for 10,00"`, an id like `"a897fe39"`) is an
+ * error rather than a guess: pick one with a `regex` transform first.
  *
  * @param value - Text or a number.
- * @param locale - The locale the text is written in. Without one, the last separator is the decimal one when
- * it is followed by 1 or 2 digits, otherwise it is a group separator.
+ * @param locale - The locale the text is written in. Without one, the decimal separator is guessed: of two
+ * kinds of separator the last one; a single separator is a thousands separator only when exactly three digits
+ * follow it and one to three digits other than a lone `0` precede it (`1.299` is 1299, `0.125` and `10,00`
+ * are decimals); a repeated one groups thousands (`1,234,567`).
+ * @param op - The transform or type to name in errors.
  * @returns The number.
- * @throws TransformError when no number can be read.
+ * @throws TransformError when the text holds no number, several, or one that cannot be read.
  */
-export function parseNumber (value: unknown, locale?: string): number {
+export function parseNumber (value: unknown, locale?: string, op = 'number'): number {
   if (typeof value === 'number') return value
-  if (typeof value !== 'string') throw new TransformError('number', `expects text or a number, got ${describe(value)}`, value)
-  const cleaned = value.replaceAll(/[^\d.,\-−+\u{A0}\u{202F} ]/gu, '').replaceAll(/[\u{A0}\u{202F} ]/gu, '').replace('−', '-').trim()
-  if (cleaned === '') throw new TransformError('number', `no number in "${value}"`, value)
-  const normalised = locale === undefined ? guessDecimal(cleaned) : withLocale(cleaned, locale)
-  const parsed = Number(normalised)
-  if (Number.isNaN(parsed)) throw new TransformError('number', `cannot read "${value}" as a number`, value)
+  if (typeof value !== 'string') throw new TransformError(op, `expects text or a number, got ${describe(value)}`, value)
+  const found = Array.from(value.matchAll(NUMBER), match => match[0])
+  if (found.length === 0) throw new TransformError(op, `no number in "${value}"`, value)
+  if (found.length > 1) throw new TransformError(op, `"${value}" holds ${found.length} numbers (${found.join(', ')}): pick one with a "regex" transform first`, value)
+  const parsed = readNumber(found[0], locale)
+  if (parsed === undefined) throw new TransformError(op, `cannot read "${value}" as a number`, value)
 
   return parsed
 }
 
-function withLocale (text: string, locale: string): string {
-  const { decimal, group } = separatorsOf(locale)
-  const escapedGroup = group.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
+/**
+ * @param token - One match of {@link NUMBER}.
+ * @param locale - The locale the text is written in, if known.
+ * @returns The number, or `undefined` when its separators make no sense (`1.2.3`, `22.10.2026`).
+ */
+function readNumber (token: string, locale: string | undefined): number | undefined {
+  const negative = /^[-−]/u.test(token)
+  const body = token.replace(/^[-+−]/u, '').replaceAll(new RegExp(GROUP_SPACE, 'gu'), '')
+  const plain = assemble(body, locale === undefined ? guessDecimal(body) : separatorsOf(locale).decimal)
+  if (plain === undefined) return undefined
+  const parsed = Number(plain)
 
-  return text.replaceAll(new RegExp(escapedGroup, 'g'), '').replace(decimal, '.')
+  return negative ? -parsed : parsed
 }
 
-function guessDecimal (text: string): string {
-  const lastDot = text.lastIndexOf('.')
-  const lastComma = text.lastIndexOf(',')
-  const last = Math.max(lastDot, lastComma)
-  if (last === -1) return text
-  const digitsAfter = text.length - last - 1
-  const separator = text[last]
-  const isDecimal = digitsAfter > 0 && digitsAfter <= 2 && text.indexOf(separator) === last
-  const withoutGroups = text.replaceAll(/[.,]/g, (mark, offset: number) => (isDecimal && offset === last ? '.' : ''))
+/**
+ * Puts a number together as `1234.5`: the part before the decimal separator is groups of digits.
+ *
+ * @param body - Digits and separators, without sign or spaces.
+ * @param decimal - The decimal separator, `undefined` when the number has none.
+ * @returns The number as plain text, or `undefined` when it is not a well-formed number.
+ */
+function assemble (body: string, decimal: string | undefined): string | undefined {
+  const [whole, fraction, ...rest] = decimal === undefined || !body.includes(decimal) ? [body] : body.split(decimal)
+  if (rest.length > 0 || /[.,]/.test(fraction ?? '')) return undefined
+  const groups = whole.split(/[.,]/)
+  if (groups.length > 1 && !wellGrouped(groups)) return undefined
 
-  return withoutGroups
+  return `${groups.join('') || '0'}${fraction === undefined ? '' : `.${fraction}`}`
 }
 
+/** Thousands (`1,234,567`) or the Indian lakh grouping (`12,34,567`). */
+function wellGrouped (groups: readonly string[]): boolean {
+  const [lead, ...others] = groups
+  if (lead === '0' || !/^\d{1,3}$/.test(lead)) return false
+  const last = others.at(-1)
+
+  return others.every(group => group.length === 3) || (last?.length === 3 && others.slice(0, -1).every(group => group.length === 2))
+}
+
+function guessDecimal (body: string): string | undefined {
+  const lastDot = body.lastIndexOf('.')
+  const lastComma = body.lastIndexOf(',')
+  if (lastDot === -1 && lastComma === -1) return undefined
+  if (lastDot !== -1 && lastComma !== -1) return lastDot > lastComma ? '.' : ','
+  const mark = lastDot === -1 ? ',' : '.'
+  const [whole, fraction, ...rest] = body.split(mark)
+  if (rest.length > 0) return undefined
+  const thousands = fraction.length === 3 && /^\d{1,3}$/.test(whole) && whole !== '0'
+
+  return thousands ? undefined : mark
+}
+
+/**
+ * Parses the one number in a text and truncates it.
+ *
+ * @param value - Text or a number.
+ * @param locale - The locale the text is written in.
+ * @returns The integer.
+ * @throws TransformError (naming `integer`) when no single number can be read.
+ */
 export function parseInteger (value: unknown, locale?: string): number {
-  return Math.trunc(parseNumber(value, locale))
+  return Math.trunc(parseNumber(value, locale, 'integer'))
 }
 
 /**

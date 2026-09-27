@@ -3,13 +3,19 @@ import { TransformError } from './transform.error'
 
 const TOKENS: Record<string, string> = { YYYY: String.raw`(?<year>\d{4})`, MM: String.raw`(?<month>\d{1,2})`, DD: String.raw`(?<day>\d{1,2})`, HH: String.raw`(?<hour>\d{1,2})`, mm: String.raw`(?<minute>\d{1,2})`, ss: String.raw`(?<second>\d{1,2})` }
 const TOKEN = /YYYY|MM|DD|HH|mm|ss/g
+/** A zone the text names: an offset after a time (`10:00Z`, `10:00 +0200`), `GMT` / `UTC`, or a US zone `Date.parse` knows. */
+const ZONE = /\d:\d{2}(?::\d{2}(?:\.\d+)?)?\s*(?:Z|[+-]\d{2}(?::?\d{2})?)\b|\b(?:GMT|UTC?)\b|\b[ECMP][SD]T\b/
+/** The ISO calendar date forms JavaScript reads as UTC. */
+const DATE_ONLY = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/
+/** An ISO date and time without a zone. */
+const ISO_LOCAL = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/
 
 /**
  * Parses a date or instant.
  *
  * @param value - Text, a number (epoch milliseconds) or a Date.
  * @param format - Tokens `YYYY MM DD HH mm ss`, e.g. `DD/MM/YYYY`; without one the text must be ISO 8601 or otherwise `Date.parse`-able.
- * @param timezone - An IANA zone the text is written in when it carries no offset; default UTC.
+ * @param timezone - An IANA zone the text is written in when it carries no offset; default UTC, whatever the host's zone.
  * @returns The instant.
  * @throws TransformError when the text cannot be read.
  */
@@ -29,13 +35,28 @@ export function toIsoDate (date: Date): string {
   return date.toISOString().slice(0, 10)
 }
 
+/**
+ * Text without a format: ISO 8601 or anything `Date.parse` reads. Text that names its zone (`Z`, `+02:00`,
+ * `GMT`) is that instant. A calendar date alone (`2026-03-04`) is midnight UTC. Any other text is a wall-clock
+ * time in `timezone`, or in UTC without one: never in the host's zone, so every machine reads the same instant.
+ */
 function parseIso (text: string, timezone: string | undefined): Date | undefined {
-  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(text)
-  const hasOffset = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(text)
-  if (dateOnly || hasOffset || timezone === undefined) return new Date(text)
-  const local = new Date(`${text}Z`)
+  if (ZONE.test(text) || DATE_ONLY.test(text)) return new Date(text)
+  const wallClock = ISO_LOCAL.test(text) ? new Date(`${text.replace(' ', 'T')}Z`) : hostFieldsAsUtc(new Date(text))
+  if (Number.isNaN(wallClock.getTime())) return undefined
 
-  return Number.isNaN(local.getTime()) ? undefined : shiftFromZone(local, timezone)
+  return timezone === undefined ? wallClock : shiftFromZone(wallClock, timezone)
+}
+
+/**
+ * `Date.parse` reads zone-less non-ISO text (`March 4, 2026 10:00`) in the host's zone; its wall-clock
+ * fields, read back in that zone, are the text's.
+ *
+ * @param local - What `Date.parse` made of the text.
+ * @returns The same wall-clock time as a UTC instant.
+ */
+function hostFieldsAsUtc (local: Date): Date {
+  return new Date(Date.UTC(local.getFullYear(), local.getMonth(), local.getDate(), local.getHours(), local.getMinutes(), local.getSeconds(), local.getMilliseconds()))
 }
 
 function parseWithFormat (text: string, format: string, timezone: string | undefined): Date | undefined {
