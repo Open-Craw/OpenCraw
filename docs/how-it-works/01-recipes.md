@@ -580,13 +580,13 @@ out with the session cookie:
   · session.bootstrap.steps.0  goto  … ms
   · session.bootstrap.steps.1  fill  … ms
   · session.bootstrap.steps.2  fill  … ms
+  ⇢ page 1  https://quotes.toscrape.com/
   · session.bootstrap.steps.3  click  … ms
   · session.bootstrap.steps.4  wait  … ms
   ⇢ page 1  https://quotes.toscrape.com/
   · steps.0  request  … ms
   · steps.1  extract menu  … ms
   · steps.2  extract quotes  … ms
-    · steps.3.steps.0  extract text  … ms
   …
 ```
 <!-- /capture -->
@@ -607,7 +607,8 @@ bootstrap, the menu would read `Login` and the `goodreads` extract would find no
   login and the crawl come from the same address.
 - It sees the recipe's `vars`, but not a start point's own `vars`, and it can't emit records.
 - It runs again whenever the session is reopened: after a rotation to a new proxy, for example.
-- The bootstrap's page visit counts in the report's `pages`: this run reports 2.
+- The bootstrap's page visits count in the report's `pages`, the page the login click lands on included: this
+  run reports 3.
 
 ## Loading, validation and binding
 

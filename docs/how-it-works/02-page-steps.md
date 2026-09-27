@@ -206,8 +206,12 @@ only to a logged-in visitor. The recipe [`login`](recipes/page-login/login.input
 ![The link the click follows](../assets/how-it-works/page-login-3.png)
 <!-- /capture -->
 
-None of these steps binds a value, so the trace shows them without an id. There is one `⇢` line, for the
-`goto`: the navigations the key press and the click caused emit no `page:visit`, and the run reports `1 pages`.
+None of these steps binds a value, so the trace shows them without an id. There are three `⇢` lines: the
+`goto`'s, then one for the navigation the key press caused (the form posts, and the site redirects to `/`) and one
+for the click's (page 2). A navigation a `click`, `press` or `select` causes is followed like a `goto`: the engine
+waits for its response and `load`, retries a failure in passing, applies the block rule, emits `page:visit` and
+counts the page, so the run reports `3 pages`. Its `⇢` line comes before the step's own `·` line, which is written
+when the step ends. `page.number` stays 1 throughout: only `paginate` moves it.
 
 <!-- capture:page-login trace lines=12 grep=^(?!.*↺) -->
 ```text
@@ -217,12 +221,12 @@ None of these steps binds a value, so the trace shows them without an id. There 
   · steps.0  goto  … ms
   · steps.1  fill  … ms
   · steps.2  fill  … ms
+  ⇢ page 1  https://quotes.toscrape.com/
   · steps.3  press  … ms
   · steps.4  wait  … ms
+  ⇢ page 1  https://quotes.toscrape.com/page/2/
   · steps.5  click  … ms
   · steps.6  wait  … ms
-  · steps.7  screenshot  … ms
-  · steps.8  extract quotes  … ms
   …
 ```
 <!-- /capture -->
@@ -393,11 +397,11 @@ Each postback is a navigation to `/filter.aspx`, and after each step the engine 
   ⇄ access direct (direct)
   ⇢ page 1  https://quotes.toscrape.com/search.aspx
   · steps.0  goto  … ms
+  ⇢ page 1  https://quotes.toscrape.com/filter.aspx
   · steps.1  select  … ms
   · steps.2  select  … ms
+  ⇢ page 1  https://quotes.toscrape.com/filter.aspx
   · steps.3  click  … ms
-  · steps.4  wait  … ms
-  · steps.5  extract quotes  … ms
   …
 ```
 <!-- /capture -->
@@ -427,10 +431,12 @@ The other options, for pages that hide their `<select>`:
 <!-- /capture -->
 
 `scroll` moves the window to the bottom (`to: "bottom"`) or brings an element into view (`to: "<selector>"`),
-`times` times (default 1). After each round it waits **300 ms** and reads the page's height. With
-`untilStable: true` it keeps going until the height stops changing: the page has nothing more to add.
+`times` times (default 1). After each round it waits `settleMs` (default **300 ms**) and reads the page's
+height. With `untilStable: true` it keeps going until the height stops changing: the page has nothing more to
+add, or `maxScrolls` rounds (default 50) have run, which ends the step with a `warning` event rather than a
+failure.
 
-Those 300 ms are the whole of its patience. A page whose next batch takes longer to arrive looks finished, and
+That wait is the whole of its patience. A page whose next batch takes longer to arrive looks finished, and
 the step ends early. Two recipes on the same page:
 
 - [`scroll-until-stable`](recipes/page-scroll/scroll-until-stable.input.json): `wait` for the first quote, then
@@ -475,8 +481,8 @@ recipe does. Two more details:
 
 - The first `wait` matters too. Right after `goto`, the first batch may still be on its way; a page shorter than
   the window cannot scroll, so the scroll fires no event and nothing more loads.
-- `untilStable` has no cap: a list that never ends never ends the step, and `limits.timeoutMs` does not apply
-  to `scroll`. On such a page, use `times`.
+- On a slow site, raise `settleMs`. On a list that never ends, `maxScrolls` is what stops the step
+  (`limits.timeoutMs` does not apply to `scroll`); set it to the number of batches you want.
 
 A page like this one always has an API behind it. Reading `/api/quotes?page=N` with `request` and
 `paginate` ([part 5](04-flow-steps.md)) is faster and gets every quote; scroll when the API is out of reach.
@@ -653,8 +659,9 @@ reCAPTCHA-shaped challenge and a fake solving API, so nothing leaves the machine
 | Step | Binds under `id` | Changes |
 |---|---|---|
 | `goto` | nothing | `page.url` (the final URL); emits `page:visit` (`⇢`) |
-| `click` | nothing; with `download`, the file | `page.url` if it navigated; with `download`, the current document |
-| `fill`, `press`, `select`, `scroll`, `wait` | nothing | `page.url` if the page navigated |
+| `click` | nothing; with `download`, the file | `page.url` if it navigated, and then a `page:visit` (`⇢`), checked like a `goto`'s; with `download`, the current document |
+| `press`, `select` | nothing | as `click`, without the download |
+| `fill`, `scroll`, `wait` | nothing | `page.url` if the page navigated |
 | `screenshot` | nothing | a file at `path` |
 | `evaluate` | the script's result | whatever the script does to the page |
 | `captcha` | nothing | the page, once solved |

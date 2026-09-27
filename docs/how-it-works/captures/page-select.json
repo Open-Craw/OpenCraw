@@ -6,7 +6,7 @@
       "emitted": 2,
       "rejected": 0,
       "duplicates": 0,
-      "pages": 1
+      "pages": 3
     }
   ],
   "trace": [
@@ -14,8 +14,10 @@
     "  ⇄ access direct (direct)",
     "  ⇢ page 1  https://quotes.toscrape.com/search.aspx",
     "  · steps.0  goto  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/filter.aspx",
     "  · steps.1  select  … ms",
     "  · steps.2  select  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/filter.aspx",
     "  · steps.3  click  … ms",
     "  · steps.4  wait  … ms",
     "  · steps.5  extract quotes  … ms",
@@ -28,7 +30,7 @@
     "    · steps.6.steps.2  extract tag  … ms",
     "  ✚ record [\"“Life is like riding a bicycle. To keep your balance, you must keep moving.”\"]",
     "  · steps.6  forEach  … ms",
-    "■ search: 2 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+    "■ search: 2 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
   ],
   "records": [
     {

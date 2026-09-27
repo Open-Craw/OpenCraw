@@ -6,19 +6,20 @@
       "emitted": 3,
       "rejected": 0,
       "duplicates": 0,
-      "pages": 1
+      "pages": 3
     }
   ],
   "trace": [
     "▶ login (web)",
     "  ⇄ access direct (direct)",
-    "  ↺ https://quotes.toscrape.com/login: net::ERR_TOO_MANY_RETRIES, try 2 in … ms",
     "  ⇢ page 1  https://quotes.toscrape.com/login",
     "  · steps.0  goto  … ms",
     "  · steps.1  fill  … ms",
     "  · steps.2  fill  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
     "  · steps.3  press  … ms",
     "  · steps.4  wait  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/page/2/",
     "  · steps.5  click  … ms",
     "  · steps.6  wait  … ms",
     "  · steps.7  screenshot  … ms",
@@ -36,7 +37,7 @@
     "    · steps.9.steps.2  extract goodreads  … ms",
     "  ✚ record [\"“If you can't explain it to a six year old, you don't understand it yourself.”\"]",
     "  · steps.9  forEach  … ms",
-    "■ login: 3 emitted, 0 rejected, 0 duplicates, 1 pages, … ms"
+    "■ login: 3 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
   ],
   "records": [
     {

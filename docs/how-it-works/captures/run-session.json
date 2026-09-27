@@ -14,7 +14,7 @@
       "emitted": 2,
       "rejected": 0,
       "duplicates": 0,
-      "pages": 2
+      "pages": 3
     }
   ],
   "trace": [
@@ -30,6 +30,7 @@
     "  · session.bootstrap.steps.0  goto  … ms",
     "  · session.bootstrap.steps.1  fill  … ms",
     "  · session.bootstrap.steps.2  fill  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
     "  · session.bootstrap.steps.3  click  … ms",
     "  · session.bootstrap.steps.4  wait  … ms",
     "  ⇢ page 1  https://quotes.toscrape.com/",
@@ -45,7 +46,7 @@
     "    · steps.3.steps.2  extract goodreads  … ms",
     "  ✚ record [\"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"]",
     "  · steps.3  forEach  … ms",
-    "■ quotes-signed-in: 2 emitted, 0 rejected, 0 duplicates, 2 pages, … ms"
+    "■ quotes-signed-in: 2 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
   ],
   "records": [
     {

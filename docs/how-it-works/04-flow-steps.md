@@ -287,18 +287,19 @@ record per page:
 ```text
 ▶ catalogue-click (web)
   ⇄ access direct (direct)
-  ↺ https://books.toscrape.com/catalogue/page-1.html: net::ERR_TOO_MANY_RETRIES, try 2 in … ms
   ⇢ page 1  https://books.toscrape.com/catalogue/page-1.html
   · steps.0  goto  … ms
     · steps.1.steps.0  extract titles  … ms
     · steps.1.steps.1  extract pager  … ms
   ✚ record [1]
     · steps.1.steps.2  emit  … ms
+  ↺ https://books.toscrape.com/catalogue/page-2.html: net::ERR_TOO_MANY_RETRIES, try 2 in … ms
   ⇢ page 2  https://books.toscrape.com/catalogue/page-2.html
     · steps.1.steps.0  extract titles  … ms
     · steps.1.steps.1  extract pager  … ms
   ✚ record [2]
     · steps.1.steps.2  emit  … ms
+  ↺ https://books.toscrape.com/catalogue/page-3.html: net::ERR_TOO_MANY_RETRIES, try 2 in … ms
   ⇢ page 3  https://books.toscrape.com/catalogue/page-3.html
     · steps.1.steps.0  extract titles  … ms
     · steps.1.steps.1  extract pager  … ms
@@ -318,7 +319,12 @@ record per page:
 <!-- /capture -->
 
 Each click shows as a `⇢ page N` line between two runs of the body, and `page.number` counts the pages
-(`Page 2 of 50` agrees). The run stops at `maxPages`, with 47 pages left. The URL each record carries is the
+(`Page 2 of 50` agrees). The navigation a "next" click causes is checked like a `goto`'s: its status, the block
+rule, and the transport retry. On the network this was captured on, the proxy dropped the loads of pages 2 and 3
+once each (the `↺` lines); the engine loaded the same URL again, which is safe for a link, rather than clicking a
+second time. A load that still fails fails the `paginate` step with its cause (`net::…` or `HTTP 503 at …`)
+instead of running the body on the browser's error page. A "next" that swaps the content in place, with no
+navigation, still pages: it counts a page with no status. The run stops at `maxPages`, with 47 pages left. The URL each record carries is the
 browser's real URL after the click: the web runner re-reads it after every step.
 
 When the body leaves the listing (a `forEach` that does `goto {{link}}` on each product), the engine goes back

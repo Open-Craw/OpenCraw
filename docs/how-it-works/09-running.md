@@ -259,6 +259,7 @@ bootstrap. Both check for the Logout link first:
   · session.bootstrap.steps.0  goto  … ms
   · session.bootstrap.steps.1  fill  … ms
   · session.bootstrap.steps.2  fill  … ms
+  ⇢ page 1  https://quotes.toscrape.com/
   · session.bootstrap.steps.3  click  … ms
   · session.bootstrap.steps.4  wait  … ms
   ⇢ page 1  https://quotes.toscrape.com/
@@ -274,12 +275,12 @@ bootstrap. Both check for the Logout link first:
     · steps.3.steps.2  extract goodreads  … ms
   ✚ record ["“It is our choices, Harry, that show what we truly are, far more than our abilities.”"]
   · steps.3  forEach  … ms
-■ quotes-signed-in: 2 emitted, 0 rejected, 0 duplicates, 2 pages, … ms
+■ quotes-signed-in: 2 emitted, 0 rejected, 0 duplicates, 3 pages, … ms
 ```
 <!-- /capture -->
 
-The bootstrap's steps have paths under `session.bootstrap.steps`, and its page counts: `2 pages` is the login page and
-the home page. The HTTP session carried the login cookie, so the page it got is the logged-in one, with a Goodreads
+The bootstrap's steps have paths under `session.bootstrap.steps`, and its pages count: `3 pages` is the login page, the page
+the login click lands on, and the home page the api recipe reads. The HTTP session carried the login cookie, so the page it got is the logged-in one, with a Goodreads
 link that anonymous visitors don't see:
 
 <!-- capture:run-session records n=2 -->
@@ -326,9 +327,9 @@ plugins in full. No proxy was used for this page.
 
 ### Block detection
 
-After each `goto` and each `request`, the response is checked against the recipe's **block rule** (a
-pagination click isn't checked). When nothing is
-set, the default rule is:
+After each `goto` and each `request`, and after every navigation a `click`, `press`, `select` or pagination
+click causes, the response is checked against the recipe's **block rule**. When nothing is set, the default rule
+is:
 
 ```json
 { "status": [403, 429], "header": { "x-amzn-waf-action": "challenge" } }

@@ -6,7 +6,7 @@
       "emitted": 3,
       "rejected": 0,
       "duplicates": 0,
-      "pages": 2
+      "pages": 3
     }
   ],
   "trace": [
@@ -16,6 +16,7 @@
     "  · session.bootstrap.steps.0  goto  … ms",
     "  · session.bootstrap.steps.1  fill  … ms",
     "  · session.bootstrap.steps.2  fill  … ms",
+    "  ⇢ page 1  https://quotes.toscrape.com/",
     "  · session.bootstrap.steps.3  click  … ms",
     "  · session.bootstrap.steps.4  wait  … ms",
     "  ⇢ page 1  https://quotes.toscrape.com/",
@@ -35,7 +36,7 @@
     "    · steps.3.steps.2  extract goodreads  … ms",
     "  ✚ record [\"“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”\"]",
     "  · steps.3  forEach  … ms",
-    "■ quotes-signed-in: 3 emitted, 0 rejected, 0 duplicates, 2 pages, … ms"
+    "■ quotes-signed-in: 3 emitted, 0 rejected, 0 duplicates, 3 pages, … ms"
   ],
   "records": [
     {
