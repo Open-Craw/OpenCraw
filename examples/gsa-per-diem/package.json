@@ -1,0 +1,18 @@
+{
+  "name": "opencraw-example-gsa-per-diem",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenCraw example: every US federal per diem rate from GSA's FY 2026 Excel workbook.",
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs",
+    "live": "node run.mjs --live",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@opencraw/core": "^0.1.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

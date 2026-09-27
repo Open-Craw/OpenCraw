@@ -25,6 +25,10 @@ jobs:
           - { example: filmography }
           - { example: vehicles }
           - { example: stellantis-it-discounts }
+          # The document examples read their shipped copy by default; `live` fetches the original.
+          - { example: gsa-per-diem, script: live }
+          - { example: dfe-college-accounts, script: live }
+          - { example: fcc-regulatory-fees, script: live }
     name: ${{ matrix.example }}
     steps:
       - uses: actions/checkout@v4
@@ -42,4 +46,4 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run it
         working-directory: ${{ runner.temp }}/example
-        run: npm start ${{ matrix.args }}
+        run: npm run ${{ matrix.script || 'start' }} ${{ matrix.args }}

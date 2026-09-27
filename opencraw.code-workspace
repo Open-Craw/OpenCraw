@@ -273,11 +273,77 @@
         "type": "node-terminal",
         "request": "launch",
         "name": "example captcha-solver: test",
-        "command": "npm test",
+        "command": "npm run test",
         "cwd": "${workspaceFolder:OpenCraw}/examples/captcha-solver",
         "presentation": {
           "group": "examples",
           "order": 4
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example dfe-college-accounts: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/dfe-college-accounts",
+        "presentation": {
+          "group": "examples",
+          "order": 5
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example dfe-college-accounts: run live",
+        "command": "npm run live",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/dfe-college-accounts",
+        "presentation": {
+          "group": "examples",
+          "order": 6
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example dfe-college-accounts: test",
+        "command": "npm run test",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/dfe-college-accounts",
+        "presentation": {
+          "group": "examples",
+          "order": 7
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example fcc-regulatory-fees: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/fcc-regulatory-fees",
+        "presentation": {
+          "group": "examples",
+          "order": 8
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example fcc-regulatory-fees: run live",
+        "command": "npm run live",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/fcc-regulatory-fees",
+        "presentation": {
+          "group": "examples",
+          "order": 9
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example fcc-regulatory-fees: test",
+        "command": "npm run test",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/fcc-regulatory-fees",
+        "presentation": {
+          "group": "examples",
+          "order": 10
         }
       },
       {
@@ -288,7 +354,40 @@
         "cwd": "${workspaceFolder:OpenCraw}/examples/filmography",
         "presentation": {
           "group": "examples",
-          "order": 5
+          "order": 11
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example gsa-per-diem: run",
+        "command": "npm start",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/gsa-per-diem",
+        "presentation": {
+          "group": "examples",
+          "order": 12
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example gsa-per-diem: run live",
+        "command": "npm run live",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/gsa-per-diem",
+        "presentation": {
+          "group": "examples",
+          "order": 13
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "example gsa-per-diem: test",
+        "command": "npm run test",
+        "cwd": "${workspaceFolder:OpenCraw}/examples/gsa-per-diem",
+        "presentation": {
+          "group": "examples",
+          "order": 14
         }
       },
       {
@@ -299,7 +398,7 @@
         "cwd": "${workspaceFolder:OpenCraw}/examples/movies",
         "presentation": {
           "group": "examples",
-          "order": 6
+          "order": 15
         }
       },
       {
@@ -310,18 +409,18 @@
         "cwd": "${workspaceFolder:OpenCraw}/examples/shop",
         "presentation": {
           "group": "examples",
-          "order": 7
+          "order": 16
         }
       },
       {
         "type": "node-terminal",
         "request": "launch",
         "name": "example shop: test",
-        "command": "npm test",
+        "command": "npm run test",
         "cwd": "${workspaceFolder:OpenCraw}/examples/shop",
         "presentation": {
           "group": "examples",
-          "order": 8
+          "order": 17
         }
       },
       {
@@ -332,7 +431,7 @@
         "cwd": "${workspaceFolder:OpenCraw}/examples/stellantis-it-discounts",
         "presentation": {
           "group": "examples",
-          "order": 9
+          "order": 18
         }
       },
       {
@@ -343,7 +442,7 @@
         "cwd": "${workspaceFolder:OpenCraw}/examples/vehicles",
         "presentation": {
           "group": "examples",
-          "order": 10
+          "order": 19
         }
       }
     ]

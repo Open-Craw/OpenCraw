@@ -35,8 +35,14 @@ Run and Debug view runs and debugs each one.
 
 ## Documents
 
+Each one ships a copy of its document, so it runs offline (and in CI); `npm run live` reads the original from
+its URL instead.
+
 | Example | Runs against | Mode | What it shows |
 |---|---|---|---|
+| [gsa-per-diem](./gsa-per-diem) | Excel: GSA's FY 2026 per diem workbook (shipped copy, or the original with `npm run live`) | api | A sheet picked by name, a table found by its header row's text under a title row, columns matched by name (`Lodging Rate$` survives next year's `FY27`), a non-data row rejected by policy, a default that keeps the key unique. Has tests. |
+| [dfe-college-accounts](./dfe-college-accounts) | PowerPoint: DfE's management accounts model deck (shipped copy, or the original) | api | A table on a slide picked by its title, long headers matched by their distinctive part, `1,120`-style numbers parsed, an `enum` field. Has tests. |
+| [fcc-regulatory-fees](./fcc-regulatory-fees) | Word: the FCC's FY 2026 radio fee fact sheet (shipped copy, or the original) | api | A Word document read as a page, a merged title row skipped, two values split out of one cell, dotted targets building objects. Has tests. |
 | [stellantis-it-discounts](./stellantis-it-discounts) | monthly PDFs | api (cli) | Tables read from PDFs: cells wrapped over several lines, columns that move, a header that differs, footnotes, a month that breaks the template. The recipes run with the `opencraw` cli, no code. |
 
 ## A deployable service

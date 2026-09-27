@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/output-recipe.schema.json",
+  "kind": "output",
+  "id": "radio-station-fee",
+  "version": 1,
+  "fields": {
+    "populationServed": {
+      "type": "string",
+      "required": true,
+      "key": true
+    },
+    "amClassA": {
+      "type": "object",
+      "nullable": true,
+      "fields": {
+        "paymentTypeCode": {
+          "type": "string"
+        },
+        "feeUsd": {
+          "type": "number"
+        }
+      }
+    },
+    "amClassB": {
+      "type": "object",
+      "nullable": true,
+      "fields": {
+        "paymentTypeCode": {
+          "type": "string"
+        },
+        "feeUsd": {
+          "type": "number"
+        }
+      }
+    },
+    "amClassC": {
+      "type": "object",
+      "nullable": true,
+      "fields": {
+        "paymentTypeCode": {
+          "type": "string"
+        },
+        "feeUsd": {
+          "type": "number"
+        }
+      }
+    },
+    "amClassD": {
+      "type": "object",
+      "nullable": true,
+      "fields": {
+        "paymentTypeCode": {
+          "type": "string"
+        },
+        "feeUsd": {
+          "type": "number"
+        }
+      }
+    },
+    "fmClassesA": {
+      "type": "object",
+      "nullable": true,
+      "fields": {
+        "paymentTypeCode": {
+          "type": "string"
+        },
+        "feeUsd": {
+          "type": "number"
+        }
+      }
+    },
+    "fmClassesB": {
+      "type": "object",
+      "nullable": true,
+      "fields": {
+        "paymentTypeCode": {
+          "type": "string"
+        },
+        "feeUsd": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
