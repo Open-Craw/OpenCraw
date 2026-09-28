@@ -18,12 +18,15 @@ export {
   sentencePartSchema, outlineCardSchema, outlineBracketSchema, outlineNodeSchema, outlineViewSchema,
   whyViewSchema,
   inspectPageCommandSchema, responsesSeenCommandSchema, documentTreeCommandSchema,
+  pdfViewCommandSchema, tablePreviewOptionsSchema, tablePreviewCommandSchema,
   domTreeNodeViewSchema, pageDataFindingSchema, inspectViewSchema,
   observedResponseSchema, responsesSeenViewSchema,
   documentTreeNodeViewSchema, documentTreeViewSchema,
+  pdfCellViewSchema, pdfRowViewSchema, pdfPageViewSchema, pdfDocumentViewSchema,
+  tablePreviewTableSchema, tablePreviewBandSchema, tablePreviewMatchSchema, tablePreviewViewSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, StudioCommand,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
@@ -36,4 +39,6 @@ export type {
   DomTreeNodeView, PageDataKind, PageDataFindingView, InspectView,
   ObservedResponseView, ResponsesSeenView,
   DocumentTreeNodeView, DocumentTreeView,
+  PdfCellView, PdfRowView, PdfPageView, PdfDocumentView,
+  TablePreviewTableView, TablePreviewBandView, TablePreviewMatchView, TablePreviewView,
 } from './studio-api'

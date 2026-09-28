@@ -92,11 +92,36 @@ describe('ContentPane', () => {
     expect(screen.getByText(/read card: \$\.name/i)).toBeTruthy()
   })
 
-  it('shows an honest placeholder for a document format with no canvas yet (pdf/csv/xlsx/pptx)', async () => {
-    mockFetch({ html: '<p>[pdf document]</p>', nodeCount: 0, baseUrl: 'file:///x.pdf', format: 'pdf' })
+  it('shows an honest placeholder for a document format with no canvas yet (the workbook grid and the deck, issue #94 5c/5d)', async () => {
+    mockFetch({ html: '<p>[csv document]</p>', nodeCount: 0, baseUrl: 'file:///x.csv', format: 'csv' })
     renderWithProviders(<ContentPane recipe={recipe()} />)
 
     await waitFor(() => { expect(screen.getByText(/not built yet/i)).toBeTruthy() })
     expect(document.querySelector('iframe')).toBeNull()
+  })
+
+  it('shows the PDF canvas (not the iframe, not the placeholder) for a PDF snapshot', async () => {
+    mockFetchByCommand({
+      'take-snapshot': { html: '<p>[pdf document]</p>', nodeCount: 0, baseUrl: 'file:///discounts.pdf', format: 'pdf' },
+      'pdf-view':      {
+        pages: [
+          {
+            number:       1,
+            width:        595,
+            height:       842,
+            rows:         [{ top: 700, bottom: 693, cells: [{ x: 40, y: 693, width: 90, height: 7, text: 'MODELS ALPHA' }] }],
+            rowCount:     1,
+            cellCount:    1,
+            hasTextLayer: true,
+          },
+        ],
+      },
+    })
+    renderWithProviders(<ContentPane recipe={recipe()} />)
+
+    await waitFor(() => { expect(screen.getByText(/header row/i)).toBeTruthy() })
+    expect(screen.queryByText(/not built yet/i)).toBeNull()
+    expect(document.querySelector('iframe')).toBeNull()
+    expect(screen.getByText(/1 rows, 1 cells/i)).toBeTruthy()
   })
 })

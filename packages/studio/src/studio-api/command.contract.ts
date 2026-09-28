@@ -132,6 +132,40 @@ export const documentTreeCommandSchema = z.object({
   path:     z.string().min(1),
 })
 
+/**
+ * The PDF canvas's cells and rows (`document-view`'s `pdf-view.mapper.ts`,
+ * studio plan §3.4, issue #94's 5b), off the same cached snapshot
+ * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
+ * Only a PDF snapshot has one; JSON/YAML/XML get the tree canvas (5a), the
+ * workbook and deck their own canvases (5c/5d).
+ */
+export const pdfViewCommandSchema = z.object({
+  type:     z.literal('pdf-view'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/** A `table` extract's options, as the studio's PDF canvas picks build them — mirrors `document-view/table-preview.use-case.ts`'s `TablePreviewOptions`. */
+export const tablePreviewOptionsSchema = z.object({
+  header:  z.string().min(1),
+  until:   z.string().min(1).optional(),
+  columns: z.record(z.string(), z.string().min(1)).optional(),
+  align:   z.enum(['auto', 'top', 'center', 'bottom']).optional(),
+})
+
+/**
+ * The live preview of a `table` extract's options against a cached PDF
+ * snapshot (`document-view`'s `table-preview.use-case.ts`, studio plan §3.4,
+ * issue #94's 5b): the matched rows to highlight on the page, recomputed as
+ * the person edits the options — call `take-snapshot` first.
+ */
+export const tablePreviewCommandSchema = z.object({
+  type:     z.literal('table-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  options:  tablePreviewOptionsSchema,
+})
+
 /** A missing value in an emitted record, by its position in the last sample run's records (the order they streamed in, matching the UI's own `records` list). */
 export const missingWhyTargetSchema = z.object({
   kind:        z.literal('missing'),
@@ -175,6 +209,8 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   inspectPageCommandSchema,
   responsesSeenCommandSchema,
   documentTreeCommandSchema,
+  pdfViewCommandSchema,
+  tablePreviewCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -190,6 +226,9 @@ export type InferSelectorCommand = z.infer<typeof inferSelectorCommandSchema>
 export type InspectPageCommand = z.infer<typeof inspectPageCommandSchema>
 export type ResponsesSeenCommand = z.infer<typeof responsesSeenCommandSchema>
 export type DocumentTreeCommand = z.infer<typeof documentTreeCommandSchema>
+export type PdfViewCommand = z.infer<typeof pdfViewCommandSchema>
+export type TablePreviewOptions = z.infer<typeof tablePreviewOptionsSchema>
+export type TablePreviewCommand = z.infer<typeof tablePreviewCommandSchema>
 export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
 export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
 export type WhyTarget = z.infer<typeof whyTargetSchema>

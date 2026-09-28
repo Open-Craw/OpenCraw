@@ -1,4 +1,4 @@
-import type { DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
+import type { DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -26,6 +26,12 @@ export interface StudioClient {
   responsesSeen:  (recipeId: string, path: string) => Promise<ResponsesSeenView>
   /** The content pane's tree canvas for a JSON/YAML/XML snapshot (`document-view`, studio plan §3.4, issue #94's 5a), off the same cached snapshot. */
   documentTree:   (recipeId: string, path: string) => Promise<DocumentTreeView>
+  /** The PDF canvas's cells and rows for a PDF snapshot (`document-view`'s `pdf-view.mapper.ts`, studio plan §3.4, issue #94's 5b), off the same cached snapshot. */
+  pdfView:        (recipeId: string, path: string) => Promise<PdfDocumentView>
+  /** The PDF canvas's live preview of a `table` extract's options (`document-view`'s `table-preview.use-case.ts`, issue #94's 5b): a pure computation over the cached snapshot, instant on every option change. */
+  tablePreview:   (recipeId: string, path: string, options: TablePreviewOptions) => Promise<TablePreviewView>
+  /** The URL the PDF canvas's `pdf.js` fetches directly for the raw bytes of a cached PDF snapshot (`GET /api/pdf-bytes`, issue #94's 5b) — not a `send`-through command, since it answers bytes, not JSON. */
+  pdfBytesUrl:    (recipeId: string, path: string) => string
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -84,6 +90,9 @@ export function createStudioClient (): StudioClient {
     inspectPage:    (recipeId, path) => send<InspectView>(token, { type: 'inspect-page', recipeId, path }),
     responsesSeen:  (recipeId, path) => send<ResponsesSeenView>(token, { type: 'responses-seen', recipeId, path }),
     documentTree:   (recipeId, path) => send<DocumentTreeView>(token, { type: 'document-tree', recipeId, path }),
+    pdfView:        (recipeId, path) => send<PdfDocumentView>(token, { type: 'pdf-view', recipeId, path }),
+    tablePreview:   (recipeId, path, options) => send<TablePreviewView>(token, { type: 'table-preview', recipeId, path, options }),
+    pdfBytesUrl:    (recipeId, path) => `/api/pdf-bytes?token=${encodeURIComponent(token)}&recipeId=${encodeURIComponent(recipeId)}&path=${encodeURIComponent(path)}`,
     subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)

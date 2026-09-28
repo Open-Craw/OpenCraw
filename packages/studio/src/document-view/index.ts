@@ -1,2 +1,6 @@
 export { documentTreeView } from './tree-view.mapper'
 export type { DocumentTreeNode, DocumentTreeView, TreeValueType } from './tree-view.mapper'
+export { pdfDocumentView } from './pdf-view.mapper'
+export type { PdfCellView, PdfDocumentView, PdfPageView, PdfRowView } from './pdf-view.mapper'
+export { previewPdfTable } from './table-preview.use-case'
+export type { TablePreviewMatch, TablePreviewOptions, TablePreviewResult } from './table-preview.use-case'

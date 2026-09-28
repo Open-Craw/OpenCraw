@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Badge, Box, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
-import type { DocumentTreeNodeView, OutlineView, RecipeListing } from '@opencraw/studio'
+import type { DocumentTreeNodeView, OutlineCard, OutlineView, RecipeListing } from '@opencraw/studio'
 import { InspectorPanel } from '../inspector'
-import { useDocumentTreeQuery, useInferSelectorMutation, useSnapshotQuery } from '../studio-client'
+import { useDocumentTreeQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStudioClient } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
 import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { PdfCanvas } from './pdf-canvas.component'
 import { SnapshotFrame } from './snapshot-frame.component'
 import { TreeCanvas } from './tree-canvas.component'
 import type { TreePickMode } from './tree-canvas.component'
@@ -13,8 +14,8 @@ const STEP_PATH = 'start' // v1: only the start point is captured — see `page-
 
 /** The snapshot `format`s the tree canvas reads (studio plan §3.4, issue #94's 5a) — YAML and JSON Lines are both normalised to JSON by `http.client.ts`, so `document-tree` (and this canvas) handles them exactly like `json`. */
 const TREE_FORMATS = new Set(['json', 'yaml', 'jsonl', 'xml'])
-/** Formats with no canvas yet (PDF cells, the workbook grid, the deck — issue #94's 5b/5c/5d): shown as an honest "not yet" placeholder instead of the snapshot iframe's misleading placeholder text (`page-snapshot`'s own `textOf`). */
-const UNSUPPORTED_DOCUMENT_FORMATS = new Set(['pdf', 'csv', 'xlsx', 'pptx'])
+/** Formats with no canvas yet (the workbook grid, the deck — issue #94's 5c/5d): shown as an honest "not yet" placeholder instead of the snapshot iframe's misleading placeholder text (`page-snapshot`'s own `textOf`). */
+const UNSUPPORTED_DOCUMENT_FORMATS = new Set(['csv', 'xlsx', 'pptx'])
 
 export interface ContentPaneProps {
   /** The selected recipe, with its outline — `undefined` before one is picked. */
@@ -43,10 +44,13 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const snapshot = useSnapshotQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH)
   const inferSelector = useInferSelectorMutation()
   const [inspecting, setInspecting] = useState(false)
+  const client = useStudioClient()
   const format = snapshot.data?.format
   const isDocumentTree = format !== undefined && TREE_FORMATS.has(format)
+  const isPdf = format === 'pdf'
   const isUnsupportedDocument = format !== undefined && UNSUPPORTED_DOCUMENT_FORMATS.has(format)
   const documentTree = useDocumentTreeQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isDocumentTree)
+  const pdfView = usePdfViewQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isPdf)
 
   const pickTarget = useStudioUiStore(state => state.pickTarget)
   const showHidden = useStudioUiStore(state => state.showHidden)
@@ -60,8 +64,13 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const [status, setStatus] = useState<string | undefined>(undefined)
   /** The top-level index a first pick's Read card landed at, so a following second pick upgrades it in place instead of adding a duplicate. */
   const insertedAtRef = useRef<number | undefined>(undefined)
+  /** Same idea as `insertedAtRef`, but for the PDF canvas's `table` card (issue #94's 5b): every header/until/column pick re-sends the whole card, so it always replaces the same slot rather than piling up duplicates. */
+  const tableInsertedAtRef = useRef<number | undefined>(undefined)
 
   const pickMode = pickTarget !== undefined && pickTarget.recipeId === recipeId
+
+  // A different recipe means a different (or no) table card to upgrade in place.
+  useEffect(() => { tableInsertedAtRef.current = undefined }, [recipeId])
 
   async function handlePick (nodeId: string): Promise<void> {
     if (recipeId === undefined) return
@@ -131,6 +140,32 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     }
   }
 
+  /**
+   * Handles the PDF canvas's `table` card (issue #94's 5b): every header/
+   * until/column pick sends the whole card again, so it always replaces the
+   * same top-level slot (`tableInsertedAtRef`) instead of piling up
+   * duplicates — the same "upgrade in place" idea `handlePick`'s own
+   * `insertedAtRef` uses for the DOM picker's two-click list shape.
+   */
+  async function handlePdfTablePick (card: OutlineCard): Promise<void> {
+    await writeOutline((steps) => {
+      const at = tableInsertedAtRef.current ?? steps.length
+      tableInsertedAtRef.current = at
+      setStatus(`table: ${String(card.step.selector)}`)
+
+      return spliceTopLevel(steps, tableInsertedAtRef.current, [{ ...card, path: `steps.${at}` }])
+    })
+  }
+
+  /** A dragged-region pick (issue #94's 5b): always a fresh `regex` card, never folded into the table draft's slot. */
+  async function handlePdfRegionPick (card: OutlineCard): Promise<void> {
+    await writeOutline((steps) => {
+      setStatus(`regex: ${String(card.step.selector)}`)
+
+      return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
+    })
+  }
+
   async function writeOutline (build: (steps: NonNullable<RecipeListing['outline']>['steps']) => NonNullable<RecipeListing['outline']>['steps']): Promise<void> {
     if (onSaveOutline === undefined || recipe?.outline === undefined) return
     const steps = build(recipe.outline.steps)
@@ -158,7 +193,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   return (
     <Box h='full' display='flex' flexDirection='column'>
       <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0}>
-        {!isDocumentTree && !isUnsupportedDocument && (
+        {!isDocumentTree && !isPdf && !isUnsupportedDocument && (
           <>
             <Text
               as='button'
@@ -190,8 +225,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
           </>
         )}
         {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to read it; [*] reads every item of a list.</Text>}
-        {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching)) && <Spinner size='xs' />}
-        {status !== undefined && <Badge size='sm' colorPalette={status.startsWith('List') || status.startsWith('Read') || status.startsWith('Paginate') ? 'green' : 'orange'}>{status}</Badge>}
+        {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching)) && <Spinner size='xs' />}
+        {status !== undefined && <Badge size='sm' colorPalette={status.startsWith('List') || status.startsWith('Read') || status.startsWith('Paginate') || status.startsWith('table') || status.startsWith('regex') ? 'green' : 'orange'}>{status}</Badge>}
       </HStack>
       <Box flex='1' minH='0'>
         {isDocumentTree && documentTree.data !== undefined && (
@@ -200,12 +235,25 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         {isDocumentTree && documentTree.isError && (
           <Box p={4} color='fg.error'><Text>{documentTree.error.message}</Text></Box>
         )}
+        {isPdf && pdfView.data !== undefined && (
+          <PdfCanvas
+            recipeId={recipeId}
+            stepPath={STEP_PATH}
+            view={pdfView.data}
+            bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH)}
+            onTablePick={(card) => { void handlePdfTablePick(card) }}
+            onRegionPick={(card) => { void handlePdfRegionPick(card) }}
+          />
+        )}
+        {isPdf && pdfView.isError && (
+          <Box p={4} color='fg.error'><Text>{pdfView.error.message}</Text></Box>
+        )}
         {isUnsupportedDocument && (
           <Box p={4} color='fg.muted'>
             <Text>{`This recipe reads a "${format}" document — its canvas is not built yet (studio plan §3.4).`}</Text>
           </Box>
         )}
-        {!isDocumentTree && !isUnsupportedDocument && snapshot.data !== undefined && !inspecting && (
+        {!isDocumentTree && !isPdf && !isUnsupportedDocument && snapshot.data !== undefined && !inspecting && (
           <SnapshotFrame
             html={snapshot.data.html}
             pickMode={pickMode}
@@ -215,7 +263,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             onPickNode={(nodeId) => { void handlePick(nodeId) }}
           />
         )}
-        {!isDocumentTree && !isUnsupportedDocument && snapshot.data !== undefined && inspecting && (
+        {!isDocumentTree && !isPdf && !isUnsupportedDocument && snapshot.data !== undefined && inspecting && (
           <Splitter.Root panels={[{ id: 'snapshot', minSize: 15 }, { id: 'inspect', minSize: 20 }]} h='full'>
             <Splitter.Panel id='snapshot' overflow='hidden'>
               <SnapshotFrame

@@ -29,7 +29,45 @@ export interface PdfTable {
 
 interface Band {
   start:  number
+  end:    number
   column: number
+}
+
+/** One column band the body's cells clustered into, for the canvas to draw (studio plan §3.4, issue #94's 5b): its horizontal extent, the header it was mapped to, and that header's own text. */
+export interface TableBandDiagnostics {
+  /** The left edge, in points. */
+  start:  number
+  /** The right edge, in points: what its cells cover, bounded by the next band's start. */
+  end:    number
+  /** Index into the table's `header`. */
+  column: number
+  /** `header[column]`, for convenience. */
+  name:   string
+}
+
+/**
+ * One table's intermediate results, alongside the final {@link PdfTable}
+ * `findTables` returns — the PDF canvas (studio plan §3.4, issue #94's 5b)
+ * draws these directly instead of re-deriving them: the header row and body
+ * range, the column bands and the tolerance that clustered cell edges into
+ * them, and how the body's lines regrouped into each output row (more than
+ * one index means a wrapped or centred cell was folded into that row).
+ */
+export interface TableDiagnostics {
+  page:           number
+  /** Index into `document.pages[n].rows` of the header row. */
+  headerRowIndex: number
+  /** `[start, end)` indices into `document.pages[n].rows` of the body, before `until` truncates it. */
+  bodyRange:      [number, number]
+  /** Index into `document.pages[n].rows` of the row `until` matched and ended the table at, if any. */
+  untilRowIndex?: number
+  /** The column bands, left to right. Empty when the body has no cells. */
+  bands:          TableBandDiagnostics[]
+  /** The gap (in points) two cell edges may differ by and still share a band — `bandsOf`'s own tolerance, shown while dragging a band edge. */
+  bandTolerance:  number
+  /** Each output row's `document.pages[n].rows` indices, in reading order. */
+  rowGroups:      number[][]
+  table:          PdfTable
 }
 
 /**
@@ -50,16 +88,43 @@ interface Band {
  * @returns The tables, in page order.
  */
 export function findTables (document: PdfDocument, query: TableQuery): PdfTable[] {
-  const tables: PdfTable[] = []
+  return analyzeTables(document, query).map(analysis => analysis.table)
+}
+
+/**
+ * The same tables {@link findTables} finds, with the intermediate results it
+ * normally throws away (studio plan §3.4, issue #94's 5b: the PDF canvas
+ * draws the header row, the bands and the wrapped-row regrouping it took to
+ * get there, not only the final rows).
+ *
+ * @param document - The PDF.
+ * @param query - Which tables, and how to name their columns.
+ * @returns One {@link TableDiagnostics} per table found, in page order — the same tables, in the same order, `findTables` returns.
+ */
+export function analyzeTables (document: PdfDocument, query: TableQuery): TableDiagnostics[] {
+  const analyses: TableDiagnostics[] = []
   for (const page of document.pages) {
     const starts = page.rows.flatMap((row, index) => (query.header.test(plain(row)) ? [index] : []))
     for (const [position, start] of starts.entries()) {
-      const body = bodyOf(page.rows.slice(start + 1, starts[position + 1] ?? page.rows.length), query.until)
-      tables.push(readTable(page.number, page.rows[start], body, query))
+      const bodyEnd = starts[position + 1] ?? page.rows.length
+      const fullBody = page.rows.slice(start + 1, bodyEnd)
+      const body = bodyOf(fullBody, query.until)
+      const untilIndex = body.length === fullBody.length ? -1 : body.length
+      const analysis = analyzeTable(page.number, page.rows[start], body, query)
+      analyses.push({
+        page:           page.number,
+        headerRowIndex: start,
+        bodyRange:      [start + 1, bodyEnd],
+        ...(untilIndex !== -1 && { untilRowIndex: start + 1 + untilIndex }),
+        bands:          analysis.bands,
+        bandTolerance:  analysis.tolerance,
+        rowGroups:      analysis.rowGroups.map(group => group.map(line => page.rows.indexOf(line.row))),
+        table:          analysis.table,
+      })
     }
   }
 
-  return tables
+  return analyses
 }
 
 /** The rows under a header, up to the first one `until` matches. */
@@ -69,18 +134,20 @@ function bodyOf (rows: readonly PdfRow[], until: RegExp | undefined): PdfRow[] {
   return end === -1 ? [...rows] : rows.slice(0, end)
 }
 
-function readTable (page: number, headerRow: PdfRow, body: readonly PdfRow[], query: TableQuery): PdfTable {
+function analyzeTable (page: number, headerRow: PdfRow, body: readonly PdfRow[], query: TableQuery): { table: PdfTable, bands: TableBandDiagnostics[], tolerance: number, rowGroups: Line[][] } {
   const headers = headerCells(headerRow)
-  const bands = bandsOf(body, headers)
+  const { bands, tolerance } = bandsOf(body, headers)
   const lines = body.map(row => ({ row, values: valuesOf(row, bands, headers.length) }))
   const groups = groupLines(lines, query.align ?? 'auto')
-
-  return {
+  const table: PdfTable = {
     page,
     title:  headers[0]?.text ?? '',
     header: headers.map(header => header.text),
     rows:   groups.map(group => named(joinLines(group, headers.length), headers, query.columns)),
   }
+  const bandDiagnostics: TableBandDiagnostics[] = bands.map(band => ({ start: band.start, end: band.end, column: band.column, name: headers[band.column]?.text ?? '' }))
+
+  return { table, bands: bandDiagnostics, tolerance, rowGroups: groups }
 }
 
 interface Line {
@@ -173,10 +240,10 @@ function headerCells (row: PdfRow): PdfCell[] {
   return merged
 }
 
-function bandsOf (body: readonly PdfRow[], headers: readonly PdfCell[]): Band[] {
+function bandsOf (body: readonly PdfRow[], headers: readonly PdfCell[]): { bands: Band[], tolerance: number } {
   const cells = body.flatMap(row => row.cells)
-  if (cells.length === 0 || headers.length === 0) return []
-  const tolerance = Math.max(3, median(cells.map(cell => cell.height)) * 0.6)
+  const tolerance = cells.length === 0 ? 0 : Math.max(3, median(cells.map(cell => cell.height)) * 0.6)
+  if (cells.length === 0 || headers.length === 0) return { bands: [], tolerance }
   const edges = cells.map(cell => cell.x).sort((a, b) => a - b)
   const starts: number[] = []
   for (const edge of edges) if (starts.length === 0 || edge - (starts.at(-1) ?? 0) > tolerance) starts.push(edge)
@@ -189,7 +256,7 @@ function bandsOf (body: readonly PdfRow[], headers: readonly PdfCell[]): Band[] 
   })
   const columns = assignColumns(spans, headers)
 
-  return spans.map((span, index) => ({ start: span.start, column: columns[index] }))
+  return { bands: spans.map((span, index) => ({ start: span.start, end: span.end, column: columns[index] })), tolerance }
 }
 
 /**

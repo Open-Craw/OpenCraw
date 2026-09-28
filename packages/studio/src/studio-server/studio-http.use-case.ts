@@ -13,11 +13,14 @@ import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleInspectPage } from './inspect-page.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
+import { handlePdfBytes } from './pdf-bytes.handler'
+import { handlePdfView } from './pdf-view.handler'
 import { handleResponsesSeen } from './responses-seen.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
 import { serveStatic } from './static-file.handler'
+import { handleTablePreview } from './table-preview.handler'
 import { handleTakeSnapshot } from './take-snapshot.handler'
 import { handleVerifySelector } from './verify-selector.handler'
 import { acceptWebSocket } from './websocket.client'
@@ -105,8 +108,36 @@ async function handleRequest (request: IncomingMessage, response: ServerResponse
 
     return
   }
+  if (url.pathname === '/api/pdf-bytes' && request.method === 'GET') {
+    await handlePdfBytesRequest(response, state, url.searchParams)
+
+    return
+  }
   if (url.pathname === '/' && url.searchParams.has('token')) response.setHeader('set-cookie', `${TOKEN_COOKIE}=${token}; HttpOnly; SameSite=Strict; Path=/`)
   serveStatic(uiRoot, url.pathname, response)
+}
+
+/**
+ * `GET /api/pdf-bytes?recipeId=…&path=…`: the raw bytes of a cached PDF
+ * snapshot (`pdf-bytes.handler.ts`, studio plan §3.4, issue #94's 5b) — the
+ * PDF canvas's `pdf.js` fetches this URL directly, so it answers bytes, not
+ * the JSON envelope every `/api/command` response uses.
+ */
+async function handlePdfBytesRequest (response: ServerResponse, state: StudioState, query: URLSearchParams): Promise<void> {
+  const recipeId = query.get('recipeId')
+  const path = query.get('path')
+  if (recipeId === null || path === null) {
+    respondJson(response, 400, { error: '"recipeId" and "path" are required query params' })
+
+    return
+  }
+  try {
+    const bytes = await handlePdfBytes(state, recipeId, path)
+    response.writeHead(200, { 'content-type': 'application/pdf', 'content-length': bytes.byteLength })
+    response.end(Buffer.from(bytes))
+  } catch (error) {
+    respondJson(response, 500, { error: error instanceof Error ? error.message : String(error) })
+  }
 }
 
 async function handleCommand (request: IncomingMessage, response: ServerResponse, state: StudioState): Promise<void> {
@@ -159,6 +190,10 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'responses-seen': { return handleResponsesSeen(state, command)
     }
     case 'document-tree': { return Promise.resolve(handleDocumentTree(state, command))
+    }
+    case 'pdf-view': { return Promise.resolve(handlePdfView(state, command))
+    }
+    case 'table-preview': { return Promise.resolve(handleTablePreview(state, command))
     }
   }
 }

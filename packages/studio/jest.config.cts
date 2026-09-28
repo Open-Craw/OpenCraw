@@ -21,6 +21,8 @@ module.exports = {
   // (picking.e2e.test.ts) makes the port collision (and the missing-browser dependency) a real,
   // reproducible failure under `nx run studio:test`'s parallel workers.
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/e2e/'],
+  // pdf.js is an ES module Jest cannot load itself: see jest-pdfjs.cjs (mirrors @opencraw/core's and @opencraw/probe's own copy).
+  moduleNameMapper: { '^pdfjs-dist/legacy/build/pdf\\.mjs$': '<rootDir>/jest-pdfjs.cjs' },
   transform: {
     '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig]
   },
