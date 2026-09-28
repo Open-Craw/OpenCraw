@@ -36,6 +36,40 @@ describe('useStudioUiStore', () => {
     expect(useStudioUiStore.getState().editorTab).toBe('json')
   })
 
+  it('starts with pick mode off and hidden elements off', () => {
+    const state = useStudioUiStore.getState()
+    expect(state.pickTarget).toBeUndefined()
+    expect(state.showHidden).toBe(false)
+  })
+
+  it('startPicking/stopPicking turn pick mode on and off for a recipe and step path', () => {
+    act(() => { useStudioUiStore.getState().startPicking('books', 'start') })
+    expect(useStudioUiStore.getState().pickTarget).toEqual({ recipeId: 'books', stepPath: 'start' })
+    act(() => { useStudioUiStore.getState().stopPicking() })
+    expect(useStudioUiStore.getState().pickTarget).toBeUndefined()
+  })
+
+  it('registerPick: the first click of a pick waits, the second completes the pair and clears pick mode', () => {
+    act(() => { useStudioUiStore.getState().startPicking('books', 'start') })
+    let outcome
+    act(() => { outcome = useStudioUiStore.getState().registerPick('n5') })
+    expect(outcome).toEqual({ kind: 'first' })
+    expect(useStudioUiStore.getState().pickTarget).toEqual({ recipeId: 'books', stepPath: 'start', firstNodeId: 'n5' })
+
+    act(() => { outcome = useStudioUiStore.getState().registerPick('n12') })
+    expect(outcome).toEqual({ kind: 'second', firstNodeId: 'n5' })
+    expect(useStudioUiStore.getState().pickTarget).toBeUndefined() // a completed pick leaves pick mode; the next pick starts clean
+  })
+
+  it('setShowHidden, setHoveredSelector and setHoveredNodeId each update their own field', () => {
+    act(() => { useStudioUiStore.getState().setShowHidden(true) })
+    expect(useStudioUiStore.getState().showHidden).toBe(true)
+    act(() => { useStudioUiStore.getState().setHoveredSelector('.price') })
+    expect(useStudioUiStore.getState().hoveredSelector).toBe('.price')
+    act(() => { useStudioUiStore.getState().setHoveredNodeId('n5') })
+    expect(useStudioUiStore.getState().hoveredNodeId).toBe('n5')
+  })
+
   it('resetStudioUiStore restores the initial state', () => {
     act(() => {
       useStudioUiStore.getState().commitFolder('recipes')

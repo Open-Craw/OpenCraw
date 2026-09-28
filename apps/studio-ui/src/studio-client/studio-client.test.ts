@@ -47,6 +47,43 @@ describe('createStudioClient', () => {
     }))
   })
 
+  it('sends take-snapshot as a POST with the recipe id and step path', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { html: '<html></html>', nodeCount: 1, baseUrl: 'https://x/' } })
+
+    const client = createStudioClient()
+    const view = await client.takeSnapshot('books', 'start')
+
+    expect(view).toEqual({ html: '<html></html>', nodeCount: 1, baseUrl: 'https://x/' })
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      body: JSON.stringify({ type: 'take-snapshot', recipeId: 'books', path: 'start' }),
+    }))
+  })
+
+  it('sends verify-selector as a POST with the selector', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { selector: '.price', snapshotMatches: 1, liveChecked: true, liveMatches: 1 } })
+
+    const client = createStudioClient()
+    await client.verifySelector('books', 'start', '.price')
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      body: JSON.stringify({ type: 'verify-selector', recipeId: 'books', path: 'start', selector: '.price' }),
+    }))
+  })
+
+  it('sends infer-selector as a POST with one or two node ids', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { kind: 'field', field: { selector: '.price', tier: 'class', take: 'text', matches: 1 } } })
+
+    const client = createStudioClient()
+    await client.inferSelector('books', 'start', ['n5'])
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      body: JSON.stringify({ type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: ['n5'] }),
+    }))
+  })
+
   it('rejects with the server\'s error message on a non-ok response', async () => {
     withUrl('?token=abc123')
     mockFetch({ ok: false, status: 401, body: { error: 'missing or invalid token' } })

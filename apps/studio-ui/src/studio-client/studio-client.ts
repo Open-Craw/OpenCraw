@@ -1,4 +1,4 @@
-import type { FetchStartPageCommand, OpenWorkspaceCommand, OutlineView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, StartPageView, StopRunCommand, StudioCommand, StudioEvent, WorkspaceView } from '@opencraw/studio'
+import type { FetchStartPageCommand, InferSelectorView, OpenWorkspaceCommand, OutlineView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -12,6 +12,12 @@ export interface StudioClient {
   saveRecipe:     (path: string, recipe: unknown) => Promise<void>
   saveOutline:    (path: string, outline: OutlineView) => Promise<void>
   fetchStartPage: (recipeId: string) => Promise<string>
+  /** The content pane's snapshot for one recipe and step path (studio plan §3.1, issue #91), cached server-side. */
+  takeSnapshot:   (recipeId: string, path: string) => Promise<SnapshotView>
+  /** Runs a candidate selector through the engine's own matching against the snapshot and, best-effort, the live page. */
+  verifySelector: (recipeId: string, path: string, selector: string) => Promise<VerifySelectorView>
+  /** Turns one or two picked nodes' `data-oc-node` ids into a verified selector (a `Read` card's field, or the safe item+field list shape). */
+  inferSelector:  (recipeId: string, path: string, nodeIds: [string] | [string, string]) => Promise<InferSelectorView>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -63,7 +69,10 @@ export function createStudioClient (): StudioClient {
 
       return view.html
     },
-    subscribe: (onEvent) => {
+    takeSnapshot:   (recipeId, path) => send<SnapshotView>(token, { type: 'take-snapshot', recipeId, path }),
+    verifySelector: (recipeId, path, selector) => send<VerifySelectorView>(token, { type: 'verify-selector', recipeId, path, selector }),
+    inferSelector:  (recipeId, path, nodeIds) => send<InferSelectorView>(token, { type: 'infer-selector', recipeId, path, nodeIds }),
+    subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)
       const handler = (event: MessageEvent<unknown>): void => { onEvent(JSON.parse(String(event.data)) as StudioEvent) }

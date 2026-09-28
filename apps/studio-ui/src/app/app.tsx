@@ -12,7 +12,6 @@ import {
   useSaveOutlineMutation,
   useSaveRecipeMutation,
   useSelectedRecipe,
-  useStartPageQuery,
   useStopRunMutation,
   useStudioClient,
   useStudioEvents,
@@ -58,7 +57,6 @@ function AppShell () {
   const workspace = useWorkspaceQuery(openFolder)
   const inputs = useInputRecipes()
   const selectedRecipe = useSelectedRecipe()
-  const startPage = useStartPageQuery(selectedRecipeId)
 
   const running = useRunSessionStore(state => state.running)
   const records = useRunSessionStore(state => state.records)
@@ -82,7 +80,7 @@ function AppShell () {
     if (input?.id !== undefined) selectRecipe(input.id)
   }, [workspace.data, selectedRecipeId, selectRecipe])
 
-  const workspaceError = messageOf(workspace.error) ?? messageOf(startPage.error) ?? runError
+  const workspaceError = messageOf(workspace.error) ?? runError
 
   return (
     <Box h='100vh' display='flex' flexDirection='column'>
@@ -103,7 +101,7 @@ function AppShell () {
       <Box flex='1' minH='0'>
         <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} h='full'>
           <Splitter.Panel id='content' overflow='auto'>
-            <ContentPane html={startPage.data} />
+            <ContentPane recipe={selectedRecipe} onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }} />
           </Splitter.Panel>
           <Splitter.ResizeTrigger id='content:editor' />
           <Splitter.Panel id='editor' overflow='hidden' display='flex' flexDirection='column'>
