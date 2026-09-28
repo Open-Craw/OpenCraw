@@ -1,6 +1,6 @@
 export { selectJson } from './json-path.algorithm'
 export { selectRegex } from './regex.algorithm'
-export { selectHtml } from './html-selector.algorithm'
+export { selectHtml, countMatches, matchesOf, NODE_ID_ATTRIBUTE } from './html-selector.algorithm'
 export type { HtmlMatch } from './html-selector.algorithm'
 export { takeFromHtml, takeFromJson, collapse } from './take-value.mapper'
 export type { Take } from './take-value.mapper'

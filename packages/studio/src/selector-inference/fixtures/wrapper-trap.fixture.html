@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head><title>Wrapper trap</title></head>
+<body>
+<!--
+  Each item is wrapped in its own extra `div.wrap`: `div.wrap` instances are
+  NOT siblings of each other (each sits inside its own `li`), only the `li`s
+  are. Picking the two titles should therefore infer `li` as the item, not
+  `div.wrap` or `article.product_pod` — the "wrapper trap" list-inference is
+  built to avoid by construction (see `list-inference.algorithm.ts`'s doc
+  comment and `docs/recipes/authoring.md` §4.5).
+-->
+<ul class="products">
+  <li>
+    <div class="wrap">
+      <article class="product_pod">
+        <h3><a href="/p/1">First Title</a></h3>
+        <p class="price_color">£10.00</p>
+      </article>
+    </div>
+  </li>
+  <li>
+    <div class="wrap">
+      <article class="product_pod">
+        <h3><a href="/p/2">Second Title</a></h3>
+        <p class="price_color">£20.00</p>
+      </article>
+    </div>
+  </li>
+  <li>
+    <div class="wrap">
+      <article class="product_pod">
+        <h3><a href="/p/3">Third Title</a></h3>
+        <p class="price_color">£30.00</p>
+      </article>
+    </div>
+  </li>
+</ul>
+</body>
+</html>

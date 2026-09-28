@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><title>Late content</title></head>
+<body>
+<!--
+  Two states of the same page: the shell served before JS runs (an empty
+  list and a loading message) and the state after client-side rendering
+  fills it in. Selector inference has no opinion on which one it is given —
+  it just describes whatever markup is in front of it — so it happily infers
+  a selector against the *shell*'s "Loading products…" placeholder if that
+  is what it is handed. Getting the *rendered* markup here is entirely
+  `page-snapshot`'s job (it captures after the recipe's step ran, in a real
+  browser, so late content has already resolved by the time the studio ever
+  calls into this slice) and is deliberately not re-solved in
+  `selector-inference` itself. `list-inference.algorithm.test.ts` documents
+  this split with a test against each half of this fixture.
+-->
+<div id="shell" data-state="pre-render">
+  <ul class="products"><li class="loading">Loading products…</li></ul>
+</div>
+<div id="rendered" data-state="post-render">
+  <ul class="products">
+    <li class="product_pod"><h3 class="title">First Title</h3><p class="price_color">£10.00</p></li>
+    <li class="product_pod"><h3 class="title">Second Title</h3><p class="price_color">£20.00</p></li>
+  </ul>
+</div>
+</body>
+</html>

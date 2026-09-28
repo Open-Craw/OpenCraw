@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head><title>Shadow DOM</title></head>
+<body>
+<!-- Declarative shadow DOM is the only shadow-DOM shape that can survive into static, server-captured markup at all: imperative attachShadow() content never serialises into page.content()/a fetched response. -->
+<div id="host">
+  <template shadowrootmode="open">
+    <article class="product_pod">
+      <h3 class="title">Hidden Title</h3>
+      <p class="price_color">£99.00</p>
+    </article>
+  </template>
+</div>
+</body>
+</html>
