@@ -1,4 +1,4 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -40,6 +40,10 @@ export interface StudioClient {
   deckView:       (recipeId: string, path: string) => Promise<DeckDocumentView>
   /** The deck canvas's live preview of a `table` extract's options (`document-view`'s `previewDeckTable`, issue #94's 5d): a pure computation over the cached snapshot, instant on every option change. */
   deckPreview:    (recipeId: string, path: string, options: DeckPreviewOptions) => Promise<DeckTablePreviewView>
+  /** Opens the studio's own headed browser window on `recipeId`'s start point and starts recording (issue #95, phase 6); `recording-card`/`recording-note` events stream over the same WebSocket `subscribe` already opens. */
+  startRecording: (recipeId: string) => Promise<{ started: true }>
+  /** Closes the recording window, if one is open, and answers with every step recorded, in order (issue #95). */
+  stopRecording:  () => Promise<{ steps: Record<string, unknown>[] }>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -105,6 +109,8 @@ export function createStudioClient (): StudioClient {
     gridPreview:    (recipeId, path, options) => send<GridTablePreviewView>(token, { type: 'grid-preview', recipeId, path, options }),
     deckView:       (recipeId, path) => send<DeckDocumentView>(token, { type: 'deck-view', recipeId, path }),
     deckPreview:    (recipeId, path, options) => send<DeckTablePreviewView>(token, { type: 'deck-preview', recipeId, path, options }),
+    startRecording: recipeId => send<{ started: true }>(token, { type: 'start-recording', recipeId } satisfies StartRecordingCommand),
+    stopRecording:  () => send<{ steps: Record<string, unknown>[] }>(token, { type: 'stop-recording' } satisfies StopRecordingCommand),
     subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)

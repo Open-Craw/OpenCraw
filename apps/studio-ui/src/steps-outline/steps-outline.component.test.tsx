@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import type { OutlineView, RecipeListing } from '@opencraw/studio'
+import { resetRecordingStore, useRecordingStore } from '../studio-store'
 import { StepsOutline } from './steps-outline.component'
 
 /**
@@ -22,6 +23,8 @@ function renderWithChakra (element: React.ReactElement) {
 function recipeWith (outline?: OutlineView, issues: RecipeListing['issues'] = []): RecipeListing {
   return { file: '/r/books.input.json', kind: 'input', id: 'books', issues, text: '{}\n', outline }
 }
+
+beforeEach(() => { resetRecordingStore() })
 
 describe('StepsOutline', () => {
   it('prompts to select a recipe when none is given', () => {
@@ -93,5 +96,71 @@ describe('StepsOutline', () => {
     }
     expect(() => { renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />) }).not.toThrow()
     expect(screen.getByText('custom step')).toBeTruthy()
+  })
+
+  it('appends live recording-card events below the real outline, read-only (no move/remove buttons)', () => {
+    const outline: OutlineView = { recipe: {}, steps: [{ kind: 'card', path: 'steps.0', stepType: 'goto', sentence: [{ kind: 'word', text: 'Go to' }], step: { type: 'goto', url: '/login' }, custom: false }] }
+    act(() => { useRecordingStore.getState().startRecording('books', 'https://example.test/login') })
+    act(() => {
+      useRecordingStore.getState().addCard({
+        node:   { kind: 'card', path: 'steps.0', stepType: 'fill', sentence: [{ kind: 'word', text: 'Fill' }, { kind: 'pill', text: 'user' }, { kind: 'word', text: 'with' }, { kind: 'code', text: 'alice' }], custom: false, step: { type: 'fill', selector: '#user', value: 'alice' } },
+        secret: false,
+      })
+    })
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />)
+
+    const recordingSection = screen.getByTestId('recording-cards')
+    expect(within(recordingSection).getByText('Fill')).toBeTruthy()
+    expect(within(recordingSection).queryByLabelText('Move up')).toBeNull()
+    expect(within(recordingSection).queryByLabelText('Remove step')).toBeNull()
+  })
+
+  it('shows nothing extra when no recording is active for this recipe', () => {
+    const outline: OutlineView = { recipe: {}, steps: [] }
+    act(() => { useRecordingStore.getState().startRecording('a-different-recipe', 'https://example.test/') })
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />)
+    expect(screen.queryByTestId('recording-cards')).toBeNull()
+  })
+
+  it('a secret fill card\'s value renders as a secret pill, never the pill for an ordinary field name', () => {
+    const outline: OutlineView = { recipe: {}, steps: [] }
+    act(() => { useRecordingStore.getState().startRecording('books', 'https://example.test/login') })
+    act(() => {
+      useRecordingStore.getState().addCard({
+        node:   { kind: 'card', path: 'steps.0', stepType: 'fill', sentence: [{ kind: 'word', text: 'Fill' }, { kind: 'pill', text: 'pass' }, { kind: 'word', text: 'with' }, { kind: 'code', text: '{{env.PASS}}' }], custom: false, step: { type: 'fill', selector: '#pass', value: '{{env.PASS}}' } },
+        secret: true,
+      })
+    })
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />)
+    const value = screen.getByText('{{env.PASS}}')
+    expect(value.title).toContain('PASS')
+  })
+
+  it('"Turn into pagination" appends a paginate bracket with the note\'s own selector and saves it', () => {
+    const outline: OutlineView = { recipe: { kind: 'input', id: 'books' }, steps: [] }
+    const onSaveOutline = jest.fn().mockResolvedValue(undefined)
+    act(() => { useRecordingStore.getState().startRecording('books', 'https://example.test/search') })
+    act(() => {
+      useRecordingStore.getState().addCard({ node: { kind: 'card', path: 'steps.0', stepType: 'click', sentence: [{ kind: 'word', text: 'Click' }], custom: false, step: { type: 'click', selector: '#next' } }, secret: false })
+      useRecordingStore.getState().addNote({ kind: 'next-link', message: 'turn this into pagination?', selector: '#next' })
+    })
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={onSaveOutline} />)
+
+    fireEvent.click(screen.getByRole('button', { name: /turn into pagination/i }))
+
+    expect(onSaveOutline).toHaveBeenCalledTimes(1)
+    const [path, savedOutline] = onSaveOutline.mock.calls[0] as [string, OutlineView]
+    expect(path).toBe('/r/books.input.json')
+    expect(stepsOf(savedOutline)).toEqual([{ type: 'paginate', next: { selector: '#next' }, steps: [] }])
+    expect(screen.getByText('Added')).toBeTruthy()
+  })
+
+  it('a next-link note with no resolved selector shows the message with no action', () => {
+    const outline: OutlineView = { recipe: {}, steps: [] }
+    act(() => { useRecordingStore.getState().startRecording('books', 'https://example.test/search') })
+    act(() => { useRecordingStore.getState().addNote({ kind: 'next-link', message: 'turn this into pagination?' }) })
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />)
+    expect(screen.getByText('turn this into pagination?')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /turn into pagination/i })).toBeNull()
   })
 })

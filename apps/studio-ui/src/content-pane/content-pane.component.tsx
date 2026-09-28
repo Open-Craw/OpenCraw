@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { Badge, Box, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
+import { Badge, Box, Button, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
 import type { DocumentTreeNodeView, OutlineCard, OutlineView, RecipeListing } from '@opencraw/studio'
 import { InspectorPanel } from '../inspector'
 import type { GridViewOverride } from '../studio-client'
-import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStudioClient } from '../studio-client'
-import { useStudioUiStore } from '../studio-store'
+import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
+import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
 import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 import { PdfCanvas } from './pdf-canvas.component'
+import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
 import { TreeCanvas } from './tree-canvas.component'
 import type { TreePickMode } from './tree-canvas.component'
@@ -69,6 +70,17 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const registerPick = useStudioUiStore(state => state.registerPick)
   const setShowHidden = useStudioUiStore(state => state.setShowHidden)
   const setHoveredNodeId = useStudioUiStore(state => state.setHoveredNodeId)
+
+  const recordingRecipeId = useRecordingStore(state => state.recipeId)
+  const recordingActive = useRecordingStore(state => state.active)
+  const recordingCardCount = useRecordingStore(state => state.cards.length)
+  const recordingStoppedSteps = useRecordingStore(state => state.stoppedSteps)
+  const recordingError = useRecordingStore(state => state.error)
+  const dismissRecordingStopped = useRecordingStore(state => state.dismissStopped)
+  const startRecording = useStartRecordingMutation()
+  const stopRecording = useStopRecordingMutation()
+  const isRecordingThis = recordingRecipeId === recipeId && recordingActive
+  const recordingStoppedForThis = recordingRecipeId === recipeId ? recordingStoppedSteps : undefined
 
   const [status, setStatus] = useState<string | undefined>(undefined)
   /** The top-level index a first pick's Read card landed at, so a following second pick upgrades it in place instead of adding a duplicate. */
@@ -194,6 +206,66 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     await onSaveOutline(recipe.file, { ...recipe.outline, steps })
   }
 
+  /** The "Record" button (issue #95, phase 6): opens the studio's own headed browser window on the recipe's own start point. */
+  function handleStartRecording (): void {
+    if (recipeId === undefined || recipe?.outline === undefined) return
+    const url = recipeStartUrl(recipe.outline.recipe)
+    if (url === undefined) {
+      setStatus('this recipe has no start point to record from')
+
+      return
+    }
+    startRecording.mutate({ recipeId, startUrl: url })
+  }
+
+  /**
+   * "Make this the login" (issue #95): every step recorded becomes
+   * `session.bootstrap`, `keep: ['cookies']` and a suggested `saveTo`
+   * (`recording-conversion.mapper.ts`) — the recipe's own `steps` untouched.
+   * There is no dedicated server command for this conversion (only
+   * `recording.e2e.test.ts`'s own golden recipe proves the shape out), so it
+   * is built here, against the same `save-outline` every other outline edit
+   * in this pane already goes through.
+   */
+  async function handleMakeLogin (): Promise<void> {
+    if (recordingStoppedForThis === undefined || recipe?.outline === undefined) return
+    const startUrl = useRecordingStore.getState().startUrl
+    if (startUrl === undefined) return
+    const existingSessionValue = recipe.outline.recipe.session
+    const existingSession = isRecord(existingSessionValue) ? existingSessionValue : {}
+    const existingBootstrapValue = existingSession.bootstrap
+    const existingBootstrap = isRecord(existingBootstrapValue) ? existingBootstrapValue : undefined
+    const saveTo = suggestedStorageStatePath(recipe.file, recipeId ?? 'recipe')
+    const session = { ...existingSession, bootstrap: suggestedBootstrap(startUrl, recordingStoppedForThis, existingBootstrap, saveTo) }
+    await onSaveOutline?.(recipe.file, { ...recipe.outline, recipe: { ...recipe.outline.recipe, session } })
+    setStatus(`Made the login: session.bootstrap, ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
+    dismissRecordingStopped()
+  }
+
+  /**
+   * "Keep as steps" (issue #95): every card recorded — the same
+   * `OutlineNode`s the Steps outline's own live section already renders
+   * (`recording.store.ts`'s `cards`, one per `recording-stopped` step, in
+   * the same order — never rebuilt from the raw JSON, which would lose their
+   * real sentences) — after a `goto` back to the recording's own start
+   * point, appended to the recipe's own top-level `steps`; never replacing
+   * what was already there (`spliceTopLevel`, the same "append, don't
+   * clobber" every pick in this pane already follows).
+   */
+  async function handleKeepAsSteps (): Promise<void> {
+    if (recordingStoppedForThis === undefined || recipe?.outline === undefined) return
+    const startUrl = useRecordingStore.getState().startUrl
+    if (startUrl === undefined) return
+    const cards = useRecordingStore.getState().cards
+    await writeOutline((steps) => {
+      const gotoNode = gotoCardNode(startUrl, `steps.${steps.length}`)
+
+      return spliceTopLevel(steps, undefined, [gotoNode, ...cards.map(card => card.node)])
+    })
+    setStatus(`Kept as steps: ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
+    dismissRecordingStopped()
+  }
+
   if (recipeId === undefined) {
     return (
       <Box p={4} color='fg.muted'>
@@ -244,12 +316,61 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             >
               {inspecting ? 'Hide inspector' : 'Inspect'}
             </Text>
+            <Text
+              as='button'
+              fontSize='sm'
+              fontWeight={isRecordingThis ? 'semibold' : 'normal'}
+              color={isRecordingThis ? 'red.fg' : 'fg'}
+              colorPalette='red'
+              cursor='pointer'
+              onClick={() => { if (isRecordingThis) stopRecording.mutate(); else handleStartRecording() }}
+            >
+              {isRecordingThis ? 'Stop recording' : 'Record'}
+            </Text>
           </>
         )}
         {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to read it; [*] reads every item of a list.</Text>}
         {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching) || (isGrid && gridView.isFetching) || (isDeck && deckView.isFetching)) && <Spinner size='xs' />}
-        {status !== undefined && <Badge size='sm' colorPalette={status.startsWith('List') || status.startsWith('Read') || status.startsWith('Paginate') || status.startsWith('table') || status.startsWith('regex') || status.startsWith('jsonpath') ? 'green' : 'orange'}>{status}</Badge>}
+        {status !== undefined && (
+          <Badge
+            size='sm'
+            colorPalette={
+              status.startsWith('List') || status.startsWith('Read') || status.startsWith('Paginate') || status.startsWith('table') ||
+              status.startsWith('regex') || status.startsWith('jsonpath') || status.startsWith('Made') || status.startsWith('Kept')
+                ? 'green'
+                : 'orange'
+            }
+          >
+            {status}
+          </Badge>
+        )}
       </HStack>
+      {isRecordingThis && (
+        <HStack px={3} py={2} bg='red.subtle' color='red.fg' fontSize='sm' gap={3} flexShrink={0} data-testid='recording-banner'>
+          <Box w='8px' h='8px' borderRadius='full' bg='red.solid' flexShrink={0} />
+          <Text>Recording — a browser window opened for you to drive; interact with it, not with the snapshot below.</Text>
+          <Badge size='sm' colorPalette='red'>{recordingCardCount} step{recordingCardCount === 1 ? '' : 's'}</Badge>
+        </HStack>
+      )}
+      {recordingError !== undefined && recordingRecipeId === recipeId && (
+        <Box px={3} py={1} bg='red.subtle' color='red.fg' fontSize='sm' flexShrink={0}>{recordingError}</Box>
+      )}
+      {recordingStoppedForThis !== undefined && (
+        <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} data-testid='recording-stopped-bar'>
+          <Text fontSize='sm'>
+            Recording stopped: {recordingStoppedForThis.length} step{recordingStoppedForThis.length === 1 ? '' : 's'} recorded.
+          </Text>
+          <Button size='xs' colorPalette='blue' onClick={() => { void handleMakeLogin() }} disabled={recordingStoppedForThis.length === 0}>
+            Make this the login
+          </Button>
+          <Button size='xs' variant='outline' onClick={() => { void handleKeepAsSteps() }} disabled={recordingStoppedForThis.length === 0}>
+            Keep as steps
+          </Button>
+          <Button size='xs' variant='ghost' onClick={dismissRecordingStopped}>
+            Discard
+          </Button>
+        </HStack>
+      )}
       <Box flex='1' minH='0'>
         {isDocumentTree && documentTree.data !== undefined && (
           <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} />
@@ -335,4 +456,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       </Box>
     </Box>
   )
+}
+
+function isRecord (value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
