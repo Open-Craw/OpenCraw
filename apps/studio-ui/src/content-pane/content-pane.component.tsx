@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
-import { Badge, Box, HStack, Spinner, Switch, Text } from '@chakra-ui/react'
+import { Badge, Box, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
 import type { OutlineView, RecipeListing } from '@opencraw/studio'
+import { InspectorPanel } from '../inspector'
 import { useInferSelectorMutation, useSnapshotQuery } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
 import { listOutlineNodes, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
@@ -13,6 +14,8 @@ export interface ContentPaneProps {
   recipe?:        RecipeListing
   /** Saves an edited outline (the same call `steps-outline` makes); picking writes through this, not a separate path. */
   onSaveOutline?: (path: string, outline: OutlineView) => Promise<void>
+  /** Saves the recipe's raw JSON; the Inspect panel's "responses seen" tab writes through this when a pick switches the recipe to api mode (issue #93). */
+  onSaveRecipe?:  (path: string, recipe: unknown) => Promise<void>
 }
 
 /**
@@ -28,10 +31,11 @@ export interface ContentPaneProps {
  * in the Steps outline — picking into a nested scope is a real gap this
  * phase did not close (see the final report).
  */
-export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React.ReactElement {
+export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPaneProps): React.ReactElement {
   const recipeId = recipe?.id
   const snapshot = useSnapshotQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH)
   const inferSelector = useInferSelectorMutation()
+  const [inspecting, setInspecting] = useState(false)
 
   const pickTarget = useStudioUiStore(state => state.pickTarget)
   const showHidden = useStudioUiStore(state => state.showHidden)
@@ -126,11 +130,22 @@ export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React
           <Switch.Control />
           <Switch.Label fontSize='sm'>Show hidden</Switch.Label>
         </Switch.Root>
+        <Text
+          as='button'
+          fontSize='sm'
+          fontWeight={inspecting ? 'semibold' : 'normal'}
+          color={inspecting ? 'colorPalette.fg' : 'fg'}
+          colorPalette='purple'
+          cursor='pointer'
+          onClick={() => { setInspecting(value => !value) }}
+        >
+          {inspecting ? 'Hide inspector' : 'Inspect'}
+        </Text>
         {snapshot.isFetching && <Spinner size='xs' />}
         {status !== undefined && <Badge size='sm' colorPalette={status.startsWith('List') || status.startsWith('Read') ? 'green' : 'orange'}>{status}</Badge>}
       </HStack>
       <Box flex='1' minH='0'>
-        {snapshot.data !== undefined && (
+        {snapshot.data !== undefined && !inspecting && (
           <SnapshotFrame
             html={snapshot.data.html}
             pickMode={pickMode}
@@ -139,6 +154,30 @@ export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React
             onHoverNode={setHoveredNodeId}
             onPickNode={(nodeId) => { void handlePick(nodeId) }}
           />
+        )}
+        {snapshot.data !== undefined && inspecting && (
+          <Splitter.Root panels={[{ id: 'snapshot', minSize: 15 }, { id: 'inspect', minSize: 20 }]} h='full'>
+            <Splitter.Panel id='snapshot' overflow='hidden'>
+              <SnapshotFrame
+                html={snapshot.data.html}
+                pickMode={pickMode}
+                showHidden={showHidden}
+                hoveredSelector={hoveredSelector}
+                onHoverNode={setHoveredNodeId}
+                onPickNode={(nodeId) => { void handlePick(nodeId) }}
+              />
+            </Splitter.Panel>
+            <Splitter.ResizeTrigger id='snapshot:inspect' />
+            <Splitter.Panel id='inspect' overflow='hidden'>
+              <InspectorPanel
+                recipeId={recipeId}
+                recipe={recipe}
+                snapshot={snapshot.data}
+                onSaveOutline={onSaveOutline}
+                onSaveRecipe={onSaveRecipe}
+              />
+            </Splitter.Panel>
+          </Splitter.Root>
         )}
         {!snapshot.isFetching && snapshot.data === undefined && (
           <Box p={4} color='fg.muted'><Text>Run a sample, or open a recipe, to see its snapshot here.</Text></Box>

@@ -1,4 +1,4 @@
-import type { ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, OpenWorkspaceCommand, OutlineView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
+import type { ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -20,6 +20,10 @@ export interface StudioClient {
   inferSelector:  (recipeId: string, path: string, nodeIds: [string] | [string, string]) => Promise<InferSelectorView>
   /** Explains a missing or rejected value from the recipe's last sample run (issue #92's Why? tab). */
   explainWhy:     (target: WhyTarget) => Promise<WhyView>
+  /** The Inspect panel's DOM tree and data-in-the-page findings, off the same cached snapshot (issue #93). */
+  inspectPage:    (recipeId: string, path: string) => Promise<InspectView>
+  /** The JSON responses seen while the recipe's start page rendered (issue #93's "responses seen"); slower than `inspectPage` (opens its own browser session). */
+  responsesSeen:  (recipeId: string, path: string) => Promise<ResponsesSeenView>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -75,6 +79,8 @@ export function createStudioClient (): StudioClient {
     verifySelector: (recipeId, path, selector) => send<VerifySelectorView>(token, { type: 'verify-selector', recipeId, path, selector }),
     inferSelector:  (recipeId, path, nodeIds) => send<InferSelectorView>(token, { type: 'infer-selector', recipeId, path, nodeIds }),
     explainWhy:     target => send<WhyView>(token, { type: 'explain-why', target } satisfies ExplainWhyCommand),
+    inspectPage:    (recipeId, path) => send<InspectView>(token, { type: 'inspect-page', recipeId, path }),
+    responsesSeen:  (recipeId, path) => send<ResponsesSeenView>(token, { type: 'responses-seen', recipeId, path }),
     subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)
