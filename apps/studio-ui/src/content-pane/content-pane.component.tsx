@@ -113,7 +113,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       if (mode === 'next') {
         await writeOutline((steps) => {
           const bracket = paginateFromNextNode(node, `steps.${steps.length}`)
-          setStatus(`Paginate: next from ${bracket.step.next.jsonpath}`)
+          setStatus(`Paginate: next from ${node.jsonpath}`)
 
           return spliceTopLevel(steps, undefined, [bracket])
         })
