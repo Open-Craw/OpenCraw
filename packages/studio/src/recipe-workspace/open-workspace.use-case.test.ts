@@ -26,6 +26,26 @@ describe('openWorkspace', () => {
     expect(JSON.parse(output?.text ?? '')).toMatchObject({ kind: 'output', id: 'book' })
   })
 
+  it('gives every input recipe its outline, and no output/unknown recipe one', async () => {
+    const folder = folderOf({
+      'book.output.json': { kind: 'output', id: 'book', version: 1, fields: { title: { type: 'string', required: true, key: true } } },
+      'books.input.json': { kind: 'input', id: 'books', output: 'book', mode: 'api', start: [{ url: 'file:///a.json' }], steps: [{ type: 'request', id: 'doc', url: '{{start.url}}', as: 'json' }, { type: 'emit' }], mapping: { title: { from: 'doc.title' } } },
+    })
+    const view = await openWorkspace(folder)
+    const input = view.recipes.find(recipe => recipe.kind === 'input')
+    const output = view.recipes.find(recipe => recipe.kind === 'output')
+    expect(input?.outline?.steps).toHaveLength(2)
+    expect(input?.outline?.steps[0]).toMatchObject({ path: 'steps.0', stepType: 'request' })
+    expect(output?.outline).toBeUndefined()
+  })
+
+  it('still gives an outline (of custom cards) for an input recipe that fails validation', async () => {
+    const folder = folderOf({ 'books.input.json': { kind: 'input', steps: [{ type: 'goto', url: '/' }] } })
+    const view = await openWorkspace(folder)
+    expect(view.recipes[0].issues.length).toBeGreaterThan(0)
+    expect(view.recipes[0].outline?.steps).toHaveLength(1)
+  })
+
   it('reports a binding issue on the input, with its JSON path', async () => {
     const folder = folderOf({
       'book.output.json': { kind: 'output', id: 'book', version: 1, fields: { title: { type: 'string', required: true, key: true } } },

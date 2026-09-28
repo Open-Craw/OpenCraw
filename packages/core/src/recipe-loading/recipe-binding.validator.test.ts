@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { parseInputRecipe, parseOutputRecipe } from '../recipe-schema'
 import type { InputRecipe } from '../recipe-schema'
-import { fieldAt, validateBinding } from './recipe-binding.validator'
+import { bindingsAt, fieldAt, validateBinding } from './recipe-binding.validator'
 
 function fixture (name: string): unknown {
   const path = join(__dirname, '..', 'recipe-schema', 'fixtures', name)
@@ -218,5 +218,52 @@ describe('fieldAt', () => {
     ]))
     const nested: InputRecipe['steps'][number] = { type: 'forEach', over: 'wall', as: 'w', emit: true, steps: [decide] }
     expect(messages({ ...web, steps: [{ type: 'set', id: 'wall', value: '' }, nested], mapping })).toContain('steps.1.steps.0.else.1: inside an emitting forEach; only one emit per path')
+  })
+})
+
+describe('bindingsAt', () => {
+  // docs/how-it-works/05-templates-and-scope.md walks this exact recipe's scope chain.
+  const scopeChainPath = join(__dirname, '..', '..', '..', '..', 'docs', 'how-it-works', 'recipes', 'scope-chain', 'books-tag.input.json')
+  const scopeChain = parseInputRecipe(JSON.parse(readFileSync(scopeChainPath, 'utf8')))
+
+  it('sees only the built-ins at the first top-level step', () => {
+    expect(bindingsAt(scopeChain, 'steps.0')).toEqual(['page', 'start', 'vars'])
+  })
+
+  it('sees the built-ins plus every id bound by an earlier top-level step', () => {
+    // steps.3 is the paginate; label and authors were set before it.
+    expect(bindingsAt(scopeChain, 'steps.3')).toEqual(['page', 'start', 'vars', 'label', 'authors'])
+  })
+
+  it('sees into a paginate: page/root ids plus the sibling bound before the forEach', () => {
+    // steps.3.steps.1 is the forEach; steps.3.steps.0 (extract "quotes") ran before it.
+    expect(bindingsAt(scopeChain, 'steps.3.steps.1')).toEqual(['page', 'start', 'vars', 'label', 'authors', 'quotes'])
+  })
+
+  it('sees the loop variable and everything bound before a step inside the loop', () => {
+    // steps.3.steps.1.steps.2 is "set where"; text and author ran before it inside the forEach, "quote" is the loop's "as".
+    expect(bindingsAt(scopeChain, 'steps.3.steps.1.steps.2')).toEqual(['page', 'start', 'vars', 'label', 'authors', 'quotes', 'quote', 'text', 'author'])
+  })
+
+  it('drops everything the paginate and forEach bound once back outside them', () => {
+    // steps.4 is the trailing emit, back in the root scope.
+    expect(bindingsAt(scopeChain, 'steps.4')).toEqual(['page', 'start', 'vars', 'label', 'authors'])
+  })
+
+  it('keeps each if branch its own scope, seen from the ids bound before the if', () => {
+    const withIf: InputRecipe = {
+      ...scopeChain,
+      steps: [
+        { type: 'set', id: 'flag', value: '' },
+        { type: 'if', test: '{{flag}}', steps: [{ type: 'set', id: 'onlyThen', value: '' }], else: [{ type: 'set', id: 'onlyElse', value: '' }] },
+      ],
+    }
+    expect(bindingsAt(withIf, 'steps.1.steps.0')).toEqual(['page', 'start', 'vars', 'flag'])
+    expect(bindingsAt(withIf, 'steps.1.else.0')).toEqual(['page', 'start', 'vars', 'flag'])
+  })
+
+  it('stops at an unresolvable path and returns what it resolved so far, never throwing', () => {
+    expect(bindingsAt(scopeChain, 'nonsense.path')).toEqual(['page', 'start', 'vars'])
+    expect(bindingsAt(scopeChain, 'steps.99.steps.0')).toEqual(['page', 'start', 'vars'])
   })
 })

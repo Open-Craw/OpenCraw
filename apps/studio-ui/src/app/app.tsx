@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Box, ChakraProvider, Splitter, Text, defaultSystem } from '@chakra-ui/react'
-import type { WorkspaceView } from '@opencraw/studio'
+import { Box, ChakraProvider, HStack, Splitter, Text, defaultSystem } from '@chakra-ui/react'
+import type { OutlineView, WorkspaceView } from '@opencraw/studio'
 import { ContentPane } from '../content-pane'
 import { JsonEditor } from '../json-editor'
 import type { PreviewRecord } from '../preview'
 import { PreviewStrip } from '../preview'
+import { StepsOutline } from '../steps-outline'
 import { useStudioClient } from '../studio-client'
 import { Toolbar } from './toolbar'
+
+type EditorTab = 'steps' | 'json'
 
 /** The studio's shell: the toolbar, the resizable content/editor split, and the preview strip along the bottom. */
 export default function App () {
@@ -19,6 +22,7 @@ export default function App () {
   const [records, setRecords] = useState<PreviewRecord[]>([])
   const [traceLines, setTraceLines] = useState<string[]>([])
   const [running, setRunning] = useState(false)
+  const [editorTab, setEditorTab] = useState<EditorTab>('steps')
 
   useEffect(() => (
     client.subscribe((event) => {
@@ -96,6 +100,11 @@ export default function App () {
     await open(folder)
   }
 
+  const saveOutline = async (path: string, outline: OutlineView): Promise<void> => {
+    await client.saveOutline(path, outline)
+    await open(folder)
+  }
+
   const inputs = workspace?.recipes.filter(recipe => recipe.kind === 'input') ?? []
   const selectedRecipe = workspace?.recipes.find(recipe => recipe.id === selectedRecipeId)
 
@@ -122,10 +131,15 @@ export default function App () {
               <ContentPane html={html} />
             </Splitter.Panel>
             <Splitter.ResizeTrigger id='content:editor' />
-            <Splitter.Panel id='editor' overflow='auto'>
-              {selectedRecipe === undefined
-                ? <Box p={4} color='fg.muted'><Text>Select a recipe to see its JSON.</Text></Box>
-                : <JsonEditor recipe={selectedRecipe} onSave={saveRecipe} />}
+            <Splitter.Panel id='editor' overflow='hidden' display='flex' flexDirection='column'>
+              <HStack gap={1} px={2} pt={2} borderBottomWidth='1px' flexShrink={0}>
+                <EditorTabButton label='Steps' active={editorTab === 'steps'} onClick={() => { setEditorTab('steps') }} />
+                <EditorTabButton label='JSON' active={editorTab === 'json'} onClick={() => { setEditorTab('json') }} />
+              </HStack>
+              <Box flex='1' minH='0' overflow='auto'>
+                {editorTab === 'steps' && <StepsOutline recipe={selectedRecipe} onSaveOutline={saveOutline} />}
+                {editorTab === 'json' && <JsonEditor recipe={selectedRecipe} onSave={saveRecipe} />}
+              </Box>
             </Splitter.Panel>
           </Splitter.Root>
         </Box>
@@ -134,5 +148,26 @@ export default function App () {
         </Box>
       </Box>
     </ChakraProvider>
+  )
+}
+
+/** One of the editor pane's tab buttons (Steps, JSON): a plain toggle, styled active/inactive rather than a full Chakra Tabs primitive, which the pane's own layout (a fixed strip above a scrolling body) does not need. */
+function EditorTabButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) {
+  return (
+    <Text
+      as='button'
+      px={3}
+      py={1}
+      fontSize='sm'
+      fontWeight={active ? 'semibold' : 'normal'}
+      color={active ? 'fg' : 'fg.muted'}
+      borderBottomWidth='2px'
+      borderColor={active ? 'colorPalette.solid' : 'transparent'}
+      colorPalette='blue'
+      cursor='pointer'
+      onClick={onClick}
+    >
+      {label}
+    </Text>
   )
 }

@@ -33,6 +33,20 @@ describe('createStudioClient', () => {
     }))
   })
 
+  it('sends save-outline as a POST with the path and the outline', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { saved: true } })
+    const outline = { recipe: {}, steps: [] }
+
+    const client = createStudioClient()
+    await client.saveOutline('/r/books.input.json', outline)
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      method: 'POST',
+      body:   JSON.stringify({ type: 'save-outline', path: '/r/books.input.json', outline }),
+    }))
+  })
+
   it('rejects with the server\'s error message on a non-ok response', async () => {
     withUrl('?token=abc123')
     mockFetch({ ok: false, status: 401, body: { error: 'missing or invalid token' } })

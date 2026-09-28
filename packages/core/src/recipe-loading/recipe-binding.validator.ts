@@ -218,3 +218,70 @@ function matrixNames (input: InputRecipe): string[] {
 
   return [...new Set(Array.isArray(matrix) ? matrix.flatMap(set => Object.keys(set)) : Object.keys(matrix))]
 }
+
+/**
+ * The ids visible at a step path, in the order they were bound: the
+ * built-ins (`page`, `start`, `vars`), then every id bound by an earlier
+ * step on the same path (at any enclosing level), then the `as`/`next.as`
+ * name of every loop the path is inside. The step named by `path` itself,
+ * and anything bound inside a sibling's own children, are not included: this
+ * is the scope the step at `path` sees before it runs, not after (§05,
+ * "Templates and scope").
+ *
+ * `path` is dotted as the loader reports it: `steps.3.steps.1` is the
+ * second step of the fourth top-level step's body; `session.bootstrap.steps.0`
+ * is the first bootstrap step. A path that does not describe a real
+ * container chain (an unknown index, a branch a step does not have) stops
+ * the walk there and returns what was resolved up to that point.
+ *
+ * @param input - A parsed input recipe.
+ * @param path - A step's JSON path.
+ * @returns The ids in scope at that path, `page`/`start`/`vars` first.
+ */
+export function bindingsAt (input: InputRecipe, path: string): string[] {
+  const known = new Set<string>(RESERVED)
+  const segments = path.split('.')
+  let steps: readonly Step[]
+  if (segments[0] === 'session' && segments[1] === 'bootstrap' && segments[2] === 'steps') {
+    steps = input.session?.bootstrap?.steps ?? []
+    segments.splice(0, 3)
+  } else if (segments[0] === 'steps') {
+    steps = input.steps
+    segments.shift()
+  } else {
+    return [...known]
+  }
+
+  let index = 0
+  while (index < segments.length) {
+    const position = Number(segments[index])
+    const step = Number.isSafeInteger(position) ? steps[position] : undefined
+    if (step === undefined) break
+    for (const earlier of steps.slice(0, position)) bindOwnId(earlier, known)
+    index += 1
+    const branch = segments[index]
+    if (branch === undefined) break
+    bindOwnId(step, known)
+    if (branch === 'steps' && step.type === 'forEach') {
+      known.add(step.as)
+      steps = step.steps
+    } else if (branch === 'steps' && step.type === 'paginate') {
+      if ('jsonpath' in step.next && step.next.as !== undefined) known.add(step.next.as)
+      steps = step.steps
+    } else if (branch === 'steps' && step.type === 'if') {
+      steps = step.steps
+    } else if (branch === 'else' && step.type === 'if') {
+      steps = step.else ?? []
+    } else {
+      break
+    }
+    index += 1
+  }
+
+  return [...known]
+}
+
+/** Adds the id a step itself binds (its own `id`), if any. */
+function bindOwnId (step: Step, known: Set<string>): void {
+  if (step.id !== undefined) known.add(step.id)
+}

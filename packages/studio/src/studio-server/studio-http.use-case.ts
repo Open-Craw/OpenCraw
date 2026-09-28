@@ -9,6 +9,7 @@ import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
+import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
 import { serveStatic } from './static-file.handler'
 import { acceptWebSocket } from './websocket.client'
@@ -131,6 +132,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'save-recipe': { return handleSaveRecipe(state, command)
     }
     case 'fetch-start-page': { return handleFetchStartPage(state, command)
+    }
+    case 'save-outline': { return handleSaveOutline(state, command)
     }
   }
 }
