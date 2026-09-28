@@ -49,6 +49,9 @@
     "node": ">=22"
   },
   "sideEffects": false,
+  "scripts": {
+    "prepack": "node -e \"const {execFileSync}=require('node:child_process');const {existsSync}=require('node:fs');const built=()=>existsSync('dist/ui/index.html');if(!built()){console.log('@opencraw/studio: building @opencraw/studio-ui (apps/studio-ui/vite.config.mts writes straight into dist/ui) before packing...');execFileSync('npx',['nx','run','@opencraw/studio-ui:build','--skip-nx-cache'],{cwd:'../..',stdio:'inherit'})}if(!built())throw new Error('dist/ui/index.html is still missing after building @opencraw/studio-ui: this package would ship a server with nothing to serve. See docs/research/recipe-studio.md.')\""
+  },
   "nx": {
     "targets": {
       "typecheck": {
@@ -73,23 +76,6 @@
         "options": {
           "command": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
           "cwd": "packages/studio"
-        }
-      },
-      "bundle-ui": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build",
-          "studio-ui:build"
-        ],
-        "inputs": [
-          "default",
-          "^production"
-        ],
-        "outputs": [
-          "{projectRoot}/dist/ui"
-        ],
-        "options": {
-          "command": "node -e \"const fs=require('node:fs');const skip=/\\.(d\\.ts(\\.map)?|tsbuildinfo)$/;fs.rmSync('packages/studio/dist/ui',{recursive:true,force:true});fs.cpSync('apps/studio-ui/dist','packages/studio/dist/ui',{recursive:true,filter:s=>!skip.test(s)})\""
         }
       }
     }
