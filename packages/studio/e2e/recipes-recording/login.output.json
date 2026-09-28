@@ -1,0 +1,8 @@
+{
+  "kind": "output",
+  "id": "login",
+  "version": 1,
+  "fields": {
+    "heading": { "type": "string", "required": true, "key": true }
+  }
+}

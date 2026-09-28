@@ -124,6 +124,27 @@ export const explainWhyCommandSchema = z.object({
   target: whyTargetSchema,
 })
 
+/**
+ * Opens the studio's own headed browser window and starts recording user
+ * actions on it (issue #95, phase 6): clicks, fills, selects, key presses
+ * and scrolls stream back as `recording-card` events, each already a
+ * verified step. `recipeId`'s start point is where the window opens.
+ */
+export const startRecordingCommandSchema = z.object({
+  type:     z.literal('start-recording'),
+  recipeId: z.string().min(1),
+})
+
+/**
+ * Closes the recording window, if one is open; a no-op otherwise. Answers
+ * with every step recorded, in order, so the caller can offer "make this
+ * the login" (writes them under `session.bootstrap`) or "keep as steps"
+ * (appends them to the recipe's own `steps`) without a second round trip.
+ */
+export const stopRecordingCommandSchema = z.object({
+  type: z.literal('stop-recording'),
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
   runSampleCommandSchema,
@@ -135,6 +156,8 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   verifySelectorCommandSchema,
   inferSelectorCommandSchema,
   explainWhyCommandSchema,
+  startRecordingCommandSchema,
+  stopRecordingCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -151,5 +174,7 @@ export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
 export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
 export type WhyTarget = z.infer<typeof whyTargetSchema>
 export type ExplainWhyCommand = z.infer<typeof explainWhyCommandSchema>
+export type StartRecordingCommand = z.infer<typeof startRecordingCommandSchema>
+export type StopRecordingCommand = z.infer<typeof stopRecordingCommandSchema>
 /** Every command the UI can send the server, over HTTP POST. */
 export type StudioCommand = z.infer<typeof studioCommandSchema>

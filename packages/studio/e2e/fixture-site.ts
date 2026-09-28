@@ -39,7 +39,35 @@ function booksHtml (): string {
   return `<!doctype html><html lang="en"><head><title>Books</title></head><body><div class="row">${items}</div></body></html>`
 }
 
-function handle (request: IncomingMessage, response: ServerResponse): void {
+/** The only credentials `/login` accepts — the recording e2e test's own fixture, never a real secret. */
+export const LOGIN_USER = 'demo'
+export const LOGIN_PASS = 'demo-pass'
+
+const LOGIN_FORM = (message = ''): string => `<!doctype html><html lang="en"><head><title>Login</title></head><body>${message}<form id="loginForm" method="post" action="/login"><input id="user" name="user"><input id="pass" name="pass" type="password"><button id="submit" type="submit">Sign in</button></form></body></html>`
+
+const SEARCH_PAGE = '<!doctype html><html lang="en"><head><title>Search</title></head><body><h1>Search</h1><form id="searchForm" method="get" action="/search/results"><input id="q" name="q"></form></body></html>'
+
+/** Two results pages of two items each, an `id="next" rel="next"` link on page 1 only — `next-link.policy.ts`'s own heuristics, by construction. */
+function resultsHtml (page: number): string {
+  const items = [1, 2].map(n => `<li class="result"><a class="title" href="/item/${page}-${n}">Result ${page}-${n}</a></li>`).join('')
+  const next = page < 2 ? '<p><a id="next" rel="next" href="/search/results?page=2">Next</a></p>' : ''
+
+  return `<!doctype html><html lang="en"><head><title>Results</title></head><body><h1>Results</h1><ul>${items}</ul>${next}</body></html>`
+}
+
+function hasSession (request: IncomingMessage): boolean {
+  return (request.headers.cookie ?? '').includes('session=ok')
+}
+
+function readBody (request: IncomingMessage): Promise<string> {
+  return new Promise((resolve) => {
+    let body = ''
+    request.on('data', (chunk: Buffer) => { body += chunk.toString() })
+    request.on('end', () => { resolve(body) })
+  })
+}
+
+async function handle (request: IncomingMessage, response: ServerResponse): Promise<void> {
   const url = new URL(request.url ?? '/', FIXTURE_BASE)
   if (url.pathname === '/products') {
     response.writeHead(200, { 'content-type': 'application/json' })
@@ -50,6 +78,50 @@ function handle (request: IncomingMessage, response: ServerResponse): void {
   if (url.pathname === '/books') {
     response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
     response.end(booksHtml())
+
+    return
+  }
+  if (url.pathname === '/login' && request.method === 'GET') {
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(LOGIN_FORM())
+
+    return
+  }
+  if (url.pathname === '/login' && request.method === 'POST') {
+    const body = new URLSearchParams(await readBody(request))
+    if (body.get('user') === LOGIN_USER && body.get('pass') === LOGIN_PASS) {
+      response.writeHead(302, { 'set-cookie': 'session=ok; Path=/; HttpOnly', 'location': '/search' })
+      response.end()
+
+      return
+    }
+    response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(LOGIN_FORM('<p id="error">Wrong credentials</p>'))
+
+    return
+  }
+  if (url.pathname === '/search') {
+    if (!hasSession(request)) {
+      response.writeHead(302, { location: '/login' })
+      response.end()
+
+      return
+    }
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(SEARCH_PAGE)
+
+    return
+  }
+  if (url.pathname === '/search/results') {
+    if (!hasSession(request)) {
+      response.writeHead(302, { location: '/login' })
+      response.end()
+
+      return
+    }
+    const page = Number(url.searchParams.get('page') ?? '1')
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(resultsHtml(page))
 
     return
   }

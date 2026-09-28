@@ -1,0 +1,11 @@
+{
+  "kind": "input",
+  "id": "login",
+  "output": "login",
+  "mode": "web",
+  "start": [{ "url": "http://127.0.0.1:4599/login" }],
+  "steps": [{ "type": "goto", "url": "{{start.url}}" }],
+  "mapping": {
+    "heading": { "from": "heading" }
+  }
+}

@@ -11,6 +11,7 @@ import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
+import { handleStartRecording, handleStopRecording } from './recording.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
@@ -28,9 +29,9 @@ function defaultUiRoot (): string {
 
 export interface StudioServerOptions {
   /** Where the built UI lives; default: `dist/ui` next to the running server code. */
-  uiRoot?:        string
+  uiRoot?:             string
   /** A fixed port; default: an OS-assigned free port. */
-  port?:          number
+  port?:               number
   /**
    * The folder `opencraw-studio` was started with, if any: set as the
    * server's current workspace right away, so `run-sample`, `save-recipe`
@@ -38,9 +39,11 @@ export interface StudioServerOptions {
    * `open-workspace` call (which it still makes, to get the recipe listing;
    * the folder reaches it through the URL's `folder` query param).
    */
-  initialFolder?: string
-  /** Browser launch settings every web-mode command shares (`take-snapshot`, `verify-selector`, `run-sample`); an executable path override (e.g. `OPENCRAW_CHROMIUM`, read by the caller — the server itself has no opinion on env vars) for a sandbox with no full Playwright install. Default: Playwright's own bundled browser. */
-  browser?:       BrowserSessionConfig
+  initialFolder?:      string
+  /** Browser launch settings every web-mode command shares (`take-snapshot`, `verify-selector`, `run-sample`, `start-recording`); an executable path override (e.g. `OPENCRAW_CHROMIUM`, read by the caller — the server itself has no opinion on env vars) for a sandbox with no full Playwright install. Default: Playwright's own bundled browser. `start-recording` always forces `headless: false` regardless of what this sets. */
+  browser?:            BrowserSessionConfig
+  /** Where the studio's own recorder profile lives (issue #95); default: a fixed directory under the OS temp folder, never a crawl's own profile directory, never the person's default browser. */
+  recorderProfileDir?: string
 }
 
 /** The running server: its URL (token included, ready to open), the token alone, and how to stop it. */
@@ -66,6 +69,7 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
   const state = createStudioState()
   if (options.initialFolder !== undefined) state.folder = options.initialFolder
   state.browser = options.browser
+  if (options.recorderProfileDir !== undefined) state.recorderProfileDir = options.recorderProfileDir
   const server = createServer((request, response) => { void handleRequest(request, response, token, state, uiRoot) })
   server.on('upgrade', (request, socket) => { handleUpgrade(request, socket, token, state) })
   await new Promise<void>((resolve, reject) => {
@@ -85,6 +89,7 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
 
 async function stop (server: Server, state: StudioState): Promise<void> {
   await state.activeRun?.stop()
+  await state.activeRecording?.stop()
   server.closeAllConnections()
   await new Promise<void>((resolve, reject) => { server.close(error => (error === undefined ? resolve() : reject(error))) })
 }
@@ -150,6 +155,10 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'infer-selector': { return Promise.resolve(handleInferSelector(state, command))
     }
     case 'explain-why': { return handleExplainWhy(state, command)
+    }
+    case 'start-recording': { return handleStartRecording(state, command)
+    }
+    case 'stop-recording': { return handleStopRecording(state, command)
     }
   }
 }

@@ -31,8 +31,8 @@ export interface PageState {
   document?: ScopeDocument
 }
 
-/** Paths a template can read besides ids: `page.url`, `page.number`, `start.url`, `vars.*`. */
-export const RESERVED_ROOTS = ['page', 'start', 'vars'] as const
+/** Paths a template can read besides ids: `page.url`, `page.number`, `start.url`, `vars.*`, `env.*` (the process's own environment variables — a recorded secret's `{{env.NAME}}` placeholder, studio phase 6/#95). */
+export const RESERVED_ROOTS = ['page', 'start', 'vars', 'env'] as const
 
 export class ExtractionScope {
   private readonly values = new Map<string, unknown>()
@@ -117,15 +117,22 @@ export class ExtractionScope {
   }
 
   /**
-   * Resolves a dotted path the way templates do: the first segment is an id (or
-   * `page`), the rest walks into the value.
+   * Resolves a dotted path the way templates do: the first segment is an id
+   * (or `page`/`env`), the rest walks into the value.
    *
-   * @param path - A dotted path such as `item.href` or `page.url`.
+   * `env.NAME` reads `process.env.NAME` unless a step has bound its own
+   * `env` id (which then wins, same as every other reserved root) — this is
+   * how a recorded secret's `{{env.NAME}}` placeholder (studio phase 6,
+   * issue #95's `secret-field.policy.ts`) actually resolves to a real value
+   * when the recipe runs, without ever putting that value in the recipe
+   * itself.
+   *
+   * @param path - A dotted path such as `item.href`, `page.url` or `env.PASSWORD`.
    * @returns The value, or `undefined`.
    */
   lookup (path: string): unknown {
     const [head, ...rest] = path.replaceAll(/\[(\d+)\]/g, '.$1').split('.')
-    const root: unknown = head === 'page' && !this.has('page') ? pageSnapshotOf(this.pageState) : this.get(head)
+    const root: unknown = reservedRootOf(head, this) ?? this.get(head)
 
     return getPath(root, rest.join('.'))
   }
@@ -133,4 +140,13 @@ export class ExtractionScope {
 
 function pageSnapshotOf (page: PageState | undefined): { url: string, number: number } | undefined {
   return page === undefined ? undefined : { url: page.url, number: page.number }
+}
+
+/** `page`/`env`'s own value, unless a step shadowed the id; `undefined` for anything else, so the caller falls back to an ordinary binding. */
+function reservedRootOf (head: string, scope: ExtractionScope): unknown {
+  if (scope.has(head)) return undefined
+  if (head === 'page') return pageSnapshotOf(scope.pageState)
+  if (head === 'env') return process.env
+
+  return undefined
 }
