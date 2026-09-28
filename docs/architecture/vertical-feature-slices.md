@@ -5,10 +5,14 @@
 # ADR: Vertical feature slices and file naming
 
 - **Status:** Accepted
-- **Date:** 2026-09-24
+- **Date:** 2026-09-24 (UI file-role naming for `apps/**` added 2026-09-28)
 - **Scope:** every hand-authored TypeScript package under `packages/` (core, cli, mcp, office-reader, captcha-tesseract,
-  azure-durable); `apps/` is not covered
-- **Enforced by:** `@mnci/eslint-config`'s `verticalSlices` rules, switched on in the root `eslint.config.mjs`
+  azure-durable). `apps/` (React apps such as `apps/studio-ui`) is not covered by the slice/boundary rules below —
+  no flat-folder limit, no barrel-only-import rule — but its `.tsx` files and hooks *do* follow the file-role
+  naming convention in [UI file naming](#ui-file-naming-appstsx-and-hooks), so a file's role is legible from its
+  name everywhere in the repo, not just under `packages/`.
+- **Enforced by:** `@mnci/eslint-config`'s `verticalSlices` rules, switched on in the root `eslint.config.mjs`, for
+  `packages/**`. The `apps/**` UI naming convention below is not yet lint-enforced — it's a PR-review convention.
 
 ## Decision
 
@@ -47,6 +51,35 @@ Domain-Driven Design. No framework, mediator or dependency-injection container i
 | `.enum.ts` | A technical enumeration. | `recipe-kind.enum.ts` |
 
 `.service.ts` and `.middleware.ts` are **not** in the lint's role list and are not used here.
+
+## UI file naming (`apps/**` `.tsx` and hooks)
+
+`apps/` doesn't organise into `packages/`'s slices — a React app's folders (`content-pane/`, `steps-outline/`,
+`studio-client/`, `studio-store/`, ...) are feature areas grouped the same way for readability, but aren't held
+to the flat-folder limit, the folder-of-12 threshold or the barrel-only import boundary above. What *does*
+carry over is the core idea: a file's name says what kind of thing it is. Every `.tsx` file, and every custom
+hook, takes a role suffix from this list — picked the same way as the glossary above, by what the file
+actually is:
+
+| Suffix | Responsibility | Example |
+|---|---|---|
+| `.component.tsx` | A reusable or composed piece of UI: presentational or with its own local state. | `toolbar.component.tsx` |
+| `.view.tsx` | A top-level, composed screen — what a route or the app root renders. One per app today (`app.view.tsx`); reach for it again once routing exists. | `app.view.tsx` |
+| `.route.tsx` | A routing entry (a router's route element/loader). Not used yet — no app here has a router — but reserved so a future one doesn't invent something else. | — |
+| `.hook.ts` | A custom React hook (`use*`), whether it wraps TanStack Query, Zustand, or plain React state. `.hook.tsx` if the hook itself returns JSX (e.g. a hook that also renders a provider). | `use-save-outline.hook.ts` |
+
+Naming stays `<kebab-name>.<role>.tsx`/`.ts`, same as `packages/**`: the `use-` prefix on a hook's kebab-name is
+a React convention (marks it as a hook to React's own rules-of-hooks lint), the `.hook.ts` suffix is this
+repo's role convention: both stay, neither replaces the other. Tests stay `<kebab-name>.<role>.test.tsx`/`.ts`
+beside the file (`toolbar.component.tsx` -> `toolbar.component.test.tsx`).
+
+An app's entry point (`main.tsx`, the equivalent of `packages/**`'s `main.ts`) is exempt, same as `index.ts`
+barrels — there's nothing to suffix on a file whose whole job is bootstrapping. Everything else already in
+`apps/studio-ui` besides `.tsx` and hooks (`.store.ts`, `.client.ts`, `.mapper.ts`, `.policy.ts`, `.factory.ts`,
+`.catalog.ts` in `studio-store/`, `studio-client/`, `content-pane/`, `steps-outline/`) already used the
+`packages/**` glossary's suffixes (or an ad hoc but clear one) before this section existed; this section doesn't
+change those, only closes the gap that `.tsx` files and hooks were the one place in the repo without a role in
+the name.
 
 ## Boundaries
 

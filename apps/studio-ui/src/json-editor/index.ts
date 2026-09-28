@@ -1,2 +1,2 @@
-export { JsonEditor } from './json-editor'
-export type { JsonEditorProps } from './json-editor'
+export { JsonEditor } from './json-editor.component'
+export type { JsonEditorProps } from './json-editor.component'
