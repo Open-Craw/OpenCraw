@@ -1,0 +1,8 @@
+{
+  "kind": "output",
+  "id": "book",
+  "version": 1,
+  "fields": {
+    "price": { "type": "string", "required": true, "key": true }
+  }
+}

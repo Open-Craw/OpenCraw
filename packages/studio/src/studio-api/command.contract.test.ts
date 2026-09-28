@@ -9,6 +9,10 @@ describe('studioCommandSchema', () => {
     { type: 'save-recipe', path: '/tmp/recipes/books.input.json', recipe: { kind: 'input' } },
     { type: 'fetch-start-page', recipeId: 'books' },
     { type: 'save-outline', path: '/tmp/recipes/books.input.json', outline: { recipe: {}, steps: [] } },
+    { type: 'take-snapshot', recipeId: 'books', path: 'start' },
+    { type: 'verify-selector', recipeId: 'books', path: 'start', selector: '.price_color' },
+    { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: ['n5'] },
+    { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: ['n5', 'n12'] },
   ])('accepts a valid %j', (command) => {
     expect(studioCommandSchema.safeParse(command).success).toBe(true)
   })

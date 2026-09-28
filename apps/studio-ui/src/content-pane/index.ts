@@ -1,2 +1,2 @@
-export { ContentPane } from './content-pane'
-export type { ContentPaneProps } from './content-pane'
+export { ContentPane } from './content-pane.component'
+export type { ContentPaneProps } from './content-pane.component'

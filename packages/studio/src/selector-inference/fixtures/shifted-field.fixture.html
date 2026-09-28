@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head><title>Shifted field</title></head>
+<body>
+<!--
+  Item 2 has no `.price_color`: a naive "select all titles, select all
+  prices, zip by index" reader would shift item 3's price onto item 2 (the
+  bug `docs/recipes/authoring.md` §4.5 names). The safe shape this slice
+  infers reads each field `from` its own item, so item 2's price stays
+  missing instead of shifting.
+-->
+<ul class="products">
+  <li class="product_pod">
+    <h3 class="title">First Title</h3>
+    <p class="price_color">£10.00</p>
+  </li>
+  <li class="product_pod">
+    <h3 class="title">Second Title</h3>
+  </li>
+  <li class="product_pod">
+    <h3 class="title">Third Title</h3>
+    <p class="price_color">£30.00</p>
+  </li>
+</ul>
+</body>
+</html>

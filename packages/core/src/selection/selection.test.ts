@@ -1,4 +1,4 @@
-import { selectHtml } from './html-selector.algorithm'
+import { countMatches, matchesOf, NODE_ID_ATTRIBUTE, selectHtml } from './html-selector.algorithm'
 import { selectJson } from './json-path.algorithm'
 import { collapse, takeFromHtml, takeFromJson } from './take-value.mapper'
 
@@ -30,6 +30,23 @@ describe('selectHtml + takeFromHtml', () => {
 
   it('returns an empty list when nothing matches', () => {
     expect(selectHtml(html, '.nothing')).toEqual([])
+  })
+})
+
+describe('countMatches + matchesOf', () => {
+  it('counts css matches, the studio\'s verification entry point', () => {
+    expect(countMatches(html, 'a.product')).toBe(2)
+    expect(countMatches(html, '.nothing')).toBe(0)
+  })
+
+  it('rejects a kind other than css: xpath verification lives one layer up', () => {
+    expect(() => countMatches(html, 'a.product', 'xpath' as 'css')).toThrow(/unsupported kind "xpath"/)
+    expect(() => matchesOf(html, 'a.product', 'xpath' as 'css')).toThrow(/unsupported kind "xpath"/)
+  })
+
+  it('reads each match\'s data-oc-node stamp, falling back to a positional id', () => {
+    const stamped = `<ul><li ${NODE_ID_ATTRIBUTE}="n1" class="item">a</li><li class="item">b</li></ul>`
+    expect(matchesOf(stamped, 'li.item')).toEqual(['n1', '#1'])
   })
 })
 

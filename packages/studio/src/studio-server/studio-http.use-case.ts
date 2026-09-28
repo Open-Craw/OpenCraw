@@ -3,15 +3,19 @@ import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { dirname, join } from 'node:path'
 import type { Duplex } from 'node:stream'
 import { fileURLToPath } from 'node:url'
+import type { BrowserSessionConfig } from '@opencraw/core'
 import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
 import { handleFetchStartPage } from './fetch-start-page.handler'
+import { handleInferSelector } from './infer-selector.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
 import { serveStatic } from './static-file.handler'
+import { handleTakeSnapshot } from './take-snapshot.handler'
+import { handleVerifySelector } from './verify-selector.handler'
 import { acceptWebSocket } from './websocket.client'
 import { createStudioState } from './workspace.store'
 import type { StudioState } from './workspace.store'
@@ -34,6 +38,8 @@ export interface StudioServerOptions {
    * the folder reaches it through the URL's `folder` query param).
    */
   initialFolder?: string
+  /** Browser launch settings every web-mode command shares (`take-snapshot`, `verify-selector`, `run-sample`); an executable path override (e.g. `OPENCRAW_CHROMIUM`, read by the caller — the server itself has no opinion on env vars) for a sandbox with no full Playwright install. Default: Playwright's own bundled browser. */
+  browser?:       BrowserSessionConfig
 }
 
 /** The running server: its URL (token included, ready to open), the token alone, and how to stop it. */
@@ -58,6 +64,7 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
   const uiRoot = options.uiRoot ?? defaultUiRoot()
   const state = createStudioState()
   if (options.initialFolder !== undefined) state.folder = options.initialFolder
+  state.browser = options.browser
   const server = createServer((request, response) => { void handleRequest(request, response, token, state, uiRoot) })
   server.on('upgrade', (request, socket) => { handleUpgrade(request, socket, token, state) })
   await new Promise<void>((resolve, reject) => {
@@ -134,6 +141,12 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'fetch-start-page': { return handleFetchStartPage(state, command)
     }
     case 'save-outline': { return handleSaveOutline(state, command)
+    }
+    case 'take-snapshot': { return handleTakeSnapshot(state, command)
+    }
+    case 'verify-selector': { return handleVerifySelector(state, command)
+    }
+    case 'infer-selector': { return Promise.resolve(handleInferSelector(state, command))
     }
   }
 }

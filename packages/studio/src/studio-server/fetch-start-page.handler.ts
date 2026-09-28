@@ -16,7 +16,7 @@ import type { StudioState } from './workspace.store'
 export async function handleFetchStartPage (state: StudioState, command: FetchStartPageCommand): Promise<StartPageView> {
   if (state.folder === undefined) throw new Error('open a workspace first')
   const { input } = await loadRecipePair(state.folder, command.recipeId)
-  const html = await fetchStartPage(input)
+  const html = await fetchStartPage(input, state.browser)
 
   return { html }
 }
