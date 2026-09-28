@@ -30,6 +30,8 @@ export {
   gridTablePreviewMatchSchema, gridTablePreviewViewSchema,
   deckShapeViewSchema, deckChartSeriesViewSchema, deckChartViewSchema, deckSlideViewSchema, deckDocumentViewSchema,
   deckTablePreviewMatchSchema, deckTablePreviewViewSchema,
+  startRecordingCommandSchema, stopRecordingCommandSchema,
+  recordingCardEventSchema, recordingNoteEventSchema, recordingStoppedEventSchema,
 } from './studio-api'
 export type {
   SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
@@ -51,4 +53,6 @@ export type {
   GridTablePreviewMatchView, GridTablePreviewView,
   DeckShapeView, DeckChartSeriesView, DeckChartView, DeckSlideView, DeckDocumentView,
   DeckTablePreviewMatchView, DeckTablePreviewView,
+  StartRecordingCommand, StopRecordingCommand,
+  RecordingCardEvent, RecordingNoteEvent, RecordingStoppedEvent,
 } from './studio-api'
