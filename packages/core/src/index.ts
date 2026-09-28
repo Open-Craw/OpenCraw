@@ -23,7 +23,7 @@ export { tryParseJson, selectHtml, countMatches, matchesOf, NODE_ID_ATTRIBUTE } 
 export type { HtmlMatch } from './selection'
 export { readPdf, PdfReadError, analyzeTables, findTables, pdfText, isPdfDocument } from './pdf-document'
 export type { PdfDocument, PdfPage, PdfRow, PdfCell, PositionedText, PdfTable, TableQuery, TableAlign, TableDiagnostics, TableBandDiagnostics } from './pdf-document'
-export { parseCsv, detectDelimiter, csvWorkbook, findGridTables, fillDown, workbookText, isWorkbookDocument, htmlTableSheets } from './workbook-document'
+export { parseCsv, detectDelimiter, csvWorkbook, readXlsxWorkbook, findGridTables, fillDown, workbookText, isWorkbookDocument, htmlTableSheets } from './workbook-document'
 export { readMarkdown } from './markdown-document'
 export { readYaml } from './yaml-document'
 export { parseXml, selectXpath, takeFromXml, isXmlDocument, htmlAsXml } from './xml-document'

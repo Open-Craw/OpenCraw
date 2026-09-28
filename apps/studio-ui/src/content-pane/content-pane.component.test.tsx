@@ -92,12 +92,46 @@ describe('ContentPane', () => {
     expect(screen.getByText(/read card: \$\.name/i)).toBeTruthy()
   })
 
-  it('shows an honest placeholder for a document format with no canvas yet (the workbook grid and the deck, issue #94 5c/5d)', async () => {
-    mockFetch({ html: '<p>[csv document]</p>', nodeCount: 0, baseUrl: 'file:///x.csv', format: 'csv' })
+  it('shows an honest placeholder for a document format with no canvas yet (the deck, issue #94 5d)', async () => {
+    mockFetch({ html: '<p>[pptx document]</p>', nodeCount: 0, baseUrl: 'file:///x.pptx', format: 'pptx' })
     renderWithProviders(<ContentPane recipe={recipe()} />)
 
     await waitFor(() => { expect(screen.getByText(/not built yet/i)).toBeTruthy() })
     expect(document.querySelector('iframe')).toBeNull()
+  })
+
+  // The grid, like the Inspect panel's DOM tree, is virtualized (@tanstack/react-virtual): jsdom reports a
+  // zero-size scroll container, so no row/cell ever mounts here (mirrors `inspector-panel.component.test.tsx`'s
+  // own note). Its cell picking is covered by `grid-pick.mapper.test.ts`'s pure functions and
+  // `packages/studio/e2e/grid-canvas.e2e.test.ts` (a real browser is not needed there either — api mode, same as
+  // `pdf-canvas.e2e.test.ts`); this test only proves the canvas (not the iframe/placeholder) is chosen, and that
+  // its non-virtualized chrome (the sheet tabs, the CSV format controls) renders.
+  it('shows the grid canvas (not the iframe, not the placeholder) for a CSV snapshot, with its sheet tab and detected CSV format', async () => {
+    mockFetchByCommand({
+      'take-snapshot': { html: '<p>[csv document]</p>', nodeCount: 0, baseUrl: 'file:///listino.csv', format: 'csv' },
+      'grid-view':     {
+        sheets: [
+          {
+            name:        'listino',
+            hidden:      false,
+            hiddenRows:  [],
+            columnCount: 2,
+            rows:        [[{ value: 'Marca', type: 'string' }, { value: 'Modello', type: 'string' }], [{ value: 'Fiat', type: 'string' }, { value: 'Pandina', type: 'string' }]],
+            merges:      [],
+          },
+        ],
+        csv: { encoding: 'windows-1252', delimiter: ';' },
+      },
+      'grid-preview': { matches: [] },
+    })
+    renderWithProviders(<ContentPane recipe={recipe()} />)
+
+    await waitFor(() => { expect(screen.getByText('listino')).toBeTruthy() }) // the sheet tab
+    expect(screen.queryByText(/not built yet/i)).toBeNull()
+    expect(document.querySelector('iframe')).toBeNull()
+    expect(screen.getByText('Header row(s)')).toBeTruthy() // a mode button, not the DOM picker's "Read" button
+    expect(screen.queryByText('Read')).toBeNull()
+    expect(screen.getByDisplayValue(';')).toBeTruthy() // the detected delimiter, shown and editable
   })
 
   it('shows the PDF canvas (not the iframe, not the placeholder) for a PDF snapshot', async () => {

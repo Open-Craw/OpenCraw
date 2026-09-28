@@ -1,5 +1,5 @@
-import { analyzeTables } from '@opencraw/core'
-import type { PdfDocument, PdfTable, TableAlign, TableBandDiagnostics } from '@opencraw/core'
+import { analyzeTables, findGridTables } from '@opencraw/core'
+import type { GridTableQuery, PdfDocument, PdfTable, TableAlign, TableBandDiagnostics, WorkbookCell, WorkbookDocument } from '@opencraw/core'
 
 /**
  * A `table` extract's own options, as the studio's picks build them: string
@@ -44,11 +44,13 @@ export interface TablePreviewResult {
  * `selector`/`until`/`columns` costs nothing: no re-fetch, no re-parse
  * (`readPdf` already ran once, when `take-snapshot` captured the document).
  *
- * The PDF-facing version of the "preview a table extract" need issue #94's
- * 5c (the workbook grid) will also want; nothing about its shape is
- * PDF-specific, only which `@opencraw/core` reader it calls — a `previewGridTable`
- * alongside this one, sharing `TablePreviewMatch`/`TablePreviewResult`, is
- * the natural way to extend it when 5c is built.
+ * The workbook grid's live preview (issue #94's 5c) is `previewGridTable`,
+ * below: the same idea (a pure re-run of the options against the cached
+ * document), but its own result shape — a workbook table has no page, no
+ * column bands, no wrapped-row regrouping, so folding it into
+ * `TablePreviewMatch`/`TablePreviewResult` would leave most of those fields
+ * meaningless for a grid pick; a `GridTablePreviewMatch`/`GridTablePreviewResult`
+ * sibling reads honestly instead.
  *
  * @param document - The already-read PDF.
  * @param options - The `table` extract's options, not yet compiled to `RegExp`.
@@ -93,4 +95,72 @@ function compile (source: string, where: string): RegExp {
   } catch (error) {
     throw new Error(`${where}: invalid pattern ${source} (${(error as Error).message})`, { cause: error })
   }
+}
+
+/**
+ * A `table` extract's own options for a workbook (CSV or spreadsheet), as
+ * the studio's grid canvas picks build them (issue #94's 5c) — mirrors
+ * `@opencraw/core`'s `GridTableQuery`, kept as strings (not yet compiled)
+ * the same way `TablePreviewOptions` does for PDF.
+ */
+export interface GridTablePreviewOptions {
+  /** Matches the names of the sheets to read; default every sheet. */
+  sheet?:         string
+  /** Matches the header row (the recipe's `selector`). */
+  header:         string
+  /** Matches the row that ends the table. */
+  until?:         string
+  /** Output key -> a pattern for that column's header cell. */
+  columns?:       Record<string, string>
+  /** How many rows the header spans; default 1. */
+  headerRows?:    number
+  /** Output keys whose empty cells take the value of the row above (a merged-group label pick, issue #94's 5c). */
+  fillDown?:      string[]
+  /** Read hidden sheets and rows too. */
+  includeHidden?: boolean
+}
+
+/** One table matched by a `table` extract's options against a workbook — mirrors `@opencraw/core`'s `GridTable`. */
+export interface GridTablePreviewMatch {
+  sheet:  string
+  title:  string
+  header: string[]
+  rows:   Record<string, WorkbookCell>[]
+}
+
+/** What `previewGridTable` answers with: either the matches, or, when a pattern does not compile, why (mirrors `TablePreviewResult`). */
+export interface GridTablePreviewResult {
+  matches: GridTablePreviewMatch[]
+  error?:  string
+}
+
+/**
+ * Runs a `table` extract's options against an already-read workbook (studio
+ * plan §3.4, issue #94's 5c: the live preview) — a pure function of the
+ * document and the options, exactly like `previewPdfTable` above: no
+ * re-fetch, no re-parse (`csvWorkbook`/`readXlsxWorkbook` already ran once,
+ * when `take-snapshot` captured the document).
+ *
+ * @param document - The already-read workbook.
+ * @param options - The `table` extract's options, not yet compiled to `RegExp`.
+ * @returns Every matched table — or `error` (and no matches) when a pattern is not a valid regular expression, expected while the person is still typing it.
+ */
+export function previewGridTable (document: WorkbookDocument, options: GridTablePreviewOptions): GridTablePreviewResult {
+  let query: GridTableQuery
+  try {
+    query = {
+      header:        compile(options.header, 'selector'),
+      until:         options.until === undefined ? undefined : compile(options.until, 'until'),
+      columns:       options.columns === undefined ? undefined : Object.fromEntries(Object.entries(options.columns).map(([key, pattern]) => [key, compile(pattern, `columns.${key}`)])),
+      sheet:         options.sheet === undefined ? undefined : compile(options.sheet, 'sheet'),
+      headerRows:    options.headerRows,
+      fillDown:      options.fillDown,
+      includeHidden: options.includeHidden,
+    }
+  } catch (error) {
+    return { matches: [], error: error instanceof Error ? error.message : String(error) }
+  }
+  const tables = findGridTables(document, query)
+
+  return { matches: tables.map(table => ({ sheet: table.sheet, title: table.title, header: table.header, rows: table.rows })) }
 }

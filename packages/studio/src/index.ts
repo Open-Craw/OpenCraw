@@ -19,14 +19,17 @@ export {
   whyViewSchema,
   inspectPageCommandSchema, responsesSeenCommandSchema, documentTreeCommandSchema,
   pdfViewCommandSchema, tablePreviewOptionsSchema, tablePreviewCommandSchema,
+  gridViewCommandSchema, gridPreviewOptionsSchema, gridPreviewCommandSchema,
   domTreeNodeViewSchema, pageDataFindingSchema, inspectViewSchema,
   observedResponseSchema, responsesSeenViewSchema,
   documentTreeNodeViewSchema, documentTreeViewSchema,
   pdfCellViewSchema, pdfRowViewSchema, pdfPageViewSchema, pdfDocumentViewSchema,
   tablePreviewTableSchema, tablePreviewBandSchema, tablePreviewMatchSchema, tablePreviewViewSchema,
+  gridCellViewSchema, gridMergeViewSchema, gridSheetViewSchema, workbookDocumentViewSchema,
+  gridTablePreviewMatchSchema, gridTablePreviewViewSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, StudioCommand,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
@@ -41,4 +44,6 @@ export type {
   DocumentTreeNodeView, DocumentTreeView,
   PdfCellView, PdfRowView, PdfPageView, PdfDocumentView,
   TablePreviewTableView, TablePreviewBandView, TablePreviewMatchView, TablePreviewView,
+  GridCellView, GridMergeView, GridSheetView, WorkbookDocumentView,
+  GridTablePreviewMatchView, GridTablePreviewView,
 } from './studio-api'

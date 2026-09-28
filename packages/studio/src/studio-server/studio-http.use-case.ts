@@ -10,6 +10,8 @@ import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy
 import { handleDocumentTree } from './document-tree.handler'
 import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
+import { handleGridPreview } from './grid-preview.handler'
+import { handleGridView } from './grid-view.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleInspectPage } from './inspect-page.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
@@ -194,6 +196,10 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'pdf-view': { return Promise.resolve(handlePdfView(state, command))
     }
     case 'table-preview': { return Promise.resolve(handleTablePreview(state, command))
+    }
+    case 'grid-view': { return handleGridView(state, command)
+    }
+    case 'grid-preview': { return Promise.resolve(handleGridPreview(state, command))
     }
   }
 }

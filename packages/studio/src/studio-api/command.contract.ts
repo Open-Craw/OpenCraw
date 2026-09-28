@@ -166,6 +166,52 @@ export const tablePreviewCommandSchema = z.object({
   options:  tablePreviewOptionsSchema,
 })
 
+/**
+ * The grid canvas's sheets and cells (`document-view`'s `workbook-view.mapper.ts`,
+ * studio plan §3.4, issue #94's 5c), off the same cached snapshot
+ * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
+ * Only a CSV/spreadsheet snapshot has one; JSON/YAML/XML get the tree canvas
+ * (5a), PDF the PDF canvas (5b), the deck its own canvas (5d).
+ *
+ * `delimiter`/`encoding` override a CSV's auto-detected format (issue #94's
+ * 5c: "the detected delimiter and encoding shown and overridable"); the
+ * server re-reads the file with the override applied and keeps it cached, so
+ * a later `grid-preview` sees the same reading. Both are rejected on a
+ * spreadsheet snapshot (there is nothing to detect).
+ */
+export const gridViewCommandSchema = z.object({
+  type:      z.literal('grid-view'),
+  recipeId:  z.string().min(1),
+  path:      z.string().min(1),
+  delimiter: z.string().min(1).optional(),
+  encoding:  z.string().min(1).optional(),
+})
+
+/** A `table` extract's options for a workbook, as the studio's grid canvas picks build them — mirrors `document-view/table-preview.use-case.ts`'s `GridTablePreviewOptions`. */
+export const gridPreviewOptionsSchema = z.object({
+  sheet:         z.string().min(1).optional(),
+  header:        z.string().min(1),
+  until:         z.string().min(1).optional(),
+  columns:       z.record(z.string(), z.string().min(1)).optional(),
+  headerRows:    z.int().min(1).optional(),
+  fillDown:      z.array(z.string().min(1)).min(1).optional(),
+  includeHidden: z.boolean().optional(),
+})
+
+/**
+ * The live preview of a `table` extract's options against a cached CSV/
+ * spreadsheet snapshot (`document-view`'s `table-preview.use-case.ts`'s
+ * `previewGridTable`, studio plan §3.4, issue #94's 5c): the matched
+ * table(s), recomputed as the person edits the options — call `take-snapshot`
+ * and `grid-view` first.
+ */
+export const gridPreviewCommandSchema = z.object({
+  type:     z.literal('grid-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  options:  gridPreviewOptionsSchema,
+})
+
 /** A missing value in an emitted record, by its position in the last sample run's records (the order they streamed in, matching the UI's own `records` list). */
 export const missingWhyTargetSchema = z.object({
   kind:        z.literal('missing'),
@@ -211,6 +257,8 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   documentTreeCommandSchema,
   pdfViewCommandSchema,
   tablePreviewCommandSchema,
+  gridViewCommandSchema,
+  gridPreviewCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -229,6 +277,9 @@ export type DocumentTreeCommand = z.infer<typeof documentTreeCommandSchema>
 export type PdfViewCommand = z.infer<typeof pdfViewCommandSchema>
 export type TablePreviewOptions = z.infer<typeof tablePreviewOptionsSchema>
 export type TablePreviewCommand = z.infer<typeof tablePreviewCommandSchema>
+export type GridViewCommand = z.infer<typeof gridViewCommandSchema>
+export type GridPreviewOptions = z.infer<typeof gridPreviewOptionsSchema>
+export type GridPreviewCommand = z.infer<typeof gridPreviewCommandSchema>
 export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
 export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
 export type WhyTarget = z.infer<typeof whyTargetSchema>
