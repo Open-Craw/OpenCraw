@@ -41,6 +41,8 @@ describe('parseArguments', () => {
     expect(parseArguments(['run', 'r/', '--diff', 'last.jsonl', '--changes', 'c.jsonl'])).toMatchObject({ diff: 'last.jsonl', changes: 'c.jsonl' })
     expect(parseArguments(['diff', 'a.jsonl', 'b.jsonl', '--key', 'model, trim', '--ignore', 'scrapedAt'])).toEqual({ name: 'diff', previous: 'a.jsonl', current: 'b.jsonl', key: ['model', 'trim'], ignore: ['scrapedAt'], changes: undefined })
     expect(parseArguments(['run', 'r/', '--profiles', 'here'], { OPENCRAW_PROFILES: '/p' })).toMatchObject({ profiles: 'here' })
+    expect(parseArguments(['studio'])).toEqual({ name: 'studio', folder: undefined })
+    expect(parseArguments(['studio', 'recipes/'])).toEqual({ name: 'studio', folder: 'recipes/' })
   })
 
   it('rejects what makes no sense', () => {
@@ -55,5 +57,6 @@ describe('parseArguments', () => {
     expect(() => parseArguments(['run', 'a', '--changes', 'c'])).toThrow('--changes needs --diff')
     expect(() => parseArguments(['run', 'a', '--host-concurrency', '0'])).toThrow('--host-concurrency needs a whole number of at least 1, not "0"')
     expect(() => parseArguments(['run', 'a', '--host-delay', 'soon'])).toThrow('--host-delay needs a whole number')
+    expect(() => parseArguments(['studio', 'a', 'b'])).toThrow('studio takes at most one folder')
   })
 })

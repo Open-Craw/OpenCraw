@@ -8,6 +8,8 @@ Commands
   run <recipe files or directories...>        Crawl. Records go to --out as JSON Lines, or to stdout.
   probe <url>                                 Fetch a page and report where its data lives.
   diff <previous.jsonl> <current.jsonl>       Compare two runs' records by key: added, removed, changed.
+  studio [folder]                             Open a recipe folder in the browser: run samples, read
+                                               the trace next to the page (needs @opencraw/studio).
 
 Options for run
   --out <file>        Write records to this JSON Lines file (default: stdout).
@@ -127,6 +129,11 @@ export function parseArguments (argv: readonly string[], env: Record<string, str
       if (rest.length !== 1) throw new Error('probe needs exactly one URL')
 
       return { name: 'probe', url: rest[0], browser: values.browser === true, options }
+    }
+    case 'studio': {
+      if (rest.length > 1) throw new Error('studio takes at most one folder')
+
+      return { name: 'studio', folder: rest[0] }
     }
     default: { throw new Error(`unknown command "${name}"`)
     }

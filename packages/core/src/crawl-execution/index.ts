@@ -1,6 +1,6 @@
 export { createCrawler } from './create-crawler.use-case'
 export type { Crawler } from './create-crawler.use-case'
-export type { CrawlOptions } from './crawl-options.config'
+export type { CrawlOptions, SampleBudget } from './crawl-options.config'
 export type { CrawlReport, RecipeReport } from './crawl-report.model'
 export { runInputRecipe, runRecipe, openRecipeWindow } from './run-input-recipe.use-case'
 export type { RecipeWindow, RecipeRunOptions, RecipeRunResult } from './run-input-recipe.use-case'

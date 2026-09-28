@@ -56,3 +56,10 @@ test-output
 
 # persistent browser profiles (logins, cookies): never commit
 .opencraw/
+
+vite.config.*.timestamp*
+
+# MoNecromanCI: keep the committed per-environment Vite config (public VITE_ values)
+!apps/*/.env.dev
+!apps/*/.env.uat
+!apps/*/.env.prod

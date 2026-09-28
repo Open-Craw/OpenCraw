@@ -24,6 +24,8 @@ export interface RecipeReport {
   errorKind?:   ErrorKind
   /** In worker mode: the work item this run was. */
   item?:        string
+  /** Set when `CrawlOptions.sample` stopped the run: which budget was hit first. */
+  stoppedBy?:   'sample-maxRecords' | 'sample-maxPages' | 'sample-maxMs'
 }
 
 /** What a whole run did. */

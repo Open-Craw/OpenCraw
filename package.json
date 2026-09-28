@@ -38,7 +38,12 @@
     "azure-durable:e2e": "nx run azure-durable:e2e",
     "azure-host:qa": "nx run azure-host:lint && nx run azure-host:test",
     "azure-host:build": "nx run azure-host:build",
-    "azure-host:start": "nx run azure-host:start"
+    "azure-host:start": "nx run azure-host:start",
+    "studio:qa": "nx run studio:lint && nx run studio:test",
+    "studio:build": "nx run studio:build",
+    "studio-ui:qa": "nx run studio-ui:lint && nx run studio-ui:test",
+    "studio-ui:build": "nx run studio-ui:build",
+    "studio-ui:start": "nx run studio-ui:serve"
   },
   "private": true,
   "devDependencies": {
@@ -51,31 +56,43 @@
     "@nx/jest": "23.2.0",
     "@nx/js": "23.2.0",
     "@nx/node": "^23.2.0",
+    "@nx/react": "^23.2.0",
     "@nx/rollup": "23.2.0",
+    "@nx/vite": "23.2.0",
+    "@nx/web": "23.2.0",
     "@swc-node/register": "1.11.1",
     "@swc/cli": "~0.8.1",
     "@swc/core": "1.15.8",
     "@swc/helpers": "0.5.18",
     "@swc/jest": "~0.2.38",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/react": "16.3.0",
     "@types/jest": "~30.0.0",
     "@types/node": "^24.0.0",
     "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@typescript/native": "npm:typescript@^7.0.2",
+    "@vitejs/plugin-react": "^6.0.0",
     "adm-zip": "^0.6.1",
     "azurite": "^3.37.0",
+    "babel-jest": "~30.3.0",
     "esbuild": "^0.27.0",
     "eslint": "^10.8.0",
     "husky": "^9.1.7",
     "jest": "~30.3.0",
+    "jest-environment-jsdom": "~30.3.0",
     "jest-environment-node": "~30.3.0",
     "jest-util": "~30.3.0",
+    "jiti": "2.4.2",
     "nx": "23.2.0",
     "rollup": "^4.14.0",
     "swc-loader": "0.1.15",
     "ts-jest": "^29.4.7",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
-    "typescript": "npm:@typescript/typescript6@^6.0.2"
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "vite": "^8.0.0"
   },
   "workspaces": [
     "packages/*",
@@ -105,7 +122,10 @@
       "nanoid": "^3.3.18"
     },
     "brace-expansion@4.0.0 - 5.0.8": "^5.0.9",
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "@nx/react": {
+      "express": ">=4.0.0 <6.0.0"
+    }
   },
   "nx": {
     "includedScripts": [],
@@ -119,5 +139,9 @@
         }
       }
     }
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

@@ -1,0 +1,26 @@
+import { studioCommandSchema } from './command.contract'
+
+describe('studioCommandSchema', () => {
+  it.each([
+    { type: 'open-workspace', folder: '/tmp/recipes' },
+    { type: 'run-sample', recipeId: 'books', budget: { maxRecords: 5 } },
+    { type: 'run-sample', recipeId: 'books' },
+    { type: 'stop-run' },
+    { type: 'save-recipe', path: '/tmp/recipes/books.input.json', recipe: { kind: 'input' } },
+    { type: 'fetch-start-page', recipeId: 'books' },
+  ])('accepts a valid %j', (command) => {
+    expect(studioCommandSchema.safeParse(command).success).toBe(true)
+  })
+
+  it('rejects an unknown command type', () => {
+    expect(studioCommandSchema.safeParse({ type: 'delete-everything' }).success).toBe(false)
+  })
+
+  it('rejects run-sample without a recipeId', () => {
+    expect(studioCommandSchema.safeParse({ type: 'run-sample' }).success).toBe(false)
+  })
+
+  it('rejects open-workspace with an empty folder', () => {
+    expect(studioCommandSchema.safeParse({ type: 'open-workspace', folder: '' }).success).toBe(false)
+  })
+})

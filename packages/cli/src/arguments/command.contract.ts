@@ -62,4 +62,9 @@ export type Command =
     /** Also render the page in a browser and watch the JSON it fetches. */
     browser: boolean
     options: CommonOptions
+  } |
+  {
+    name:    'studio'
+    /** The recipe folder to open; the current directory when not given. */
+    folder?: string
   }

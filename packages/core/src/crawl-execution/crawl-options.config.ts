@@ -82,4 +82,27 @@ export interface CrawlOptions {
    * list. Default: no limit.
    */
   allowedHosts?:    string[]
+  /**
+   * A crawler-level budget for a preview run, checked in addition to each
+   * recipe's own `limits.maxRecords`: whichever a run hits first stops it
+   * cleanly, reported on the recipe as `stoppedBy`. Unlike `limits`, this is
+   * never authored into a recipe file; it is how a caller such as the studio
+   * or the MCP server caps a sample run without editing the recipe.
+   */
+  sample?:          SampleBudget
+}
+
+/** A crawler-level budget for one recipe run; see `CrawlOptions.sample`. */
+export interface SampleBudget {
+  /** Stop once this many records have been emitted (across `limits.maxRecords`, if lower, whichever comes first). */
+  maxRecords?: number
+  /**
+   * Let the recipe finish emitting from its `maxPages`-th visited page, then
+   * stop before the next one. Checked when a record is emitted and when a new
+   * page is visited, so a page that itself emits nothing still lets the
+   * budget stop the run, one page late at most.
+   */
+  maxPages?:   number
+  /** Stop once this many milliseconds have passed since the recipe started, checked at the same points as `maxPages`. */
+  maxMs?:      number
 }
