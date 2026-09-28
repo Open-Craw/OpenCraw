@@ -86,7 +86,7 @@
       "push": true
     },
     "version": {
-      "preVersionCommand": "npx nx run-many -t build --projects=packages/*,python-packages/*",
+      "preVersionCommand": "npx nx run-many -t build,bundle-ui --projects=packages/*,python-packages/*",
       "conventionalCommits": true,
       "preserveMatchingDependencyRanges": false,
       "fallbackCurrentVersionResolver": "disk",
