@@ -1,0 +1,9 @@
+{
+  "kind": "output",
+  "id": "product",
+  "version": 1,
+  "fields": {
+    "name": { "type": "string", "required": true, "key": true },
+    "price": { "type": "number", "required": true }
+  }
+}

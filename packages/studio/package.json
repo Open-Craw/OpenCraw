@@ -5,6 +5,9 @@
   "main": "./dist/index.esm.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/src/index.d.ts",
+  "bin": {
+    "opencraw-studio": "./bin/opencraw-studio.mjs"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -15,12 +18,63 @@
   },
   "files": [
     "dist",
+    "bin",
     "!**/*.tsbuildinfo",
     "!**/*.d.ts.map",
     "!**/*.js.map"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@opencraw/core": "^0.0.1",
+    "playwright": "^1.63.0",
+    "zod": "^4.6.5"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "description": "OpenCraw Studio: a local server and React UI for opening a recipe folder, running samples and reading the trace next to the page the engine fetched.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/russoedu/open.craw.git",
+    "directory": "packages/studio"
+  },
+  "keywords": [
+    "crawler",
+    "scraper",
+    "recipe",
+    "studio",
+    "visual-editor"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "sideEffects": false,
+  "nx": {
+    "targets": {
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "lint": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "e2e": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build"
+        ],
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "options": {
+          "command": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
+          "cwd": "packages/studio"
+        }
+      }
+    }
   }
 }

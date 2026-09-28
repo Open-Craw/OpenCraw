@@ -1,0 +1,16 @@
+{
+  "kind": "input",
+  "id": "products",
+  "output": "product",
+  "mode": "api",
+  "start": [{ "url": "http://127.0.0.1:4599/products" }],
+  "steps": [
+    { "type": "request", "id": "list", "url": "{{start.url}}", "as": "json" },
+    { "type": "extract", "id": "items", "from": "list", "selector": "$.items[*]", "kind": "jsonpath", "take": "json", "many": true },
+    { "type": "forEach", "over": "items", "as": "item", "emit": true, "steps": [] }
+  ],
+  "mapping": {
+    "name": { "from": "item.name" },
+    "price": { "from": "item.price" }
+  }
+}

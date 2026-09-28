@@ -27,6 +27,14 @@
     "@opencraw/core": "^0.0.1",
     "playwright": "^1.63.0"
   },
+  "peerDependencies": {
+    "@opencraw/studio": "^0.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@opencraw/studio": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public"
   },

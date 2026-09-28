@@ -19,7 +19,8 @@ export default defineConfig(() => ({
   //  plugins: [],
   // },
   build:   {
-    outDir:               './dist',
+    // The studio server serves the built UI from here (packages/studio/src/studio-server, #89).
+    outDir:               '../../packages/studio/dist/ui',
     emptyOutDir:          true,
     reportCompressedSize: true,
     commonjsOptions:      {

@@ -103,6 +103,7 @@ export function createCrawler (options: CrawlOptions = {}): Crawler {
     profiles,
     retry:           options.retry,
     allowedHosts,
+    sample:          options.sample,
 
     ignoreHTTPSErrors: options.browser?.ignoreHTTPSErrors,
   })

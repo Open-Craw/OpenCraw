@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@chakra-ui/react": "3.37.0",
-    "@emotion/react": "11.14.0"
+    "@emotion/react": "11.14.0",
+    "@opencraw/studio": "^0.0.1"
   }
 }

@@ -1,0 +1,28 @@
+import { z } from 'zod'
+
+/** One problem found on a recipe file, with the JSON path it lives at. */
+export const recipeIssueSchema = z.object({
+  path:    z.string(),
+  message: z.string(),
+  kind:    z.enum(['validation', 'binding']),
+})
+
+/** One recipe file in an opened workspace. */
+export const recipeListingSchema = z.object({
+  file:   z.string(),
+  kind:   z.enum(['input', 'output', 'unknown']),
+  id:     z.string().optional(),
+  issues: z.array(recipeIssueSchema),
+  /** The file's JSON, pretty-printed: the JSON tab's starting text (see `save-recipe` for how an edit is written back). */
+  text:   z.string(),
+})
+
+/** What `open-workspace` answers with: every recipe file directly inside the folder. */
+export const workspaceViewSchema = z.object({
+  folder:  z.string(),
+  recipes: z.array(recipeListingSchema),
+})
+
+export type RecipeIssue = z.infer<typeof recipeIssueSchema>
+export type RecipeListing = z.infer<typeof recipeListingSchema>
+export type WorkspaceView = z.infer<typeof workspaceViewSchema>

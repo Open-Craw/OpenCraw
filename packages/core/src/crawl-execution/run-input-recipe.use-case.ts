@@ -22,6 +22,7 @@ import { RotatingRunner } from './rotating-runner.use-case'
 import type { LeasedRunner } from './rotating-runner.use-case'
 import type { RecipeReport } from './crawl-report.model'
 import { errorKindOf } from './error-kind.mapper'
+import type { SampleBudget } from './crawl-options.config'
 
 export interface RecipeRunDependencies {
   browser:            () => Promise<BrowserClient>
@@ -48,6 +49,8 @@ export interface RecipeRunDependencies {
   retry?:             RetryRule
   /** The hosts every request may reach, when the crawler limits them. */
   allowedHosts?:      HostAllowlist
+  /** A crawler-level budget for a preview run; see `CrawlOptions.sample`. */
+  sample?:            SampleBudget
 }
 
 /** What every runner of one recipe run shares. */
@@ -177,6 +180,7 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
   const { variant, window, item } = options
   const input = window === undefined ? prepared(recipe, deps) : { ...window.recipe, vars: recipe.vars }
   const started = Date.now()
+  const sampleStarted = started
   const report: RecipeReport = { recipeId: input.id, ...(variant !== undefined && { variant }), ...(item !== undefined && { item }), mode: input.mode, emitted: 0, rejected: 0, duplicates: 0, skipped: 0, stepsSkipped: 0, pages: 0, durationMs: 0 }
   const captchas = { detected: 0, solved: 0, failed: 0 }
   const limits = input.limits ?? {}
@@ -189,6 +193,7 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
     switch (event.type) {
       case 'page:visit': {
         report.pages += 1
+        checkSample()
         break
       }
       case 'step:skip': {
@@ -290,8 +295,32 @@ export async function runRecipe (recipe: InputRecipe, output: OutputRecipe, deps
       deps.events.emit({ type: 'record:reject', recipeId: input.id, url, field: error.field, reason: error.reason, scope: deps.debug === true ? snapshot : undefined })
     }
     if (limits.maxRecords !== undefined && report.emitted + held.length >= limits.maxRecords) stopped = true
+    checkSample()
 
     return stopped ? 'stop' : 'continue'
+  }
+
+  /**
+   * Checked after each record emit and each page visit: the natural points
+   * where stopping is clean (no request left half-sent). Sets `stopped` and
+   * the report's `stoppedBy` the first time a budget in `deps.sample` is hit;
+   * a budget already exceeded (`stopped` already true) is left alone, so the
+   * first one hit is the one reported.
+   */
+  function checkSample (): void {
+    if (stopped || deps.sample === undefined) return
+    const { maxRecords, maxPages, maxMs } = deps.sample
+    if (maxRecords !== undefined && report.emitted + held.length >= maxRecords) {
+      stopped = true
+      report.stoppedBy = 'sample-maxRecords'
+      // > , not >=: lets every record already found on the page in progress emit, and stops before the next one.
+    } else if (maxPages !== undefined && report.pages > maxPages) {
+      stopped = true
+      report.stoppedBy = 'sample-maxPages'
+    } else if (maxMs !== undefined && Date.now() - sampleStarted >= maxMs) {
+      stopped = true
+      report.stoppedBy = 'sample-maxMs'
+    }
   }
 
   async function write (record: OutputRecord, url: string, snapshot: Record<string, unknown>, trace?: MappingTrace): Promise<void> {
