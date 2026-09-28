@@ -1,5 +1,5 @@
 import { BrowserClient, HttpClient } from '@opencraw/core'
-import type { BrowserSessionConfig, HttpBody, InputRecipe } from '@opencraw/core'
+import type { BodyKind, BrowserSessionConfig, HttpBody, InputRecipe } from '@opencraw/core'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
 import { rewriteDocument } from './rewrite-document.mapper'
 
@@ -10,6 +10,31 @@ export interface SnapshotResult {
   nodeCount: number
   /** The page's own URL, used to resolve every relative URL and as the `<base>`. */
   baseUrl:   string
+  /**
+   * The document as captured, before `rewriteDocument` strips every
+   * `<script>` for the sandboxed iframe — server-side only, never sent to the
+   * UI (`studio-api`'s `SnapshotView` does not carry it): `page-inspector`'s
+   * `page-data.algorithm.ts` (issue #93) needs the JSON-LD, inline state and
+   * `application/json` blocks a script tag can hold, which the display
+   * snapshot no longer has by the time it is cached.
+   */
+  rawHtml:   string
+  /**
+   * The format `http.client.ts` read the body as (api mode only; `undefined`
+   * in web mode, whose document is always HTML) — what the content pane
+   * uses to pick a canvas: `document-view`'s tree/pdf/grid/deck for
+   * `json`/`yaml`/`xml`/`pdf`/`csv`/`xlsx`/`pptx`, the snapshot iframe for
+   * `html` (and `docx`/`markdown`, which `http.client.ts` already turns into
+   * HTML), studio plan §3.4, issue #94.
+   */
+  format?:   BodyKind
+  /**
+   * The parsed body itself (api mode only), for `document-view`'s mappers to
+   * read — server-side only, never sent to the UI as-is (`studio-api`'s
+   * `SnapshotView` carries only `format`; a canvas asks for its own view
+   * model with a follow-up command, `inspect-page`'s own pattern).
+   */
+  body?:     HttpBody
 }
 
 /**
@@ -54,7 +79,7 @@ async function snapshotWeb (url: string, browser?: BrowserSessionConfig): Promis
       const baseUrl = session.page.url()
       const rewritten = rewriteDocument(html, baseUrl)
 
-      return { ...rewritten, baseUrl }
+      return { ...rewritten, baseUrl, rawHtml: html }
     } finally {
       await session.close()
     }
@@ -67,9 +92,10 @@ async function snapshotApi (url: string): Promise<SnapshotResult> {
   const client = await HttpClient.open({})
   try {
     const response = await client.send({ url })
-    const rewritten = rewriteDocument(textOf(response.body), url)
+    const text = textOf(response.body)
+    const rewritten = rewriteDocument(text, url)
 
-    return { ...rewritten, baseUrl: url }
+    return { ...rewritten, baseUrl: url, rawHtml: text, format: response.format, body: response.body }
   } finally {
     await client.dispose()
   }

@@ -2,3 +2,5 @@ export { useStudioUiStore, resetStudioUiStore, initialStudioUiState } from './st
 export type { StudioUiState, StudioUiActions, StudioUiStore, EditorTab } from './studio-ui.store'
 export { useRunSessionStore, resetRunSessionStore, initialRunSessionState } from './run-session.store'
 export type { RejectedRecord, RunSessionState, RunSessionActions, RunSessionStore } from './run-session.store'
+export { useRecordingStore, resetRecordingStore, initialRecordingState } from './recording.store'
+export type { RecordingCard, RecordingNote, RecordingState, RecordingActions, RecordingStore } from './recording.store'

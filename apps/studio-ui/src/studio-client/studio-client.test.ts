@@ -97,6 +97,32 @@ describe('createStudioClient', () => {
     }))
   })
 
+  it('sends start-recording as a POST with the recipe id', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { started: true } })
+
+    const client = createStudioClient()
+    const result = await client.startRecording('login')
+
+    expect(result).toEqual({ started: true })
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      body: JSON.stringify({ type: 'start-recording', recipeId: 'login' }),
+    }))
+  })
+
+  it('sends stop-recording as a POST and returns the recorded steps', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { steps: [{ type: 'fill', selector: '#user', value: 'alice' }] } })
+
+    const client = createStudioClient()
+    const result = await client.stopRecording()
+
+    expect(result).toEqual({ steps: [{ type: 'fill', selector: '#user', value: 'alice' }] })
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      body: JSON.stringify({ type: 'stop-recording' }),
+    }))
+  })
+
   it('rejects with the server\'s error message on a non-ok response', async () => {
     withUrl('?token=abc123')
     mockFetch({ ok: false, status: 401, body: { error: 'missing or invalid token' } })

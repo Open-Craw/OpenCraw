@@ -1,18 +1,35 @@
-import { useRef, useState } from 'react'
-import { Badge, Box, HStack, Spinner, Switch, Text } from '@chakra-ui/react'
-import type { OutlineView, RecipeListing } from '@opencraw/studio'
-import { useInferSelectorMutation, useSnapshotQuery } from '../studio-client'
-import { useStudioUiStore } from '../studio-store'
-import { listOutlineNodes, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { useEffect, useRef, useState } from 'react'
+import { Badge, Box, Button, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
+import type { DocumentTreeNodeView, OutlineCard, OutlineView, RecipeListing } from '@opencraw/studio'
+import { InspectorPanel } from '../inspector'
+import type { GridViewOverride } from '../studio-client'
+import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
+import { useRecordingStore, useStudioUiStore } from '../studio-store'
+import { DeckCanvas } from './deck-canvas.component'
+import { GridCanvas } from './grid-canvas.component'
+import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { PdfCanvas } from './pdf-canvas.component'
+import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
+import { TreeCanvas } from './tree-canvas.component'
+import type { TreePickMode } from './tree-canvas.component'
 
 const STEP_PATH = 'start' // v1: only the start point is captured — see `page-snapshot`'s take-snapshot.use-case.ts.
+
+/** The snapshot `format`s the tree canvas reads (studio plan §3.4, issue #94's 5a) — YAML and JSON Lines are both normalised to JSON by `http.client.ts`, so `document-tree` (and this canvas) handles them exactly like `json`. */
+const TREE_FORMATS = new Set(['json', 'yaml', 'jsonl', 'xml'])
+/** The snapshot `format`s the grid canvas reads (studio plan §3.4, issue #94's 5c). */
+const GRID_FORMATS = new Set(['csv', 'xlsx'])
+/** The snapshot `format` the deck canvas reads (studio plan §3.4, issue #94's 5d). */
+const DECK_FORMATS = new Set(['pptx'])
 
 export interface ContentPaneProps {
   /** The selected recipe, with its outline — `undefined` before one is picked. */
   recipe?:        RecipeListing
   /** Saves an edited outline (the same call `steps-outline` makes); picking writes through this, not a separate path. */
   onSaveOutline?: (path: string, outline: OutlineView) => Promise<void>
+  /** Saves the recipe's raw JSON; the Inspect panel's "responses seen" tab writes through this when a pick switches the recipe to api mode (issue #93). */
+  onSaveRecipe?:  (path: string, recipe: unknown) => Promise<void>
 }
 
 /**
@@ -28,10 +45,22 @@ export interface ContentPaneProps {
  * in the Steps outline — picking into a nested scope is a real gap this
  * phase did not close (see the final report).
  */
-export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React.ReactElement {
+export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPaneProps): React.ReactElement {
   const recipeId = recipe?.id
   const snapshot = useSnapshotQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH)
   const inferSelector = useInferSelectorMutation()
+  const [inspecting, setInspecting] = useState(false)
+  const client = useStudioClient()
+  const format = snapshot.data?.format
+  const isDocumentTree = format !== undefined && TREE_FORMATS.has(format)
+  const isPdf = format === 'pdf'
+  const isGrid = format !== undefined && GRID_FORMATS.has(format)
+  const isDeck = format !== undefined && DECK_FORMATS.has(format)
+  const documentTree = useDocumentTreeQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isDocumentTree)
+  const pdfView = usePdfViewQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isPdf)
+  const [csvOverride, setCsvOverride] = useState<GridViewOverride | undefined>(undefined)
+  const gridView = useGridViewQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isGrid, csvOverride)
+  const deckView = useDeckViewQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isDeck)
 
   const pickTarget = useStudioUiStore(state => state.pickTarget)
   const showHidden = useStudioUiStore(state => state.showHidden)
@@ -42,11 +71,30 @@ export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React
   const setShowHidden = useStudioUiStore(state => state.setShowHidden)
   const setHoveredNodeId = useStudioUiStore(state => state.setHoveredNodeId)
 
+  const recordingRecipeId = useRecordingStore(state => state.recipeId)
+  const recordingActive = useRecordingStore(state => state.active)
+  const recordingCardCount = useRecordingStore(state => state.cards.length)
+  const recordingStoppedSteps = useRecordingStore(state => state.stoppedSteps)
+  const recordingError = useRecordingStore(state => state.error)
+  const dismissRecordingStopped = useRecordingStore(state => state.dismissStopped)
+  const startRecording = useStartRecordingMutation()
+  const stopRecording = useStopRecordingMutation()
+  const isRecordingThis = recordingRecipeId === recipeId && recordingActive
+  const recordingStoppedForThis = recordingRecipeId === recipeId ? recordingStoppedSteps : undefined
+
   const [status, setStatus] = useState<string | undefined>(undefined)
   /** The top-level index a first pick's Read card landed at, so a following second pick upgrades it in place instead of adding a duplicate. */
   const insertedAtRef = useRef<number | undefined>(undefined)
+  /** Same idea as `insertedAtRef`, but for the PDF, grid and deck canvases' `table` card (issue #94's 5b/5c/5d): every header/until/column/sheet/slide/fillDown/shapes pick re-sends the whole card, so it always replaces the same slot rather than piling up duplicates. Shared between the three canvases since only one of them is ever shown for a given recipe's format. */
+  const tableInsertedAtRef = useRef<number | undefined>(undefined)
 
   const pickMode = pickTarget !== undefined && pickTarget.recipeId === recipeId
+
+  // A different recipe means a different (or no) table card to upgrade in place, and a stale CSV override to drop.
+  useEffect(() => {
+    tableInsertedAtRef.current = undefined
+    setCsvOverride(undefined)
+  }, [recipeId])
 
   async function handlePick (nodeId: string): Promise<void> {
     if (recipeId === undefined) return
@@ -83,10 +131,139 @@ export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React
     })
   }
 
+  /**
+   * Handles a tree canvas pick (studio plan §3.4, issue #94's 5a): `value`
+   * and `list` both write a Read card (`documentReadCardNode`, generalised
+   * to `listPath` for `list`); `next` writes an empty `paginate` bracket
+   * instead (`paginateFromNextNode`). Always appended at the end of the
+   * recipe's top-level steps — a document tree pick has none of the DOM
+   * picker's two-click "upgrade the last card in place" behaviour (there is
+   * no second pick to combine with; the tree already knows the exact list).
+   */
+  async function handleTreePick (node: DocumentTreeNodeView, mode: TreePickMode): Promise<void> {
+    if (recipeId === undefined) return
+    try {
+      if (mode === 'next') {
+        await writeOutline((steps) => {
+          const bracket = paginateFromNextNode(node, `steps.${steps.length}`)
+          setStatus(`Paginate: next from ${node.jsonpath}`)
+
+          return spliceTopLevel(steps, undefined, [bracket])
+        })
+
+        return
+      }
+      await writeOutline((steps) => {
+        const card = documentReadCardNode(node, `steps.${steps.length}`, { generalize: mode === 'list', namespaces: documentTree.data?.namespaces })
+        setStatus(`Read card: ${card.step.selector}${mode === 'list' ? ` (${String(node.listCount ?? 0)} items)` : ''}`)
+
+        return spliceTopLevel(steps, undefined, [card])
+      })
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : String(error))
+    }
+  }
+
+  /**
+   * Handles the PDF, grid and deck canvases' `table` card (issue #94's
+   * 5b/5c/5d): every header/until/column/sheet/slide/shapes/fillDown pick
+   * sends the whole card again, so it always replaces the same top-level slot
+   * (`tableInsertedAtRef`) instead of piling up duplicates — the same
+   * "upgrade in place" idea `handlePick`'s own `insertedAtRef` uses for the
+   * DOM picker's two-click list shape.
+   */
+  async function handleTableCardPick (card: OutlineCard): Promise<void> {
+    await writeOutline((steps) => {
+      const at = tableInsertedAtRef.current ?? steps.length
+      tableInsertedAtRef.current = at
+      setStatus(`table: ${String(card.step.selector)}`)
+
+      return spliceTopLevel(steps, tableInsertedAtRef.current, [{ ...card, path: `steps.${at}` }])
+    })
+  }
+
+  /** A dragged-region pick (issue #94's 5b): always a fresh `regex` card, never folded into the table draft's slot. */
+  async function handlePdfRegionPick (card: OutlineCard): Promise<void> {
+    await writeOutline((steps) => {
+      setStatus(`regex: ${String(card.step.selector)}`)
+
+      return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
+    })
+  }
+
+  /** A deck canvas chart pick (issue #94's 5d): a single-click `jsonpath` card, always a fresh one — a chart pick has no draft to upgrade in place, unlike the deck's own table card. */
+  async function handleDeckChartPick (card: OutlineCard): Promise<void> {
+    await writeOutline((steps) => {
+      setStatus(`jsonpath: ${String(card.step.selector)}`)
+
+      return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
+    })
+  }
+
   async function writeOutline (build: (steps: NonNullable<RecipeListing['outline']>['steps']) => NonNullable<RecipeListing['outline']>['steps']): Promise<void> {
     if (onSaveOutline === undefined || recipe?.outline === undefined) return
     const steps = build(recipe.outline.steps)
     await onSaveOutline(recipe.file, { ...recipe.outline, steps })
+  }
+
+  /** The "Record" button (issue #95, phase 6): opens the studio's own headed browser window on the recipe's own start point. */
+  function handleStartRecording (): void {
+    if (recipeId === undefined || recipe?.outline === undefined) return
+    const url = recipeStartUrl(recipe.outline.recipe)
+    if (url === undefined) {
+      setStatus('this recipe has no start point to record from')
+
+      return
+    }
+    startRecording.mutate({ recipeId, startUrl: url })
+  }
+
+  /**
+   * "Make this the login" (issue #95): every step recorded becomes
+   * `session.bootstrap`, `keep: ['cookies']` and a suggested `saveTo`
+   * (`recording-conversion.mapper.ts`) — the recipe's own `steps` untouched.
+   * There is no dedicated server command for this conversion (only
+   * `recording.e2e.test.ts`'s own golden recipe proves the shape out), so it
+   * is built here, against the same `save-outline` every other outline edit
+   * in this pane already goes through.
+   */
+  async function handleMakeLogin (): Promise<void> {
+    if (recordingStoppedForThis === undefined || recipe?.outline === undefined) return
+    const startUrl = useRecordingStore.getState().startUrl
+    if (startUrl === undefined) return
+    const existingSessionValue = recipe.outline.recipe.session
+    const existingSession = isRecord(existingSessionValue) ? existingSessionValue : {}
+    const existingBootstrapValue = existingSession.bootstrap
+    const existingBootstrap = isRecord(existingBootstrapValue) ? existingBootstrapValue : undefined
+    const saveTo = suggestedStorageStatePath(recipe.file, recipeId ?? 'recipe')
+    const session = { ...existingSession, bootstrap: suggestedBootstrap(startUrl, recordingStoppedForThis, existingBootstrap, saveTo) }
+    await onSaveOutline?.(recipe.file, { ...recipe.outline, recipe: { ...recipe.outline.recipe, session } })
+    setStatus(`Made the login: session.bootstrap, ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
+    dismissRecordingStopped()
+  }
+
+  /**
+   * "Keep as steps" (issue #95): every card recorded — the same
+   * `OutlineNode`s the Steps outline's own live section already renders
+   * (`recording.store.ts`'s `cards`, one per `recording-stopped` step, in
+   * the same order — never rebuilt from the raw JSON, which would lose their
+   * real sentences) — after a `goto` back to the recording's own start
+   * point, appended to the recipe's own top-level `steps`; never replacing
+   * what was already there (`spliceTopLevel`, the same "append, don't
+   * clobber" every pick in this pane already follows).
+   */
+  async function handleKeepAsSteps (): Promise<void> {
+    if (recordingStoppedForThis === undefined || recipe?.outline === undefined) return
+    const startUrl = useRecordingStore.getState().startUrl
+    if (startUrl === undefined) return
+    const cards = useRecordingStore.getState().cards
+    await writeOutline((steps) => {
+      const gotoNode = gotoCardNode(startUrl, `steps.${steps.length}`)
+
+      return spliceTopLevel(steps, undefined, [gotoNode, ...cards.map(card => card.node)])
+    })
+    setStatus(`Kept as steps: ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
+    dismissRecordingStopped()
   }
 
   if (recipeId === undefined) {
@@ -110,27 +287,136 @@ export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React
   return (
     <Box h='full' display='flex' flexDirection='column'>
       <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0}>
-        <Text
-          as='button'
-          fontSize='sm'
-          fontWeight={pickMode ? 'semibold' : 'normal'}
-          color={pickMode ? 'colorPalette.fg' : 'fg'}
-          colorPalette='blue'
-          cursor='pointer'
-          onClick={togglePicking}
-        >
-          {pickMode ? 'Cancel pick' : 'Read'}
-        </Text>
-        <Switch.Root checked={showHidden} onCheckedChange={(details) => { setShowHidden(details.checked) }} size='sm'>
-          <Switch.HiddenInput />
-          <Switch.Control />
-          <Switch.Label fontSize='sm'>Show hidden</Switch.Label>
-        </Switch.Root>
-        {snapshot.isFetching && <Spinner size='xs' />}
-        {status !== undefined && <Badge size='sm' colorPalette={status.startsWith('List') || status.startsWith('Read') ? 'green' : 'orange'}>{status}</Badge>}
+        {!isDocumentTree && !isPdf && !isGrid && !isDeck && (
+          <>
+            <Text
+              as='button'
+              fontSize='sm'
+              fontWeight={pickMode ? 'semibold' : 'normal'}
+              color={pickMode ? 'colorPalette.fg' : 'fg'}
+              colorPalette='blue'
+              cursor='pointer'
+              onClick={togglePicking}
+            >
+              {pickMode ? 'Cancel pick' : 'Read'}
+            </Text>
+            <Switch.Root checked={showHidden} onCheckedChange={(details) => { setShowHidden(details.checked) }} size='sm'>
+              <Switch.HiddenInput />
+              <Switch.Control />
+              <Switch.Label fontSize='sm'>Show hidden</Switch.Label>
+            </Switch.Root>
+            <Text
+              as='button'
+              fontSize='sm'
+              fontWeight={inspecting ? 'semibold' : 'normal'}
+              color={inspecting ? 'colorPalette.fg' : 'fg'}
+              colorPalette='purple'
+              cursor='pointer'
+              onClick={() => { setInspecting(value => !value) }}
+            >
+              {inspecting ? 'Hide inspector' : 'Inspect'}
+            </Text>
+            <Text
+              as='button'
+              fontSize='sm'
+              fontWeight={isRecordingThis ? 'semibold' : 'normal'}
+              color={isRecordingThis ? 'red.fg' : 'fg'}
+              colorPalette='red'
+              cursor='pointer'
+              onClick={() => { if (isRecordingThis) stopRecording.mutate(); else handleStartRecording() }}
+            >
+              {isRecordingThis ? 'Stop recording' : 'Record'}
+            </Text>
+          </>
+        )}
+        {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to read it; [*] reads every item of a list.</Text>}
+        {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching) || (isGrid && gridView.isFetching) || (isDeck && deckView.isFetching)) && <Spinner size='xs' />}
+        {status !== undefined && (
+          <Badge
+            size='sm'
+            colorPalette={
+              status.startsWith('List') || status.startsWith('Read') || status.startsWith('Paginate') || status.startsWith('table') ||
+              status.startsWith('regex') || status.startsWith('jsonpath') || status.startsWith('Made') || status.startsWith('Kept')
+                ? 'green'
+                : 'orange'
+            }
+          >
+            {status}
+          </Badge>
+        )}
       </HStack>
+      {isRecordingThis && (
+        <HStack px={3} py={2} bg='red.subtle' color='red.fg' fontSize='sm' gap={3} flexShrink={0} data-testid='recording-banner'>
+          <Box w='8px' h='8px' borderRadius='full' bg='red.solid' flexShrink={0} />
+          <Text>Recording — a browser window opened for you to drive; interact with it, not with the snapshot below.</Text>
+          <Badge size='sm' colorPalette='red'>{recordingCardCount} step{recordingCardCount === 1 ? '' : 's'}</Badge>
+        </HStack>
+      )}
+      {recordingError !== undefined && recordingRecipeId === recipeId && (
+        <Box px={3} py={1} bg='red.subtle' color='red.fg' fontSize='sm' flexShrink={0}>{recordingError}</Box>
+      )}
+      {recordingStoppedForThis !== undefined && (
+        <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} data-testid='recording-stopped-bar'>
+          <Text fontSize='sm'>
+            Recording stopped: {recordingStoppedForThis.length} step{recordingStoppedForThis.length === 1 ? '' : 's'} recorded.
+          </Text>
+          <Button size='xs' colorPalette='blue' onClick={() => { void handleMakeLogin() }} disabled={recordingStoppedForThis.length === 0}>
+            Make this the login
+          </Button>
+          <Button size='xs' variant='outline' onClick={() => { void handleKeepAsSteps() }} disabled={recordingStoppedForThis.length === 0}>
+            Keep as steps
+          </Button>
+          <Button size='xs' variant='ghost' onClick={dismissRecordingStopped}>
+            Discard
+          </Button>
+        </HStack>
+      )}
       <Box flex='1' minH='0'>
-        {snapshot.data !== undefined && (
+        {isDocumentTree && documentTree.data !== undefined && (
+          <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} />
+        )}
+        {isDocumentTree && documentTree.isError && (
+          <Box p={4} color='fg.error'><Text>{documentTree.error.message}</Text></Box>
+        )}
+        {isPdf && pdfView.data !== undefined && (
+          <PdfCanvas
+            recipeId={recipeId}
+            stepPath={STEP_PATH}
+            view={pdfView.data}
+            bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH)}
+            onTablePick={(card) => { void handleTableCardPick(card) }}
+            onRegionPick={(card) => { void handlePdfRegionPick(card) }}
+          />
+        )}
+        {isPdf && pdfView.isError && (
+          <Box p={4} color='fg.error'><Text>{pdfView.error.message}</Text></Box>
+        )}
+        {isGrid && gridView.data !== undefined && (
+          <GridCanvas
+            recipeId={recipeId}
+            stepPath={STEP_PATH}
+            view={gridView.data}
+            onTablePick={(card) => { void handleTableCardPick(card) }}
+            csvOverride={csvOverride}
+            onCsvOverrideChange={setCsvOverride}
+          />
+        )}
+        {isGrid && gridView.isError && (
+          <Box p={4} color='fg.error'><Text>{gridView.error.message}</Text></Box>
+        )}
+        {isDeck && deckView.data !== undefined && (
+          <DeckCanvas
+            recipeId={recipeId}
+            stepPath={STEP_PATH}
+            view={deckView.data}
+            onTablePick={(card) => { void handleTableCardPick(card) }}
+            onChartPick={(card) => { void handleDeckChartPick(card) }}
+          />
+        )}
+        {isDeck && deckView.isError && (
+          <Box p={4} color='fg.error'><Text>{deckView.error.message}</Text></Box>
+        )}
+        {!isDocumentTree && !isPdf && !isGrid && !isDeck && snapshot.data !== undefined && !inspecting && (
           <SnapshotFrame
             html={snapshot.data.html}
             pickMode={pickMode}
@@ -140,10 +426,38 @@ export function ContentPane ({ recipe, onSaveOutline }: ContentPaneProps): React
             onPickNode={(nodeId) => { void handlePick(nodeId) }}
           />
         )}
+        {!isDocumentTree && !isPdf && !isGrid && !isDeck && snapshot.data !== undefined && inspecting && (
+          <Splitter.Root panels={[{ id: 'snapshot', minSize: 15 }, { id: 'inspect', minSize: 20 }]} h='full'>
+            <Splitter.Panel id='snapshot' overflow='hidden'>
+              <SnapshotFrame
+                html={snapshot.data.html}
+                pickMode={pickMode}
+                showHidden={showHidden}
+                hoveredSelector={hoveredSelector}
+                onHoverNode={setHoveredNodeId}
+                onPickNode={(nodeId) => { void handlePick(nodeId) }}
+              />
+            </Splitter.Panel>
+            <Splitter.ResizeTrigger id='snapshot:inspect' />
+            <Splitter.Panel id='inspect' overflow='hidden'>
+              <InspectorPanel
+                recipeId={recipeId}
+                recipe={recipe}
+                snapshot={snapshot.data}
+                onSaveOutline={onSaveOutline}
+                onSaveRecipe={onSaveRecipe}
+              />
+            </Splitter.Panel>
+          </Splitter.Root>
+        )}
         {!snapshot.isFetching && snapshot.data === undefined && (
           <Box p={4} color='fg.muted'><Text>Run a sample, or open a recipe, to see its snapshot here.</Text></Box>
         )}
       </Box>
     </Box>
   )
+}
+
+function isRecord (value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }

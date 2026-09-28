@@ -46,10 +46,19 @@ export interface OutlineNodeViewProps {
   /** Every issue on the recipe; each node shows only its own (`outline-tree.ts`'s `issuesForNode`), and passes the whole list on to its children. */
   allIssues: Issue[]
   actions:   OutlineActions
+  /**
+   * Renders the same card/bracket shape without the move/remove controls or
+   * the expand-to-edit form: for a card that is not yet part of the outline
+   * a save would write (a `recording-card` streaming in during a recording,
+   * issue #95's live cards) — reusing this rendering rather than a parallel
+   * one, minus the affordances that only make sense once the card is really
+   * in the tree `actions` edits. Default `false`.
+   */
+  readOnly?: boolean
 }
 
 /** One card or bracket: its sentence, move/remove controls, its own issues, and (expanded) its form; a bracket also its nested lists. */
-export function OutlineNodeView ({ node, listId, index, lastIndex, allIssues, actions }: OutlineNodeViewProps) {
+export function OutlineNodeView ({ node, listId, index, lastIndex, allIssues, actions, readOnly = false }: OutlineNodeViewProps) {
   const [expanded, setExpanded] = useState(false)
   const isBracket = node.kind === 'bracket'
   const isCustom = node.kind === 'card' && node.custom
@@ -63,29 +72,31 @@ export function OutlineNodeView ({ node, listId, index, lastIndex, allIssues, ac
         borderWidth='1px'
         borderRadius='md'
         bg={isCustom ? 'bg.muted' : 'bg.panel'}
-        cursor='pointer'
-        onClick={() => { setExpanded(open => !open) }}
+        cursor={readOnly ? 'default' : 'pointer'}
+        onClick={readOnly ? undefined : () => { setExpanded(open => !open) }}
       >
-        <Stack gap={0} flexShrink={0}>
-          <IconButton
-            aria-label='Move up'
-            size='2xs'
-            variant='ghost'
-            disabled={index === 0}
-            onClick={event => { event.stopPropagation(); actions.move(listId, index, -1) }}
-          >
-            ↑
-          </IconButton>
-          <IconButton
-            aria-label='Move down'
-            size='2xs'
-            variant='ghost'
-            disabled={index === lastIndex}
-            onClick={event => { event.stopPropagation(); actions.move(listId, index, 1) }}
-          >
-            ↓
-          </IconButton>
-        </Stack>
+        {!readOnly && (
+          <Stack gap={0} flexShrink={0}>
+            <IconButton
+              aria-label='Move up'
+              size='2xs'
+              variant='ghost'
+              disabled={index === 0}
+              onClick={event => { event.stopPropagation(); actions.move(listId, index, -1) }}
+            >
+              ↑
+            </IconButton>
+            <IconButton
+              aria-label='Move down'
+              size='2xs'
+              variant='ghost'
+              disabled={index === lastIndex}
+              onClick={event => { event.stopPropagation(); actions.move(listId, index, 1) }}
+            >
+              ↓
+            </IconButton>
+          </Stack>
+        )}
         <Box flex='1'>
           <SentenceView parts={node.sentence} />
           {issues.length > 0 && (
@@ -96,12 +107,14 @@ export function OutlineNodeView ({ node, listId, index, lastIndex, allIssues, ac
             </Stack>
           )}
         </Box>
-        <IconButton aria-label='Remove step' size='2xs' variant='ghost' onClick={event => { event.stopPropagation(); actions.remove(listId, index) }}>
-          ✕
-        </IconButton>
+        {!readOnly && (
+          <IconButton aria-label='Remove step' size='2xs' variant='ghost' onClick={event => { event.stopPropagation(); actions.remove(listId, index) }}>
+            ✕
+          </IconButton>
+        )}
       </HStack>
 
-      {expanded && !isCustom && (
+      {expanded && !isCustom && !readOnly && (
         <Box pl={8}>
           <StepForm
             stepType={node.stepType}
@@ -111,7 +124,7 @@ export function OutlineNodeView ({ node, listId, index, lastIndex, allIssues, ac
           />
         </Box>
       )}
-      {expanded && isCustom && (
+      {expanded && isCustom && !readOnly && (
         <Box pl={8}>
           <Text fontSize='xs' color='fg.muted' mb={1}>
             This step doesn&apos;t read as a sentence yet: edit its JSON directly.

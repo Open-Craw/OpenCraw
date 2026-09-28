@@ -2,7 +2,7 @@ import { cachedSnapshot, createSnapshotCache, invalidateRecipe, putSnapshot } fr
 import type { SnapshotResult } from './take-snapshot.use-case'
 
 function snapshot (html: string): SnapshotResult {
-  return { html, nodeCount: 1, baseUrl: 'https://example.com/' }
+  return { html, nodeCount: 1, baseUrl: 'https://example.com/', rawHtml: html }
 }
 
 describe('snapshot.store', () => {

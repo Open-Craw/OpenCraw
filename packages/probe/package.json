@@ -1,0 +1,60 @@
+{
+  "name": "@opencraw/probe",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.esm.js",
+  "module": "./dist/index.esm.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "default": "./dist/index.esm.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo",
+    "!**/*.d.ts.map",
+    "!**/*.js.map"
+  ],
+  "dependencies": {
+    "@opencraw/core": "^0.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Finds where a fetched page's data lives: JSON-LD blocks, inline JSON, HTML/Markdown tables and outline, JSON/JSON-Lines/YAML structure, PDF rows, workbook sheets and deck slides. The findings behind @opencraw/cli's probe command, shared with @opencraw/mcp and @opencraw/studio.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/russoedu/open.craw.git",
+    "directory": "packages/probe"
+  },
+  "keywords": [
+    "crawler",
+    "scraper",
+    "probe",
+    "json-ld",
+    "recipe"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "sideEffects": false,
+  "nx": {
+    "targets": {
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "lint": {
+        "dependsOn": [
+          "^build"
+        ]
+      }
+    }
+  }
+}

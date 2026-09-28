@@ -61,6 +61,23 @@ describe('ExtractionScope', () => {
     expect(scope.lookup('nothing')).toBeUndefined()
   })
 
+  it('looks up env.NAME from process.env — a recorded secret\'s {{env.NAME}} placeholder (studio phase 6, #95)', () => {
+    const scope = new ExtractionScope()
+    process.env.OPENCRAW_TEST_SECRET = 'sh'
+    try {
+      expect(scope.lookup('env.OPENCRAW_TEST_SECRET')).toBe('sh')
+      expect(scope.lookup('env.NOT_SET')).toBeUndefined()
+    } finally {
+      delete process.env.OPENCRAW_TEST_SECRET
+    }
+  })
+
+  it('a step-bound "env" id shadows process.env, same as any other reserved root', () => {
+    const scope = new ExtractionScope()
+    scope.set('env', { CUSTOM: 'x' })
+    expect(scope.lookup('env.CUSTOM')).toBe('x')
+  })
+
   it('appends to a list bound in a parent scope, as a new list', () => {
     const root = new ExtractionScope()
     root.set('ids', [1])

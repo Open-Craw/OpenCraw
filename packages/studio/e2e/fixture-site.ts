@@ -22,12 +22,25 @@ export const PRODUCTS = [
 /** How many books the listing page has — the picking e2e test's "emits 20 records" (issue #91's deliverable line), echoing books.toscrape.com's own page size. */
 export const BOOK_COUNT = 20
 
+/** The Inspect panel e2e test's (#93) three finds, apart from the tree's own picking: a value only in a hidden node, a JSON-LD block, and a JSON response fetched while the page renders. */
+export const HIDDEN_PROMO_CODE = 'SECRET-42'
+export const JSON_LD_PRICE = 42
+export const REVIEWS_PATH = '/api/reviews'
+export const REVIEWS_QUERY_PAGE = 1
+
 /**
  * A books.toscrape-shaped listing (studio plan §3.2, issue #91's picking
  * e2e test): `article.product_pod` items, directly inside `div.row` (no
  * extra wrapper — books.toscrape's own markup), each with an `h3 > a` title
  * and a `p.price_color` price, so `packages/studio/e2e/picking.e2e.test.ts`
  * can pick a price twice and get the safe list shape by construction.
+ *
+ * Also carries the Inspect panel e2e test's (#93) three finds, none of them
+ * inside `.row` so `BOOK_COUNT`/`.price_color`/`article.product_pod` counts
+ * above are untouched: a hidden `<input>` (a value that never renders), a
+ * `<script type="application/ld+json">` block, and an inline `<script>` that
+ * fetches a JSON endpoint while the page loads (a real XHR a headless
+ * browser observes, the same way `packages/cli`'s `probe --browser` does).
  */
 function booksHtml (): string {
   const items = Array.from({ length: BOOK_COUNT }, (_, index) => {
@@ -35,11 +48,42 @@ function booksHtml (): string {
 
     return `<article class="product_pod"><h3><a href="/book/${id}" title="Book ${id}">Book ${id}</a></h3><p class="price_color">£${(10 + id).toFixed(2)}</p></article>`
   }).join('')
+  const hiddenPromo = `<input type="hidden" id="promo-code" value="${HIDDEN_PROMO_CODE}">`
+  const jsonLd = `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'Product', 'name': 'Books catalogue', 'price': JSON_LD_PRICE })}</script>`
+  const fetchReviews = `<script>fetch(${JSON.stringify(`${REVIEWS_PATH}?page=${REVIEWS_QUERY_PAGE}`)})</script>`
 
-  return `<!doctype html><html lang="en"><head><title>Books</title></head><body><div class="row">${items}</div></body></html>`
+  return `<!doctype html><html lang="en"><head><title>Books</title>${jsonLd}</head><body>${hiddenPromo}<div class="row">${items}</div>${fetchReviews}</body></html>`
 }
 
-function handle (request: IncomingMessage, response: ServerResponse): void {
+/** The only credentials `/login` accepts — the recording e2e test's own fixture, never a real secret. */
+export const LOGIN_USER = 'demo'
+export const LOGIN_PASS = 'demo-pass'
+
+const LOGIN_FORM = (message = ''): string => `<!doctype html><html lang="en"><head><title>Login</title></head><body>${message}<form id="loginForm" method="post" action="/login"><input id="user" name="user"><input id="pass" name="pass" type="password"><button id="submit" type="submit">Sign in</button></form></body></html>`
+
+const SEARCH_PAGE = '<!doctype html><html lang="en"><head><title>Search</title></head><body><h1>Search</h1><form id="searchForm" method="get" action="/search/results"><input id="q" name="q"></form></body></html>'
+
+/** Two results pages of two items each, an `id="next" rel="next"` link on page 1 only — `next-link.policy.ts`'s own heuristics, by construction. */
+function resultsHtml (page: number): string {
+  const items = [1, 2].map(n => `<li class="result"><a class="title" href="/item/${page}-${n}">Result ${page}-${n}</a></li>`).join('')
+  const next = page < 2 ? '<p><a id="next" rel="next" href="/search/results?page=2">Next</a></p>' : ''
+
+  return `<!doctype html><html lang="en"><head><title>Results</title></head><body><h1>Results</h1><ul>${items}</ul>${next}</body></html>`
+}
+
+function hasSession (request: IncomingMessage): boolean {
+  return (request.headers.cookie ?? '').includes('session=ok')
+}
+
+function readBody (request: IncomingMessage): Promise<string> {
+  return new Promise((resolve) => {
+    let body = ''
+    request.on('data', (chunk: Buffer) => { body += chunk.toString() })
+    request.on('end', () => { resolve(body) })
+  })
+}
+
+async function handle (request: IncomingMessage, response: ServerResponse): Promise<void> {
   const url = new URL(request.url ?? '/', FIXTURE_BASE)
   if (url.pathname === '/products') {
     response.writeHead(200, { 'content-type': 'application/json' })
@@ -50,6 +94,56 @@ function handle (request: IncomingMessage, response: ServerResponse): void {
   if (url.pathname === '/books') {
     response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
     response.end(booksHtml())
+
+    return
+  }
+  if (url.pathname === REVIEWS_PATH) {
+    response.writeHead(200, { 'content-type': 'application/json' })
+    response.end(JSON.stringify({ items: [{ rating: 5 }, { rating: 4 }] }))
+
+    return
+  }
+  if (url.pathname === '/login' && request.method === 'GET') {
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(LOGIN_FORM())
+
+    return
+  }
+  if (url.pathname === '/login' && request.method === 'POST') {
+    const body = new URLSearchParams(await readBody(request))
+    if (body.get('user') === LOGIN_USER && body.get('pass') === LOGIN_PASS) {
+      response.writeHead(302, { 'set-cookie': 'session=ok; Path=/; HttpOnly', 'location': '/search' })
+      response.end()
+
+      return
+    }
+    response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(LOGIN_FORM('<p id="error">Wrong credentials</p>'))
+
+    return
+  }
+  if (url.pathname === '/search') {
+    if (!hasSession(request)) {
+      response.writeHead(302, { location: '/login' })
+      response.end()
+
+      return
+    }
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(SEARCH_PAGE)
+
+    return
+  }
+  if (url.pathname === '/search/results') {
+    if (!hasSession(request)) {
+      response.writeHead(302, { location: '/login' })
+      response.end()
+
+      return
+    }
+    const page = Number(url.searchParams.get('page') ?? '1')
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(resultsHtml(page))
 
     return
   }

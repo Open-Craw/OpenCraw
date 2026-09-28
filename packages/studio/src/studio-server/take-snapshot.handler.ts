@@ -18,10 +18,15 @@ import type { StudioState } from './workspace.store'
 export async function handleTakeSnapshot (state: StudioState, command: TakeSnapshotCommand): Promise<SnapshotView> {
   if (state.folder === undefined) throw new Error('open a workspace first')
   const cached = cachedSnapshot(state.snapshots, command.recipeId, command.path)
-  if (cached !== undefined) return cached
+  if (cached !== undefined) return snapshotView(cached)
   const { input } = await loadRecipePair(state.folder, command.recipeId)
   const snapshot = await takeSnapshot(input, command.path, state.browser)
   putSnapshot(state.snapshots, command.recipeId, command.path, snapshot)
 
-  return snapshot
+  return snapshotView(snapshot)
+}
+
+/** The wire view of a cached snapshot: `html`/`nodeCount`/`baseUrl`/`format`, never `rawHtml` or the parsed `body` (server-side only — see `SnapshotResult`'s own doc comments). */
+function snapshotView (snapshot: { html: string, nodeCount: number, baseUrl: string, format?: SnapshotView['format'] }): SnapshotView {
+  return { html: snapshot.html, nodeCount: snapshot.nodeCount, baseUrl: snapshot.baseUrl, ...(snapshot.format !== undefined && { format: snapshot.format }) }
 }

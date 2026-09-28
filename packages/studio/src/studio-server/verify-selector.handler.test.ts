@@ -41,7 +41,7 @@ describe('handleVerifySelector', () => {
     const folder = apiWorkspace('<p class="price">10</p>')
     state.folder = folder
     await handleTakeSnapshot(state, { type: 'take-snapshot', recipeId: 'items', path: 'start' })
-    putSnapshot(state.snapshots, 'items', 'start', { html: '<p class="price" data-oc-node="n0">10</p>', nodeCount: 1, baseUrl: 'file:///stale' }) // pretend the cached snapshot is stale
+    putSnapshot(state.snapshots, 'items', 'start', { html: '<p class="price" data-oc-node="n0">10</p>', nodeCount: 1, baseUrl: 'file:///stale', rawHtml: '<p class="price">10</p>' }) // pretend the cached snapshot is stale
     writeFileSync(join(folder, 'page.html'), '<p class="cost">10</p>') // the live page renamed its class
 
     const view = await handleVerifySelector(state, { type: 'verify-selector', recipeId: 'items', path: 'start', selector: '.price' })

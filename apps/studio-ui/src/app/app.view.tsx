@@ -120,7 +120,11 @@ function AppShell () {
       <Box flex='1' minH='0'>
         <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} h='full'>
           <Splitter.Panel id='content' overflow='auto'>
-            <ContentPane recipe={selectedRecipe} onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }} />
+            <ContentPane
+              recipe={selectedRecipe}
+              onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
+              onSaveRecipe={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+            />
           </Splitter.Panel>
           <Splitter.ResizeTrigger id='content:editor' />
           <Splitter.Panel id='editor' overflow='hidden' display='flex' flexDirection='column'>

@@ -1,4 +1,4 @@
-import type { ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, OpenWorkspaceCommand, OutlineView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -20,6 +20,30 @@ export interface StudioClient {
   inferSelector:  (recipeId: string, path: string, nodeIds: [string] | [string, string]) => Promise<InferSelectorView>
   /** Explains a missing or rejected value from the recipe's last sample run (issue #92's Why? tab). */
   explainWhy:     (target: WhyTarget) => Promise<WhyView>
+  /** The Inspect panel's DOM tree and data-in-the-page findings, off the same cached snapshot (issue #93). */
+  inspectPage:    (recipeId: string, path: string) => Promise<InspectView>
+  /** The JSON responses seen while the recipe's start page rendered (issue #93's "responses seen"); slower than `inspectPage` (opens its own browser session). */
+  responsesSeen:  (recipeId: string, path: string) => Promise<ResponsesSeenView>
+  /** The content pane's tree canvas for a JSON/YAML/XML snapshot (`document-view`, studio plan §3.4, issue #94's 5a), off the same cached snapshot. */
+  documentTree:   (recipeId: string, path: string) => Promise<DocumentTreeView>
+  /** The PDF canvas's cells and rows for a PDF snapshot (`document-view`'s `pdf-view.mapper.ts`, studio plan §3.4, issue #94's 5b), off the same cached snapshot. */
+  pdfView:        (recipeId: string, path: string) => Promise<PdfDocumentView>
+  /** The PDF canvas's live preview of a `table` extract's options (`document-view`'s `table-preview.use-case.ts`, issue #94's 5b): a pure computation over the cached snapshot, instant on every option change. */
+  tablePreview:   (recipeId: string, path: string, options: TablePreviewOptions) => Promise<TablePreviewView>
+  /** The URL the PDF canvas's `pdf.js` fetches directly for the raw bytes of a cached PDF snapshot (`GET /api/pdf-bytes`, issue #94's 5b) — not a `send`-through command, since it answers bytes, not JSON. */
+  pdfBytesUrl:    (recipeId: string, path: string) => string
+  /** The grid canvas's sheets and cells for a CSV/spreadsheet snapshot (`document-view`'s `workbook-view.mapper.ts`, studio plan §3.4, issue #94's 5c), off the same cached snapshot; `delimiter`/`encoding` override a CSV's auto-detected reading. */
+  gridView:       (recipeId: string, path: string, override?: { delimiter?: string, encoding?: string }) => Promise<WorkbookDocumentView>
+  /** The grid canvas's live preview of a `table` extract's options (`document-view`'s `previewGridTable`, issue #94's 5c): a pure computation over the cached snapshot, instant on every option change. */
+  gridPreview:    (recipeId: string, path: string, options: GridPreviewOptions) => Promise<GridTablePreviewView>
+  /** The deck canvas's slides, shapes, tables, charts and notes for a `.pptx` snapshot (`document-view`'s `deck-view.mapper.ts`, studio plan §3.4, issue #94's 5d), off the same cached snapshot. */
+  deckView:       (recipeId: string, path: string) => Promise<DeckDocumentView>
+  /** The deck canvas's live preview of a `table` extract's options (`document-view`'s `previewDeckTable`, issue #94's 5d): a pure computation over the cached snapshot, instant on every option change. */
+  deckPreview:    (recipeId: string, path: string, options: DeckPreviewOptions) => Promise<DeckTablePreviewView>
+  /** Opens the studio's own headed browser window on `recipeId`'s start point and starts recording (issue #95, phase 6); `recording-card`/`recording-note` events stream over the same WebSocket `subscribe` already opens. */
+  startRecording: (recipeId: string) => Promise<{ started: true }>
+  /** Closes the recording window, if one is open, and answers with every step recorded, in order (issue #95). */
+  stopRecording:  () => Promise<{ steps: Record<string, unknown>[] }>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -75,6 +99,18 @@ export function createStudioClient (): StudioClient {
     verifySelector: (recipeId, path, selector) => send<VerifySelectorView>(token, { type: 'verify-selector', recipeId, path, selector }),
     inferSelector:  (recipeId, path, nodeIds) => send<InferSelectorView>(token, { type: 'infer-selector', recipeId, path, nodeIds }),
     explainWhy:     target => send<WhyView>(token, { type: 'explain-why', target } satisfies ExplainWhyCommand),
+    inspectPage:    (recipeId, path) => send<InspectView>(token, { type: 'inspect-page', recipeId, path }),
+    responsesSeen:  (recipeId, path) => send<ResponsesSeenView>(token, { type: 'responses-seen', recipeId, path }),
+    documentTree:   (recipeId, path) => send<DocumentTreeView>(token, { type: 'document-tree', recipeId, path }),
+    pdfView:        (recipeId, path) => send<PdfDocumentView>(token, { type: 'pdf-view', recipeId, path }),
+    tablePreview:   (recipeId, path, options) => send<TablePreviewView>(token, { type: 'table-preview', recipeId, path, options }),
+    pdfBytesUrl:    (recipeId, path) => `/api/pdf-bytes?token=${encodeURIComponent(token)}&recipeId=${encodeURIComponent(recipeId)}&path=${encodeURIComponent(path)}`,
+    gridView:       (recipeId, path, override) => send<WorkbookDocumentView>(token, { type: 'grid-view', recipeId, path, delimiter: override?.delimiter, encoding: override?.encoding }),
+    gridPreview:    (recipeId, path, options) => send<GridTablePreviewView>(token, { type: 'grid-preview', recipeId, path, options }),
+    deckView:       (recipeId, path) => send<DeckDocumentView>(token, { type: 'deck-view', recipeId, path }),
+    deckPreview:    (recipeId, path, options) => send<DeckTablePreviewView>(token, { type: 'deck-preview', recipeId, path, options }),
+    startRecording: recipeId => send<{ started: true }>(token, { type: 'start-recording', recipeId } satisfies StartRecordingCommand),
+    stopRecording:  () => send<{ steps: Record<string, unknown>[] }>(token, { type: 'stop-recording' } satisfies StopRecordingCommand),
     subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)

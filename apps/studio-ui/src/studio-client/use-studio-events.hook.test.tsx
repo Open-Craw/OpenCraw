@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { QueryClientProvider } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
-import { resetRunSessionStore, useRunSessionStore } from '../studio-store'
+import { resetRecordingStore, resetRunSessionStore, useRecordingStore, useRunSessionStore } from '../studio-store'
 import { createStudioQueryClient } from './query-client'
 import { useStudioEvents } from './use-studio-events.hook'
 
@@ -30,6 +30,7 @@ beforeAll(() => {
 beforeEach(() => {
   withUrl('?token=abc123')
   resetRunSessionStore()
+  resetRecordingStore()
   messageHandler = undefined
 })
 
@@ -80,6 +81,60 @@ describe('useStudioEvents', () => {
 
     send({ type: 'run-finished', recipeId: 'books', emitted: 1, rejected: 0, duplicates: 0, durationMs: 5 })
     expect(useRunSessionStore.getState().running).toBe(false)
+  })
+
+  it('appends recording-card events (with their secret flag) to the recording store', () => {
+    const queryClient = createStudioQueryClient()
+    function wrapper ({ children }: PropsWithChildren): React.ReactElement {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    }
+    renderHook(() => { useStudioEvents() }, { wrapper })
+
+    const node = { kind: 'card', path: 'steps.0', stepType: 'fill', sentence: [], custom: false, step: { type: 'fill', selector: '#pass', value: '{{env.PASS}}' } }
+    send({ type: 'recording-card', node, secret: true })
+
+    expect(useRecordingStore.getState().cards).toEqual([{ node, secret: true }])
+  })
+
+  it('appends recording-note events to the recording store', () => {
+    const queryClient = createStudioQueryClient()
+    function wrapper ({ children }: PropsWithChildren): React.ReactElement {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    }
+    renderHook(() => { useStudioEvents() }, { wrapper })
+
+    send({ type: 'recording-note', kind: 'unsupported', message: 'recording inside an iframe is not supported' })
+
+    expect(useRecordingStore.getState().notes).toEqual([{ kind: 'unsupported', message: 'recording inside an iframe is not supported' }])
+  })
+
+  it('resolves a next-link note\'s selector off the click card it followed, for the "turn into pagination" offer', () => {
+    const queryClient = createStudioQueryClient()
+    function wrapper ({ children }: PropsWithChildren): React.ReactElement {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    }
+    renderHook(() => { useStudioEvents() }, { wrapper })
+
+    send({ type: 'recording-card', node: { kind: 'card', path: 'steps.0', stepType: 'click', sentence: [], custom: false, step: { type: 'click', selector: '#next' } }, secret: false })
+    send({ type: 'recording-note', kind: 'next-link', message: 'this click looks like a "next" link — turn it into "For every page — click #next"?' })
+
+    expect(useRecordingStore.getState().notes[0]?.selector).toBe('#next')
+  })
+
+  it('marks the recording stopped, holds its steps, and drops the cached snapshot(s) on recording-stopped', async () => {
+    const queryClient = createStudioQueryClient()
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries')
+    function wrapper ({ children }: PropsWithChildren): React.ReactElement {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    }
+    act(() => { useRecordingStore.getState().startRecording('login', 'https://example.test/login') })
+    renderHook(() => { useStudioEvents() }, { wrapper })
+
+    send({ type: 'recording-stopped', steps: [{ type: 'fill', selector: '#user', value: 'alice' }] })
+
+    expect(useRecordingStore.getState().active).toBe(false)
+    expect(useRecordingStore.getState().stoppedSteps).toEqual([{ type: 'fill', selector: '#user', value: 'alice' }])
+    await waitFor(() => { expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['snapshot'] }) })
   })
 
   it('invalidates the workspace query on workspace-changed', async () => {

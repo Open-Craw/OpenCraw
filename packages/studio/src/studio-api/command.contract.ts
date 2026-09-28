@@ -95,6 +95,163 @@ export const inferSelectorCommandSchema = z.object({
   nodeIds:  z.union([onePickedNodeSchema, twoPickedNodesSchema]),
 })
 
+/**
+ * The Inspect panel's DOM tree and data-in-the-page findings, off the same
+ * cached snapshot `take-snapshot`/`infer-selector` already use (`page-inspector`,
+ * issue #93). Call `take-snapshot` first, same as `infer-selector`.
+ */
+export const inspectPageCommandSchema = z.object({
+  type:     z.literal('inspect-page'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/**
+ * The JSON responses seen while a recipe's start page rendered
+ * (`page-inspector`'s `responses-seen.use-case.ts`, issue #93), for the
+ * Inspect panel's "responses seen" list. Opens its own browser session
+ * (see that use-case's doc comment for why); slower than `inspect-page`.
+ */
+export const responsesSeenCommandSchema = z.object({
+  type:     z.literal('responses-seen'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/**
+ * The document tree for the content pane's tree canvas (`document-view`'s
+ * `tree-view.mapper.ts`, studio plan §3.4, issue #94's 5a), off the same
+ * cached snapshot `take-snapshot`/`inspect-page` already use — call
+ * `take-snapshot` first, same as `inspect-page`. Only a JSON/YAML/XML
+ * snapshot has one; PDF, workbook and deck documents get their own canvases
+ * (5b/5c/5d).
+ */
+export const documentTreeCommandSchema = z.object({
+  type:     z.literal('document-tree'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/**
+ * The PDF canvas's cells and rows (`document-view`'s `pdf-view.mapper.ts`,
+ * studio plan §3.4, issue #94's 5b), off the same cached snapshot
+ * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
+ * Only a PDF snapshot has one; JSON/YAML/XML get the tree canvas (5a), the
+ * workbook and deck their own canvases (5c/5d).
+ */
+export const pdfViewCommandSchema = z.object({
+  type:     z.literal('pdf-view'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/** A `table` extract's options, as the studio's PDF canvas picks build them — mirrors `document-view/table-preview.use-case.ts`'s `TablePreviewOptions`. */
+export const tablePreviewOptionsSchema = z.object({
+  header:  z.string().min(1),
+  until:   z.string().min(1).optional(),
+  columns: z.record(z.string(), z.string().min(1)).optional(),
+  align:   z.enum(['auto', 'top', 'center', 'bottom']).optional(),
+})
+
+/**
+ * The live preview of a `table` extract's options against a cached PDF
+ * snapshot (`document-view`'s `table-preview.use-case.ts`, studio plan §3.4,
+ * issue #94's 5b): the matched rows to highlight on the page, recomputed as
+ * the person edits the options — call `take-snapshot` first.
+ */
+export const tablePreviewCommandSchema = z.object({
+  type:     z.literal('table-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  options:  tablePreviewOptionsSchema,
+})
+
+/**
+ * The grid canvas's sheets and cells (`document-view`'s `workbook-view.mapper.ts`,
+ * studio plan §3.4, issue #94's 5c), off the same cached snapshot
+ * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
+ * Only a CSV/spreadsheet snapshot has one; JSON/YAML/XML get the tree canvas
+ * (5a), PDF the PDF canvas (5b), the deck its own canvas (5d).
+ *
+ * `delimiter`/`encoding` override a CSV's auto-detected format (issue #94's
+ * 5c: "the detected delimiter and encoding shown and overridable"); the
+ * server re-reads the file with the override applied and keeps it cached, so
+ * a later `grid-preview` sees the same reading. Both are rejected on a
+ * spreadsheet snapshot (there is nothing to detect).
+ */
+export const gridViewCommandSchema = z.object({
+  type:      z.literal('grid-view'),
+  recipeId:  z.string().min(1),
+  path:      z.string().min(1),
+  delimiter: z.string().min(1).optional(),
+  encoding:  z.string().min(1).optional(),
+})
+
+/** A `table` extract's options for a workbook, as the studio's grid canvas picks build them — mirrors `document-view/table-preview.use-case.ts`'s `GridTablePreviewOptions`. */
+export const gridPreviewOptionsSchema = z.object({
+  sheet:         z.string().min(1).optional(),
+  header:        z.string().min(1),
+  until:         z.string().min(1).optional(),
+  columns:       z.record(z.string(), z.string().min(1)).optional(),
+  headerRows:    z.int().min(1).optional(),
+  fillDown:      z.array(z.string().min(1)).min(1).optional(),
+  includeHidden: z.boolean().optional(),
+})
+
+/**
+ * The live preview of a `table` extract's options against a cached CSV/
+ * spreadsheet snapshot (`document-view`'s `table-preview.use-case.ts`'s
+ * `previewGridTable`, studio plan §3.4, issue #94's 5c): the matched
+ * table(s), recomputed as the person edits the options — call `take-snapshot`
+ * and `grid-view` first.
+ */
+export const gridPreviewCommandSchema = z.object({
+  type:     z.literal('grid-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  options:  gridPreviewOptionsSchema,
+})
+
+/**
+ * The deck canvas's slides, shapes, tables, charts and notes for a deck
+ * (PowerPoint) snapshot (`document-view`'s `deck-view.mapper.ts`, studio plan
+ * §3.4, issue #94's 5d), off the same cached snapshot
+ * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
+ * Only a `.pptx` snapshot has one; JSON/YAML/XML get the tree canvas (5a),
+ * PDF the PDF canvas (5b), the workbook the grid canvas (5c).
+ */
+export const deckViewCommandSchema = z.object({
+  type:     z.literal('deck-view'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/** A `table` extract's options for a deck, as the studio's deck canvas picks build them — mirrors `document-view/table-preview.use-case.ts`'s `DeckTablePreviewOptions`. */
+export const deckPreviewOptionsSchema = z.object({
+  slide:         z.string().min(1).optional(),
+  shapes:        z.boolean().optional(),
+  align:         z.enum(['auto', 'top', 'center', 'bottom']).optional(),
+  header:        z.string().min(1),
+  until:         z.string().min(1).optional(),
+  columns:       z.record(z.string(), z.string().min(1)).optional(),
+  headerRows:    z.int().min(1).optional(),
+  fillDown:      z.array(z.string().min(1)).min(1).optional(),
+  includeHidden: z.boolean().optional(),
+})
+
+/**
+ * The live preview of a `table` extract's options against a cached deck
+ * snapshot (`document-view`'s `table-preview.use-case.ts`'s `previewDeckTable`,
+ * studio plan §3.4, issue #94's 5d): the matched table(s), recomputed as the
+ * person edits the options — call `take-snapshot` and `deck-view` first.
+ */
+export const deckPreviewCommandSchema = z.object({
+  type:     z.literal('deck-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  options:  deckPreviewOptionsSchema,
+})
+
 /** A missing value in an emitted record, by its position in the last sample run's records (the order they streamed in, matching the UI's own `records` list). */
 export const missingWhyTargetSchema = z.object({
   kind:        z.literal('missing'),
@@ -124,6 +281,27 @@ export const explainWhyCommandSchema = z.object({
   target: whyTargetSchema,
 })
 
+/**
+ * Opens the studio's own headed browser window and starts recording user
+ * actions on it (issue #95, phase 6): clicks, fills, selects, key presses
+ * and scrolls stream back as `recording-card` events, each already a
+ * verified step. `recipeId`'s start point is where the window opens.
+ */
+export const startRecordingCommandSchema = z.object({
+  type:     z.literal('start-recording'),
+  recipeId: z.string().min(1),
+})
+
+/**
+ * Closes the recording window, if one is open; a no-op otherwise. Answers
+ * with every step recorded, in order, so the caller can offer "make this
+ * the login" (writes them under `session.bootstrap`) or "keep as steps"
+ * (appends them to the recipe's own `steps`) without a second round trip.
+ */
+export const stopRecordingCommandSchema = z.object({
+  type: z.literal('stop-recording'),
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
   runSampleCommandSchema,
@@ -135,6 +313,17 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   verifySelectorCommandSchema,
   inferSelectorCommandSchema,
   explainWhyCommandSchema,
+  inspectPageCommandSchema,
+  responsesSeenCommandSchema,
+  documentTreeCommandSchema,
+  pdfViewCommandSchema,
+  tablePreviewCommandSchema,
+  gridViewCommandSchema,
+  gridPreviewCommandSchema,
+  deckViewCommandSchema,
+  deckPreviewCommandSchema,
+  startRecordingCommandSchema,
+  stopRecordingCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -147,9 +336,23 @@ export type SaveOutlineCommand = z.infer<typeof saveOutlineCommandSchema>
 export type TakeSnapshotCommand = z.infer<typeof takeSnapshotCommandSchema>
 export type VerifySelectorCommand = z.infer<typeof verifySelectorCommandSchema>
 export type InferSelectorCommand = z.infer<typeof inferSelectorCommandSchema>
+export type InspectPageCommand = z.infer<typeof inspectPageCommandSchema>
+export type ResponsesSeenCommand = z.infer<typeof responsesSeenCommandSchema>
+export type DocumentTreeCommand = z.infer<typeof documentTreeCommandSchema>
+export type PdfViewCommand = z.infer<typeof pdfViewCommandSchema>
+export type TablePreviewOptions = z.infer<typeof tablePreviewOptionsSchema>
+export type TablePreviewCommand = z.infer<typeof tablePreviewCommandSchema>
+export type GridViewCommand = z.infer<typeof gridViewCommandSchema>
+export type GridPreviewOptions = z.infer<typeof gridPreviewOptionsSchema>
+export type GridPreviewCommand = z.infer<typeof gridPreviewCommandSchema>
+export type DeckViewCommand = z.infer<typeof deckViewCommandSchema>
+export type DeckPreviewOptions = z.infer<typeof deckPreviewOptionsSchema>
+export type DeckPreviewCommand = z.infer<typeof deckPreviewCommandSchema>
 export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
 export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
 export type WhyTarget = z.infer<typeof whyTargetSchema>
 export type ExplainWhyCommand = z.infer<typeof explainWhyCommandSchema>
+export type StartRecordingCommand = z.infer<typeof startRecordingCommandSchema>
+export type StopRecordingCommand = z.infer<typeof stopRecordingCommandSchema>
 /** Every command the UI can send the server, over HTTP POST. */
 export type StudioCommand = z.infer<typeof studioCommandSchema>

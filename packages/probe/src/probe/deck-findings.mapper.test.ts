@@ -2,7 +2,6 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { HttpClient } from '@opencraw/core'
 import { describeDeck } from './deck-findings.mapper'
-import { deckReport } from './probe-report.mapper'
 
 const fixture = join(__dirname, '..', '..', '..', 'office-reader', 'src', 'presentation', 'fixtures', 'incentivi.pptx')
 
@@ -17,7 +16,6 @@ describe('describeDeck', () => {
       expect(findings.headers).toEqual([{ slide: 1, text: 'Modello | Prezzo | Sconto', selector: '^Modello', hint: 'merged header cells: try "headerRows": 2' }, { slide: 1, text: 'Listino | Netto', selector: '^Listino' }])
       expect(findings.grids).toEqual([{ slide: 2, title: 'Griglia prezzi Jeep', boxes: 9 }])
       expect(findings.charts).toEqual([{ slide: 3, type: 'bar', title: 'Immatricolazioni', series: [{ name: 'Pandina', points: 3 }, { name: '600e', points: 3 }] }])
-      expect(deckReport('x.pptx', findings)).toContain('slide 2  Griglia prezzi Jeep: 9 short boxes')
     } finally {
       await client.dispose()
     }

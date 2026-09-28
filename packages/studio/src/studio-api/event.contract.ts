@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { outlineNodeSchema } from './outline-view.contract'
 
 /** Why a sample run stopped before finishing on its own; mirrors `@opencraw/core`'s `RecipeReport.stoppedBy`. */
 export const stoppedBySchema = z.enum(['sample-maxRecords', 'sample-maxPages', 'sample-maxMs'])
@@ -54,12 +55,44 @@ export const workspaceChangedEventSchema = z.object({
   type: z.literal('workspace-changed'),
 })
 
+/**
+ * One recorded action landed as a step (issue #95): the card it becomes
+ * (`scope-outline`'s own `OutlineCard`/`OutlineBracket` shape — the wire
+ * form `outline-view.contract.ts` already defines, never a second card
+ * format) and whether its value is a secret placeholder, for the secret
+ * pill styling.
+ */
+export const recordingCardEventSchema = z.object({
+  type:   z.literal('recording-card'),
+  node:   outlineNodeSchema,
+  secret: z.boolean(),
+})
+
+/** A notice from the recording session that is not itself a step: a "next" link offer, or an unsupported iframe/shadow-DOM report. */
+export const recordingNoteEventSchema = z.object({
+  type:    z.literal('recording-note'),
+  kind:    z.enum(['next-link', 'unsupported', 'info']),
+  message: z.string(),
+})
+
+/** One recorded step's raw JSON, exactly as `flow-recording` built it. */
+const recordedStepSchema = z.record(z.string(), z.unknown())
+
+/** The recording window closed — `stop-recording` completed, or the window was closed some other way. `steps` is every step recorded, in order, exactly as `stop-recording`'s own response carries them. */
+export const recordingStoppedEventSchema = z.object({
+  type:  z.literal('recording-stopped'),
+  steps: z.array(recordedStepSchema),
+})
+
 export const studioEventSchema = z.discriminatedUnion('type', [
   traceLineEventSchema,
   recordEventSchema,
   recordRejectedEventSchema,
   runFinishedEventSchema,
   workspaceChangedEventSchema,
+  recordingCardEventSchema,
+  recordingNoteEventSchema,
+  recordingStoppedEventSchema,
 ])
 
 export type StoppedBy = z.infer<typeof stoppedBySchema>
@@ -69,5 +102,8 @@ export type RecordEvent = z.infer<typeof recordEventSchema>
 export type RecordRejectedEvent = z.infer<typeof recordRejectedEventSchema>
 export type RunFinishedEvent = z.infer<typeof runFinishedEventSchema>
 export type WorkspaceChangedEvent = z.infer<typeof workspaceChangedEventSchema>
+export type RecordingCardEvent = z.infer<typeof recordingCardEventSchema>
+export type RecordingNoteEvent = z.infer<typeof recordingNoteEventSchema>
+export type RecordingStoppedEvent = z.infer<typeof recordingStoppedEventSchema>
 /** Every event the server pushes to the UI over the WebSocket. */
 export type StudioEvent = z.infer<typeof studioEventSchema>
