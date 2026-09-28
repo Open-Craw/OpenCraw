@@ -1,1 +1,8 @@
 export { fetchStartPage } from './fetch-start-page.use-case'
+export { takeSnapshot } from './take-snapshot.use-case'
+export type { SnapshotResult } from './take-snapshot.use-case'
+export { rewriteDocument } from './rewrite-document.mapper'
+export type { RewrittenDocument } from './rewrite-document.mapper'
+export { hiddenMarksScript, HIDDEN_ATTRIBUTE } from './hidden-marks.algorithm'
+export { createSnapshotCache, cachedSnapshot, putSnapshot, invalidateRecipe } from './snapshot.store'
+export type { SnapshotCache } from './snapshot.store'
