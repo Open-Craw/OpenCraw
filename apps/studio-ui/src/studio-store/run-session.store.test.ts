@@ -44,6 +44,13 @@ describe('useRunSessionStore', () => {
     ])
   })
 
+  it('appendRejected appends in order', () => {
+    act(() => {
+      useRunSessionStore.getState().appendRejected({ field: 'price', reason: 'missing' })
+    })
+    expect(useRunSessionStore.getState().rejected).toEqual([{ field: 'price', reason: 'missing' }])
+  })
+
   it('finishRun stops running without touching what was collected', () => {
     act(() => {
       useRunSessionStore.getState().startRun()

@@ -84,6 +84,19 @@ describe('createStudioClient', () => {
     }))
   })
 
+  it('sends explain-why as a POST with the target', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { sentence: '"price" is missing.', field: 'price', recipeId: 'books', outcome: 'missing' } })
+
+    const client = createStudioClient()
+    const view = await client.explainWhy({ kind: 'missing', recipeId: 'books', recordIndex: 0, field: 'price' })
+
+    expect(view.sentence).toBe('"price" is missing.')
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      body: JSON.stringify({ type: 'explain-why', target: { kind: 'missing', recipeId: 'books', recordIndex: 0, field: 'price' } }),
+    }))
+  })
+
   it('rejects with the server\'s error message on a non-ok response', async () => {
     withUrl('?token=abc123')
     mockFetch({ ok: false, status: 401, body: { error: 'missing or invalid token' } })

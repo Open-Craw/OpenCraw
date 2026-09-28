@@ -42,4 +42,9 @@ describe('App shell', () => {
     render(<App />)
     expect(screen.getByRole('button', { name: 'Run sample' }).hasAttribute('disabled')).toBe(true)
   })
+
+  it('has a Record tab alongside Steps and JSON (issue #92)', () => {
+    render(<App />)
+    expect(screen.getByText('Record')).toBeTruthy()
+  })
 })

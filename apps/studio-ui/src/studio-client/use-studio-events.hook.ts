@@ -17,6 +17,7 @@ export function useStudioEvents (): void {
   const queryClient = useQueryClient()
   const appendTraceLine = useRunSessionStore(state => state.appendTraceLine)
   const appendRecord = useRunSessionStore(state => state.appendRecord)
+  const appendRejected = useRunSessionStore(state => state.appendRejected)
   const finishRun = useRunSessionStore(state => state.finishRun)
 
   useEffect(() => (
@@ -27,7 +28,11 @@ export function useStudioEvents (): void {
           break
         }
         case 'record': {
-          appendRecord({ key: event.key, data: event.data })
+          appendRecord({ key: event.key, data: event.data, scope: event.scope, mapping: event.mapping })
+          break
+        }
+        case 'record-rejected': {
+          appendRejected({ field: event.field, reason: event.reason, scope: event.scope })
           break
         }
         case 'run-finished': {
@@ -41,5 +46,5 @@ export function useStudioEvents (): void {
         // No default
       }
     })
-  ), [client, queryClient, appendTraceLine, appendRecord, finishRun])
+  ), [client, queryClient, appendTraceLine, appendRecord, appendRejected, finishRun])
 }

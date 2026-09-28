@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type EditorTab = 'steps' | 'json'
+export type EditorTab = 'steps' | 'record' | 'json'
 
 /**
  * Client-only UI state that is not server data: the folder box's own text,

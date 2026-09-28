@@ -1,4 +1,4 @@
-import type { FetchStartPageCommand, InferSelectorView, OpenWorkspaceCommand, OutlineView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WorkspaceView } from '@opencraw/studio'
+import type { ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, OpenWorkspaceCommand, OutlineView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -18,6 +18,8 @@ export interface StudioClient {
   verifySelector: (recipeId: string, path: string, selector: string) => Promise<VerifySelectorView>
   /** Turns one or two picked nodes' `data-oc-node` ids into a verified selector (a `Read` card's field, or the safe item+field list shape). */
   inferSelector:  (recipeId: string, path: string, nodeIds: [string] | [string, string]) => Promise<InferSelectorView>
+  /** Explains a missing or rejected value from the recipe's last sample run (issue #92's Why? tab). */
+  explainWhy:     (target: WhyTarget) => Promise<WhyView>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -72,6 +74,7 @@ export function createStudioClient (): StudioClient {
     takeSnapshot:   (recipeId, path) => send<SnapshotView>(token, { type: 'take-snapshot', recipeId, path }),
     verifySelector: (recipeId, path, selector) => send<VerifySelectorView>(token, { type: 'verify-selector', recipeId, path, selector }),
     inferSelector:  (recipeId, path, nodeIds) => send<InferSelectorView>(token, { type: 'infer-selector', recipeId, path, nodeIds }),
+    explainWhy:     target => send<WhyView>(token, { type: 'explain-why', target } satisfies ExplainWhyCommand),
     subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)
