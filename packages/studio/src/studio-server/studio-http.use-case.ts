@@ -7,11 +7,14 @@ import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
 import { handleFetchStartPage } from './fetch-start-page.handler'
+import { handleInferSelector } from './infer-selector.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
 import { serveStatic } from './static-file.handler'
+import { handleTakeSnapshot } from './take-snapshot.handler'
+import { handleVerifySelector } from './verify-selector.handler'
 import { acceptWebSocket } from './websocket.client'
 import { createStudioState } from './workspace.store'
 import type { StudioState } from './workspace.store'
@@ -134,6 +137,12 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'fetch-start-page': { return handleFetchStartPage(state, command)
     }
     case 'save-outline': { return handleSaveOutline(state, command)
+    }
+    case 'take-snapshot': { return handleTakeSnapshot(state, command)
+    }
+    case 'verify-selector': { return handleVerifySelector(state, command)
+    }
+    case 'infer-selector': { return Promise.resolve(handleInferSelector(state, command))
     }
   }
 }

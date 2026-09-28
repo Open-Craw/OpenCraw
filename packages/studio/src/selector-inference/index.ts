@@ -1,5 +1,6 @@
-export { domPathOf, isStableId, crossesShadowRoot, parseDocument } from './dom-path.model'
+export { domPathOf, isStableId, crossesShadowRoot, parseDocument, pathToNode } from './dom-path.model'
 export type { DomPath, DomPathLevel } from './dom-path.model'
+export { takeKindFor } from './take-kind.policy'
 export { isStableClassToken, stableClasses, sameClassSignature } from './class-token.policy'
 export { ShadowDomUnsupportedError } from './shadow-dom.error'
 export { candidatesFor } from './selector-candidates.algorithm'

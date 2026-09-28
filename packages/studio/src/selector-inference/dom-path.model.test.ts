@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { crossesShadowRoot, domPathOf, isStableId, parseDocument } from './dom-path.model'
+import { crossesShadowRoot, domPathOf, isStableId, parseDocument, pathToNode } from './dom-path.model'
 
 const booksHtml = readFileSync(join(__dirname, 'fixtures', 'books-listing.fixture.html'), 'utf8')
 const shadowHtml = readFileSync(join(__dirname, 'fixtures', 'shadow-dom.fixture.html'), 'utf8')
@@ -30,6 +30,18 @@ describe('domPathOf', () => {
     expect(leaf?.id).toBe('go')
     expect(leaf?.attrs.href).toBe('/x')
     expect(leaf?.attrs['data-testid']).toBe('cta')
+  })
+})
+
+describe('pathToNode', () => {
+  it('finds the path to the element stamped with a given data-oc-node id', () => {
+    const path = pathToNode('<div><p data-oc-node="n0">a</p><span data-oc-node="n1" class="price">£1</span></div>', 'n1')
+    expect(path?.at(-1)?.tag).toBe('span')
+    expect(path?.at(-1)?.classes).toEqual(['price'])
+  })
+
+  it('returns undefined when no element carries that id', () => {
+    expect(pathToNode('<div><p data-oc-node="n0">a</p></div>', 'missing')).toBeUndefined()
   })
 })
 

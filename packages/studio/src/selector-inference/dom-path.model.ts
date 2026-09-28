@@ -1,6 +1,7 @@
 import { load } from 'cheerio'
 import type { AnyNode, Element } from 'domhandler'
 import type { Cheerio, CheerioAPI } from 'cheerio'
+import { NODE_ID_ATTRIBUTE } from '@opencraw/core'
 
 /**
  * One level of a node's ancestry, root first: the element's own shape (tag,
@@ -96,4 +97,29 @@ export function crossesShadowRoot (path: DomPath): boolean {
 /** Parses `html` and returns cheerio's API, for callers that need more than one path from the same document. */
 export function parseDocument (html: string): CheerioAPI {
   return load(html)
+}
+
+/**
+ * The path to the element the snapshot stamped with `nodeId` (its
+ * `data-oc-node` attribute — `@opencraw/core`'s `NODE_ID_ATTRIBUTE`,
+ * `packages/studio/src/page-snapshot/rewrite-document.mapper.ts`). This is
+ * how a click in the content pane's iframe — which only ever needs to read
+ * that one attribute off the element the user clicked — turns into
+ * something `selector-inference`'s other algorithms can work with, without
+ * the browser-side picker script needing to know anything about ancestry,
+ * classes or candidate ranking itself.
+ *
+ * @param html - The snapshot document (already stamped with node ids).
+ * @param nodeId - The `data-oc-node` value to find.
+ * @returns The node's path, or `undefined` when no element carries that id.
+ */
+export function pathToNode (html: string, nodeId: string): DomPath | undefined {
+  const $ = parseDocument(html)
+  const found = $(`[${NODE_ID_ATTRIBUTE}="${cssAttributeValue(nodeId)}"]`)
+
+  return found.length === 0 ? undefined : domPathOf($, found.first())
+}
+
+function cssAttributeValue (value: string): string {
+  return value.replaceAll('\\', String.raw`\\`).replaceAll('"', String.raw`\"`)
 }

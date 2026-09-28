@@ -55,6 +55,46 @@ export const saveOutlineCommandSchema = z.object({
   outline: outlineViewSchema,
 })
 
+/**
+ * Captures the snapshot the content pane shows for a step (`page-snapshot`'s
+ * `take-snapshot.use-case.ts`), caching it by recipe and step path so
+ * switching the selected step does not always re-run the recipe.
+ */
+export const takeSnapshotCommandSchema = z.object({
+  type:     z.literal('take-snapshot'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/**
+ * Verifies a candidate selector against the cached snapshot and, when
+ * reachable, the live page — the studio's own selection (`@opencraw/core`'s
+ * `countMatches`), never the browser's or a guess (issue #91).
+ */
+export const verifySelectorCommandSchema = z.object({
+  type:     z.literal('verify-selector'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  selector: z.string().min(1),
+})
+
+/**
+ * Turns one or two picked nodes (their `data-oc-node` ids, off the cached
+ * snapshot) into a verified selector: one id for a `Read` card's field, two
+ * for the safe item+field list shape `selector-inference`'s `inferList`
+ * builds by construction (issue #91, studio plan §3.2).
+ */
+const pickedNodeIdSchema = z.string().min(1)
+const onePickedNodeSchema = z.tuple([pickedNodeIdSchema])
+const twoPickedNodesSchema = z.tuple([pickedNodeIdSchema, pickedNodeIdSchema])
+
+export const inferSelectorCommandSchema = z.object({
+  type:     z.literal('infer-selector'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  nodeIds:  z.union([onePickedNodeSchema, twoPickedNodesSchema]),
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
   runSampleCommandSchema,
@@ -62,6 +102,9 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   saveRecipeCommandSchema,
   fetchStartPageCommandSchema,
   saveOutlineCommandSchema,
+  takeSnapshotCommandSchema,
+  verifySelectorCommandSchema,
+  inferSelectorCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -71,5 +114,8 @@ export type StopRunCommand = z.infer<typeof stopRunCommandSchema>
 export type SaveRecipeCommand = z.infer<typeof saveRecipeCommandSchema>
 export type FetchStartPageCommand = z.infer<typeof fetchStartPageCommandSchema>
 export type SaveOutlineCommand = z.infer<typeof saveOutlineCommandSchema>
+export type TakeSnapshotCommand = z.infer<typeof takeSnapshotCommandSchema>
+export type VerifySelectorCommand = z.infer<typeof verifySelectorCommandSchema>
+export type InferSelectorCommand = z.infer<typeof inferSelectorCommandSchema>
 /** Every command the UI can send the server, over HTTP POST. */
 export type StudioCommand = z.infer<typeof studioCommandSchema>
