@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { outlineViewSchema } from './outline-view.contract'
 
 /** One problem found on a recipe file, with the JSON path it lives at. */
 export const recipeIssueSchema = z.object({
@@ -9,12 +10,14 @@ export const recipeIssueSchema = z.object({
 
 /** One recipe file in an opened workspace. */
 export const recipeListingSchema = z.object({
-  file:   z.string(),
-  kind:   z.enum(['input', 'output', 'unknown']),
-  id:     z.string().optional(),
-  issues: z.array(recipeIssueSchema),
+  file:    z.string(),
+  kind:    z.enum(['input', 'output', 'unknown']),
+  id:      z.string().optional(),
+  issues:  z.array(recipeIssueSchema),
   /** The file's JSON, pretty-printed: the JSON tab's starting text (see `save-recipe` for how an edit is written back). */
-  text:   z.string(),
+  text:    z.string(),
+  /** The Steps tab's view of this file's `steps`, from `@opencraw/studio`'s `scope-outline` slice. `input` recipes only; `undefined` for an `output` or `unknown` file, which has no steps to show. */
+  outline: outlineViewSchema.optional(),
 })
 
 /** What `open-workspace` answers with: every recipe file directly inside the folder. */

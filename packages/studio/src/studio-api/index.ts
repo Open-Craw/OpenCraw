@@ -1,5 +1,5 @@
-export { sampleBudgetSchema, openWorkspaceCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, studioCommandSchema } from './command.contract'
-export type { SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, StudioCommand } from './command.contract'
+export { sampleBudgetSchema, openWorkspaceCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, saveOutlineCommandSchema, studioCommandSchema } from './command.contract'
+export type { SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, StudioCommand } from './command.contract'
 export { stoppedBySchema, traceLineEventSchema, recordEventSchema, runFinishedEventSchema, workspaceChangedEventSchema, studioEventSchema } from './event.contract'
 export type { StoppedBy, TraceLineEvent, RecordEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent } from './event.contract'
 export { recipeIssueSchema, recipeListingSchema, workspaceViewSchema } from './workspace-view.contract'
@@ -8,3 +8,5 @@ export { sampleRunRecordSchema, sampleRunViewSchema } from './sample-run-view.co
 export type { SampleRunRecord, SampleRunView } from './sample-run-view.contract'
 export { startPageViewSchema } from './start-page-view.contract'
 export type { StartPageView } from './start-page-view.contract'
+export { sentencePartSchema, outlineCardSchema, outlineBracketSchema, outlineNodeSchema, outlineViewSchema } from './outline-view.contract'
+export type { SentencePart, OutlineCard, OutlineBracket, OutlineNode, OutlineView } from './outline-view.contract'

@@ -8,6 +8,7 @@ describe('studioCommandSchema', () => {
     { type: 'stop-run' },
     { type: 'save-recipe', path: '/tmp/recipes/books.input.json', recipe: { kind: 'input' } },
     { type: 'fetch-start-page', recipeId: 'books' },
+    { type: 'save-outline', path: '/tmp/recipes/books.input.json', outline: { recipe: {}, steps: [] } },
   ])('accepts a valid %j', (command) => {
     expect(studioCommandSchema.safeParse(command).success).toBe(true)
   })
