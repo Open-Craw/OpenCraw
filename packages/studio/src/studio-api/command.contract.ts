@@ -95,6 +95,35 @@ export const inferSelectorCommandSchema = z.object({
   nodeIds:  z.union([onePickedNodeSchema, twoPickedNodesSchema]),
 })
 
+/** A missing value in an emitted record, by its position in the last sample run's records (the order they streamed in, matching the UI's own `records` list). */
+export const missingWhyTargetSchema = z.object({
+  kind:        z.literal('missing'),
+  recipeId:    z.string().min(1),
+  recordIndex: z.int().nonnegative(),
+  field:       z.string().min(1),
+})
+
+/** A rejected record, by its position in the last sample run's `rejectedRecords`. */
+export const rejectedWhyTargetSchema = z.object({
+  kind:          z.literal('rejected'),
+  recipeId:      z.string().min(1),
+  rejectedIndex: z.int().nonnegative(),
+})
+
+export const whyTargetSchema = z.discriminatedUnion('kind', [missingWhyTargetSchema, rejectedWhyTargetSchema])
+
+/**
+ * Explains one missing or rejected value from the recipe's last sample run
+ * (`explain-why.use-case.ts`, issue #92's Why? tab): the mapping trace and
+ * scope snapshot `run-sample` already kept, the step that bound the value's
+ * source id and whether it ran, was skipped or found nothing, and the
+ * missing-value policy that applied.
+ */
+export const explainWhyCommandSchema = z.object({
+  type:   z.literal('explain-why'),
+  target: whyTargetSchema,
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
   runSampleCommandSchema,
@@ -105,6 +134,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   takeSnapshotCommandSchema,
   verifySelectorCommandSchema,
   inferSelectorCommandSchema,
+  explainWhyCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -117,5 +147,9 @@ export type SaveOutlineCommand = z.infer<typeof saveOutlineCommandSchema>
 export type TakeSnapshotCommand = z.infer<typeof takeSnapshotCommandSchema>
 export type VerifySelectorCommand = z.infer<typeof verifySelectorCommandSchema>
 export type InferSelectorCommand = z.infer<typeof inferSelectorCommandSchema>
+export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
+export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
+export type WhyTarget = z.infer<typeof whyTargetSchema>
+export type ExplainWhyCommand = z.infer<typeof explainWhyCommandSchema>
 /** Every command the UI can send the server, over HTTP POST. */
 export type StudioCommand = z.infer<typeof studioCommandSchema>

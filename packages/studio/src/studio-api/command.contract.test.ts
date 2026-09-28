@@ -13,6 +13,8 @@ describe('studioCommandSchema', () => {
     { type: 'verify-selector', recipeId: 'books', path: 'start', selector: '.price_color' },
     { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: ['n5'] },
     { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: ['n5', 'n12'] },
+    { type: 'explain-why', target: { kind: 'missing', recipeId: 'books', recordIndex: 0, field: 'price' } },
+    { type: 'explain-why', target: { kind: 'rejected', recipeId: 'books', rejectedIndex: 0 } },
   ])('accepts a valid %j', (command) => {
     expect(studioCommandSchema.safeParse(command).success).toBe(true)
   })

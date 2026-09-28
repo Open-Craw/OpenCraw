@@ -56,6 +56,20 @@ describe('useStudioEvents', () => {
     expect(useRunSessionStore.getState().records).toEqual([{ key: 'a1', data: { name: 'Widget' } }])
   })
 
+  it('appends record events\' scope and mapping trace, and record-rejected events, to the run session store', () => {
+    const queryClient = createStudioQueryClient()
+    function wrapper ({ children }: PropsWithChildren): React.ReactElement {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    }
+    renderHook(() => { useStudioEvents() }, { wrapper })
+
+    send({ type: 'record', recipeId: 'books', key: 'a1', data: { price: null }, scope: { vars: {} }, mapping: { price: { from: undefined, steps: [] } } })
+    send({ type: 'record-rejected', recipeId: 'books', field: 'title', reason: 'missing', scope: { vars: {} } })
+
+    expect(useRunSessionStore.getState().records).toEqual([{ key: 'a1', data: { price: null }, scope: { vars: {} }, mapping: { price: { from: undefined, steps: [] } } }])
+    expect(useRunSessionStore.getState().rejected).toEqual([{ field: 'title', reason: 'missing', scope: { vars: {} } }])
+  })
+
   it('stops the run on run-finished', () => {
     const queryClient = createStudioQueryClient()
     function wrapper ({ children }: PropsWithChildren): React.ReactElement {

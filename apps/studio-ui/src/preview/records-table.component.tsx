@@ -1,16 +1,26 @@
 import { Box, Table, Text } from '@chakra-ui/react'
+import type { FieldTraceView } from '@opencraw/studio'
 
+/** One record of a sample run, as kept for the Records tab and the Record tab's transform-chain trace (issue #92): `scope`/`mapping` ride along on the `record` WebSocket event now that `run-sample` keeps them (studio plan §4.2/§4.4). */
 export interface PreviewRecord {
-  key:  string | null
-  data: Record<string, unknown>
+  key:      string | null
+  data:     Record<string, unknown>
+  scope?:   Record<string, unknown>
+  mapping?: Record<string, FieldTraceView>
 }
 
 export interface RecordsTableProps {
-  records: PreviewRecord[]
+  records:      PreviewRecord[]
+  /**
+   * A cell whose value is `null` was clicked: `recordIndex` is its position
+   * in `records` (what `explain-why`'s `missing` target needs), `field` its
+   * column. Omit to render a plain table (no Why? tab wired up yet).
+   */
+  onCellClick?: (recordIndex: number, field: string) => void
 }
 
-/** The Records tab: one column per output field (from the records seen so far), missing values marked. */
-export function RecordsTable ({ records }: RecordsTableProps) {
+/** The Records tab: one column per output field (from the records seen so far), missing values marked and clickable (issue #92's Why? tab). */
+export function RecordsTable ({ records, onCellClick }: RecordsTableProps) {
   if (records.length === 0) {
     return (
       <Box p={4} color='fg.muted'>
@@ -31,7 +41,9 @@ export function RecordsTable ({ records }: RecordsTableProps) {
         <Table.Body>
           {records.map((record, index) => (
             <Table.Row key={record.key ?? `row-${index}`}>
-              {fields.map(field => <Cell key={field} value={record.data[field]} />)}
+              {fields.map(field => (
+                <Cell key={field} value={record.data[field]} onClick={onCellClick === undefined ? undefined : () => { onCellClick(index, field) }} />
+              ))}
             </Table.Row>
           ))}
         </Table.Body>
@@ -40,9 +52,17 @@ export function RecordsTable ({ records }: RecordsTableProps) {
   )
 }
 
-function Cell ({ value }: { value: unknown }) {
+function Cell ({ value, onClick }: { value: unknown, onClick?: () => void }) {
   if (value === undefined) return <Table.Cell color='fg.muted' fontStyle='italic'>missing</Table.Cell>
-  if (value === null) return <Table.Cell color='fg.muted' fontStyle='italic'>null</Table.Cell>
+  if (value === null) {
+    if (onClick === undefined) return <Table.Cell color='fg.muted' fontStyle='italic'>null</Table.Cell>
+
+    return (
+      <Table.Cell color='fg.muted' fontStyle='italic' cursor='pointer' textDecoration='underline' title='Why is this missing?' onClick={onClick}>
+        null
+      </Table.Cell>
+    )
+  }
 
   return <Table.Cell>{typeof value === 'object' ? JSON.stringify(value) : String(value)}</Table.Cell>
 }

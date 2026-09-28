@@ -1,4 +1,4 @@
-import { runSample } from '../sample-run'
+import { recordLastRun, runSample } from '../sample-run'
 import type { RunSampleCommand, StopRunCommand } from '../studio-api'
 import { broadcast } from './workspace.store'
 import type { StudioState } from './workspace.store'
@@ -19,11 +19,13 @@ export async function handleRunSample (state: StudioState, command: RunSampleCom
   await state.activeRun?.stop()
   const handle = await runSample(state.folder, command.recipeId, command.budget, {
     onTraceLine: line => { broadcast(state, { type: 'trace-line', line }) },
-    onRecord:    record => { broadcast(state, { type: 'record', recipeId: command.recipeId, key: record.key, data: record.data }) },
+    onRecord:    record => { broadcast(state, { type: 'record', recipeId: command.recipeId, key: record.key, data: record.data, scope: record.scope, mapping: record.mapping }) },
+    onRejected:  rejected => { broadcast(state, { type: 'record-rejected', recipeId: command.recipeId, field: rejected.field, reason: rejected.reason, scope: rejected.scope }) },
   }, state.browser)
   state.activeRun = handle
   void handle.result.then((result) => {
     if (state.activeRun === handle) state.activeRun = undefined
+    recordLastRun(state.lastRuns, command.recipeId, result)
     broadcast(state, { type: 'run-finished', recipeId: result.recipeId, emitted: result.emitted, rejected: result.rejected, duplicates: result.duplicates, durationMs: result.durationMs, error: result.error, stoppedBy: result.stoppedBy })
   })
 

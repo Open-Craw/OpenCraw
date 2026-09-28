@@ -2,12 +2,14 @@ import { bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/c
 import type { BrowserSessionConfig, Crawler, CrawlEvent } from '@opencraw/core'
 import type { SampleBudget } from '../studio-api'
 import { loadRecipePair } from './load-recipe-pair.use-case'
-import type { SampleRunRecord, SampleRunResult } from './sample-run-record.contract'
+import type { SampleRunRecord, SampleRunRejected, SampleRunResult, SampleStepSummary } from './sample-run-record.contract'
 
 /** Where trace lines and records go as a sample run proceeds. */
 export interface SampleRunCallbacks {
   onTraceLine: (line: string) => void
   onRecord:    (record: SampleRunRecord) => void
+  /** A record was rejected (a field's `skip-record` missing/coercion policy); optional, most callers only need the final `rejectedRecords` list. */
+  onRejected?: (rejected: SampleRunRejected) => void
 }
 
 /** A sample run in progress. */
@@ -19,11 +21,15 @@ export interface SampleRunHandle {
 
 /**
  * Runs one input recipe of a workspace folder as a sample: `debug: true` (so
- * each `record:emit` carries its data), an in-memory sink, and `budget` as
- * the crawler's `sample` (`@opencraw/core`'s `CrawlOptions.sample`, #89).
- * Every engine event becomes a trace line with the same `traceLine`
- * formatter the cli's `--trace` uses; every emitted record reaches
- * `callbacks.onRecord` as it happens, not only in the final result.
+ * each `record:emit` carries its scope snapshot and mapping trace, and each
+ * `record:reject` its scope), an in-memory sink, and `budget` as the
+ * crawler's `sample` (`@opencraw/core`'s `CrawlOptions.sample`, #89). Every
+ * engine event becomes a trace line with the same `traceLine` formatter the
+ * cli's `--trace` uses; every emitted record reaches `callbacks.onRecord` as
+ * it happens, not only in the final result. Step events (`step:start`,
+ * `step:skip`, `step:retry`) are aggregated by path into `result.steps`, so
+ * `explain-why` (#92) can later say whether the step that bound a mapping's
+ * source id ran, was skipped, or retried — without a second run.
  *
  * @param folder - The workspace folder the recipe lives in.
  * @param recipeId - The input recipe to run.
@@ -37,6 +43,9 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
   const { input, output } = await loadRecipePair(folder, recipeId)
   const set = bindRecipeSet(output, [input])
   const sink = memorySink()
+  const records: SampleRunRecord[] = []
+  const rejectedRecords: SampleRunRejected[] = []
+  const steps = new Map<string, SampleStepSummary>()
   const crawler: Crawler = createCrawler({
     sink,
     debug:   true,
@@ -45,15 +54,48 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
     onEvent: (event: CrawlEvent) => {
       const line = traceLine(event)
       if (line !== undefined) callbacks.onTraceLine(line)
-      if (event.type === 'record:emit') callbacks.onRecord({ key: event.key, data: event.data })
+      trackStep(steps, event)
+      if (event.type === 'record:emit') {
+        const record: SampleRunRecord = { key: event.key, data: event.data, scope: event.scope, mapping: event.mapping }
+        records.push(record)
+        callbacks.onRecord(record)
+      } else if (event.type === 'record:reject') {
+        const rejected: SampleRunRejected = { field: event.field, reason: event.reason, url: event.url, scope: event.scope }
+        rejectedRecords.push(rejected)
+        callbacks.onRejected?.(rejected)
+      }
     },
   })
-  const result = runToResult(crawler, set, sink)
+  const result = runToResult(crawler, set, records, rejectedRecords, steps)
 
   return { stop: () => crawler.close(), result }
 }
 
-async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], sink: ReturnType<typeof memorySink>): Promise<SampleRunResult> {
+/**
+ * Folds one `step:*` event into `steps`, by path: `skip` always wins over an
+ * earlier `ran`/`retried` outcome for the same path (a step skipped even
+ * once is worth flagging), `retry` wins over a plain `ran`, and a path seen
+ * only as `finish`/`start` (no skip, no retry) settles on `ran`. A `forEach`
+ * runs its body once per item, so the same path folds repeatedly; this is
+ * deliberately a summary across the whole sample, not a per-record trace.
+ */
+function trackStep (steps: Map<string, SampleStepSummary>, event: CrawlEvent): void {
+  if (event.type === 'step:start') {
+    if (!steps.has(event.path)) steps.set(event.path, { path: event.path, stepType: event.stepType, stepId: event.stepId, outcome: 'ran' })
+
+    return
+  }
+  if (event.type === 'step:retry') {
+    steps.set(event.path, { path: event.path, stepType: event.stepType, stepId: event.stepId, outcome: 'retried', error: event.error })
+
+    return
+  }
+  if (event.type === 'step:skip') {
+    steps.set(event.path, { path: event.path, stepType: event.stepType, stepId: event.stepId, outcome: 'skipped', error: event.error })
+  }
+}
+
+async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], records: SampleRunRecord[], rejectedRecords: SampleRunRejected[], steps: Map<string, SampleStepSummary>): Promise<SampleRunResult> {
   try {
     const report = await crawler.run(set)
     const recipe = report.recipes[0]
@@ -66,7 +108,10 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
       durationMs: recipe.durationMs,
       error:      recipe.error,
       stoppedBy:  recipe.stoppedBy,
-      records:    sink.records.map(record => ({ key: record.key, data: record.data })),
+      records,
+      rejectedRecords,
+      // eslint-disable-next-line unicorn/prefer-iterator-to-array -- `.toArray()` needs a `lib` newer than this repo's `es2022` (tsconfig.base.json)
+      steps:      [...steps.values()],
     }
   } finally {
     await crawler.close()

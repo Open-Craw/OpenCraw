@@ -7,6 +7,7 @@ import type { BrowserSessionConfig } from '@opencraw/core'
 import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
+import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
@@ -147,6 +148,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'verify-selector': { return handleVerifySelector(state, command)
     }
     case 'infer-selector': { return Promise.resolve(handleInferSelector(state, command))
+    }
+    case 'explain-why': { return handleExplainWhy(state, command)
     }
   }
 }

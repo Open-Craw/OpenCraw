@@ -5,6 +5,8 @@ describe('studioEventSchema', () => {
     { type: 'trace-line', line: '■ books: 20 emitted, 0 rejected' },
     { type: 'record', recipeId: 'books', key: 'book-1', data: { title: 'A Light in the Attic' } },
     { type: 'record', recipeId: 'books', key: null, data: {} },
+    { type: 'record', recipeId: 'books', key: null, data: { price: null }, scope: { price: undefined }, mapping: { price: { from: undefined, steps: [] } } },
+    { type: 'record-rejected', recipeId: 'books', field: 'price', reason: 'missing', scope: { vars: {} } },
     { type: 'run-finished', recipeId: 'books', emitted: 20, rejected: 0, duplicates: 0, durationMs: 340 },
     { type: 'run-finished', recipeId: 'books', emitted: 5, rejected: 0, duplicates: 0, durationMs: 12, stoppedBy: 'sample-maxRecords' },
     { type: 'workspace-changed' },

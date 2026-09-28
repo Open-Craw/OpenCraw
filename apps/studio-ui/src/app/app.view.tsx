@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Box, ChakraProvider, HStack, Splitter, Text, defaultSystem } from '@chakra-ui/react'
 import { QueryClientProvider } from '@tanstack/react-query'
+import type { WhyTarget } from '@opencraw/studio'
 import { ContentPane } from '../content-pane'
 import { JsonEditor } from '../json-editor'
 import { PreviewStrip } from '../preview'
+import { RecordEditor } from '../record-editor'
 import { StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
+  useExplainWhyMutation,
   useInputRecipes,
   useRunSampleMutation,
   useSaveOutlineMutation,
@@ -60,6 +63,7 @@ function AppShell () {
 
   const running = useRunSessionStore(state => state.running)
   const records = useRunSessionStore(state => state.records)
+  const rejected = useRunSessionStore(state => state.rejected)
   const traceLines = useRunSessionStore(state => state.traceLines)
   const runError = useRunSessionStore(state => state.error)
 
@@ -67,6 +71,7 @@ function AppShell () {
   const stopRun = useStopRunMutation()
   const saveRecipe = useSaveRecipeMutation()
   const saveOutline = useSaveOutlineMutation()
+  const explainWhy = useExplainWhyMutation()
 
   useEffect(() => {
     if (client.initialFolder !== undefined) commitFolder(client.initialFolder)
@@ -79,6 +84,20 @@ function AppShell () {
     const input = workspace.data.recipes.find(recipe => recipe.kind === 'input')
     if (input?.id !== undefined) selectRecipe(input.id)
   }, [workspace.data, selectedRecipeId, selectRecipe])
+
+  /** The selected input recipe's own output recipe (its `output` id), found in the same workspace listing — `undefined` when the input does not parse or names no output found here (the Record tab then says so, same as the JSON tab shows a recipe's own issues). */
+  const outputRecipe = useMemo(() => {
+    if (selectedRecipe === undefined || selectedRecipe.kind !== 'input') return
+    try {
+      const outputId = (JSON.parse(selectedRecipe.text) as { output?: unknown }).output
+
+      return workspace.data?.recipes.find(recipe => recipe.kind === 'output' && recipe.id === outputId)
+    } catch {
+      return
+    }
+  }, [selectedRecipe, workspace.data])
+
+  const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
   const workspaceError = messageOf(workspace.error) ?? runError
 
@@ -107,6 +126,7 @@ function AppShell () {
           <Splitter.Panel id='editor' overflow='hidden' display='flex' flexDirection='column'>
             <HStack gap={1} px={2} pt={2} borderBottomWidth='1px' flexShrink={0}>
               <EditorTabButton label='Steps' active={editorTab === 'steps'} onClick={() => { setEditorTab('steps') }} />
+              <EditorTabButton label='Record' active={editorTab === 'record'} onClick={() => { setEditorTab('record') }} />
               <EditorTabButton label='JSON' active={editorTab === 'json'} onClick={() => { setEditorTab('json') }} />
             </HStack>
             <Box flex='1' minH='0' overflow='auto'>
@@ -114,6 +134,18 @@ function AppShell () {
                 <StepsOutline
                   recipe={selectedRecipe}
                   onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
+                />
+              )}
+              {editorTab === 'record' && (
+                <RecordEditor
+                  inputRecipe={selectedRecipe}
+                  outputRecipe={outputRecipe}
+                  records={records}
+                  rejected={rejected}
+                  onSaveInput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+                  onSaveOutput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+                  onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
+                  onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
                 />
               )}
               {editorTab === 'json' && (
@@ -127,7 +159,16 @@ function AppShell () {
         </Splitter.Root>
       </Box>
       <Box h='260px' borderTopWidth='1px' flexShrink={0}>
-        <PreviewStrip records={records} traceLines={traceLines} />
+        <PreviewStrip
+          records={records}
+          traceLines={traceLines}
+          rejected={rejected}
+          onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
+          onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
+          whyLoading={explainWhy.isPending}
+          whyView={explainWhy.data}
+          whyError={messageOf(explainWhy.error)}
+        />
       </Box>
     </Box>
   )
@@ -139,7 +180,7 @@ function messageOf (error: unknown): string | undefined {
   return error instanceof Error ? error.message : String(error)
 }
 
-/** One of the editor pane's tab buttons (Steps, JSON): a plain toggle, styled active/inactive rather than a full Chakra Tabs primitive, which the pane's own layout (a fixed strip above a scrolling body) does not need. */
+/** One of the editor pane's tab buttons (Steps, Record, JSON): a plain toggle, styled active/inactive rather than a full Chakra Tabs primitive, which the pane's own layout (a fixed strip above a scrolling body) does not need. */
 function EditorTabButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) {
   return (
     <Text

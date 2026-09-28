@@ -33,4 +33,39 @@ describe('PreviewStrip', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Trace' }))
     expect(screen.getByText(/no trace yet/i)).toBeTruthy()
   })
+
+  it('clicking a missing (null) cell calls onExplainMissing with the record index and field, and the Why? tab shows the answer once it arrives', () => {
+    const recordsWithNull = [{ key: 'a1', data: { name: 'Widget', price: 9.5 } }, { key: 'a2', data: { name: 'Gadget', price: null } }]
+    const onExplainMissing = jest.fn()
+    const { rerender } = renderWithChakra(
+      <PreviewStrip records={recordsWithNull} traceLines={[]} onExplainMissing={onExplainMissing} />,
+    )
+
+    fireEvent.click(screen.getByText('null'))
+    expect(onExplainMissing).toHaveBeenCalledWith(1, 'price')
+
+    rerender(
+      <ChakraProvider value={defaultSystem}>
+        <PreviewStrip
+          records={recordsWithNull}
+          traceLines={[]}
+          onExplainMissing={onExplainMissing}
+          whyView={{ sentence: '"price" is missing: no step in this recipe binds "value".', field: 'price', recipeId: 'books', outcome: 'missing' }}
+        />
+      </ChakraProvider>,
+    )
+    fireEvent.click(screen.getByRole('tab', { name: 'Why?' }))
+    expect(screen.getByText(/"price" is missing/)).toBeTruthy()
+  })
+
+  it('shows the rejected list and calls onExplainRejected with its index', () => {
+    const onExplainRejected = jest.fn()
+    renderWithChakra(
+      <PreviewStrip records={[]} traceLines={[]} rejected={[{ field: 'title', reason: 'missing' }]} onExplainRejected={onExplainRejected} />,
+    )
+
+    expect(screen.getByText('Rejected (1)')).toBeTruthy()
+    fireEvent.click(screen.getByText('title'))
+    expect(onExplainRejected).toHaveBeenCalledWith(0)
+  })
 })
