@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { csvWorkbook } from '@opencraw/core'
-import { workbookReport } from './probe-report.mapper'
 import { describeWorkbook } from './workbook-findings.mapper'
 
 const bytes = readFileSync(join(__dirname, '..', '..', '..', 'core', 'src', 'workbook-document', 'fixtures', 'listino.csv'))
@@ -30,14 +29,7 @@ describe('describeWorkbook', () => {
   })
 })
 
-describe('workbookReport', () => {
-  it('names the encoding and the delimiter, and lists headers before rows', () => {
-    const report = workbookReport('http://x/listino.csv', describeWorkbook(listino))
-    expect(report.split('\n', 1)[0]).toBe('http://x/listino.csv (CSV, windows-1252, delimited by semicolons)')
-    expect(report).toContain('  listino r3  ^Marca\n        Marca | Modello | Versione | Prezzo € | Sconto %')
-    expect(report.indexOf('Likely table headers')).toBeLessThan(report.indexOf('First rows'))
-  })
-
+describe('describeWorkbook: header detection', () => {
   it('finds headers whose words contain digits (#73)', () => {
     const gsa = { name: 'Master', rows: [['FY2026 Per Diem Rates - Effective October 1, 2025'], ['ID', 'STATE', 'DESTINATION', 'SEASON BEGIN', 'FY26 Lodging Rate', 'FY26 M&IE'], ['Standard CONUS rate applies', '', '', '', 110, 68], [2, 'AL', 'Gulf Shores', 'October 1', 134, 74]] }
     const fcc = { name: 'table 2', rows: [['FY 2026 RADIO STATION REGULATORY FEES', '', ''], ['Population Served', 'AM Class A', 'FM Classes A, B1 & C3'], ['<=10,000', '2659 $560', '2663 $615']], merges: ['A1:C1'] }

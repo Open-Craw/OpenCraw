@@ -10,6 +10,12 @@
     "forceConsistentCasingInFileNames": true,
     "types": [
       "node"
+    ],
+    "lib": [
+      "es2022",
+      "es2024.promise",
+      "dom",
+      "dom.iterable"
     ]
   },
   "include": [
@@ -18,6 +24,9 @@
   "references": [
     {
       "path": "../core/tsconfig.lib.json"
+    },
+    {
+      "path": "../probe/tsconfig.lib.json"
     }
   ],
   "exclude": [

@@ -1,5 +1,5 @@
-import type { FieldPick, InferSelectorView } from '@opencraw/studio'
-import { listOutlineNodes, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import type { DocumentTreeNodeView, FieldPick, InferSelectorView } from '@opencraw/studio'
+import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 
 const priceField: FieldPick = { selector: '.price_color', tier: 'class', take: 'text', matches: 20 }
 const linkField: FieldPick = { selector: 'h3 a', tier: 'structure', take: 'attr:href', matches: 20 }
@@ -66,5 +66,51 @@ describe('spliceTopLevel', () => {
     expect(result.map(node => node.stepType)).toEqual(['extract', 'forEach'])
     expect(result.map(node => node.path)).toEqual(['steps.0', 'steps.1'])
     expect((result[1] as typeof forEach).children.at(0)?.path).toBe('steps.1.steps.0')
+  })
+})
+
+const jsonLeaf: DocumentTreeNodeView = { id: '$.name', label: 'name', valueType: 'string', preview: 'bulbasaur', jsonpath: '$.name', children: [] }
+const jsonListItem: DocumentTreeNodeView = { id: '$.results[2].url', label: 'url', valueType: 'string', preview: 'https://x/2', jsonpath: '$.results[2].url', listPath: '$.results[*].url', listCount: 3, children: [] }
+const xmlLeaf: DocumentTreeNodeView = { id: '/a:feed/a:title', label: 'a:title', valueType: 'string', preview: 'Incentivi', xpath: '/a:feed/a:title', children: [] }
+
+describe('documentReadCardNode', () => {
+  it('builds a jsonpath extract from a JSON node', () => {
+    const node = documentReadCardNode(jsonLeaf, 'steps.0')
+    expect(node).toEqual({
+      kind:     'card',
+      path:     'steps.0',
+      stepType: 'extract',
+      sentence: [],
+      custom:   false,
+      step:     { type: 'extract', id: 'value', selector: '$.name', kind: 'jsonpath' },
+    })
+  })
+
+  it('generalises to the listPath, with many: true, when asked to', () => {
+    const node = documentReadCardNode(jsonListItem, 'steps.0', { id: 'urls', generalize: true })
+    expect(node.step).toEqual({ type: 'extract', id: 'urls', selector: '$.results[*].url', kind: 'jsonpath', many: true })
+  })
+
+  it('refuses to generalise a node with no listPath', () => {
+    expect(() => documentReadCardNode(jsonLeaf, 'steps.0', { generalize: true })).toThrow(/no list to generalise/)
+  })
+
+  it('builds an xpath extract from an XML node, with namespaces only when the document declares any', () => {
+    const bare = documentReadCardNode(xmlLeaf, 'steps.0')
+    expect(bare.step).toEqual({ type: 'extract', id: 'value', selector: '/a:feed/a:title', kind: 'xpath' })
+    const withNs = documentReadCardNode(xmlLeaf, 'steps.0', { namespaces: { a: 'http://www.w3.org/2005/Atom' } })
+    expect(withNs.step).toEqual({ type: 'extract', id: 'value', selector: '/a:feed/a:title', kind: 'xpath', namespaces: { a: 'http://www.w3.org/2005/Atom' } })
+  })
+})
+
+describe('paginateFromNextNode', () => {
+  it('builds an empty paginate bracket reading the picked node on every page', () => {
+    const next: DocumentTreeNodeView = { id: '$.next', label: 'next', valueType: 'string', preview: 'https://x/page/2', jsonpath: '$.next', children: [] }
+    const bracket = paginateFromNextNode(next, 'steps.1')
+    expect(bracket).toEqual({ kind: 'bracket', path: 'steps.1', stepType: 'paginate', sentence: [], children: [], step: { type: 'paginate', next: { jsonpath: '$.next' }, steps: [] } })
+  })
+
+  it('refuses an XML pick: paginate.next has no xpath form', () => {
+    expect(() => paginateFromNextNode(xmlLeaf, 'steps.1')).toThrow(/jsonpath/)
   })
 })

@@ -22,12 +22,25 @@ export const PRODUCTS = [
 /** How many books the listing page has — the picking e2e test's "emits 20 records" (issue #91's deliverable line), echoing books.toscrape.com's own page size. */
 export const BOOK_COUNT = 20
 
+/** The Inspect panel e2e test's (#93) three finds, apart from the tree's own picking: a value only in a hidden node, a JSON-LD block, and a JSON response fetched while the page renders. */
+export const HIDDEN_PROMO_CODE = 'SECRET-42'
+export const JSON_LD_PRICE = 42
+export const REVIEWS_PATH = '/api/reviews'
+export const REVIEWS_QUERY_PAGE = 1
+
 /**
  * A books.toscrape-shaped listing (studio plan §3.2, issue #91's picking
  * e2e test): `article.product_pod` items, directly inside `div.row` (no
  * extra wrapper — books.toscrape's own markup), each with an `h3 > a` title
  * and a `p.price_color` price, so `packages/studio/e2e/picking.e2e.test.ts`
  * can pick a price twice and get the safe list shape by construction.
+ *
+ * Also carries the Inspect panel e2e test's (#93) three finds, none of them
+ * inside `.row` so `BOOK_COUNT`/`.price_color`/`article.product_pod` counts
+ * above are untouched: a hidden `<input>` (a value that never renders), a
+ * `<script type="application/ld+json">` block, and an inline `<script>` that
+ * fetches a JSON endpoint while the page loads (a real XHR a headless
+ * browser observes, the same way `packages/cli`'s `probe --browser` does).
  */
 function booksHtml (): string {
   const items = Array.from({ length: BOOK_COUNT }, (_, index) => {
@@ -35,8 +48,11 @@ function booksHtml (): string {
 
     return `<article class="product_pod"><h3><a href="/book/${id}" title="Book ${id}">Book ${id}</a></h3><p class="price_color">£${(10 + id).toFixed(2)}</p></article>`
   }).join('')
+  const hiddenPromo = `<input type="hidden" id="promo-code" value="${HIDDEN_PROMO_CODE}">`
+  const jsonLd = `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'Product', 'name': 'Books catalogue', 'price': JSON_LD_PRICE })}</script>`
+  const fetchReviews = `<script>fetch(${JSON.stringify(`${REVIEWS_PATH}?page=${REVIEWS_QUERY_PAGE}`)})</script>`
 
-  return `<!doctype html><html lang="en"><head><title>Books</title></head><body><div class="row">${items}</div></body></html>`
+  return `<!doctype html><html lang="en"><head><title>Books</title>${jsonLd}</head><body>${hiddenPromo}<div class="row">${items}</div>${fetchReviews}</body></html>`
 }
 
 /** The only credentials `/login` accepts — the recording e2e test's own fixture, never a real secret. */
@@ -78,6 +94,12 @@ async function handle (request: IncomingMessage, response: ServerResponse): Prom
   if (url.pathname === '/books') {
     response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
     response.end(booksHtml())
+
+    return
+  }
+  if (url.pathname === REVIEWS_PATH) {
+    response.writeHead(200, { 'content-type': 'application/json' })
+    response.end(JSON.stringify({ items: [{ rating: 5 }, { rating: 4 }] }))
 
     return
   }

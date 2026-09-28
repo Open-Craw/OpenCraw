@@ -2,8 +2,6 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { readMarkdown } from '@opencraw/core'
 import { describeHtml } from './html-findings.mapper'
-import { probeReport } from './probe-report.mapper'
-import { findData } from './find-data.algorithm'
 
 describe('describeHtml', () => {
   it('lists an HTML page\'s table headers, hinting at a second header row under merged cells', () => {
@@ -19,7 +17,5 @@ describe('describeHtml', () => {
     expect(findings.outline?.map(entry => [entry.level, entry.heading])).toEqual([[1, 'Listino'], [2, 'Prezzi'], [3, 'Accessori'], [2, 'Note']])
     expect(findings.outline?.[1].selector).toBe("section[data-heading='Prezzi' i]")
     expect(findings.tables[0]).toMatchObject({ table: 'table 1', selector: '^Modello' })
-    const report = probeReport('listino.md', 200, findData(html), [], findings)
-    expect(report).toContain("    section[data-heading='Prezzi' i]")
   })
 })

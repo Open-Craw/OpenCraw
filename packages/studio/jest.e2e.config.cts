@@ -15,4 +15,6 @@ module.exports = {
   maxWorkers: 1,
   transform: { '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig] },
   moduleFileExtensions: ['ts', 'js', 'html'],
+  // pdf.js is an ES module Jest cannot load itself: see jest-pdfjs.cjs (a PDF-reading recipe runs through the real server here — pdf-canvas.e2e.test.ts, issue #94's 5b).
+  moduleNameMapper: { '^pdfjs-dist/legacy/build/pdf\\.mjs$': '<rootDir>/jest-pdfjs.cjs' },
 }

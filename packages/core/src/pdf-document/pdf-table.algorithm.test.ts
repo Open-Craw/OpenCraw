@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { PdfDocument } from './pdf-document.model'
-import { findTables } from './pdf-table.algorithm'
+import { analyzeTables, findTables } from './pdf-table.algorithm'
 import { readPdf } from './read-pdf.client'
 import { assembleRows } from './row-assembly.algorithm'
 
@@ -64,5 +64,49 @@ describe('findTables', () => {
     expect(top[0].rows).toEqual([{ Model: 'Long name continued', Price: '10' }, { Model: 'Short', Price: '20' }])
     const bottom = findTables({ kind: 'pdf', pages: [page] }, { header: /^Model/, align: 'bottom' })
     expect(bottom[0].rows).toEqual([{ Model: 'Long name', Price: '10' }, { Model: 'continued Short', Price: '20' }])
+  })
+})
+
+describe('analyzeTables (studio plan §3.4, issue #94\'s 5b: the PDF canvas draws these)', () => {
+  it('returns the same tables findTables does, in the same order', () => {
+    const analyses = analyzeTables(document, { header: /^MODELS/i, until: /^(NOTE|\*)/i, columns })
+    const tables = findTables(document, { header: /^MODELS/i, until: /^(NOTE|\*)/i, columns })
+    expect(analyses.map(analysis => analysis.table)).toEqual(tables)
+  })
+
+  it('points at the header row and the body range by index into the page\'s rows, and at the row "until" matched', () => {
+    const [alpha] = analyzeTables(document, { header: /^MODELS ALPHA/i, until: /^NOTE/i, columns })
+    expect(document.pages[0].rows[alpha.headerRowIndex].text).toMatch(/^MODELS ALPHA/i)
+    const [bodyStart, bodyEnd] = alpha.bodyRange
+    expect(bodyStart).toBe(alpha.headerRowIndex + 1)
+    expect(bodyEnd).toBeGreaterThan(bodyStart)
+    expect(alpha.untilRowIndex).toBeDefined()
+    expect(document.pages[0].rows[alpha.untilRowIndex as number].text).toMatch(/^NOTE/i)
+    // The until row is inside the header-to-next-header span, but past the truncated body used for the rows themselves.
+    expect(alpha.untilRowIndex as number).toBeLessThan(bodyEnd)
+  })
+
+  it('has no untilRowIndex when nothing truncates the table (it runs to the next header or the page\'s end)', () => {
+    const [delta] = analyzeTables(document, { header: /^MODELS DELTA/i, columns })
+    expect(delta.untilRowIndex).toBeUndefined()
+  })
+
+  it('names each band by the header column it was mapped to, and gives the tolerance that clustered cell edges into bands', () => {
+    const [alpha] = analyzeTables(document, { header: /^MODELS ALPHA/i, until: /^NOTE/i, columns })
+    expect(alpha.bands.length).toBeGreaterThan(0)
+    expect(alpha.bands.map(band => band.name)).toEqual(expect.arrayContaining(['MODELS ALPHA']))
+    for (const band of alpha.bands) {
+      expect(band.end).toBeGreaterThanOrEqual(band.start)
+      expect(alpha.table.header[band.column]).toBe(band.name)
+    }
+    expect(alpha.bandTolerance).toBeGreaterThan(0)
+  })
+
+  it('regroups wrapped cells into one row: a name split over two lines has more than one row index in its group', () => {
+    const [alpha] = analyzeTables(document, { header: /^MODELS ALPHA/i, until: /^NOTE/i, columns })
+    expect(alpha.rowGroups).toHaveLength(alpha.table.rows.length)
+    // rows[4] ("WAGON base series 1 …") is the one wrapped over several lines in the fixture (see the findTables suite above).
+    expect(alpha.rowGroups[4].length).toBeGreaterThan(1)
+    for (const group of alpha.rowGroups) for (const index of group) expect(index).toBeGreaterThanOrEqual(alpha.bodyRange[0])
   })
 })

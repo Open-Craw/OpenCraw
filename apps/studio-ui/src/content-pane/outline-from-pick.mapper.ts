@@ -1,4 +1,4 @@
-import type { FieldPick, InferSelectorView, OutlineBracket, OutlineCard, OutlineNode } from '@opencraw/studio'
+import type { DocumentTreeNodeView, FieldPick, InferSelectorView, OutlineBracket, OutlineCard, OutlineNode } from '@opencraw/studio'
 
 /** A safe default field id: a `Read` card's picked value has no name from the user in v1 (naming fields is the Record tab's job, phase 3, #92) — `value` is renamed in the JSON/Record tab like any other id. */
 const DEFAULT_FIELD_ID = 'value'
@@ -24,6 +24,59 @@ export function readCardNode (field: FieldPick, path: string, id: string = DEFAU
     custom:   false,
     step:     { type: 'extract', id, selector: field.selector, kind: 'css', ...((field.take !== 'text') && { take: field.take }) },
   }
+}
+
+/**
+ * Builds a Read card from a document tree pick (studio plan §3.4, issue
+ * #94's 5a): a JSON/YAML node's `jsonpath` or an XML node's `xpath`, no
+ * selector inference needed — the path *is* the engine's own address for
+ * the node, exact by construction (`document-view/tree-view.mapper.ts`).
+ *
+ * @param node - The picked tree node.
+ * @param path - This node's outline path.
+ * @param options - `id` (default `"value"`, same convention as `readCardNode`); `generalize` picks the node's `listPath` (every item of its array/repeated sibling group) instead of its own exact path, adding `many: true` — studio plan §3.4's "a value inside a list generalises to the whole list"; `namespaces` carries the document's declared prefixes onto an XML pick (offered, not required — `selectXpath` resolves root-declared `xmlns:*` prefixes on its own; only a default, unprefixed namespace needs naming here).
+ * @returns The outline card.
+ * @throws Error when the node has neither a `jsonpath` nor an `xpath`, or `generalize` is asked for a node with no `listPath`.
+ */
+export function documentReadCardNode (
+  node: DocumentTreeNodeView,
+  path: string,
+  options: { id?: string, generalize?: boolean, namespaces?: Record<string, string> } = {},
+): OutlineCard {
+  const id = options.id ?? DEFAULT_FIELD_ID
+  const kind = node.jsonpath === undefined ? 'xpath' : 'jsonpath'
+  const exact = node.jsonpath ?? node.xpath
+  if (exact === undefined) throw new Error('documentReadCardNode: the node has neither a jsonpath nor an xpath')
+  if (options.generalize === true && node.listPath === undefined) throw new Error('documentReadCardNode: this node has no list to generalise to (it is not part of an array or a repeated sibling group)')
+  const selector = options.generalize === true ? (node.listPath as string) : exact
+  const namespaces = kind === 'xpath' && options.namespaces !== undefined && Object.keys(options.namespaces).length > 0 ? options.namespaces : undefined
+
+  return {
+    kind:     'card',
+    path,
+    stepType: 'extract',
+    sentence: [],
+    custom:   false,
+    step:     { type: 'extract', id, selector, kind, ...(options.generalize === true && { many: true }), ...(namespaces !== undefined && { namespaces }) },
+  }
+}
+
+/**
+ * Builds a `paginate` step's outline node from a picked "next" value (studio
+ * plan §3.4, issue #94's 5a): a JSON/YAML tree's cursor or next-page-URL
+ * field, read again on every page by `next.jsonpath`. `steps` starts empty —
+ * the loop's own body (the page's read cards) is authored afterwards in the
+ * Steps outline, the same as any other bracket a pick starts.
+ *
+ * @param node - The picked "next" value; must have a `jsonpath` (JSON/YAML only — `PaginateNext` has no XPath form).
+ * @param path - The new bracket's outline path.
+ * @returns The outline bracket.
+ * @throws Error when `node` has no `jsonpath`.
+ */
+export function paginateFromNextNode (node: DocumentTreeNodeView, path: string): OutlineBracket {
+  if (node.jsonpath === undefined) throw new Error('paginateFromNextNode: pagination reads a JSON/YAML "next" value (node.jsonpath)')
+
+  return { kind: 'bracket', path, stepType: 'paginate', sentence: [], children: [], step: { type: 'paginate', next: { jsonpath: node.jsonpath }, steps: [] } }
 }
 
 /**

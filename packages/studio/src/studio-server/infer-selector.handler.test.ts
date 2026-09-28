@@ -11,7 +11,7 @@ const snapshotHtml = rewriteDocument(booksHtml, 'https://books.example/').html
 function stateWithSnapshot (): ReturnType<typeof createStudioState> {
   const state = createStudioState()
   state.folder = '/tmp/does-not-matter' // infer-selector never touches disk once a snapshot is cached
-  putSnapshot(state.snapshots, 'books', 'start', { html: snapshotHtml, nodeCount: 0, baseUrl: 'https://books.example/' })
+  putSnapshot(state.snapshots, 'books', 'start', { html: snapshotHtml, nodeCount: 0, baseUrl: 'https://books.example/', rawHtml: booksHtml })
 
   return state
 }

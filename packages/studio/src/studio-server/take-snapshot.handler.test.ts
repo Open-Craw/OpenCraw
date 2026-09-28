@@ -26,7 +26,9 @@ describe('handleTakeSnapshot', () => {
 
     const view = await handleTakeSnapshot(state, { type: 'take-snapshot', recipeId: 'items', path: 'start' })
     expect(view.html).toContain('data-oc-node="n0"')
-    expect(cachedSnapshot(state.snapshots, 'items', 'start')).toEqual(view)
+    expect(view.format).toBe('html') // api mode, read `as: "html"`
+    // The wire view strips the cached entry's server-only fields (`rawHtml`, the parsed `body`) — see `SnapshotResult`'s own doc comment.
+    expect(cachedSnapshot(state.snapshots, 'items', 'start')).toMatchObject({ html: view.html, nodeCount: view.nodeCount, baseUrl: view.baseUrl, format: view.format })
   })
 
   it('answers from the cache on a second call, without recapturing', async () => {
@@ -35,6 +37,6 @@ describe('handleTakeSnapshot', () => {
 
     const first = await handleTakeSnapshot(state, { type: 'take-snapshot', recipeId: 'items', path: 'start' })
     const second = await handleTakeSnapshot(state, { type: 'take-snapshot', recipeId: 'items', path: 'start' })
-    expect(second).toBe(first) // the very same object: the cached entry, not a recapture
+    expect(second).toEqual(first) // the same wire view; the handler builds a fresh one from the (very same) cached entry each call
   })
 })
