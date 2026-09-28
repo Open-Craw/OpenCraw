@@ -7,6 +7,8 @@ import type { BrowserSessionConfig } from '@opencraw/core'
 import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
+import { handleDeckPreview } from './deck-preview.handler'
+import { handleDeckView } from './deck-view.handler'
 import { handleDocumentTree } from './document-tree.handler'
 import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
@@ -200,6 +202,10 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'grid-view': { return handleGridView(state, command)
     }
     case 'grid-preview': { return Promise.resolve(handleGridPreview(state, command))
+    }
+    case 'deck-view': { return Promise.resolve(handleDeckView(state, command))
+    }
+    case 'deck-preview': { return Promise.resolve(handleDeckPreview(state, command))
     }
   }
 }

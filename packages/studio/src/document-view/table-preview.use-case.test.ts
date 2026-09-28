@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { csvWorkbook, readPdf } from '@opencraw/core'
-import type { PdfDocument, WorkbookDocument } from '@opencraw/core'
-import { previewGridTable, previewPdfTable } from './table-preview.use-case'
+import { csvWorkbook, readPdf, readPptxDeck } from '@opencraw/core'
+import type { DeckDocument, PdfDocument, WorkbookDocument } from '@opencraw/core'
+import { previewDeckTable, previewGridTable, previewPdfTable } from './table-preview.use-case'
 
 const fixture = join(__dirname, '..', '..', '..', '..', 'packages', 'core', 'src', 'pdf-document', 'fixtures', 'discounts.pdf')
 const listinoPath = join(__dirname, '..', '..', '..', '..', 'packages', 'core', 'src', 'workbook-document', 'fixtures', 'listino.csv')
+const incentiviPptxPath = join(__dirname, '..', '..', '..', 'office-reader', 'src', 'presentation', 'fixtures', 'incentivi.pptx')
 
 describe('previewPdfTable', () => {
   let document: PdfDocument
@@ -119,6 +120,69 @@ describe('previewGridTable', () => {
   it('is a pure function of the document and the options: running it twice gives the same result', () => {
     const first = previewGridTable(listino, { header: '^Marca', until: '^Totale' })
     const second = previewGridTable(listino, { header: '^Marca', until: '^Totale' })
+    expect(second).toEqual(first)
+  })
+})
+
+describe('previewDeckTable', () => {
+  let deck: DeckDocument
+
+  beforeAll(async () => {
+    deck = await readPptxDeck(new Uint8Array(readFileSync(incentiviPptxPath)), incentiviPptxPath)
+  })
+
+  it('matches a slide\'s native table, named by the header cells, scoped by "slide"', () => {
+    const result = previewDeckTable(deck, { slide: '^Incentivi giugno$', header: '^Modello Prezzo', headerRows: 2 })
+    expect(result.error).toBeUndefined()
+    expect(result.matches).toHaveLength(1)
+    const [match] = result.matches
+    expect(match.slide).toBe(1)
+    expect(match.slideTitle).toBe('Incentivi giugno')
+    expect(match.header).toEqual(['Modello', 'Prezzo Listino', 'Prezzo Netto', 'Sconto'])
+    expect(match.rows).toEqual([
+      { 'Modello': 'Pandina', 'Prezzo Listino': '15.950 €', 'Prezzo Netto': '13.955 €', 'Sconto': '12,5%' },
+      { 'Modello': 'Pandina Cross', 'Prezzo Listino': '17.950 €', 'Prezzo Netto': '15.706 €', 'Sconto': '12,5%' },
+    ])
+  })
+
+  it('reads text boxes laid out as a table with "shapes", each box a cell', () => {
+    const result = previewDeckTable(deck, { shapes: true, header: '^Modello', columns: { model: '^Modello', price: '^Prezzo' } })
+    expect(result.error).toBeUndefined()
+    expect(result.matches).toHaveLength(1)
+    const [match] = result.matches
+    expect(match.slide).toBe(2)
+    expect(match.header).toEqual(['Modello', 'Prezzo', 'Sconto'])
+    expect(match.rows.length).toBeGreaterThan(0)
+    expect(match.rows[0]).toHaveProperty('model')
+    expect(match.rows[0]).toHaveProperty('price')
+  })
+
+  it('skips hidden slides unless "includeHidden" is asked for', () => {
+    expect(previewDeckTable(deck, { shapes: true, header: '^Bozza' }).matches).toEqual([])
+    expect(previewDeckTable(deck, { shapes: true, header: '^Bozza', includeHidden: true }).matches.map(match => match.slide)).toEqual([4])
+  })
+
+  it('finds no matches for a header that matches nothing, without erroring', () => {
+    const result = previewDeckTable(deck, { header: '^NOTHING WILL MATCH THIS' })
+    expect(result.error).toBeUndefined()
+    expect(result.matches).toEqual([])
+  })
+
+  it('answers with an error (and no matches) instead of throwing when a pattern does not compile', () => {
+    const result = previewDeckTable(deck, { header: '(unterminated' })
+    expect(result.matches).toEqual([])
+    expect(result.error).toMatch(/selector/)
+  })
+
+  it('reports an invalid "until", "slide" or column pattern the same way', () => {
+    expect(previewDeckTable(deck, { header: '^Modello', until: '(unterminated' }).error).toMatch(/until/)
+    expect(previewDeckTable(deck, { header: '^Modello', slide: '(unterminated' }).error).toMatch(/slide/)
+    expect(previewDeckTable(deck, { header: '^Modello', columns: { x: '(unterminated' } }).error).toMatch(/columns\.x/)
+  })
+
+  it('is a pure function of the document and the options: running it twice gives the same result', () => {
+    const first = previewDeckTable(deck, { slide: '^Incentivi giugno$', header: '^Modello Prezzo', headerRows: 2 })
+    const second = previewDeckTable(deck, { slide: '^Incentivi giugno$', header: '^Modello Prezzo', headerRows: 2 })
     expect(second).toEqual(first)
   })
 })

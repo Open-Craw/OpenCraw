@@ -20,6 +20,7 @@ export {
   inspectPageCommandSchema, responsesSeenCommandSchema, documentTreeCommandSchema,
   pdfViewCommandSchema, tablePreviewOptionsSchema, tablePreviewCommandSchema,
   gridViewCommandSchema, gridPreviewOptionsSchema, gridPreviewCommandSchema,
+  deckViewCommandSchema, deckPreviewOptionsSchema, deckPreviewCommandSchema,
   domTreeNodeViewSchema, pageDataFindingSchema, inspectViewSchema,
   observedResponseSchema, responsesSeenViewSchema,
   documentTreeNodeViewSchema, documentTreeViewSchema,
@@ -27,9 +28,11 @@ export {
   tablePreviewTableSchema, tablePreviewBandSchema, tablePreviewMatchSchema, tablePreviewViewSchema,
   gridCellViewSchema, gridMergeViewSchema, gridSheetViewSchema, workbookDocumentViewSchema,
   gridTablePreviewMatchSchema, gridTablePreviewViewSchema,
+  deckShapeViewSchema, deckChartSeriesViewSchema, deckChartViewSchema, deckSlideViewSchema, deckDocumentViewSchema,
+  deckTablePreviewMatchSchema, deckTablePreviewViewSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
@@ -46,4 +49,6 @@ export type {
   TablePreviewTableView, TablePreviewBandView, TablePreviewMatchView, TablePreviewView,
   GridCellView, GridMergeView, GridSheetView, WorkbookDocumentView,
   GridTablePreviewMatchView, GridTablePreviewView,
+  DeckShapeView, DeckChartSeriesView, DeckChartView, DeckSlideView, DeckDocumentView,
+  DeckTablePreviewMatchView, DeckTablePreviewView,
 } from './studio-api'

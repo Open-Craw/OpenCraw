@@ -1,5 +1,5 @@
-import { analyzeTables, findGridTables } from '@opencraw/core'
-import type { GridTableQuery, PdfDocument, PdfTable, TableAlign, TableBandDiagnostics, WorkbookCell, WorkbookDocument } from '@opencraw/core'
+import { analyzeTables, findDeckTables, findGridTables } from '@opencraw/core'
+import type { DeckDocument, GridTableQuery, PdfDocument, PdfTable, TableAlign, TableBandDiagnostics, WorkbookCell, WorkbookDocument } from '@opencraw/core'
 
 /**
  * A `table` extract's own options, as the studio's picks build them: string
@@ -163,4 +163,79 @@ export function previewGridTable (document: WorkbookDocument, options: GridTable
   const tables = findGridTables(document, query)
 
   return { matches: tables.map(table => ({ sheet: table.sheet, title: table.title, header: table.header, rows: table.rows })) }
+}
+
+/**
+ * A `table` extract's own options for a deck, as the studio's deck canvas
+ * picks build them (issue #94's 5d) — mirrors `@opencraw/core`'s
+ * `DeckTableQuery`, kept as strings (not yet compiled) the same way
+ * `TablePreviewOptions`/`GridTablePreviewOptions` do for PDF/workbook.
+ */
+export interface DeckTablePreviewOptions {
+  /** Matches the titles of the slides to read; default every slide. */
+  slide?:         string
+  /** Read text boxes laid out as a table instead of native tables. */
+  shapes?:        boolean
+  /** With `shapes`: how a row's values sit against a box wrapped over several lines. */
+  align?:         TableAlign
+  /** Matches the header row (the recipe's `selector`). */
+  header:         string
+  /** Matches the row that ends the table. */
+  until?:         string
+  /** Output key -> a pattern for that column's header cell. */
+  columns?:       Record<string, string>
+  /** How many rows the header spans; default 1 (native tables only). */
+  headerRows?:    number
+  /** Output keys whose empty cells take the value of the row above (native tables only). */
+  fillDown?:      string[]
+  /** Read hidden slides too. */
+  includeHidden?: boolean
+}
+
+/** One table matched by a `table` extract's options against a deck — mirrors `@opencraw/core`'s `DeckTable`. */
+export interface DeckTablePreviewMatch {
+  slide:      number
+  slideTitle: string
+  title:      string
+  header:     string[]
+  rows:       Record<string, WorkbookCell>[]
+}
+
+/** What `previewDeckTable` answers with: either the matches, or, when a pattern does not compile, why (mirrors `TablePreviewResult`/`GridTablePreviewResult`). */
+export interface DeckTablePreviewResult {
+  matches: DeckTablePreviewMatch[]
+  error?:  string
+}
+
+/**
+ * Runs a `table` extract's options against an already-read deck (studio plan
+ * §3.4, issue #94's 5d: the live preview) — a pure function of the document
+ * and the options, exactly like `previewPdfTable`/`previewGridTable` above:
+ * no re-fetch, no re-parse (`readPptxDeck` already ran once, when
+ * `take-snapshot` captured the document).
+ *
+ * @param document - The already-read deck.
+ * @param options - The `table` extract's options, not yet compiled to `RegExp`.
+ * @returns Every matched table — or `error` (and no matches) when a pattern is not a valid regular expression, expected while the person is still typing it.
+ */
+export function previewDeckTable (document: DeckDocument, options: DeckTablePreviewOptions): DeckTablePreviewResult {
+  let query: { slide?: RegExp, shapes?: boolean, align?: TableAlign, header: RegExp, until?: RegExp, columns?: Record<string, RegExp>, headerRows?: number, fillDown?: string[], includeHidden?: boolean }
+  try {
+    query = {
+      slide:         options.slide === undefined ? undefined : compile(options.slide, 'slide'),
+      shapes:        options.shapes,
+      align:         options.align,
+      header:        compile(options.header, 'selector'),
+      until:         options.until === undefined ? undefined : compile(options.until, 'until'),
+      columns:       options.columns === undefined ? undefined : Object.fromEntries(Object.entries(options.columns).map(([key, pattern]) => [key, compile(pattern, `columns.${key}`)])),
+      headerRows:    options.headerRows,
+      fillDown:      options.fillDown,
+      includeHidden: options.includeHidden,
+    }
+  } catch (error) {
+    return { matches: [], error: error instanceof Error ? error.message : String(error) }
+  }
+  const tables = findDeckTables(document, query)
+
+  return { matches: tables.map(table => ({ slide: table.slide, slideTitle: table.slideTitle, title: table.title, header: table.header, rows: table.rows })) }
 }

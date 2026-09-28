@@ -1,4 +1,4 @@
-import type { DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -36,6 +36,10 @@ export interface StudioClient {
   gridView:       (recipeId: string, path: string, override?: { delimiter?: string, encoding?: string }) => Promise<WorkbookDocumentView>
   /** The grid canvas's live preview of a `table` extract's options (`document-view`'s `previewGridTable`, issue #94's 5c): a pure computation over the cached snapshot, instant on every option change. */
   gridPreview:    (recipeId: string, path: string, options: GridPreviewOptions) => Promise<GridTablePreviewView>
+  /** The deck canvas's slides, shapes, tables, charts and notes for a `.pptx` snapshot (`document-view`'s `deck-view.mapper.ts`, studio plan §3.4, issue #94's 5d), off the same cached snapshot. */
+  deckView:       (recipeId: string, path: string) => Promise<DeckDocumentView>
+  /** The deck canvas's live preview of a `table` extract's options (`document-view`'s `previewDeckTable`, issue #94's 5d): a pure computation over the cached snapshot, instant on every option change. */
+  deckPreview:    (recipeId: string, path: string, options: DeckPreviewOptions) => Promise<DeckTablePreviewView>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -99,6 +103,8 @@ export function createStudioClient (): StudioClient {
     pdfBytesUrl:    (recipeId, path) => `/api/pdf-bytes?token=${encodeURIComponent(token)}&recipeId=${encodeURIComponent(recipeId)}&path=${encodeURIComponent(path)}`,
     gridView:       (recipeId, path, override) => send<WorkbookDocumentView>(token, { type: 'grid-view', recipeId, path, delimiter: override?.delimiter, encoding: override?.encoding }),
     gridPreview:    (recipeId, path, options) => send<GridTablePreviewView>(token, { type: 'grid-preview', recipeId, path, options }),
+    deckView:       (recipeId, path) => send<DeckDocumentView>(token, { type: 'deck-view', recipeId, path }),
+    deckPreview:    (recipeId, path, options) => send<DeckTablePreviewView>(token, { type: 'deck-preview', recipeId, path, options }),
     subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)

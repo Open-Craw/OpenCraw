@@ -92,12 +92,35 @@ describe('ContentPane', () => {
     expect(screen.getByText(/read card: \$\.name/i)).toBeTruthy()
   })
 
-  it('shows an honest placeholder for a document format with no canvas yet (the deck, issue #94 5d)', async () => {
-    mockFetch({ html: '<p>[pptx document]</p>', nodeCount: 0, baseUrl: 'file:///x.pptx', format: 'pptx' })
+  it('shows the deck canvas (not the iframe, not a placeholder) for a pptx snapshot, with its slide select and side panel', async () => {
+    mockFetchByCommand({
+      'take-snapshot': { html: '<p>[pptx document]</p>', nodeCount: 0, baseUrl: 'file:///incentivi.pptx', format: 'pptx' },
+      'deck-view':     {
+        width:  960,
+        height: 540,
+        slides: [
+          {
+            number:    1,
+            title:     'Incentivi giugno',
+            hidden:    false,
+            shapes:    [{ x: 60, y: 30, width: 840, height: 60, text: 'Incentivi giugno', placeholder: 'title' }],
+            shapeRows: [[0]],
+            tables:    [{ name: 'table 1', hidden: false, hiddenRows: [], columnCount: 2, rows: [[{ value: 'Modello', type: 'string' }, { value: 'Prezzo', type: 'string' }]], merges: [] }],
+            charts:    [{ type: 'bar', title: 'Immatricolazioni', series: [{ name: 'Pandina', categories: ['Aprile'], values: [1200] }] }],
+            notes:     'Prezzi IVA inclusa.',
+          },
+        ],
+      },
+    })
     renderWithProviders(<ContentPane recipe={recipe()} />)
 
-    await waitFor(() => { expect(screen.getByText(/not built yet/i)).toBeTruthy() })
+    await waitFor(() => { expect(screen.getByText('table 1')).toBeTruthy() }) // the native table entry in the side list
+    expect(screen.queryByText(/not built yet/i)).toBeNull()
     expect(document.querySelector('iframe')).toBeNull()
+    expect(screen.getByText('Native table')).toBeTruthy() // a source toggle, not the DOM picker's "Read" button
+    expect(screen.queryByText('Read')).toBeNull()
+    expect(screen.getByText('Immatricolazioni')).toBeTruthy() // the chart entry in the side list
+    expect(screen.getByText('Prezzi IVA inclusa.')).toBeTruthy() // the notes
   })
 
   // The grid, like the Inspect panel's DOM tree, is virtualized (@tanstack/react-virtual): jsdom reports a

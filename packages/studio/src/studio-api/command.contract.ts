@@ -212,6 +212,46 @@ export const gridPreviewCommandSchema = z.object({
   options:  gridPreviewOptionsSchema,
 })
 
+/**
+ * The deck canvas's slides, shapes, tables, charts and notes for a deck
+ * (PowerPoint) snapshot (`document-view`'s `deck-view.mapper.ts`, studio plan
+ * §3.4, issue #94's 5d), off the same cached snapshot
+ * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
+ * Only a `.pptx` snapshot has one; JSON/YAML/XML get the tree canvas (5a),
+ * PDF the PDF canvas (5b), the workbook the grid canvas (5c).
+ */
+export const deckViewCommandSchema = z.object({
+  type:     z.literal('deck-view'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/** A `table` extract's options for a deck, as the studio's deck canvas picks build them — mirrors `document-view/table-preview.use-case.ts`'s `DeckTablePreviewOptions`. */
+export const deckPreviewOptionsSchema = z.object({
+  slide:         z.string().min(1).optional(),
+  shapes:        z.boolean().optional(),
+  align:         z.enum(['auto', 'top', 'center', 'bottom']).optional(),
+  header:        z.string().min(1),
+  until:         z.string().min(1).optional(),
+  columns:       z.record(z.string(), z.string().min(1)).optional(),
+  headerRows:    z.int().min(1).optional(),
+  fillDown:      z.array(z.string().min(1)).min(1).optional(),
+  includeHidden: z.boolean().optional(),
+})
+
+/**
+ * The live preview of a `table` extract's options against a cached deck
+ * snapshot (`document-view`'s `table-preview.use-case.ts`'s `previewDeckTable`,
+ * studio plan §3.4, issue #94's 5d): the matched table(s), recomputed as the
+ * person edits the options — call `take-snapshot` and `deck-view` first.
+ */
+export const deckPreviewCommandSchema = z.object({
+  type:     z.literal('deck-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  options:  deckPreviewOptionsSchema,
+})
+
 /** A missing value in an emitted record, by its position in the last sample run's records (the order they streamed in, matching the UI's own `records` list). */
 export const missingWhyTargetSchema = z.object({
   kind:        z.literal('missing'),
@@ -259,6 +299,8 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   tablePreviewCommandSchema,
   gridViewCommandSchema,
   gridPreviewCommandSchema,
+  deckViewCommandSchema,
+  deckPreviewCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -280,6 +322,9 @@ export type TablePreviewCommand = z.infer<typeof tablePreviewCommandSchema>
 export type GridViewCommand = z.infer<typeof gridViewCommandSchema>
 export type GridPreviewOptions = z.infer<typeof gridPreviewOptionsSchema>
 export type GridPreviewCommand = z.infer<typeof gridPreviewCommandSchema>
+export type DeckViewCommand = z.infer<typeof deckViewCommandSchema>
+export type DeckPreviewOptions = z.infer<typeof deckPreviewOptionsSchema>
+export type DeckPreviewCommand = z.infer<typeof deckPreviewCommandSchema>
 export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
 export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
 export type WhyTarget = z.infer<typeof whyTargetSchema>
