@@ -17,9 +17,12 @@ export {
   fieldPickSchema, inferSelectorViewSchema,
   sentencePartSchema, outlineCardSchema, outlineBracketSchema, outlineNodeSchema, outlineViewSchema,
   whyViewSchema,
+  inspectPageCommandSchema, responsesSeenCommandSchema,
+  domTreeNodeViewSchema, pageDataFindingSchema, inspectViewSchema,
+  observedResponseSchema, responsesSeenViewSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, StudioCommand,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
@@ -29,4 +32,6 @@ export type {
   FieldPick, InferSelectorView,
   SentencePart, OutlineCard, OutlineBracket, OutlineNode, OutlineView,
   WhyView,
+  DomTreeNodeView, PageDataKind, PageDataFindingView, InspectView,
+  ObservedResponseView, ResponsesSeenView,
 } from './studio-api'

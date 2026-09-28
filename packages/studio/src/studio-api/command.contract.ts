@@ -95,6 +95,29 @@ export const inferSelectorCommandSchema = z.object({
   nodeIds:  z.union([onePickedNodeSchema, twoPickedNodesSchema]),
 })
 
+/**
+ * The Inspect panel's DOM tree and data-in-the-page findings, off the same
+ * cached snapshot `take-snapshot`/`infer-selector` already use (`page-inspector`,
+ * issue #93). Call `take-snapshot` first, same as `infer-selector`.
+ */
+export const inspectPageCommandSchema = z.object({
+  type:     z.literal('inspect-page'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
+/**
+ * The JSON responses seen while a recipe's start page rendered
+ * (`page-inspector`'s `responses-seen.use-case.ts`, issue #93), for the
+ * Inspect panel's "responses seen" list. Opens its own browser session
+ * (see that use-case's doc comment for why); slower than `inspect-page`.
+ */
+export const responsesSeenCommandSchema = z.object({
+  type:     z.literal('responses-seen'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
 /** A missing value in an emitted record, by its position in the last sample run's records (the order they streamed in, matching the UI's own `records` list). */
 export const missingWhyTargetSchema = z.object({
   kind:        z.literal('missing'),
@@ -135,6 +158,8 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   verifySelectorCommandSchema,
   inferSelectorCommandSchema,
   explainWhyCommandSchema,
+  inspectPageCommandSchema,
+  responsesSeenCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -147,6 +172,8 @@ export type SaveOutlineCommand = z.infer<typeof saveOutlineCommandSchema>
 export type TakeSnapshotCommand = z.infer<typeof takeSnapshotCommandSchema>
 export type VerifySelectorCommand = z.infer<typeof verifySelectorCommandSchema>
 export type InferSelectorCommand = z.infer<typeof inferSelectorCommandSchema>
+export type InspectPageCommand = z.infer<typeof inspectPageCommandSchema>
+export type ResponsesSeenCommand = z.infer<typeof responsesSeenCommandSchema>
 export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
 export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
 export type WhyTarget = z.infer<typeof whyTargetSchema>

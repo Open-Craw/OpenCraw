@@ -10,7 +10,9 @@ import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy
 import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleInferSelector } from './infer-selector.handler'
+import { handleInspectPage } from './inspect-page.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
+import { handleResponsesSeen } from './responses-seen.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
@@ -150,6 +152,10 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'infer-selector': { return Promise.resolve(handleInferSelector(state, command))
     }
     case 'explain-why': { return handleExplainWhy(state, command)
+    }
+    case 'inspect-page': { return Promise.resolve(handleInspectPage(state, command))
+    }
+    case 'responses-seen': { return handleResponsesSeen(state, command)
     }
   }
 }
