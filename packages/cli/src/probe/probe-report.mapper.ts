@@ -1,10 +1,4 @@
-import type { ProbeFindings } from './find-data.algorithm'
-import type { DeckFindings } from './deck-findings.mapper'
-import type { HtmlFindings } from './html-findings.mapper'
-import type { JsonFindings } from './json-findings.mapper'
-import type { XmlFindings } from './xml-findings.mapper'
-import type { PdfFindings } from './pdf-findings.mapper'
-import type { WorkbookFindings } from './workbook-findings.mapper'
+import type { DeckFindings, HtmlFindings, JsonFindings, PdfFindings, ProbeFindings, WorkbookFindings, XmlFindings } from '@opencraw/probe'
 
 /**
  * Renders a probe's findings as text.

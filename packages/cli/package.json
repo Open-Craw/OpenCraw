@@ -25,6 +25,7 @@
   ],
   "dependencies": {
     "@opencraw/core": "^0.0.1",
+    "@opencraw/probe": "^0.0.1",
     "playwright": "^1.63.0"
   },
   "peerDependencies": {

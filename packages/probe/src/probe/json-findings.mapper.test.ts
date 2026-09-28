@@ -1,5 +1,4 @@
 import { describeJson } from './json-findings.mapper'
-import { jsonReport } from './probe-report.mapper'
 
 const catalogue = {
   meta: { 'total': 3, 'next-page': null },
@@ -38,6 +37,5 @@ describe('describeJson', () => {
   it('reads a top-level list, as JSON Lines give', () => {
     const findings = describeJson([{ a: 1 }, { a: 2 }], 'jsonl')
     expect(findings).toMatchObject({ format: 'jsonl', type: 'array (2) of object', lists: [{ path: '$[*]', length: 2, keys: ['a'] }] })
-    expect(jsonReport('x.jsonl', findings).split('\n', 1)[0]).toBe('x.jsonl (JSON Lines: array (2) of object)')
   })
 })

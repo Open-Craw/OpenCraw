@@ -17,13 +17,7 @@
   ],
   "references": [
     {
-      "path": "../studio/tsconfig.lib.json"
-    },
-    {
       "path": "../core/tsconfig.lib.json"
-    },
-    {
-      "path": "../probe/tsconfig.lib.json"
     }
   ],
   "exclude": [

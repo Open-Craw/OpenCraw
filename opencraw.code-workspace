@@ -221,6 +221,20 @@
         "script": "studio-ui:start",
         "problemMatcher": [],
         "isBackground": true
+      },
+      {
+        "label": "probe: qa",
+        "type": "npm",
+        "script": "probe:qa",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "probe: build",
+        "type": "npm",
+        "script": "probe:build",
+        "problemMatcher": [],
+        "group": "build"
       }
     ]
   },

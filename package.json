@@ -43,7 +43,9 @@
     "studio:build": "nx run studio:build",
     "studio-ui:qa": "nx run studio-ui:lint && nx run studio-ui:test",
     "studio-ui:build": "nx run studio-ui:build",
-    "studio-ui:start": "nx run studio-ui:serve"
+    "studio-ui:start": "nx run studio-ui:serve",
+    "probe:qa": "nx run probe:lint && nx run probe:test",
+    "probe:build": "nx run probe:build"
   },
   "private": true,
   "devDependencies": {
