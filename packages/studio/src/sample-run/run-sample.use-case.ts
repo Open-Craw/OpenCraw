@@ -1,5 +1,5 @@
 import { bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/core'
-import type { Crawler, CrawlEvent } from '@opencraw/core'
+import type { BrowserSessionConfig, Crawler, CrawlEvent } from '@opencraw/core'
 import type { SampleBudget } from '../studio-api'
 import { loadRecipePair } from './load-recipe-pair.use-case'
 import type { SampleRunRecord, SampleRunResult } from './sample-run-record.contract'
@@ -29,10 +29,11 @@ export interface SampleRunHandle {
  * @param recipeId - The input recipe to run.
  * @param budget - The sample budget; unset runs the recipe to completion (still capped by its own `limits`).
  * @param callbacks - Where trace lines and records go as the run proceeds.
+ * @param browser - Browser launch settings for a web-mode recipe (an executable path override, headless…); the server-wide setting `studio-http.use-case.ts`'s `StudioServerOptions.browser` carries in, e.g. `OPENCRAW_CHROMIUM` in a sandbox with no full Playwright install.
  * @returns A handle: `stop` closes the crawler cleanly, `result` resolves when the run ends.
  * @throws RecipeValidationError, RecipeBindingError, Error when the recipe or its output cannot be loaded or bound.
  */
-export async function runSample (folder: string, recipeId: string, budget: SampleBudget | undefined, callbacks: SampleRunCallbacks): Promise<SampleRunHandle> {
+export async function runSample (folder: string, recipeId: string, budget: SampleBudget | undefined, callbacks: SampleRunCallbacks, browser?: BrowserSessionConfig): Promise<SampleRunHandle> {
   const { input, output } = await loadRecipePair(folder, recipeId)
   const set = bindRecipeSet(output, [input])
   const sink = memorySink()
@@ -40,6 +41,7 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
     sink,
     debug:   true,
     sample:  budget,
+    browser,
     onEvent: (event: CrawlEvent) => {
       const line = traceLine(event)
       if (line !== undefined) callbacks.onTraceLine(line)

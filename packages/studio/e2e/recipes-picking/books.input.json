@@ -1,0 +1,11 @@
+{
+  "kind": "input",
+  "id": "books",
+  "output": "book",
+  "mode": "web",
+  "start": [{ "url": "http://127.0.0.1:4599/books" }],
+  "steps": [{ "type": "goto", "url": "{{start.url}}" }],
+  "mapping": {
+    "price": { "from": "value" }
+  }
+}

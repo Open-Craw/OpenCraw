@@ -3,6 +3,7 @@ import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { dirname, join } from 'node:path'
 import type { Duplex } from 'node:stream'
 import { fileURLToPath } from 'node:url'
+import type { BrowserSessionConfig } from '@opencraw/core'
 import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
@@ -37,6 +38,8 @@ export interface StudioServerOptions {
    * the folder reaches it through the URL's `folder` query param).
    */
   initialFolder?: string
+  /** Browser launch settings every web-mode command shares (`take-snapshot`, `verify-selector`, `run-sample`); an executable path override (e.g. `OPENCRAW_CHROMIUM`, read by the caller — the server itself has no opinion on env vars) for a sandbox with no full Playwright install. Default: Playwright's own bundled browser. */
+  browser?:       BrowserSessionConfig
 }
 
 /** The running server: its URL (token included, ready to open), the token alone, and how to stop it. */
@@ -61,6 +64,7 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
   const uiRoot = options.uiRoot ?? defaultUiRoot()
   const state = createStudioState()
   if (options.initialFolder !== undefined) state.folder = options.initialFolder
+  state.browser = options.browser
   const server = createServer((request, response) => { void handleRequest(request, response, token, state, uiRoot) })
   server.on('upgrade', (request, socket) => { handleUpgrade(request, socket, token, state) })
   await new Promise<void>((resolve, reject) => {

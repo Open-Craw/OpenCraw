@@ -1,5 +1,6 @@
 import { createServer } from 'node:http'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
+import type { BrowserSessionConfig } from '@opencraw/core'
 
 /**
  * A tiny fixture site for the studio's own e2e suite: two products, served
@@ -18,6 +19,26 @@ export const PRODUCTS = [
   { name: 'Gadget', price: 14 },
 ]
 
+/** How many books the listing page has — the picking e2e test's "emits 20 records" (issue #91's deliverable line), echoing books.toscrape.com's own page size. */
+export const BOOK_COUNT = 20
+
+/**
+ * A books.toscrape-shaped listing (studio plan §3.2, issue #91's picking
+ * e2e test): `article.product_pod` items, directly inside `div.row` (no
+ * extra wrapper — books.toscrape's own markup), each with an `h3 > a` title
+ * and a `p.price_color` price, so `packages/studio/e2e/picking.e2e.test.ts`
+ * can pick a price twice and get the safe list shape by construction.
+ */
+function booksHtml (): string {
+  const items = Array.from({ length: BOOK_COUNT }, (_, index) => {
+    const id = index + 1
+
+    return `<article class="product_pod"><h3><a href="/book/${id}" title="Book ${id}">Book ${id}</a></h3><p class="price_color">£${(10 + id).toFixed(2)}</p></article>`
+  }).join('')
+
+  return `<!doctype html><html lang="en"><head><title>Books</title></head><body><div class="row">${items}</div></body></html>`
+}
+
 function handle (request: IncomingMessage, response: ServerResponse): void {
   const url = new URL(request.url ?? '/', FIXTURE_BASE)
   if (url.pathname === '/products') {
@@ -26,8 +47,27 @@ function handle (request: IncomingMessage, response: ServerResponse): void {
 
     return
   }
+  if (url.pathname === '/books') {
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+    response.end(booksHtml())
+
+    return
+  }
   response.writeHead(404, { 'content-type': 'text/plain' })
   response.end('not found')
+}
+
+/**
+ * Browser settings for a web-mode e2e run (`picking.e2e.test.ts`):
+ * `OPENCRAW_CHROMIUM` points at a chromium binary when the one `playwright
+ * install` would fetch is not available (a sandbox with a preinstalled
+ * browser); unset, Playwright's own browser is used. Mirrors
+ * `packages/core/e2e/fixture-site.ts`'s own `browserConfig`.
+ */
+export function browserConfig (): BrowserSessionConfig {
+  const executablePath = process.env.OPENCRAW_CHROMIUM
+
+  return executablePath === undefined || executablePath === '' ? {} : { executablePath }
 }
 
 /** Starts the fixture site on its fixed port. */

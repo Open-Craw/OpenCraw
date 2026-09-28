@@ -26,7 +26,7 @@ export async function handleVerifySelector (state: StudioState, command: VerifyS
   if (command.path !== 'start') return { selector: command.selector, snapshotMatches, liveChecked: false, liveError: 'only the start page can be checked against the live site for now' }
   try {
     const { input } = await loadRecipePair(state.folder, command.recipeId)
-    const live = await fetchStartPage(input)
+    const live = await fetchStartPage(input, state.browser)
 
     return { selector: command.selector, snapshotMatches, liveChecked: true, liveMatches: countMatches(live, command.selector) }
   } catch (error) {

@@ -20,7 +20,7 @@ export async function handleRunSample (state: StudioState, command: RunSampleCom
   const handle = await runSample(state.folder, command.recipeId, command.budget, {
     onTraceLine: line => { broadcast(state, { type: 'trace-line', line }) },
     onRecord:    record => { broadcast(state, { type: 'record', recipeId: command.recipeId, key: record.key, data: record.data }) },
-  })
+  }, state.browser)
   state.activeRun = handle
   void handle.result.then((result) => {
     if (state.activeRun === handle) state.activeRun = undefined

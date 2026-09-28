@@ -20,7 +20,7 @@ export async function handleTakeSnapshot (state: StudioState, command: TakeSnaps
   const cached = cachedSnapshot(state.snapshots, command.recipeId, command.path)
   if (cached !== undefined) return cached
   const { input } = await loadRecipePair(state.folder, command.recipeId)
-  const snapshot = await takeSnapshot(input, command.path)
+  const snapshot = await takeSnapshot(input, command.path, state.browser)
   putSnapshot(state.snapshots, command.recipeId, command.path, snapshot)
 
   return snapshot
