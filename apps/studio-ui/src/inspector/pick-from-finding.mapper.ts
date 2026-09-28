@@ -10,11 +10,14 @@ const DEFAULT_FIELD_ID = 'data'
  * point at a real element on the page (`page-inspector`'s `page-data.algorithm.ts`
  * always computes a structural css selector, inline state assignments
  * included — it locates the exact `<script>` the assignment lives in rather
- * than scanning the page's text with a regex), so all three read `take:
- * "json"`; picking one of the value's own top-level keys (`key`, from the
- * findings' `keys` list) adds a second card, `kind: "jsonpath"`, `from` the
- * first one, reading `$.<key>` — the issue's "Read with take: json followed
- * by a jsonpath card".
+ * than scanning the page's text with a regex), so all three read its text
+ * (`take`'s default — a `css` extract's `take: "json"` reads the element's
+ * *outer* html, not its parsed content; `text` is the convention every
+ * JSON-LD read in this repo's own recipes already uses, `docs/recipes/authoring.md`
+ * and `examples/movies/`); picking one of the value's own top-level keys
+ * (`key`, from the findings' `keys` list) adds a second card, `kind:
+ * "jsonpath"`, `from` the first one, reading `$.<key>` — the issue's "a
+ * jsonpath card".
  *
  * @param finding - The picked finding.
  * @param path - The first card's outline path; a second card (a key pick) is its sibling.
@@ -39,7 +42,7 @@ export function pageDataPickNodes (finding: PageDataFindingView, path: string, k
     stepType: 'extract',
     sentence: [],
     custom:   false,
-    step:     { type: 'extract', id, selector: finding.selector, kind: 'css', take: 'json' },
+    step:     { type: 'extract', id, selector: finding.selector, kind: 'css' },
   }
   if (key === undefined) return [raw]
   const drill: OutlineCard = {
