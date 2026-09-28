@@ -55,6 +55,9 @@
   "dependencies": {
     "@chakra-ui/react": "3.37.0",
     "@emotion/react": "11.14.0",
-    "@opencraw/studio": "^0.0.1"
+    "@opencraw/studio": "^0.0.1",
+    "@tanstack/react-form": "^1.33.5",
+    "@tanstack/react-query": "^5.104.0",
+    "zustand": "^5.0.15"
   }
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Box, Checkbox, Field, Input, NativeSelect, Stack, Text, Textarea } from '@chakra-ui/react'
+import { useForm } from '@tanstack/react-form'
 import { STEP_FIELDS } from './step-field.catalog'
 import type { FieldSpec } from './step-field.catalog'
 
@@ -18,25 +19,51 @@ export interface StepFormProps {
  * everything else — the plan doc's "the sentence stays short; the details
  * are one click away", generated from a catalog rather than a live JSON
  * Schema read (see the catalog's own doc comment for why).
+ *
+ * TanStack Form (`useForm`) owns each catalog field's value/change/blur
+ * plumbing; the Advanced box stays a plain buffered `<Textarea>` outside the
+ * form, on purpose — it edits the *whole* step as raw JSON (arbitrary keys
+ * the catalog does not know), which does not map onto named form fields.
+ * `defaultValues` is seeded once, from `step`, when this component mounts:
+ * `steps-outline.tsx` keys its outline tree on the selected recipe's file,
+ * so switching recipes remounts every card's form with fresh values, rather
+ * than this component trying to resync a form field mid-edit (which would
+ * fight the very state it owns) whenever the `step` prop's identity changes
+ * from the outline's own local, responsive edits.
  */
 export function StepForm ({ stepType, step, onChange, onCommit }: StepFormProps) {
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const fields = STEP_FIELDS[stepType] ?? []
-
-  const setField = (key: string, value: unknown): void => {
-    onChange({ ...step, [key]: value })
-  }
+  const form = useForm({ defaultValues: step })
 
   return (
     <Stack gap={2} p={2} borderWidth='1px' borderRadius='md' bg='bg.subtle'>
       {fields.map(field => (
-        <FieldControl
+        <form.Field
           key={field.key}
-          field={field}
-          value={step[field.key]}
-          onChange={value => { setField(field.key, value) }}
-          onCommit={onCommit}
-        />
+          name={field.key}
+          validators={{
+            onMount:  ({ value }) => numberValidationError(field, value),
+            onChange: ({ value }) => numberValidationError(field, value),
+          }}
+        >
+          {(formField) => (
+            <Stack gap={0}>
+              <FieldControl
+                field={field}
+                value={formField.state.value}
+                onChange={value => {
+                  formField.handleChange(value)
+                  onChange({ ...step, [field.key]: value })
+                }}
+                onCommit={() => { formField.handleBlur(); onCommit() }}
+              />
+              {formField.state.meta.errors.length > 0 && (
+                <Text fontSize='xs' color='fg.error'>{String(formField.state.meta.errors[0])}</Text>
+              )}
+            </Stack>
+          )}
+        </form.Field>
       ))}
       {fields.length === 0 && <Text fontSize='xs' color='fg.muted'>No common fields for this step type; edit its JSON below.</Text>}
       <Box>
@@ -53,6 +80,17 @@ export function StepForm ({ stepType, step, onChange, onCommit }: StepFormProps)
       </Box>
     </Stack>
   )
+}
+
+/**
+ * A number field seeded from (or edited into) a non-number: a recipe file
+ * hand-edited outside the studio, or a value the Advanced (JSON) box wrote.
+ * `FieldControl`'s own number input always coerces through `numberOrUndefined`
+ * before calling `onChange`, so this only ever fires for a value that
+ * reached the form some other way.
+ */
+function numberValidationError (field: FieldSpec, value: unknown): string | undefined {
+  return value !== undefined && typeof value !== 'number' && field.kind === 'number' ? 'must be a number' : undefined
 }
 
 function FieldControl ({ field, value, onChange, onCommit }: { field: FieldSpec, value: unknown, onChange: (value: unknown) => void, onCommit: () => void }) {
@@ -122,6 +160,7 @@ function RawStepEditor ({ step, onChange, onCommit }: { step: Record<string, unk
         fontFamily='mono'
         fontSize='xs'
         rows={6}
+        aria-label='Advanced step JSON'
         value={text}
         onChange={event => { setText(event.target.value) }}
         onBlur={() => {

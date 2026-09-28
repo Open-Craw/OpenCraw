@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { resetRunSessionStore, resetStudioUiStore } from '../studio-store'
 import App from './app'
 
 class FakeWebSocket {
@@ -21,6 +22,8 @@ beforeAll(() => {
 
 beforeEach(() => {
   history.replaceState({}, '', '/')
+  resetStudioUiStore()
+  resetRunSessionStore()
 })
 
 describe('App shell', () => {

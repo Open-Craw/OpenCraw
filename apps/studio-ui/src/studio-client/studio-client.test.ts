@@ -1,7 +1,7 @@
 import { createStudioClient } from './studio-client'
 
 function withUrl (search: string): void {
-  globalThis.history.replaceState({}, '', `/${search}`)
+  history.replaceState({}, '', `/${search}`)
 }
 
 function mockFetch (response: { ok: boolean, status: number, body: unknown }): jest.Mock {

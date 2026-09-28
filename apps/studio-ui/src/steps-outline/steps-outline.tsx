@@ -75,7 +75,16 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
 
   return (
     <Box h='full' overflow='auto' p={2}>
-      <OutlineList listId='' nodes={outline.steps} allIssues={recipe.issues} actions={actions} menuLabel='Add step' />
+      {/*
+        Keyed on the recipe's own file: forces a fresh subtree (and so a
+        fresh `StepForm`/TanStack Form instance per card) whenever the
+        selected recipe changes, even when a step at the same tree position
+        keeps the same `path` across recipes. Without this, `step-form.tsx`'s
+        TanStack Form (whose values are seeded once, from `defaultValues`)
+        would keep showing the previous recipe's field values for a card
+        that never itself remounted.
+      */}
+      <OutlineList key={recipe.file} listId='' nodes={outline.steps} allIssues={recipe.issues} actions={actions} menuLabel='Add step' />
     </Box>
   )
 }
