@@ -141,7 +141,9 @@ describe('studio phase 6: recording flows (#95)', () => {
         output:  'login',
         mode:    'web',
         start:   [{ url: 'http://127.0.0.1:4599/search' }],
-        session: { bootstrap: { steps: bootstrapSteps, keep: ['cookies'], saveTo: 'storage/session.json' } },
+        // An absolute path, inside this test's own tmpdir: `saveTo` is resolved against the server's cwd
+        // otherwise (`runBootstrap`'s `storageStateDir`), which this e2e suite has no reason to write into.
+        session: { bootstrap: { steps: bootstrapSteps, keep: ['cookies'], saveTo: join(folder, 'storage', 'session.json') } },
         steps:   crawlSteps,
         mapping: { heading: { from: 'heading' } },
       }
@@ -150,7 +152,7 @@ describe('studio phase 6: recording flows (#95)', () => {
       // The recipe on disk never carries the real password either.
       expect(readFileSync(recipePath, 'utf8')).not.toContain(LOGIN_PASS)
       expect(readFileSync(recipePath, 'utf8')).toContain('{{env.PASS}}')
-      expect((JSON.parse(readFileSync(recipePath, 'utf8')) as { session: { bootstrap: { keep: string[], saveTo: string } } }).session.bootstrap).toMatchObject({ keep: ['cookies'], saveTo: 'storage/session.json' })
+      expect((JSON.parse(readFileSync(recipePath, 'utf8')) as { session: { bootstrap: { keep: string[], saveTo: string } } }).session.bootstrap).toMatchObject({ keep: ['cookies'] })
 
       // 6. Running the recipe (with the env var set) actually logs in: the crawl reaches the results page
       //    (never bounced back to the login form), and the click's own navigation shows up in the trace as a
@@ -184,6 +186,11 @@ describe('studio phase 6: recording flows (#95)', () => {
           expect(result.emitted).toBe(1)
           expect(records[0]?.heading).toBe('Results') // the login form has no <h1> at all — this proves the session carried the login through
           expect(traceLines.some(line => line.includes('⇢ page'))).toBe(true) // the bootstrap's own click navigation, reported like any other page:visit
+
+          // The suggested storageStatePath actually got written (`session.bootstrap.saveTo`), and never carries the real password either — only cookies.
+          const savedState = readFileSync(join(folder, 'storage', 'session.json'), 'utf8')
+          expect(savedState).not.toContain(LOGIN_PASS)
+          expect(JSON.parse(savedState).cookies.some((cookie: { name: string }) => cookie.name === 'session')).toBe(true)
         } finally {
           await server.close()
         }
