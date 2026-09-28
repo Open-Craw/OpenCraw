@@ -1,4 +1,4 @@
-import type { FetchStartPageCommand, OpenWorkspaceCommand, RunSampleCommand, SampleBudget, SaveRecipeCommand, StartPageView, StopRunCommand, StudioCommand, StudioEvent, WorkspaceView } from '@opencraw/studio'
+import type { FetchStartPageCommand, OpenWorkspaceCommand, OutlineView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, StartPageView, StopRunCommand, StudioCommand, StudioEvent, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -10,6 +10,7 @@ export interface StudioClient {
   runSample:      (recipeId: string, budget?: SampleBudget) => Promise<void>
   stopRun:        () => Promise<void>
   saveRecipe:     (path: string, recipe: unknown) => Promise<void>
+  saveOutline:    (path: string, outline: OutlineView) => Promise<void>
   fetchStartPage: (recipeId: string) => Promise<string>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
@@ -56,6 +57,7 @@ export function createStudioClient (): StudioClient {
     runSample:      async (recipeId, budget) => { await send(token, { type: 'run-sample', recipeId, budget } satisfies RunSampleCommand) },
     stopRun:        async () => { await send(token, { type: 'stop-run' } satisfies StopRunCommand) },
     saveRecipe:     async (path, recipe) => { await send(token, { type: 'save-recipe', path, recipe: recipe as Record<string, unknown> } satisfies SaveRecipeCommand) },
+    saveOutline:    async (path, outline) => { await send(token, { type: 'save-outline', path, outline } satisfies SaveOutlineCommand) },
     fetchStartPage: async (recipeId) => {
       const view = await send<StartPageView>(token, { type: 'fetch-start-page', recipeId } satisfies FetchStartPageCommand)
 

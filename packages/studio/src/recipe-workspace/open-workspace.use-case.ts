@@ -1,5 +1,6 @@
 import { RecipeBindingError, RecipeValidationError, bindRecipeSet, parseInputRecipe, parseOutputRecipe, readRecipeSource } from '@opencraw/core'
 import type { InputRecipe, OutputRecipe } from '@opencraw/core'
+import { recipeToOutline } from '../scope-outline'
 import type { RecipeIssue, WorkspaceView } from '../studio-api'
 
 interface Entry {
@@ -36,7 +37,19 @@ export async function openWorkspace (folder: string): Promise<WorkspaceView> {
     }
   }
 
-  return { folder, recipes: entries.map(({ file, kind, id, issues, content }) => ({ file, kind, id, issues, text: `${JSON.stringify(content, null, 2)}\n` })) }
+  return {
+    folder,
+    recipes: entries.map(({ file, kind, id, issues, content }) => ({
+      file,
+      kind,
+      id,
+      issues,
+      text:    `${JSON.stringify(content, null, 2)}\n`,
+      // The Steps tab needs steps to render: an output/unknown file has none. recipeToOutline never
+      // throws, so this covers a file that fails validation too (its outline just has "custom" cards).
+      outline: kind === 'input' ? recipeToOutline(content) : undefined,
+    })),
+  }
 }
 
 /** Binds one output recipe to the inputs that name it, filing every binding issue back on the recipe it names. */

@@ -5,6 +5,6 @@ export type { RecipeSource, RecipeBytes, RecipeDocument } from './recipe-source.
 export { RecipeSet } from './recipe-set.model'
 export { hookUses } from './hook-use.algorithm'
 export type { HookUse } from './hook-use.algorithm'
-export { validateBinding, fieldAt } from './recipe-binding.validator'
+export { validateBinding, fieldAt, bindingsAt } from './recipe-binding.validator'
 export { RecipeBindingError } from './recipe-binding.error'
 export type { BindingIssue } from './recipe-binding.error'

@@ -1,7 +1,7 @@
 import { createStudioClient } from './studio-client'
 
 function withUrl (search: string): void {
-  globalThis.history.replaceState({}, '', `/${search}`)
+  history.replaceState({}, '', `/${search}`)
 }
 
 function mockFetch (response: { ok: boolean, status: number, body: unknown }): jest.Mock {
@@ -30,6 +30,20 @@ describe('createStudioClient', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
       method: 'POST',
       body:   JSON.stringify({ type: 'open-workspace', folder: 'recipes' }),
+    }))
+  })
+
+  it('sends save-outline as a POST with the path and the outline', async () => {
+    withUrl('?token=abc123')
+    const fetchMock = mockFetch({ ok: true, status: 200, body: { saved: true } })
+    const outline = { recipe: {}, steps: [] }
+
+    const client = createStudioClient()
+    await client.saveOutline('/r/books.input.json', outline)
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/command?token=abc123', expect.objectContaining({
+      method: 'POST',
+      body:   JSON.stringify({ type: 'save-outline', path: '/r/books.input.json', outline }),
     }))
   })
 

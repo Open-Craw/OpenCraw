@@ -198,11 +198,39 @@ apps/studio-ui/                  the React UI (Vite, Chakra UI); built into pack
     json-editor/
     preview/                     records, trace, why
     inspector/
-    studio-client/               the API client, WebSocket, shared types from @opencraw/studio
+    studio-client/               TanStack Query hooks over the API client, WebSocket, shared types from @opencraw/studio
+    studio-store/                Zustand: client-only UI state (selected recipe, active tab, run/pick state)
 ```
 
 The cli gains a `studio` command that imports `@opencraw/studio` lazily and says how to install it when it is
 missing, so the cli stays light.
+
+### 5.1 State management (#102)
+
+`apps/studio-ui` uses three libraries for state, adopted before phase 2 so every later phase builds on them
+instead of more `useState`/prop drilling:
+
+- **Zustand** (`studio-store/`) for client-only UI state that has no server representation: which folder box
+  text is typed, which folder is actually open, the selected recipe id, the active editor tab, and (phase 2
+  onward) pick-mode state. `run-session.store.ts` is a second, narrower store for the *current sample run's*
+  live output (`running`, `records`, `traceLines`) — it is pushed to entirely by WebSocket events
+  (`trace-line`, `record`, `run-finished`), which have no query response to live in instead (`run-sample`
+  only answers once a run has *started*), so a plain Zustand store is the honest fit here even though it is
+  otherwise "server-ish" data.
+- **TanStack Query** (`studio-client/`) for everything the server actually returns from a command: the
+  workspace listing (`useWorkspaceQuery`, keyed on the open folder), a recipe's JSON/outline (`useSelectedRecipe`,
+  a selector over the workspace query's own cache — `open-workspace` already returns every recipe's JSON and
+  outline in one round trip, so this is not a second fetch), and a recipe's start-page HTML (`useStartPageQuery`,
+  which *is* a genuine second round trip: `fetch-start-page` loads the page live, `open-workspace` never
+  does). `save-recipe`/`save-outline`/`run-sample`/`stop-run` are mutations; the two saves invalidate the
+  workspace query on success instead of the old `open(folder)` full reload, and `use-studio-events.ts`
+  invalidates it again on the server's own `workspace-changed` broadcast, so every connected client — not just
+  the one that saved — stays in sync.
+- **TanStack Form** for a step's expanded config form (`steps-outline/step-form.tsx`), driven by phase 1's
+  `step-field.catalog.ts` field definitions. It replaces the form-state plumbing (values, change, blur,
+  per-field validation) the catalog's fields used to hand-roll; the catalog itself did not need to change
+  shape to be reused this way. The "Advanced (JSON)" fallback for anything the catalog does not cover stays a
+  plain buffered textarea outside the form — TanStack Form only needs to own the fields it actually knows.
 
 ## 6. Phases and deliverables
 

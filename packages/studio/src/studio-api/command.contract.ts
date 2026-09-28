@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { outlineViewSchema } from './outline-view.contract'
 
 /** A budget for a sample run; never authored into a recipe, only asked for by the caller. */
 export const sampleBudgetSchema = z.object({
@@ -38,12 +39,29 @@ export const fetchStartPageCommandSchema = z.object({
   recipeId: z.string().min(1),
 })
 
+/**
+ * Writes a recipe file from an edited outline: the server converts it back
+ * to the recipe's JSON (`scope-outline`'s `outlineToRecipe`) and saves it
+ * exactly as `save-recipe` would. Kept as its own command, rather than
+ * asking the Steps tab to run the outline↔recipe mappers itself, so that
+ * conversion stays server-side code (it already is: `@opencraw/studio`'s
+ * root export also carries Node-only slices, so the UI never imports
+ * runtime code from it, only types — see `apps/studio-ui`'s `steps-outline`
+ * for where this is called from).
+ */
+export const saveOutlineCommandSchema = z.object({
+  type:    z.literal('save-outline'),
+  path:    z.string().min(1),
+  outline: outlineViewSchema,
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
   runSampleCommandSchema,
   stopRunCommandSchema,
   saveRecipeCommandSchema,
   fetchStartPageCommandSchema,
+  saveOutlineCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -52,5 +70,6 @@ export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
 export type StopRunCommand = z.infer<typeof stopRunCommandSchema>
 export type SaveRecipeCommand = z.infer<typeof saveRecipeCommandSchema>
 export type FetchStartPageCommand = z.infer<typeof fetchStartPageCommandSchema>
+export type SaveOutlineCommand = z.infer<typeof saveOutlineCommandSchema>
 /** Every command the UI can send the server, over HTTP POST. */
 export type StudioCommand = z.infer<typeof studioCommandSchema>
