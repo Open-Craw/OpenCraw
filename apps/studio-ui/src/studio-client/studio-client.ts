@@ -1,4 +1,4 @@
-import type { ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
+import type { DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StopRunCommand, StudioCommand, StudioEvent, VerifySelectorView, WhyTarget, WhyView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -24,6 +24,8 @@ export interface StudioClient {
   inspectPage:    (recipeId: string, path: string) => Promise<InspectView>
   /** The JSON responses seen while the recipe's start page rendered (issue #93's "responses seen"); slower than `inspectPage` (opens its own browser session). */
   responsesSeen:  (recipeId: string, path: string) => Promise<ResponsesSeenView>
+  /** The content pane's tree canvas for a JSON/YAML/XML snapshot (`document-view`, studio plan §3.4, issue #94's 5a), off the same cached snapshot. */
+  documentTree:   (recipeId: string, path: string) => Promise<DocumentTreeView>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
   subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
 }
@@ -81,6 +83,7 @@ export function createStudioClient (): StudioClient {
     explainWhy:     target => send<WhyView>(token, { type: 'explain-why', target } satisfies ExplainWhyCommand),
     inspectPage:    (recipeId, path) => send<InspectView>(token, { type: 'inspect-page', recipeId, path }),
     responsesSeen:  (recipeId, path) => send<ResponsesSeenView>(token, { type: 'responses-seen', recipeId, path }),
+    documentTree:   (recipeId, path) => send<DocumentTreeView>(token, { type: 'document-tree', recipeId, path }),
     subscribe:      (onEvent) => {
       const protocol = globalThis.location.protocol === 'https:' ? 'wss' : 'ws'
       const socket = new WebSocket(`${protocol}://${globalThis.location.host}/ws?token=${encodeURIComponent(token)}`)

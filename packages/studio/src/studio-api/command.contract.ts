@@ -118,6 +118,20 @@ export const responsesSeenCommandSchema = z.object({
   path:     z.string().min(1),
 })
 
+/**
+ * The document tree for the content pane's tree canvas (`document-view`'s
+ * `tree-view.mapper.ts`, studio plan §3.4, issue #94's 5a), off the same
+ * cached snapshot `take-snapshot`/`inspect-page` already use — call
+ * `take-snapshot` first, same as `inspect-page`. Only a JSON/YAML/XML
+ * snapshot has one; PDF, workbook and deck documents get their own canvases
+ * (5b/5c/5d).
+ */
+export const documentTreeCommandSchema = z.object({
+  type:     z.literal('document-tree'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+})
+
 /** A missing value in an emitted record, by its position in the last sample run's records (the order they streamed in, matching the UI's own `records` list). */
 export const missingWhyTargetSchema = z.object({
   kind:        z.literal('missing'),
@@ -160,6 +174,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   explainWhyCommandSchema,
   inspectPageCommandSchema,
   responsesSeenCommandSchema,
+  documentTreeCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -174,6 +189,7 @@ export type VerifySelectorCommand = z.infer<typeof verifySelectorCommandSchema>
 export type InferSelectorCommand = z.infer<typeof inferSelectorCommandSchema>
 export type InspectPageCommand = z.infer<typeof inspectPageCommandSchema>
 export type ResponsesSeenCommand = z.infer<typeof responsesSeenCommandSchema>
+export type DocumentTreeCommand = z.infer<typeof documentTreeCommandSchema>
 export type MissingWhyTarget = z.infer<typeof missingWhyTargetSchema>
 export type RejectedWhyTarget = z.infer<typeof rejectedWhyTargetSchema>
 export type WhyTarget = z.infer<typeof whyTargetSchema>

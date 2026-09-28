@@ -17,12 +17,13 @@ export {
   fieldPickSchema, inferSelectorViewSchema,
   sentencePartSchema, outlineCardSchema, outlineBracketSchema, outlineNodeSchema, outlineViewSchema,
   whyViewSchema,
-  inspectPageCommandSchema, responsesSeenCommandSchema,
+  inspectPageCommandSchema, responsesSeenCommandSchema, documentTreeCommandSchema,
   domTreeNodeViewSchema, pageDataFindingSchema, inspectViewSchema,
   observedResponseSchema, responsesSeenViewSchema,
+  documentTreeNodeViewSchema, documentTreeViewSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, StudioCommand,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
@@ -34,4 +35,5 @@ export type {
   WhyView,
   DomTreeNodeView, PageDataKind, PageDataFindingView, InspectView,
   ObservedResponseView, ResponsesSeenView,
+  DocumentTreeNodeView, DocumentTreeView,
 } from './studio-api'

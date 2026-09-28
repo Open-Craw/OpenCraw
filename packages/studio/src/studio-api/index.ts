@@ -1,5 +1,5 @@
-export { sampleBudgetSchema, openWorkspaceCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, saveOutlineCommandSchema, takeSnapshotCommandSchema, verifySelectorCommandSchema, inferSelectorCommandSchema, missingWhyTargetSchema, rejectedWhyTargetSchema, whyTargetSchema, explainWhyCommandSchema, inspectPageCommandSchema, responsesSeenCommandSchema, studioCommandSchema } from './command.contract'
-export type { SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, StudioCommand } from './command.contract'
+export { sampleBudgetSchema, openWorkspaceCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, saveOutlineCommandSchema, takeSnapshotCommandSchema, verifySelectorCommandSchema, inferSelectorCommandSchema, missingWhyTargetSchema, rejectedWhyTargetSchema, whyTargetSchema, explainWhyCommandSchema, inspectPageCommandSchema, responsesSeenCommandSchema, documentTreeCommandSchema, studioCommandSchema } from './command.contract'
+export type { SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, StudioCommand } from './command.contract'
 export { snapshotViewSchema } from './snapshot-view.contract'
 export type { SnapshotView } from './snapshot-view.contract'
 export { verifySelectorViewSchema } from './verify-selector-view.contract'
@@ -22,3 +22,5 @@ export { domTreeNodeViewSchema, pageDataFindingSchema, inspectViewSchema } from 
 export type { DomTreeNodeView, PageDataKind, PageDataFindingView, InspectView } from './inspect-view.contract'
 export { observedResponseSchema, responsesSeenViewSchema } from './responses-seen-view.contract'
 export type { ObservedResponseView, ResponsesSeenView } from './responses-seen-view.contract'
+export { documentTreeNodeViewSchema, documentTreeViewSchema } from './document-tree-view.contract'
+export type { DocumentTreeNodeView, DocumentTreeView } from './document-tree-view.contract'

@@ -8,7 +8,13 @@
     ],
     "module": "esnext",
     "moduleResolution": "bundler",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2022",
+      "es2024.promise",
+      "dom",
+      "dom.iterable"
+    ]
   },
   "include": [
     "jest.config.ts",

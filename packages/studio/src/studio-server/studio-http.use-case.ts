@@ -7,6 +7,7 @@ import type { BrowserSessionConfig } from '@opencraw/core'
 import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
+import { handleDocumentTree } from './document-tree.handler'
 import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleInferSelector } from './infer-selector.handler'
@@ -104,7 +105,7 @@ async function handleRequest (request: IncomingMessage, response: ServerResponse
 
     return
   }
-  if (url.pathname === '/' && url.searchParams.get('token') !== null) response.setHeader('set-cookie', `${TOKEN_COOKIE}=${token}; HttpOnly; SameSite=Strict; Path=/`)
+  if (url.pathname === '/' && url.searchParams.has('token')) response.setHeader('set-cookie', `${TOKEN_COOKIE}=${token}; HttpOnly; SameSite=Strict; Path=/`)
   serveStatic(uiRoot, url.pathname, response)
 }
 
@@ -156,6 +157,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'inspect-page': { return Promise.resolve(handleInspectPage(state, command))
     }
     case 'responses-seen': { return handleResponsesSeen(state, command)
+    }
+    case 'document-tree': { return Promise.resolve(handleDocumentTree(state, command))
     }
   }
 }
