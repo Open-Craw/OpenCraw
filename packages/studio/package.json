@@ -74,6 +74,23 @@
           "command": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
           "cwd": "packages/studio"
         }
+      },
+      "bundle-ui": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build",
+          "studio-ui:build"
+        ],
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/dist/ui"
+        ],
+        "options": {
+          "command": "node -e \"const fs=require('node:fs');const skip=/\\.(d\\.ts(\\.map)?|tsbuildinfo)$/;fs.rmSync('packages/studio/dist/ui',{recursive:true,force:true});fs.cpSync('apps/studio-ui/dist','packages/studio/dist/ui',{recursive:true,filter:s=>!skip.test(s)})\""
+        }
       }
     }
   }
