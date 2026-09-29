@@ -61,11 +61,11 @@ describe('useStudioUiStore', () => {
     expect(useStudioUiStore.getState().pickTarget).toBeUndefined() // a completed pick leaves pick mode; the next pick starts clean
   })
 
-  it('setShowHidden, setHoveredSelector and setHoveredNodeId each update their own field', () => {
+  it('setShowHidden, setHoveredStepId and setHoveredNodeId each update their own field', () => {
     act(() => { useStudioUiStore.getState().setShowHidden(true) })
     expect(useStudioUiStore.getState().showHidden).toBe(true)
-    act(() => { useStudioUiStore.getState().setHoveredSelector('.price') })
-    expect(useStudioUiStore.getState().hoveredSelector).toBe('.price')
+    act(() => { useStudioUiStore.getState().setHoveredStepId('price') })
+    expect(useStudioUiStore.getState().hoveredStepId).toBe('price')
     act(() => { useStudioUiStore.getState().setHoveredNodeId('n5') })
     expect(useStudioUiStore.getState().hoveredNodeId).toBe('n5')
   })

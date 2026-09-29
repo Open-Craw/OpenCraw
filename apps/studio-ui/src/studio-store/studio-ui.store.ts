@@ -27,36 +27,42 @@ export interface StudioUiState {
   pickTarget?:       { recipeId: string, stepPath: string, firstNodeId?: string }
   /** The hidden-elements toggle (studio plan §3.2): shows `data-oc-hidden` nodes, greyed, instead of hiding them from the snapshot view. */
   showHidden:        boolean
-  /**
-   * Two-way highlight (studio plan §4.1): hovering a Steps card sets
-   * `hoveredSelector` (its pill's colour highlights every match in the
-   * iframe); hovering an element in the iframe sets `hoveredNodeId` (its
-   * card highlights). The two are set by different sides and read by the
-   * other, so they are kept apart rather than merged into one field.
-   */
-  hoveredSelector?:  string
+  /** The Inspect panel's own DOM-tree ↔ snapshot-iframe hover, kept apart from `hoveredStepId` below: a raw DOM node has no step behind it until something has actually been picked there. */
   hoveredNodeId?:    string
+  /**
+   * The cross-panel highlight (issue #111): a step's own id (its "pill" —
+   * `books`, `book`, `title`), the one id space already common to the Steps
+   * outline (`OutlineNode.step.id`) and the Record tab's mapping (a rule's
+   * `from`, when it is a plain scope id rather than a template or a list).
+   * Every panel that participates — the Steps outline, the Record tab, the
+   * content pane's snapshot canvas, the records preview table — writes this
+   * on hover/select and reads it back, translating it into its own local
+   * highlight target (a card, a row, a css selector via the step's own
+   * `selector`, a table column) rather than a chain of one-off props between
+   * panel pairs. `undefined`: nothing highlighted.
+   */
+  hoveredStepId?:    string
 }
 
 export interface StudioUiActions {
-  setFolder:          (folder: string) => void
+  setFolder:        (folder: string) => void
   /** Makes `folder` the workspace query's key: what `Open` and the initial `?folder=` both do. */
-  commitFolder:       (folder: string) => void
-  selectRecipe:       (recipeId: string | undefined) => void
-  setEditorTab:       (tab: EditorTab) => void
+  commitFolder:     (folder: string) => void
+  selectRecipe:     (recipeId: string | undefined) => void
+  setEditorTab:     (tab: EditorTab) => void
   /** Puts the content pane in pick mode for one recipe and step path (a `＋` menu's "Read", or the toolbar's pick button). */
-  startPicking:       (recipeId: string, stepPath: string) => void
+  startPicking:     (recipeId: string, stepPath: string) => void
   /** Leaves pick mode: a card was made, or the person cancelled (Escape, toggling pick mode off again). */
-  stopPicking:        () => void
+  stopPicking:      () => void
   /**
    * Records a click's node id while in pick mode.
    *
    * @returns `'first'` when this was the first click of a new pick (the caller now waits for the field's value / a possible second click); `'second'` with the first id when this completes a pair, ready for `infer-selector` with both ids (the pick target is cleared either way — a fresh pick starts clean).
    */
-  registerPick:       (nodeId: string) => { kind: 'first' } | { kind: 'second', firstNodeId: string }
-  setShowHidden:      (show: boolean) => void
-  setHoveredSelector: (selector: string | undefined) => void
-  setHoveredNodeId:   (nodeId: string | undefined) => void
+  registerPick:     (nodeId: string) => { kind: 'first' } | { kind: 'second', firstNodeId: string }
+  setShowHidden:    (show: boolean) => void
+  setHoveredNodeId: (nodeId: string | undefined) => void
+  setHoveredStepId: (stepId: string | undefined) => void
 }
 
 export type StudioUiStore = StudioUiState & StudioUiActions
@@ -89,9 +95,9 @@ export const useStudioUiStore = create<StudioUiStore>((set, get) => ({
 
     return { kind: 'second', firstNodeId }
   },
-  setShowHidden:      showHidden => { set({ showHidden }) },
-  setHoveredSelector: hoveredSelector => { set({ hoveredSelector }) },
-  setHoveredNodeId:   hoveredNodeId => { set({ hoveredNodeId }) },
+  setShowHidden:    showHidden => { set({ showHidden }) },
+  setHoveredNodeId: hoveredNodeId => { set({ hoveredNodeId }) },
+  setHoveredStepId: hoveredStepId => { set({ hoveredStepId }) },
 }))
 
 /**

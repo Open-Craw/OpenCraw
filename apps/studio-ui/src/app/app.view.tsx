@@ -5,7 +5,8 @@ import type { WhyTarget } from '@opencraw/studio'
 import { ContentPane } from '../content-pane'
 import { JsonEditor } from '../json-editor'
 import { PreviewStrip } from '../preview'
-import { RecordEditor } from '../record-editor'
+import { RecordEditor, fieldToStepIdOf } from '../record-editor'
+import type { MappingRuleJson } from '../record-editor'
 import { StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
@@ -56,6 +57,8 @@ function AppShell () {
   const commitFolder = useStudioUiStore(state => state.commitFolder)
   const selectRecipe = useStudioUiStore(state => state.selectRecipe)
   const setEditorTab = useStudioUiStore(state => state.setEditorTab)
+  const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
+  const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
 
   const workspace = useWorkspaceQuery(openFolder)
   const inputs = useInputRecipes()
@@ -96,6 +99,19 @@ function AppShell () {
       return
     }
   }, [selectedRecipe, workspace.data])
+
+  /** The selected input recipe's mapping, reduced to its cross-panel highlight id space (issue #111): output field name → source step id, for every field whose rule reads from a single plain step id. `{}` (not thrown) for text that doesn't parse yet — same "leave it to the JSON tab's own error" treatment as `outputRecipe` above. */
+  const fieldToStepId = useMemo(() => {
+    if (selectedRecipe === undefined || selectedRecipe.kind !== 'input') return {}
+    try {
+      const mapping = (JSON.parse(selectedRecipe.text) as { mapping?: Record<string, MappingRuleJson> }).mapping
+
+      return mapping === undefined ? {} : fieldToStepIdOf(mapping)
+    } catch {
+      return {}
+    }
+  }, [selectedRecipe])
+  const highlightedField = Object.keys(fieldToStepId).find(field => fieldToStepId[field] === hoveredStepId && hoveredStepId !== undefined)
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
@@ -176,6 +192,8 @@ function AppShell () {
             whyLoading={explainWhy.isPending}
             whyView={explainWhy.data}
             whyError={messageOf(explainWhy.error)}
+            highlightedField={highlightedField}
+            onHoverField={field => { setHoveredStepId(field === undefined ? undefined : fieldToStepId[field]) }}
           />
         </Splitter.Panel>
       </Splitter.Root>

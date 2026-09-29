@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Badge, Box, Button, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
 import type { DocumentTreeNodeView, OutlineCard, OutlineView, RecipeListing } from '@opencraw/studio'
-import { InspectorPanel } from '../inspector'
+import { InspectorPanel, matchingNodeIds } from '../inspector'
+import { allSteps, stepById } from '../steps-outline'
 import type { GridViewOverride } from '../studio-client'
 import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
 import { useRecordingStore, useStudioUiStore } from '../studio-store'
@@ -13,6 +14,31 @@ import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageState
 import { SnapshotFrame } from './snapshot-frame.component'
 import { TreeCanvas } from './tree-canvas.component'
 import type { TreePickMode } from './tree-canvas.component'
+
+/**
+ * The css selector the cross-panel highlight's `hoveredStepId` (issue #111) currently means for the
+ * snapshot iframe: the step in `outline` with that id, when it is a `css` extract (the only kind with a
+ * `selector` a browser can match) — `undefined` for anything else (a different kind, an unmapped hover, no
+ * outline yet), which `SnapshotFrame`'s own `hoveredSelector` prop already treats as "nothing highlighted".
+ */
+function selectorForStepId (outline: OutlineView | undefined, stepId: string | undefined): string | undefined {
+  const selector = stepById(outline, stepId)?.step.selector
+
+  return typeof selector === 'string' ? selector : undefined
+}
+
+/** The reverse direction: which step (by its own id) a hovered snapshot node belongs to, found by matching each `css` step's selector against the snapshot html until one contains this node id. Best-effort, same as `matchingNodeIds` itself: a node with no picked step yet, or one only a non-css step reads, resolves to `undefined`. */
+function stepIdForNode (outline: OutlineView | undefined, html: string | undefined, nodeId: string): string | undefined {
+  if (outline === undefined || html === undefined) return undefined
+  for (const node of allSteps(outline)) {
+    const selector = node.step.selector
+    const id = node.step.id
+    if (typeof selector !== 'string' || typeof id !== 'string') continue
+    if (matchingNodeIds(html, selector).has(nodeId)) return id
+  }
+
+  return undefined
+}
 
 const STEP_PATH = 'start' // v1: only the start point is captured — see `page-snapshot`'s take-snapshot.use-case.ts.
 
@@ -64,12 +90,18 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
 
   const pickTarget = useStudioUiStore(state => state.pickTarget)
   const showHidden = useStudioUiStore(state => state.showHidden)
-  const hoveredSelector = useStudioUiStore(state => state.hoveredSelector)
+  const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
   const startPicking = useStudioUiStore(state => state.startPicking)
   const stopPicking = useStudioUiStore(state => state.stopPicking)
   const registerPick = useStudioUiStore(state => state.registerPick)
   const setShowHidden = useStudioUiStore(state => state.setShowHidden)
   const setHoveredNodeId = useStudioUiStore(state => state.setHoveredNodeId)
+  const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
+  const hoveredSelector = useMemo(() => selectorForStepId(recipe?.outline, hoveredStepId), [recipe?.outline, hoveredStepId])
+  const handleHoverNode = (nodeId: string | undefined): void => {
+    setHoveredNodeId(nodeId)
+    setHoveredStepId(nodeId === undefined ? undefined : stepIdForNode(recipe?.outline, snapshot.data?.html, nodeId))
+  }
 
   const recordingRecipeId = useRecordingStore(state => state.recipeId)
   const recordingActive = useRecordingStore(state => state.active)
@@ -422,7 +454,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             pickMode={pickMode}
             showHidden={showHidden}
             hoveredSelector={hoveredSelector}
-            onHoverNode={setHoveredNodeId}
+            onHoverNode={handleHoverNode}
             onPickNode={(nodeId) => { void handlePick(nodeId) }}
           />
         )}
@@ -434,7 +466,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
                 pickMode={pickMode}
                 showHidden={showHidden}
                 hoveredSelector={hoveredSelector}
-                onHoverNode={setHoveredNodeId}
+                onHoverNode={handleHoverNode}
                 onPickNode={(nodeId) => { void handlePick(nodeId) }}
               />
             </Splitter.Panel>

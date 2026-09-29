@@ -77,4 +77,38 @@ describe('FieldRow', () => {
     expect(screen.getByText('generated: uuid')).toBeTruthy()
     expect(screen.queryByText('+ transform')).toBeNull()
   })
+
+  it('reports its own hover as stepId on enter and undefined on leave, when it has one (issue #111)', () => {
+    const onHoverStepId = jest.fn()
+    renderWithChakra(
+      <FieldRow name='price' field={{ type: 'string' }} scopeIds={[]} stepId='rawPrice' onHoverStepId={onHoverStepId} onFieldChange={noop} onRename={noop} onRemove={noop} onRuleChange={noop} />,
+    )
+    const row = screen.getByTestId('price-row')
+    fireEvent.mouseEnter(row)
+    expect(onHoverStepId).toHaveBeenCalledWith('rawPrice')
+    fireEvent.mouseLeave(row)
+    expect(onHoverStepId).toHaveBeenCalledWith(undefined)
+  })
+
+  it('renders highlighted when told to, and not otherwise', () => {
+    const { rerender } = renderWithChakra(
+      <FieldRow name='price' field={{ type: 'string' }} scopeIds={[]} highlighted onFieldChange={noop} onRename={noop} onRemove={noop} onRuleChange={noop} />,
+    )
+    expect(screen.getByTestId('price-row').dataset.highlighted).toBe('true')
+    rerender(
+      <ChakraProvider value={defaultSystem}>
+        <FieldRow name='price' field={{ type: 'string' }} scopeIds={[]} onFieldChange={noop} onRename={noop} onRemove={noop} onRuleChange={noop} />
+      </ChakraProvider>,
+    )
+    expect(screen.getByTestId('price-row').dataset.highlighted).toBe('false')
+  })
+
+  it('does not wire hover at all without a stepId (an object/each summary row, or an unmapped field)', () => {
+    const onHoverStepId = jest.fn()
+    renderWithChakra(
+      <FieldRow name='price' field={{ type: 'string' }} scopeIds={[]} onHoverStepId={onHoverStepId} onFieldChange={noop} onRename={noop} onRemove={noop} onRuleChange={noop} />,
+    )
+    fireEvent.mouseEnter(screen.getByTestId('price-row'))
+    expect(onHoverStepId).not.toHaveBeenCalled()
+  })
 })

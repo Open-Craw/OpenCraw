@@ -21,4 +21,21 @@ describe('RecordsTable', () => {
     const cell = screen.getByText('null')
     expect(cell.getAttribute('title')).not.toBe('Why is this missing?')
   })
+
+  it('reports hovering a column header as that field, on enter and undefined on leave (issue #111)', () => {
+    const onHoverField = jest.fn()
+    renderWithChakra(<RecordsTable records={[{ key: 'a', data: { name: 'Widget', price: 3 } }]} onHoverField={onHoverField} />)
+    const header = screen.getByText('price')
+    fireEvent.mouseEnter(header)
+    expect(onHoverField).toHaveBeenCalledWith('price')
+    fireEvent.mouseLeave(header)
+    expect(onHoverField).toHaveBeenCalledWith(undefined)
+  })
+
+  it('highlights the header and every cell of the currently highlighted field', () => {
+    renderWithChakra(<RecordsTable records={[{ key: 'a', data: { name: 'Widget', price: 3 } }]} highlightedField='price' />)
+    expect(screen.getByText('price').dataset.highlighted).toBe('true')
+    expect(screen.getByText('3').dataset.highlighted).toBe('true')
+    expect(screen.getByText('name').dataset.highlighted).toBe('false')
+  })
 })

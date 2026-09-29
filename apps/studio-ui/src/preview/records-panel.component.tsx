@@ -7,9 +7,12 @@ import type { RecordsExportFormat } from './records-export.mapper'
 import { buildRecordsExportFile } from './records-export.mapper'
 
 export interface RecordsPanelProps {
-  records:      PreviewRecord[]
+  records:           PreviewRecord[]
   /** See `RecordsTableProps.onCellClick`. */
-  onCellClick?: (recordIndex: number, field: string) => void
+  onCellClick?:      (recordIndex: number, field: string) => void
+  /** See `RecordsTableProps.highlightedField`/`onHoverField` — the JSONL view does not participate (issue #111, see its own file's comment on why). */
+  highlightedField?: string
+  onHoverField?:     (field: string | undefined) => void
 }
 
 type RecordsView = 'table' | 'jsonl'
@@ -28,7 +31,7 @@ type RecordsView = 'table' | 'jsonl'
  * `Splitter`/`Table`/`Tabs` already use here (`Dialog.Root`/`Dialog.Content`/…
  * from `@chakra-ui/react`, Chakra v3's renamed `Modal`).
  */
-export function RecordsPanel ({ records, onCellClick }: RecordsPanelProps) {
+export function RecordsPanel ({ records, onCellClick, highlightedField, onHoverField }: RecordsPanelProps) {
   const [view, setView] = useState<RecordsView>('table')
   const [enlarged, setEnlarged] = useState(false)
 
@@ -41,7 +44,7 @@ export function RecordsPanel ({ records, onCellClick }: RecordsPanelProps) {
     <Box flex='1' minH='0' display='flex' flexDirection='column'>
       <RecordsToolbar view={view} onViewChange={setView} onExport={handleExport} onEnlarge={() => { setEnlarged(true) }} exportDisabled={records.length === 0} />
       <Box flex='1' minH='0' overflow='auto'>
-        <RecordsView view={view} records={records} onCellClick={onCellClick} />
+        <RecordsView view={view} records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} />
       </Box>
       <Dialog.Root open={enlarged} onOpenChange={(details) => { setEnlarged(details.open) }} size='cover' placement='center'>
         <Portal>
@@ -57,7 +60,7 @@ export function RecordsPanel ({ records, onCellClick }: RecordsPanelProps) {
               <Dialog.Body flex='1' minH='0' display='flex' flexDirection='column' gap={2} pb={4}>
                 <RecordsToolbar view={view} onViewChange={setView} onExport={handleExport} exportDisabled={records.length === 0} />
                 <Box flex='1' minH='0' overflow='auto'>
-                  <RecordsView view={view} records={records} onCellClick={onCellClick} />
+                  <RecordsView view={view} records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} />
                 </Box>
               </Dialog.Body>
             </Dialog.Content>
@@ -68,8 +71,16 @@ export function RecordsPanel ({ records, onCellClick }: RecordsPanelProps) {
   )
 }
 
-function RecordsView ({ view, records, onCellClick }: { view: RecordsView, records: PreviewRecord[], onCellClick?: (recordIndex: number, field: string) => void }) {
-  return view === 'table' ? <RecordsTable records={records} onCellClick={onCellClick} /> : <RecordsJsonl records={records} />
+function RecordsView ({ view, records, onCellClick, highlightedField, onHoverField }: {
+  view:              RecordsView
+  records:           PreviewRecord[]
+  onCellClick?:      (recordIndex: number, field: string) => void
+  highlightedField?: string
+  onHoverField?:     (field: string | undefined) => void
+}) {
+  return view === 'table'
+    ? <RecordsTable records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} />
+    : <RecordsJsonl records={records} />
 }
 
 /** The toolbar shared by the inline panel and the enlarge dialog: Table/JSONL toggle, export select and (inline only) the Enlarge button. */

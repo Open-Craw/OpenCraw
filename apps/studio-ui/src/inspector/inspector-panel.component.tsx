@@ -3,6 +3,7 @@ import { Badge, Box, HStack, Input, Text } from '@chakra-ui/react'
 import type { DomTreeNodeView, ObservedResponseView, OutlineCard, OutlineView, PageDataFindingView, RecipeListing, SnapshotView } from '@opencraw/studio'
 import { readCardNode, spliceTopLevel } from '../content-pane/outline-from-pick.mapper'
 import { hashColor } from '../steps-outline/hash-color'
+import { stepById } from '../steps-outline/outline-tree'
 import { useInferSelectorMutation, useInspectPageQuery, useResponsesSeenMutation } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
 import { DomTreeView } from './dom-tree-view.component'
@@ -49,9 +50,14 @@ export function InspectorPanel ({ recipeId, recipe, snapshot, onSaveOutline, onS
   const [contextMenu, setContextMenu] = useState<{ node: DomTreeNodeView, x: number, y: number } | undefined>(undefined)
   const [status, setStatus] = useState<string | undefined>(undefined)
 
-  const hoveredSelector = useStudioUiStore(state => state.hoveredSelector)
+  const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
   const hoveredNodeId = useStudioUiStore(state => state.hoveredNodeId)
   const setHoveredNodeId = useStudioUiStore(state => state.setHoveredNodeId)
+  const hoveredSelector = useMemo(() => {
+    const selector = stepById(recipe?.outline, hoveredStepId)?.step.selector
+
+    return typeof selector === 'string' ? selector : undefined
+  }, [recipe?.outline, hoveredStepId])
 
   const inspectPage = useInspectPageQuery(recipeId, STEP_PATH, snapshot !== undefined)
   const inferSelector = useInferSelectorMutation()

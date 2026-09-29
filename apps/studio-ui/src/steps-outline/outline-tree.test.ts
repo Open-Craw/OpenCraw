@@ -1,8 +1,8 @@
 import type { OutlineNode, OutlineView } from '@opencraw/studio'
-import { issuesForNode, listAt, listPathPrefix, withList, withNode } from './outline-tree'
+import { allSteps, issuesForNode, listAt, listPathPrefix, stepById, withList, withNode } from './outline-tree'
 
-function card (path: string, stepType = 'goto'): OutlineNode {
-  return { kind: 'card', path, stepType, sentence: [], step: { type: stepType }, custom: false }
+function card (path: string, stepType = 'goto', id?: string): OutlineNode {
+  return { kind: 'card', path, stepType, sentence: [], step: { type: stepType, ...(id !== undefined && { id }) }, custom: false }
 }
 
 function bracket (path: string, children: OutlineNode[], elseChildren?: OutlineNode[]): OutlineNode {
@@ -60,6 +60,36 @@ describe('listPathPrefix', () => {
   it('is "<bracket>.steps" for a "then" branch and "<bracket>.else" for an "else" branch', () => {
     expect(listPathPrefix('steps.1::then')).toBe('steps.1.steps')
     expect(listPathPrefix('steps.1::else')).toBe('steps.1.else')
+  })
+})
+
+describe('stepById / allSteps (issue #111)', () => {
+  const outline: OutlineView = {
+    recipe: {},
+    steps:  [
+      card('steps.0', 'extract', 'title'),
+      bracket('steps.1', [card('steps.1.steps.0', 'extract', 'price')], [card('steps.1.else.0', 'extract', 'fallback')]),
+    ],
+  }
+
+  it('finds a top-level step by its own id', () => {
+    expect(stepById(outline, 'title')?.path).toBe('steps.0')
+  })
+
+  it('finds a step nested inside a bracket\'s "then" or "else" branch', () => {
+    expect(stepById(outline, 'price')?.path).toBe('steps.1.steps.0')
+    expect(stepById(outline, 'fallback')?.path).toBe('steps.1.else.0')
+  })
+
+  it('returns undefined for an id no step has, or an absent outline/id', () => {
+    expect(stepById(outline, 'nope')).toBeUndefined()
+    expect(stepById(undefined, 'title')).toBeUndefined()
+    expect(stepById(outline, undefined)).toBeUndefined()
+  })
+
+  it('allSteps flattens every node, brackets included, depth-first', () => {
+    expect(allSteps(outline).map(node => node.path)).toEqual(['steps.0', 'steps.1', 'steps.1.steps.0', 'steps.1.else.0'])
+    expect(allSteps(undefined)).toEqual([])
   })
 })
 
