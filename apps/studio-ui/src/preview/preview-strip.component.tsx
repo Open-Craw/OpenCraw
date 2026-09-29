@@ -1,8 +1,8 @@
-import { Box, Tabs } from '@chakra-ui/react'
+import { Tabs } from '@chakra-ui/react'
 import type { WhyView } from '@opencraw/studio'
 import type { RejectedRecord } from '../studio-store'
 import type { PreviewRecord } from './records-table.component'
-import { RecordsTable } from './records-table.component'
+import { RecordsPanel } from './records-panel.component'
 import { RejectedList } from './rejected-list.component'
 import { TracePanel } from './trace-panel.component'
 import { WhyPanel } from './why-panel.component'
@@ -35,9 +35,7 @@ export function PreviewStrip ({ records, traceLines, rejected = [], onExplainMis
         <Tabs.Trigger value='why'>Why?</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value='records' flex='1' minH='0' p={0} display='flex' flexDirection='column'>
-        <Box flex='1' minH='0' overflow='auto'>
-          <RecordsTable records={records} onCellClick={onExplainMissing} />
-        </Box>
+        <RecordsPanel records={records} onCellClick={onExplainMissing} />
         <RejectedList rejected={rejected} onClick={onExplainRejected} />
       </Tabs.Content>
       <Tabs.Content value='trace' flex='1' minH='0' overflow='auto' p={0}>

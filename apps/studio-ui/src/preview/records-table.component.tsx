@@ -67,8 +67,8 @@ function Cell ({ value, onClick }: { value: unknown, onClick?: () => void }) {
   return <Table.Cell>{typeof value === 'object' ? JSON.stringify(value) : String(value)}</Table.Cell>
 }
 
-/** Every field seen on any record, in first-seen order: a record's own missing fields still get a column. */
-function fieldsOf (records: PreviewRecord[]): string[] {
+/** Every field seen on any record, in first-seen order: a record's own missing fields still get a column. Exported for `records-export.mapper.ts`'s CSV export (issue #116), which needs the same column set and order the Table view renders. */
+export function fieldsOf (records: PreviewRecord[]): string[] {
   const fields: string[] = []
   for (const record of records) {
     for (const field of Object.keys(record.data)) if (!fields.includes(field)) fields.push(field)
