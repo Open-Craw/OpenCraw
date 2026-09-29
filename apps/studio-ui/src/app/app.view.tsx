@@ -107,9 +107,11 @@ function AppShell () {
         folder={folder}
         onFolderChange={setFolder}
         onOpen={() => { commitFolder(folder) }}
+        openFolder={openFolder}
         inputs={inputs}
         selectedRecipeId={selectedRecipeId}
         onSelectRecipe={selectRecipe}
+        onRecipeCreated={selectRecipe}
         running={running}
         onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId }) }}
         onStop={() => { stopRun.mutate() }}

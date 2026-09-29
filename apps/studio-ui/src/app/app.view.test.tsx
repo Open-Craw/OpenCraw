@@ -47,4 +47,9 @@ describe('App shell', () => {
     render(<App />)
     expect(screen.getByText('Record')).toBeTruthy()
   })
+
+  it('disables "+ New recipe" until a workspace folder is open (issue #110)', () => {
+    render(<App />)
+    expect(screen.getByRole('button', { name: '+ New recipe' }).hasAttribute('disabled')).toBe(true)
+  })
 })
