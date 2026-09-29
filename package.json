@@ -101,6 +101,9 @@
     "apps/*"
   ],
   "overrides": {
+    "@verdaccio/config": {
+      "js-yaml": "^5.4.2"
+    },
     "eslint-plugin-jsx-a11y": {
       "eslint": "$eslint"
     },
