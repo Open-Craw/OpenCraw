@@ -21,6 +21,12 @@ export interface FieldRowProps {
   /** How many of the last sample's records this field rejected, and why (its most recent reason); `undefined` when none did. */
   rejected?:          { count: number, reason: string }
   depth?:             number
+  /** This row's source step id — `rule.from` when it is a plain scope id (not a template or a list) — the cross-panel highlight key (issue #111); `undefined` when the row has no simple single-step source to highlight by. */
+  stepId?:            string
+  /** `true` when `stepId` is the studio's current cross-panel highlight (issue #111): hovering elsewhere lit this row up. */
+  highlighted?:       boolean
+  /** Hovering this row: `stepId` on enter, `undefined` on leave. Omitted (no hover wiring at all) when the row has no `stepId`. */
+  onHoverStepId?:     (stepId: string | undefined) => void
   onFieldChange:      (field: FieldSpecJson) => void
   onRuleChange:       (rule: FromRuleJson | undefined) => void
   onRename:           (name: string) => void
@@ -35,7 +41,7 @@ export interface FieldRowProps {
  * Steps tab), the transform chain with real trace values, key/required, and
  * an expanded row for `nullable`/`default`/`onMissing`/validation options.
  */
-export function FieldRow ({ name, field, rule, scopeIds, trace, missing, rejected, depth = 0, onFieldChange, onRuleChange, onRename, onRemove, onExplainMissing, onExplainRejected }: FieldRowProps) {
+export function FieldRow ({ name, field, rule, scopeIds, trace, missing, rejected, depth = 0, stepId, highlighted = false, onHoverStepId, onFieldChange, onRuleChange, onRename, onRemove, onExplainMissing, onExplainRejected }: FieldRowProps) {
   const [expanded, setExpanded] = useState(false)
   const [nameText, setNameText] = useState(name)
   const [nameError, setNameError] = useState<string>()
@@ -54,7 +60,18 @@ export function FieldRow ({ name, field, rule, scopeIds, trace, missing, rejecte
   }
 
   return (
-    <Box borderWidth='1px' borderRadius='md' p={2} ml={depth * 5} borderColor={rejected === undefined ? undefined : 'red.subtle'}>
+    <Box
+      data-testid={`${name}-row`}
+      data-highlighted={highlighted}
+      borderWidth='1px'
+      borderRadius='md'
+      p={2}
+      ml={depth * 5}
+      borderColor={highlighted ? 'orange.solid' : (rejected === undefined ? undefined : 'red.subtle')}
+      bg={highlighted ? 'orange.subtle' : undefined}
+      onMouseEnter={stepId === undefined || onHoverStepId === undefined ? undefined : () => { onHoverStepId(stepId) }}
+      onMouseLeave={stepId === undefined || onHoverStepId === undefined ? undefined : () => { onHoverStepId(undefined) }}
+    >
       <HStack gap={2} align='center' wrap='wrap'>
         <Stack gap={0}>
           <Input size='xs' width='140px' value={nameText} onChange={event => { setNameText(event.target.value) }} onBlur={commitName} />

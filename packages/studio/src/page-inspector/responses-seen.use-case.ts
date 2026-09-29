@@ -1,6 +1,7 @@
 import { BrowserClient, tryParseJson } from '@opencraw/core'
 import type { BrowserSessionConfig, InputRecipe } from '@opencraw/core'
 import { describeJson } from '@opencraw/probe'
+import { ensureBrowserLaunch } from '../browser-provisioning'
 import type { Response as PlaywrightResponse } from 'playwright'
 
 /** How long the browser is given to settle after `goto`, watching for JSON responses (mirrors `packages/cli`'s `probe --browser`, `observeBrowserJson`). */
@@ -48,7 +49,7 @@ export async function responsesSeen (input: InputRecipe, stepPath: string, brows
   const point = input.start[0]
   if (point === undefined) throw new Error(`recipe "${input.id}" has no start point`)
 
-  const client = await BrowserClient.launch(browser)
+  const client = await ensureBrowserLaunch(browser, () => BrowserClient.launch(browser))
   try {
     const session = await client.newSession()
     try {

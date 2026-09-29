@@ -6,7 +6,8 @@ export interface TransformOptionField {
 
 export const TRANSFORM_OPS: readonly string[] = [
   'trim', 'lowercase', 'uppercase', 'replace', 'regex', 'split', 'join', 'first', 'last', 'nth', 'slice',
-  'concat', 'coalesce', 'default', 'number', 'integer', 'boolean', 'currency', 'date', 'absoluteUrl',
+  'concat', 'coalesce', 'default', 'number', 'integer', 'boolean', 'toString', 'padStart', 'padEnd',
+  'currency', 'date', 'absoluteUrl',
   'urlEncode', 'flatten', 'unique', 'sum', 'count', 'template', 'jsonpath', 'lookup', 'group',
 ]
 
@@ -21,6 +22,8 @@ const OPTIONS: Record<string, TransformOptionField[]> = {
   default:     [{ name: 'value' }],
   number:      [{ name: 'locale' }],
   boolean:     [{ name: 'truthy' }],
+  padStart:    [{ name: 'length', numeric: true }, { name: 'char' }],
+  padEnd:      [{ name: 'length', numeric: true }, { name: 'char' }],
   currency:    [{ name: 'locale' }, { name: 'currency' }],
   date:        [{ name: 'format' }, { name: 'timezone' }],
   absoluteUrl: [{ name: 'base' }],

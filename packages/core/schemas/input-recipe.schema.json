@@ -3573,6 +3573,67 @@
                     "properties": {
                       "op": {
                         "type": "string",
+                        "const": "toString"
+                      }
+                    },
+                    "required": [
+                      "op"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "op": {
+                        "type": "string",
+                        "const": "padStart"
+                      },
+                      "length": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "char": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1
+                      }
+                    },
+                    "required": [
+                      "op",
+                      "length"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "op": {
+                        "type": "string",
+                        "const": "padEnd"
+                      },
+                      "length": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "char": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1
+                      }
+                    },
+                    "required": [
+                      "op",
+                      "length"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "op": {
+                        "type": "string",
                         "const": "currency"
                       },
                       "locale": {

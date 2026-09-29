@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import type { RecipeListing } from '@opencraw/studio'
+import { resetStudioUiStore, useStudioUiStore } from '../studio-store'
 import { RecordEditor } from './record-editor.component'
 
 function renderWithChakra (element: React.ReactElement) {
@@ -37,6 +38,29 @@ version: 1,
 }
 
 describe('RecordEditor', () => {
+  beforeEach(() => { resetStudioUiStore() })
+
+  it('hovering a mapped row writes its source step id as the cross-panel highlight, and reflects it back (issue #111)', () => {
+    renderWithChakra(<RecordEditor inputRecipe={INPUT} outputRecipe={OUTPUT} records={[]} rejected={[]} onSaveInput={async () => {}} onSaveOutput={async () => {}} />)
+    const row = screen.getByTestId('price-row')
+
+    fireEvent.mouseEnter(row)
+    expect(useStudioUiStore.getState().hoveredStepId).toBe('price')
+    expect(row.dataset.highlighted).toBe('true')
+
+    fireEvent.mouseLeave(row)
+    expect(useStudioUiStore.getState().hoveredStepId).toBeUndefined()
+  })
+
+  it('highlights a mapped row when another panel sets its step id as the hovered one', () => {
+    renderWithChakra(<RecordEditor inputRecipe={INPUT} outputRecipe={OUTPUT} records={[]} rejected={[]} onSaveInput={async () => {}} onSaveOutput={async () => {}} />)
+    const row = screen.getByTestId('price-row')
+    expect(row.dataset.highlighted).toBe('false')
+
+    act(() => { useStudioUiStore.getState().setHoveredStepId('price') })
+    expect(row.dataset.highlighted).toBe('true')
+  })
+
   it('says to select a recipe when none is selected', () => {
     renderWithChakra(<RecordEditor records={[]} rejected={[]} onSaveInput={async () => {}} onSaveOutput={async () => {}} />)
     expect(screen.getByText(/select a recipe/i)).toBeTruthy()

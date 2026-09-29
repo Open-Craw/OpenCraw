@@ -1,7 +1,20 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import type { RecipeListing } from '@opencraw/studio'
 import { JsonEditor } from './json-editor.component'
+
+/**
+ * CodeMirror 6 edits its own `contenteditable` through a DOM-mutation observer that jsdom cannot drive
+ * realistically (no real `Selection`/`Range` text-insertion behaviour) — the library's own suite covers
+ * that editing machinery. This stands in with a plain `<textarea>` sharing the same `value`/`onChange`
+ * contract, so these tests exercise `JsonEditor`'s own state and save logic, not CodeMirror's internals.
+ */
+jest.mock('@uiw/react-codemirror', () => ({
+  __esModule: true,
+  default:    ({ value, onChange }: { value: string, onChange: (value: string) => void }) => (
+    <textarea value={value} onChange={event => { onChange(event.target.value) }} />
+  ),
+}))
 
 function renderWithChakra (element: React.ReactElement) {
   return render(<ChakraProvider value={defaultSystem}>{element}</ChakraProvider>)
@@ -14,6 +27,10 @@ const WITH_ISSUES: RecipeListing = {
   id:     'books',
   issues: [{ path: 'mapping.title', message: 'output "book" has no field "title"', kind: 'binding' }],
   text:   '{\n  "kind": "input"\n}\n',
+}
+
+function typeInEditor (text: string): void {
+  fireEvent.change(screen.getByRole('textbox'), { target: { value: text } })
 }
 
 describe('JsonEditor', () => {
@@ -35,8 +52,7 @@ describe('JsonEditor', () => {
 
   it('flags invalid JSON as the text is edited, disabling Save', () => {
     renderWithChakra(<JsonEditor recipe={CLEAN} onSave={async () => {}} />)
-    const textarea = screen.getByRole('textbox')
-    fireEvent.change(textarea, { target: { value: '{ not json' } })
+    typeInEditor('{ not json')
     expect(screen.getByText(/invalid json/i)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Save' }).hasAttribute('disabled')).toBe(true)
   })
@@ -44,11 +60,9 @@ describe('JsonEditor', () => {
   it('calls onSave with the file path and the parsed object', async () => {
     const onSave = jest.fn().mockResolvedValue(undefined)
     renderWithChakra(<JsonEditor recipe={CLEAN} onSave={onSave} />)
-    const textarea = screen.getByRole('textbox')
-    fireEvent.change(textarea, { target: { value: '{"kind":"output","id":"book"}' } })
+    typeInEditor('{"kind":"output","id":"book"}')
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await Promise.resolve()
-    await Promise.resolve()
+    await act(async () => { await Promise.resolve() })
     expect(onSave).toHaveBeenCalledWith('/r/book.output.json', { kind: 'output', id: 'book' })
   })
 })

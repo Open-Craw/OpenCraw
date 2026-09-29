@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Box, Button, HStack, IconButton, Stack, Text } from '@chakra-ui/react'
 import type { OutlineNode } from '@opencraw/studio'
+import { useStudioUiStore } from '../studio-store'
 import { AddStepMenu } from './add-step-menu.component'
 import type { OutlineActions } from './outline-actions'
 import { issuesForNode } from './outline-tree'
@@ -63,6 +64,10 @@ export function OutlineNodeView ({ node, listId, index, lastIndex, allIssues, ac
   const isBracket = node.kind === 'bracket'
   const isCustom = node.kind === 'card' && node.custom
   const issues = issuesForNode(allIssues, node.path)
+  const stepId = typeof node.step.id === 'string' ? node.step.id : undefined
+  const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
+  const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
+  const highlighted = stepId !== undefined && stepId === hoveredStepId
 
   return (
     <Stack gap={1} data-testid={`outline-card-${node.path}`}>
@@ -71,9 +76,13 @@ export function OutlineNodeView ({ node, listId, index, lastIndex, allIssues, ac
         p={2}
         borderWidth='1px'
         borderRadius='md'
-        bg={isCustom ? 'bg.muted' : 'bg.panel'}
+        data-highlighted={highlighted}
+        borderColor={highlighted ? 'orange.solid' : undefined}
+        bg={highlighted ? 'orange.subtle' : (isCustom ? 'bg.muted' : 'bg.panel')}
         cursor={readOnly ? 'default' : 'pointer'}
         onClick={readOnly ? undefined : () => { setExpanded(open => !open) }}
+        onMouseEnter={readOnly || stepId === undefined ? undefined : () => { setHoveredStepId(stepId) }}
+        onMouseLeave={readOnly || stepId === undefined ? undefined : () => { setHoveredStepId(undefined) }}
       >
         {!readOnly && (
           <Stack gap={0} flexShrink={0}>

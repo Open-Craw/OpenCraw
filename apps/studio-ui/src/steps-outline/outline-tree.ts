@@ -85,6 +85,42 @@ export function listPathPrefix (listId: string): string {
   return `${path}.${branch === 'else' ? 'else' : 'steps'}`
 }
 
+/**
+ * Finds the step whose own id (`step.id`, its "pill" — see issue #111's cross-panel highlight) matches,
+ * depth-first through every bracket's `children` and `elseChildren`.
+ *
+ * @returns The matching node, or `undefined` when the outline has none by this id (or `outline`/`stepId` is absent).
+ */
+export function stepById (outline: OutlineView | undefined, stepId: string | undefined): OutlineNode | undefined {
+  if (outline === undefined || stepId === undefined) return undefined
+
+  return findById(outline.steps, stepId)
+}
+
+function findById (nodes: OutlineNode[], stepId: string): OutlineNode | undefined {
+  for (const node of nodes) {
+    if (node.step.id === stepId) return node
+    if (!isBracket(node)) continue
+    const inChildren = findById(node.children, stepId)
+    if (inChildren !== undefined) return inChildren
+    if (node.elseChildren !== undefined) {
+      const inElse = findById(node.elseChildren, stepId)
+      if (inElse !== undefined) return inElse
+    }
+  }
+
+  return undefined
+}
+
+/** Every node in the outline, flattened depth-first through every bracket's `children` and `elseChildren` — for a scan that needs every step regardless of nesting (issue #111's content-pane node → step resolution). */
+export function allSteps (outline: OutlineView | undefined): OutlineNode[] {
+  return outline === undefined ? [] : flatten(outline.steps)
+}
+
+function flatten (nodes: OutlineNode[]): OutlineNode[] {
+  return nodes.flatMap(node => (isBracket(node) ? [node, ...flatten(node.children), ...flatten(node.elseChildren ?? [])] : [node]))
+}
+
 /** Every issue whose path is this node's own path, or one of its own fields (not a descendant step's). */
 export function issuesForNode (issues: readonly { path: string, message: string }[], path: string): { path: string, message: string }[] {
   return issues.filter((issue) => {

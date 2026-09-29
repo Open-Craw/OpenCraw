@@ -38,6 +38,7 @@ export default [
   {
     ignores: [
       '**/vite.config.*.timestamp*',
+      '.claude/worktrees/**',
     ],
   },
 ]

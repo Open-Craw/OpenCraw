@@ -1,5 +1,6 @@
 import { BrowserClient, HttpClient } from '@opencraw/core'
 import type { BrowserSessionConfig, HttpBody, InputRecipe } from '@opencraw/core'
+import { ensureBrowserLaunch } from '../browser-provisioning'
 
 /**
  * Fetches an input recipe's start page as the engine would see it: a fresh
@@ -26,7 +27,7 @@ export async function fetchStartPage (input: InputRecipe, browser?: BrowserSessi
 }
 
 async function fetchWeb (url: string, browser?: BrowserSessionConfig): Promise<string> {
-  const client = await BrowserClient.launch(browser)
+  const client = await ensureBrowserLaunch(browser, () => BrowserClient.launch(browser))
   try {
     const session = await client.newSession()
     try {

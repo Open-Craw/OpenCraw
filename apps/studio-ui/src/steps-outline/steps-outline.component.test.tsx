@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import type { OutlineView, RecipeListing } from '@opencraw/studio'
-import { resetRecordingStore, useRecordingStore } from '../studio-store'
+import { resetRecordingStore, resetStudioUiStore, useRecordingStore, useStudioUiStore } from '../studio-store'
 import { StepsOutline } from './steps-outline.component'
 
 /**
@@ -24,7 +24,10 @@ function recipeWith (outline?: OutlineView, issues: RecipeListing['issues'] = []
   return { file: '/r/books.input.json', kind: 'input', id: 'books', issues, text: '{}\n', outline }
 }
 
-beforeEach(() => { resetRecordingStore() })
+beforeEach(() => {
+  resetRecordingStore()
+  resetStudioUiStore()
+})
 
 describe('StepsOutline', () => {
   it('prompts to select a recipe when none is given', () => {
@@ -162,5 +165,35 @@ describe('StepsOutline', () => {
     renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />)
     expect(screen.getByText('turn this into pagination?')).toBeTruthy()
     expect(screen.queryByRole('button', { name: /turn into pagination/i })).toBeNull()
+  })
+
+  it('hovering a card writes the step\'s own id as the cross-panel highlight, and clears it on leave (issue #111)', () => {
+    const outline: OutlineView = {
+      recipe: {},
+      steps:  [{ kind: 'card', path: 'steps.0', stepType: 'extract', sentence: [{ kind: 'word', text: 'Read' }], custom: false, step: { type: 'extract', id: 'title', selector: 'h1', kind: 'css' } }],
+    }
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />)
+    const card = screen.getByTestId('outline-card-steps.0').firstChild as HTMLElement
+
+    fireEvent.mouseEnter(card)
+    expect(useStudioUiStore.getState().hoveredStepId).toBe('title')
+    expect(card.dataset.highlighted).toBe('true')
+
+    fireEvent.mouseLeave(card)
+    expect(useStudioUiStore.getState().hoveredStepId).toBeUndefined()
+    expect(card.dataset.highlighted).toBe('false')
+  })
+
+  it('highlights a card when another panel sets its step id as the hovered one', () => {
+    const outline: OutlineView = {
+      recipe: {},
+      steps:  [{ kind: 'card', path: 'steps.0', stepType: 'extract', sentence: [{ kind: 'word', text: 'Read' }], custom: false, step: { type: 'extract', id: 'title', selector: 'h1', kind: 'css' } }],
+    }
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={async () => {}} />)
+    const card = screen.getByTestId('outline-card-steps.0').firstChild as HTMLElement
+    expect(card.dataset.highlighted).toBe('false')
+
+    act(() => { useStudioUiStore.getState().setHoveredStepId('title') })
+    expect(card.dataset.highlighted).toBe('true')
   })
 })

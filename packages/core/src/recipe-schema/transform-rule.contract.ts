@@ -11,6 +11,10 @@ export type TransformRule =
   { op: 'first' } | { op: 'last' } | { op: 'nth', index: number } | { op: 'slice', start: number, end?: number } |
   { op: 'concat', separator?: string } | { op: 'coalesce' } | { op: 'default', value: unknown } |
   { op: 'number', locale?: string } | { op: 'integer' } | { op: 'boolean', truthy?: string[] } |
+  /** Coerces any value to its plain string form (`String(value)`), unlike the string ops above which reject anything but text, a number, or a boolean. */
+  { op: 'toString' } |
+  /** Pads text to `length` with a single `char` (default a space), from the left or right. */
+  { op: 'padStart', length: number, char?: string } | { op: 'padEnd', length: number, char?: string } |
   { op: 'currency', locale?: string, currency?: string } |
   { op: 'date', format?: string, timezone?: string } |
   { op: 'absoluteUrl', base?: string } |
@@ -57,6 +61,9 @@ export const transformRuleSchema: z.ZodType<TransformRule> = z.discriminatedUnio
   z.strictObject({ op: z.literal('number'), locale: z.string().optional() }),
   z.strictObject({ op: z.literal('integer') }),
   z.strictObject({ op: z.literal('boolean'), truthy: stringList.optional() }),
+  z.strictObject({ op: z.literal('toString') }),
+  z.strictObject({ op: z.literal('padStart'), length: z.int().nonnegative(), char: z.string().length(1).optional() }),
+  z.strictObject({ op: z.literal('padEnd'), length: z.int().nonnegative(), char: z.string().length(1).optional() }),
   z.strictObject({ op: z.literal('currency'), locale: z.string().optional(), currency: z.string().length(3).optional() }),
   z.strictObject({ op: z.literal('date'), format: z.string().optional(), timezone: z.string().optional() }),
   z.strictObject({ op: z.literal('absoluteUrl'), base: z.string().optional() }),

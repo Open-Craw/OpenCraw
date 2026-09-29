@@ -50,6 +50,22 @@ export function isEachRule (rule: MappingRuleJson | undefined): rule is EachRule
   return rule !== undefined && 'each' in rule
 }
 
+/**
+ * Every top-level output field whose mapping rule reads from a single, plain step id (not a template, not
+ * a list of ids, not an `each` list) — the cross-panel highlight's own id space (issue #111): a field maps
+ * to the same step id `FieldRow`/`FieldTree` resolve for its own hover, computed once here so
+ * `records-table.component.tsx` (which knows nothing about steps or mapping rules) can highlight the right
+ * column from a shared `hoveredStepId` without importing this slice's own field-tree logic.
+ */
+export function fieldToStepIdOf (mapping: Record<string, MappingRuleJson>): Record<string, string> {
+  const result: Record<string, string> = {}
+  for (const [field, rule] of Object.entries(mapping)) {
+    if (!isEachRule(rule) && typeof rule.from === 'string') result[field] = rule.from
+  }
+
+  return result
+}
+
 /** The output types the Record tab's type dropdown offers (`@opencraw/core`'s `FIELD_TYPES`, kept as a local literal list for the same reason as `field-spec.model.ts`'s own doc comment). */
 export const FIELD_TYPES: readonly string[] = ['string', 'number', 'integer', 'boolean', 'date', 'datetime', 'currency', 'url', 'enum', 'array', 'object', 'json']
 

@@ -3,6 +3,7 @@ import { Box, Button, HStack, Input, NativeSelect, Stack, Text } from '@chakra-u
 import type { FieldTraceView, RecipeListing } from '@opencraw/studio'
 import type { PreviewRecord } from '../preview'
 import type { RejectedRecord } from '../studio-store'
+import { useStudioUiStore } from '../studio-store'
 import { FieldRow } from './field-row.component'
 import type { FieldSpecJson, MappingRuleJson } from './field-spec.model'
 import { isEachRule, MISSING_POLICIES } from './field-spec.model'
@@ -51,6 +52,8 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
   const [recordIndex, setRecordIndex] = useState(0)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string>()
+  const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
+  const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
 
   useEffect(() => {
     const nextOutput = outputRecipe === undefined ? undefined : (JSON.parse(outputRecipe.text) as OutputRecipeJson)
@@ -163,6 +166,8 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
             record={record}
             rejected={rejected}
             scopeIds={scopeIds}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={setHoveredStepId}
             setRule={setRule}
             onFieldChange={next => { setField(name, next) }}
             onRename={nextName => { renameField(name, nextName) }}
@@ -195,6 +200,9 @@ interface FieldTreeProps {
   rejected:           RejectedRecord[]
   scopeIds:           string[]
   depth?:             number
+  /** The cross-panel highlight's current step id (issue #111), and how a row reports its own hover — threaded through unchanged at every depth, `FieldRow` (not this function) resolves whether it applies to one particular row. */
+  hoveredStepId?:     string
+  onHoverStepId:      (stepId: string | undefined) => void
   /** Writes the mapping rule at one dotted target, straight into `input.mapping` — the same setter every depth uses, so an object member's rule lands in the flat, top-level `mapping` map exactly like a top-level field's (only an `each` list's own item fields nest inside their list's rule, handled locally below). */
   setRule:            (target: string, rule: MappingRuleJson | undefined) => void
   onFieldChange:      (field: FieldSpecJson) => void
@@ -205,7 +213,7 @@ interface FieldTreeProps {
 }
 
 /** One field, recursively: an `object` field renders its members (one level: `field-spec.model.ts`'s own doc comment on why deeper nesting is out of scope), an `array` of `object` renders its `each` shape and item fields, anything else is a plain `FieldRow`. */
-function FieldTree ({ name, field, target, input, record, rejected, scopeIds, depth = 0, setRule, onFieldChange, onRename, onRemove, onExplainMissing, onExplainRejected }: FieldTreeProps) {
+function FieldTree ({ name, field, target, input, record, rejected, scopeIds, depth = 0, hoveredStepId, onHoverStepId, setRule, onFieldChange, onRename, onRemove, onExplainMissing, onExplainRejected }: FieldTreeProps) {
   if (field.type === 'object' && field.fields !== undefined) {
     return (
       <Stack gap={1}>
@@ -224,6 +232,8 @@ function FieldTree ({ name, field, target, input, record, rejected, scopeIds, de
             rejected={rejected}
             scopeIds={scopeIds}
             depth={depth + 1}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={onHoverStepId}
             setRule={setRule}
             onFieldChange={next => { onFieldChange({ ...field, fields: { ...field.fields, [memberName]: next } }) }}
             onRename={nextName => {
@@ -263,33 +273,41 @@ function FieldTree ({ name, field, target, input, record, rejected, scopeIds, de
             onChange={event => { setRule(target, event.target.value === '' ? undefined : { each: event.target.value, fields: eachRule?.fields ?? {} }) }}
           />
         </HStack>
-        {Object.entries(itemFields).map(([itemName, itemField]) => (
-          <FieldRow
-            key={itemName}
-            name={itemName}
-            field={itemField}
-            rule={eachRule?.fields[itemName]}
-            scopeIds={scopeIds}
-            depth={depth + 1}
-            onFieldChange={next => { onFieldChange({ ...field, items: { ...items, fields: { ...itemFields, [itemName]: next } } }) }}
-            onRename={nextName => {
-              const fields: Record<string, FieldSpecJson> = {}
-              for (const [key, value] of Object.entries(itemFields)) fields[key === itemName ? nextName : key] = value
-              onFieldChange({ ...field, items: { ...items, fields } })
-            }}
-            onRemove={() => {
-              const fields = { ...itemFields }
-              delete fields[itemName]
-              onFieldChange({ ...field, items: { ...items, fields } })
-            }}
-            onRuleChange={next => {
-              const fields = { ...eachRule?.fields }
-              if (next === undefined) delete fields[itemName]
-              else fields[itemName] = next
-              setRule(target, { each: eachRule?.each ?? '', fields })
-            }}
-          />
-        ))}
+        {Object.entries(itemFields).map(([itemName, itemField]) => {
+          const itemRule = eachRule?.fields[itemName]
+          const itemStepId = typeof itemRule?.from === 'string' ? itemRule.from : undefined
+
+          return (
+            <FieldRow
+              key={itemName}
+              name={itemName}
+              field={itemField}
+              rule={itemRule}
+              scopeIds={scopeIds}
+              depth={depth + 1}
+              stepId={itemStepId}
+              highlighted={itemStepId !== undefined && itemStepId === hoveredStepId}
+              onHoverStepId={onHoverStepId}
+              onFieldChange={next => { onFieldChange({ ...field, items: { ...items, fields: { ...itemFields, [itemName]: next } } }) }}
+              onRename={nextName => {
+                const fields: Record<string, FieldSpecJson> = {}
+                for (const [key, value] of Object.entries(itemFields)) fields[key === itemName ? nextName : key] = value
+                onFieldChange({ ...field, items: { ...items, fields } })
+              }}
+              onRemove={() => {
+                const fields = { ...itemFields }
+                delete fields[itemName]
+                onFieldChange({ ...field, items: { ...items, fields } })
+              }}
+              onRuleChange={next => {
+                const fields = { ...eachRule?.fields }
+                if (next === undefined) delete fields[itemName]
+                else fields[itemName] = next
+                setRule(target, { each: eachRule?.each ?? '', fields })
+              }}
+            />
+          )
+        })}
       </Stack>
     )
   }
@@ -299,6 +317,7 @@ function FieldTree ({ name, field, target, input, record, rejected, scopeIds, de
   const value = record?.data[name]
   const trace: FieldTraceView | undefined = record?.mapping?.[target]
   const rejectedForField = rejected.filter(entry => entry.field === target)
+  const stepId = typeof fromRule?.from === 'string' ? fromRule.from : undefined
 
   return (
     <FieldRow
@@ -311,6 +330,9 @@ function FieldTree ({ name, field, target, input, record, rejected, scopeIds, de
       // eslint-disable-next-line unicorn/prefer-at -- `.at()` needs an ES2022+ `lib`; `tsconfig.app.json` (the browser build) only has `dom` (see this file's own TS2550 history)
       rejected={rejectedForField.length === 0 ? undefined : { count: rejectedForField.length, reason: rejectedForField[rejectedForField.length - 1].reason }}
       depth={depth}
+      stepId={stepId}
+      highlighted={stepId !== undefined && stepId === hoveredStepId}
+      onHoverStepId={onHoverStepId}
       onFieldChange={onFieldChange}
       onRename={onRename}
       onRemove={onRemove}
