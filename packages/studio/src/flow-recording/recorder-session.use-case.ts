@@ -1,6 +1,7 @@
 import type { Page, Response } from 'playwright'
 import type { BrowserSessionConfig, Step } from '@opencraw/core'
 import { BrowserProfiles } from '@opencraw/core'
+import { ensureBrowserLaunch } from '../browser-provisioning'
 import { recipeToOutline } from '../scope-outline'
 import { bestCandidate, candidatesFor, crossesShadowRoot, pathToNode } from '../selector-inference'
 import type { OutlineNode } from '../studio-api'
@@ -86,7 +87,7 @@ export interface RecorderSessionHandle {
  */
 export async function openRecorderSession (options: RecorderSessionOptions, callbacks: RecorderCallbacks): Promise<RecorderSessionHandle> {
   const profiles = new BrowserProfiles(options.profileDir, { ...options.browser, headless: false })
-  const session = await profiles.open(RECORDER_PROFILE_NAME, {}, {})
+  const session = await ensureBrowserLaunch(options.browser, () => profiles.open(RECORDER_PROFILE_NAME, {}, {}))
   const context = session.context
   const steps: Step[] = []
   let closed = false

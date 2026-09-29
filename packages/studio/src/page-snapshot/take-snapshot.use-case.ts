@@ -1,5 +1,6 @@
 import { BrowserClient, HttpClient } from '@opencraw/core'
 import type { BodyKind, BrowserSessionConfig, HttpBody, InputRecipe } from '@opencraw/core'
+import { ensureBrowserLaunch } from '../browser-provisioning'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
 import { rewriteDocument } from './rewrite-document.mapper'
 
@@ -69,7 +70,7 @@ export async function takeSnapshot (input: InputRecipe, stepPath: string, browse
 }
 
 async function snapshotWeb (url: string, browser?: BrowserSessionConfig): Promise<SnapshotResult> {
-  const client = await BrowserClient.launch(browser)
+  const client = await ensureBrowserLaunch(browser, () => BrowserClient.launch(browser))
   try {
     const session = await client.newSession()
     try {
