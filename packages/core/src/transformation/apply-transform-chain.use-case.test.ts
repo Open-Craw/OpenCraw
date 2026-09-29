@@ -90,6 +90,14 @@ describe('applyTransformChain', () => {
     await expect(run('x', { op: 'sum' })).rejects.toThrow(/expects a list/)
   })
 
+  it('coerces to text and pads it', async () => {
+    expect(await run(42, { op: 'toString' })).toBe('42')
+    expect(await run(null, { op: 'toString' }, { op: 'default', value: 'n/a' })).toBe('n/a')
+    expect(await run(7, { op: 'toString' }, { op: 'padStart', length: 3, char: '0' })).toBe('007')
+    expect(await run('ab', { op: 'padEnd', length: 4 })).toBe('ab  ')
+    await expect(run('7', { op: 'padStart', length: 3, char: '00' })).rejects.toThrow(/exactly one character/)
+  })
+
   it('percent-encodes a URL component', async () => {
     expect(await run('A#1 b&c+d/é', { op: 'urlEncode' })).toBe('A%231%20b%26c%2Bd%2F%C3%A9')
     expect(await run(['#', 'x y'], { op: 'urlEncode' })).toEqual(['%23', 'x%20y'])

@@ -53,6 +53,25 @@ export function split (value: unknown, separator: string): string[] {
   return asText('split', value).split(separator)
 }
 
+/** Coerces any value to its plain string form, unlike the other string ops which reject anything but text, a number, or a boolean. */
+export function toText (value: unknown): string {
+  return typeof value === 'string' ? value : String(value)
+}
+
+export function padStart (value: unknown, length: number, char = ' '): string {
+  return asText('padStart', value).padStart(length, padChar('padStart', char))
+}
+
+export function padEnd (value: unknown, length: number, char = ' '): string {
+  return asText('padEnd', value).padEnd(length, padChar('padEnd', char))
+}
+
+function padChar (op: string, char: string): string {
+  if (char.length !== 1) throw new TransformError(op, `char must be exactly one character, got ${JSON.stringify(char)}`, char)
+
+  return char
+}
+
 /**
  * Expands `$1`..`$9` and `$&` in a replacement, the way `String#replace` does
  * with a string replacement. Done by hand so the replacement is never

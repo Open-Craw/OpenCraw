@@ -949,6 +949,8 @@ reaches the missing-value policy untouched.
 | `number` | `locale?` | scalar | reads the one number in the text (`"1.299,00"` with `de-DE` → 1299, `"£51.77"` → 51.77); two numbers or more is an error, so `regex` first. Separators as for the `number` type (§1.2) |
 | `integer` | – | scalar | as `number`, truncated |
 | `boolean` | `truthy?` | scalar | `truthy`: `true` when the text contains a phrase (substring, case-insensitive). Without it, the field type's default phrases (§1.2). |
+| `toString` | – | scalar | coerces any value to its plain string form (`String(value)`), unlike the text ops above which reject anything but text, a number, or a boolean |
+| `padStart`, `padEnd` | `length`, `char?` (default a space, exactly one character) | scalar | pads text to `length` from the left or right |
 | `currency` | `locale?`, `currency?` | scalar | `{ amount, currency }`; the amount as `number` reads it; the code from the arg, else an ISO 4217 code next to the amount, else a symbol, else an ISO 4217 code anywhere in the text |
 | `date` | `format?`, `timezone?` | scalar | a Date; `format` tokens `YYYY MM DD HH mm ss`; `timezone` an IANA zone for text without an offset, UTC without one (never the host's zone); a date alone (`2026-03-04`) is midnight UTC |
 | `absoluteUrl` | `base?` | scalar | resolve against `base`, else `page.url` |

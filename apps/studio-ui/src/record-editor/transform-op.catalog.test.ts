@@ -20,6 +20,12 @@ describe('optionFieldsOf', () => {
     expect(optionFieldsOf('nth')).toEqual([{ name: 'index', numeric: true }])
   })
 
+  it('lists padStart/padEnd\'s options', () => {
+    expect(optionFieldsOf('padStart')).toEqual([{ name: 'length', numeric: true }, { name: 'char' }])
+    expect(optionFieldsOf('padEnd')).toEqual([{ name: 'length', numeric: true }, { name: 'char' }])
+    expect(TRANSFORM_OPS).toEqual(expect.arrayContaining(['toString', 'padStart', 'padEnd']))
+  })
+
   it('is empty for an op not in the catalog', () => {
     expect(optionFieldsOf('not-a-real-op')).toEqual([])
   })
