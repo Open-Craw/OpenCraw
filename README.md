@@ -22,6 +22,7 @@ Several input recipes can feed one output; a run processes them one after anothe
 | [`@opencraw/office-reader`](./packages/office-reader) | Reads `.xlsx` workbooks, `.pptx` presentations and `.docx` documents into plain objects, in Node or a browser. Standalone: core uses it, it depends on nothing of OpenCraw. |
 | [`@opencraw/captcha-tesseract`](./packages/captcha-tesseract) | Reads image captchas with Tesseract for form captchas: refreshes the image instead of submitting a doubtful read, fills the answer field, and audits every read with the site's verdict. |
 | [`@opencraw/azure-durable`](./packages/azure-durable) | OpenCraw as an HTTP service on Azure Durable Functions: run recipes with one call, or send items one at a time to warm worker pools that keep their windows. Hooks, solvers and secrets stay in the host; recipes can only reach the hosts it allows. |
+| [`@opencraw/studio`](./packages/studio) | A visual editor: open a site or a document, click the data you want, get a recipe that runs. [Manual →](./docs/studio/manual.md) |
 
 | App | What it is |
 |---|---|
@@ -81,6 +82,7 @@ await crawler.close()
 
 Start from the [examples](./examples/README.md) (each one runs with `npm start`; [`examples/shop`](./examples/shop) runs offline) and the guide in [`docs/recipes/authoring.md`](./docs/recipes/authoring.md).
 [How OpenCraw works](./docs/how-it-works/README.md) shows what the engine does with every part of a recipe, on real sites, APIs and documents.
+[The OpenCraw Studio manual](./docs/studio/manual.md) builds a recipe visually, start to finish, with no JSON hand-written.
 The specification is [`docs/requirements.md`](./docs/requirements.md).
 
 ## Working on this repository
