@@ -167,6 +167,20 @@ export const tablePreviewCommandSchema = z.object({
 })
 
 /**
+ * The live preview of a `region` extract's selector against a cached PDF
+ * snapshot (`document-view`'s `region-preview.use-case.ts`, issue #121: the
+ * PDF canvas's click-to-snap selection): the text the step would bind and
+ * the cells to highlight, recomputed as the box changes — call
+ * `take-snapshot` first.
+ */
+export const regionPreviewCommandSchema = z.object({
+  type:     z.literal('region-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  selector: z.string().min(1),
+})
+
+/**
  * The grid canvas's sheets and cells (`document-view`'s `workbook-view.mapper.ts`,
  * studio plan §3.4, issue #94's 5c), off the same cached snapshot
  * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
@@ -336,6 +350,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   documentTreeCommandSchema,
   pdfViewCommandSchema,
   tablePreviewCommandSchema,
+  regionPreviewCommandSchema,
   gridViewCommandSchema,
   gridPreviewCommandSchema,
   deckViewCommandSchema,
@@ -361,6 +376,7 @@ export type DocumentTreeCommand = z.infer<typeof documentTreeCommandSchema>
 export type PdfViewCommand = z.infer<typeof pdfViewCommandSchema>
 export type TablePreviewOptions = z.infer<typeof tablePreviewOptionsSchema>
 export type TablePreviewCommand = z.infer<typeof tablePreviewCommandSchema>
+export type RegionPreviewCommand = z.infer<typeof regionPreviewCommandSchema>
 export type GridViewCommand = z.infer<typeof gridViewCommandSchema>
 export type GridPreviewOptions = z.infer<typeof gridPreviewOptionsSchema>
 export type GridPreviewCommand = z.infer<typeof gridPreviewCommandSchema>

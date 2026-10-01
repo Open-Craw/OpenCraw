@@ -22,6 +22,7 @@ import { handlePdfBytes } from './pdf-bytes.handler'
 import { handlePdfView } from './pdf-view.handler'
 import { handleStartRecording, handleStopRecording } from './recording.handler'
 import { handleResponsesSeen } from './responses-seen.handler'
+import { handleRegionPreview } from './region-preview.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
@@ -206,6 +207,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'pdf-view': { return Promise.resolve(handlePdfView(state, command))
     }
     case 'table-preview': { return Promise.resolve(handleTablePreview(state, command))
+    }
+    case 'region-preview': { return Promise.resolve(handleRegionPreview(state, command))
     }
     case 'grid-view': { return handleGridView(state, command)
     }

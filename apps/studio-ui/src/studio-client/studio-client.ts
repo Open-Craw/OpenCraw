@@ -1,4 +1,4 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -32,6 +32,8 @@ export interface StudioClient {
   pdfView:        (recipeId: string, path: string) => Promise<PdfDocumentView>
   /** The PDF canvas's live preview of a `table` extract's options (`document-view`'s `table-preview.use-case.ts`, issue #94's 5b): a pure computation over the cached snapshot, instant on every option change. */
   tablePreview:   (recipeId: string, path: string, options: TablePreviewOptions) => Promise<TablePreviewView>
+  /** The PDF canvas's live preview of a `region` extract's selector (`document-view`'s `region-preview.use-case.ts`, issue #121): the text the step would bind and the cells to highlight — a pure computation over the cached snapshot, instant on every change of the box. */
+  regionPreview:  (recipeId: string, path: string, selector: string) => Promise<RegionPreviewView>
   /** The URL the PDF canvas's `pdf.js` fetches directly for the raw bytes of a cached PDF snapshot (`GET /api/pdf-bytes`, issue #94's 5b) — not a `send`-through command, since it answers bytes, not JSON. */
   pdfBytesUrl:    (recipeId: string, path: string) => string
   /** The grid canvas's sheets and cells for a CSV/spreadsheet snapshot (`document-view`'s `workbook-view.mapper.ts`, studio plan §3.4, issue #94's 5c), off the same cached snapshot; `delimiter`/`encoding` override a CSV's auto-detected reading. */
@@ -107,6 +109,7 @@ export function createStudioClient (): StudioClient {
     documentTree:   (recipeId, path) => send<DocumentTreeView>(token, { type: 'document-tree', recipeId, path }),
     pdfView:        (recipeId, path) => send<PdfDocumentView>(token, { type: 'pdf-view', recipeId, path }),
     tablePreview:   (recipeId, path, options) => send<TablePreviewView>(token, { type: 'table-preview', recipeId, path, options }),
+    regionPreview:  (recipeId, path, selector) => send<RegionPreviewView>(token, { type: 'region-preview', recipeId, path, selector }),
     pdfBytesUrl:    (recipeId, path) => `/api/pdf-bytes?token=${encodeURIComponent(token)}&recipeId=${encodeURIComponent(recipeId)}&path=${encodeURIComponent(path)}`,
     gridView:       (recipeId, path, override) => send<WorkbookDocumentView>(token, { type: 'grid-view', recipeId, path, delimiter: override?.delimiter, encoding: override?.encoding }),
     gridPreview:    (recipeId, path, options) => send<GridTablePreviewView>(token, { type: 'grid-preview', recipeId, path, options }),

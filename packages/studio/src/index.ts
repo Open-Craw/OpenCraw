@@ -20,7 +20,8 @@ export {
   sentencePartSchema, outlineCardSchema, outlineBracketSchema, outlineNodeSchema, outlineViewSchema,
   whyViewSchema,
   inspectPageCommandSchema, responsesSeenCommandSchema, documentTreeCommandSchema,
-  pdfViewCommandSchema, tablePreviewOptionsSchema, tablePreviewCommandSchema,
+  pdfViewCommandSchema, tablePreviewOptionsSchema, tablePreviewCommandSchema, regionPreviewCommandSchema,
+  regionPreviewMatchSchema, regionPreviewViewSchema,
   gridViewCommandSchema, gridPreviewOptionsSchema, gridPreviewCommandSchema,
   deckViewCommandSchema, deckPreviewOptionsSchema, deckPreviewCommandSchema,
   domTreeNodeViewSchema, pageDataFindingSchema, inspectViewSchema,
@@ -36,8 +37,9 @@ export {
   recordingCardEventSchema, recordingNoteEventSchema, recordingStoppedEventSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, ImportDocumentCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, ImportDocumentCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, RegionPreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
   ImportDocumentView,
+  RegionPreviewMatchView, RegionPreviewView,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
