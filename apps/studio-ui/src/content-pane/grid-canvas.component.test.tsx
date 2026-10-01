@@ -30,13 +30,19 @@ const VIEW: WorkbookDocumentView = {
   }],
 }
 
-function renderCanvas (onCellPick: (card: OutlineCard) => void = () => {}) {
+interface HighlightProps {
+  steps?:         { id: string, kind: string, selector: string }[]
+  hoveredStepId?: string
+  onHoverStepId?: (stepId: string | undefined) => void
+}
+
+function renderCanvas (onCellPick: (card: OutlineCard) => void = () => {}, highlight: HighlightProps = {}) {
   Object.defineProperty(globalThis, 'fetch', { value: jest.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ matches: [] }) }), configurable: true })
 
   return render(
     <QueryClientProvider client={createStudioQueryClient()}>
       <ChakraProvider value={defaultSystem}>
-        <GridCanvas recipeId='listino' stepPath='start' view={VIEW} onTablePick={() => {}} onCellPick={onCellPick} onCsvOverrideChange={() => {}} />
+        <GridCanvas recipeId='listino' stepPath='start' view={VIEW} onTablePick={() => {}} onCellPick={onCellPick} onCsvOverrideChange={() => {}} {...highlight} />
       </ChakraProvider>
     </QueryClientProvider>,
   )
@@ -125,5 +131,19 @@ describe('GridCanvas cell mode (issue #123)', () => {
     fireEvent.click(screen.getByText('Marca'))
     expect(screen.getByText(/^table: /)).toBeTruthy()
     expect(screen.queryByTestId('region-chip')).toBeNull()
+  })
+
+  it('outlines the cells steps already read, fills the hovered step\'s in, and reports the step a hovered cell belongs to (issue #125)', () => {
+    const onHoverStepId = jest.fn()
+    const steps = [{ id: 'brand', kind: 'jsonpath', selector: "$.sheets[?(@.name=='listino')].rows[2][0]" }, { id: 'header', kind: 'jsonpath', selector: "$.sheets[?(@.name=='listino')].rows[1][0:3]" }]
+    renderCanvas(() => {}, { steps, hoveredStepId: 'header', onHoverStepId })
+    const marked = screen.getAllByTestId('grid-cell').filter(cell => Boolean(cell.dataset.stepIds))
+    expect(marked.map(cell => cell.dataset.stepIds)).toEqual(['header', 'header', 'header', 'brand'])
+    expect(marked.filter(cell => cell.dataset.highlighted === 'true')).toHaveLength(3)
+
+    fireEvent.mouseEnter(screen.getByText('Fiat'))
+    expect(onHoverStepId).toHaveBeenLastCalledWith('brand')
+    fireEvent.mouseEnter(screen.getByText('Pandina'))
+    expect(onHoverStepId).toHaveBeenLastCalledWith(undefined)
   })
 })

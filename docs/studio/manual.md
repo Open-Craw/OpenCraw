@@ -122,7 +122,10 @@ book instead of one for the whole page.
 
 A card's **pill** — the small coloured `books`, `book`, `title` labels — is the id the next card downstream
 can read `from`. Hovering a card highlights every matching element in the content pane with a count, so you
-can confirm a selector actually matches what you expect before moving on. Container steps (`forEach`,
+can confirm a selector actually matches what you expect before moving on. The document canvases do the same
+in both directions: a tree node, a region of a PDF page or a slide, a chart, or a cell a step already reads
+is marked with the step's id (a dashed box, a pill), hovering the card fills it in, and hovering the marked
+node, line, text box, chart or cell lights the card up. Container steps (`forEach`,
 `paginate`, `if`) draw as brackets around their children: a card can only use a pill from its own bracket or
 an outer one, so the outline can never let you build a binding error the loader would later reject.
 

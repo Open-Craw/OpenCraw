@@ -51,11 +51,17 @@ function sentSelectors (fetchMock: jest.Mock): string[] {
   return fetchMock.mock.calls.map(([, init]) => JSON.parse((init as RequestInit).body as string) as SentCommand).filter(command => command.type === 'region-preview').map(command => command.selector ?? '')
 }
 
-function renderCanvas (onRegionPick: (card: OutlineCard) => void = () => {}) {
+interface HighlightProps {
+  steps?:         { id: string, kind: string, selector: string }[]
+  hoveredStepId?: string
+  onHoverStepId?: (stepId: string | undefined) => void
+}
+
+function renderCanvas (onRegionPick: (card: OutlineCard) => void = () => {}, highlight: HighlightProps = {}) {
   return render(
     <QueryClientProvider client={createStudioQueryClient()}>
       <ChakraProvider value={defaultSystem}>
-        <PdfCanvas recipeId='discounts' stepPath='start' view={VIEW} bytesUrl='/api/pdf-bytes' onTablePick={() => {}} onRegionPick={onRegionPick} />
+        <PdfCanvas recipeId='discounts' stepPath='start' view={VIEW} bytesUrl='/api/pdf-bytes' onTablePick={() => {}} onRegionPick={onRegionPick} {...highlight} />
       </ChakraProvider>
     </QueryClientProvider>,
   )
@@ -186,5 +192,24 @@ describe('PdfCanvas text mode (issue #121)', () => {
     const overlay = screen.getByTestId('pdf-overlay')
     fireEvent.click(overlay.querySelector('g') as Element)
     expect(screen.getByText(/^table: /)).toBeTruthy()
+  })
+
+  it('draws the region steps already in the recipe, fills the hovered one in, and reports the step a snapped line belongs to (issue #125)', () => {
+    mockFetch()
+    const onHoverStepId = jest.fn()
+    const steps = [{ id: 'title', kind: 'region', selector: 'page=1 x=71..273 y=799..813' }, { id: 'elsewhere', kind: 'region', selector: 'page=2 x=0..100 y=0..100' }]
+    renderCanvas(() => {}, { steps, hoveredStepId: 'title', onHoverStepId })
+    const regions = screen.getAllByTestId('recipe-region')
+    expect(regions.map(region => region.dataset.stepId)).toEqual(['title'])
+    expect(regions[0].dataset.highlighted).toBe('true')
+
+    const overlay = screen.getByTestId('pdf-overlay')
+    fireEvent.mouseMove(overlay, ON_TITLE)
+    expect(onHoverStepId).toHaveBeenLastCalledWith('title')
+    fireEvent.mouseMove(overlay, ON_NOTE)
+    expect(onHoverStepId).toHaveBeenLastCalledWith(undefined)
+    fireEvent.mouseMove(overlay, ON_TITLE)
+    fireEvent.mouseLeave(overlay)
+    expect(onHoverStepId).toHaveBeenLastCalledWith(undefined)
   })
 })

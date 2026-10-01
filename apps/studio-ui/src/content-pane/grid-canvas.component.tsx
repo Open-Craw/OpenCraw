@@ -8,6 +8,8 @@ import { useGridPreviewQuery } from '../studio-client'
 import { cellSelector, columnHeaderText, columnKeyFrom, escapedRowPattern, fillDownKeyFor, filledGridOf, gridCellCardNode, gridTableCardNode, isSingleCell, rangeText, regionIdFrom, rowPickText, sheetPattern, unionRange } from './grid-pick.mapper'
 import type { CellRange, GridDraft } from './grid-pick.mapper'
 import { SelectionChip } from './selection-chip.component'
+import { cellStepsOnSheet, stepIdsForCell } from './step-highlight.mapper'
+import type { PickedStep } from './step-highlight.mapper'
 
 /** What clicking on the grid canvas is currently picking: a cell or a rectangle of cells (issue #123, the default), or a `table` extract's sheet, header row(s), last row, column or fill-down group (studio plan §3.4, issue #94's 5c). */
 export type GridPickMode = 'cell' | 'sheet' | 'header' | 'until' | 'column' | 'fillDown'
@@ -34,11 +36,18 @@ export interface GridCanvasProps {
   onTablePick:         (card: OutlineCard) => void
   /** Called with a `jsonpath` extract card when a staged cell or range's "Add to recipe" is clicked (issue #123). */
   onCellPick:          (card: OutlineCard) => void
+  /** The recipe's extract steps, for marking the cells already read by one (issue #125); default none. */
+  steps?:              readonly PickedStep[]
+  /** The cross-panel highlight (issue #111): the step whose cells light up. */
+  hoveredStepId?:      string
+  /** Reports the step the cell under the mouse belongs to (or `undefined`), the way the HTML canvas does. */
+  onHoverStepId?:      (stepId: string | undefined) => void
   /** The CSV delimiter/encoding override currently applied, if any (undefined: auto-detected). Not a CSV: undefined and unused. */
   csvOverride?:        GridViewOverride
   onCsvOverrideChange: (override: GridViewOverride) => void
 }
 
+const NO_STEPS: readonly PickedStep[] = []
 const ROW_HEIGHT = 24
 const CELL_WIDTH = 130
 const OVERSCAN = 30
@@ -76,8 +85,13 @@ const PREVIEW_ROW_LIMIT = 5
  * here" honesty `page-snapshot`'s own doc comments use elsewhere); a large
  * `overscan` keeps this from being visible in practice for any sheet a
  * person is actually scrolling through by hand.
+ *
+ * Cross-panel highlighting (issues #111, #125): every cell a `jsonpath`
+ * step of `cellSelector`'s shape reads is outlined and named after the
+ * step; hovering the step's card fills them in, and hovering such a cell
+ * lights the card up.
  */
-export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick, csvOverride, onCsvOverrideChange }: GridCanvasProps): React.ReactElement {
+export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick, steps = NO_STEPS, hoveredStepId, onHoverStepId, csvOverride, onCsvOverrideChange }: GridCanvasProps): React.ReactElement {
   const [sheetIndex, setSheetIndex] = useState(0)
   const [mode, setMode] = useState<GridPickMode>('cell')
   const [draft, setDraft] = useState<GridDraft>({})
@@ -85,8 +99,10 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
   const [anchor, setAnchor] = useState<CellAt | undefined>(undefined)
   const [staged, setStaged] = useState<StagedCells | undefined>(undefined)
   const parentRef = useRef<HTMLDivElement>(null)
+  const reportedHoverRef = useRef<string | undefined>(undefined)
 
   const sheet = view.sheets[sheetIndex]
+  const recipeCells = useMemo(() => cellStepsOnSheet(steps, sheet?.name ?? ''), [steps, sheet?.name])
   const filledGrid = useMemo(() => (sheet === undefined ? [] : filledGridOf(sheet)), [sheet])
   const layout = useMemo(() => (sheet === undefined ? [] : sheetGridLayout(sheet)), [sheet])
   const headerRowIndexes = draft.headerRowIndex === undefined ? undefined : Array.from({ length: draft.headerRows ?? 1 }, (_, index) => (draft.headerRowIndex as number) + index)
@@ -117,6 +133,13 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
 
   if (sheet === undefined) {
     return <Box p={4} color='fg.muted'><Text>This workbook has no sheets.</Text></Box>
+  }
+
+  /** Tells the other panels which step the mouse is over, once per change rather than per cell. */
+  function reportHover (stepId: string | undefined): void {
+    if (onHoverStepId === undefined || reportedHoverRef.current === stepId) return
+    reportedHoverRef.current = stepId
+    onHoverStepId(stepId)
   }
 
   /** Stages `range` on this sheet, or widens the current selection to hold it too when extending (shift). */
@@ -256,7 +279,7 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
       </HStack>
       <Box flex='1' minH='0' display='flex' flexDirection='column'>
-        <Box ref={parentRef} flex='1' minH='0' overflow='auto' position='relative' onMouseUp={handleBackgroundMouseUp} onMouseLeave={() => { setHoverCell(undefined) }}>
+        <Box ref={parentRef} flex='1' minH='0' overflow='auto' position='relative' onMouseUp={handleBackgroundMouseUp} onMouseLeave={() => { setHoverCell(undefined); reportHover(undefined) }}>
           <Box h={`${String(virtualizer.getTotalSize())}px`} position='relative' style={{ width: `${String(sheet.columnCount * CELL_WIDTH)}px` }}>
             {virtualizer.getVirtualItems().map(item => (
               layout[item.index]?.map(cell => cell === undefined
@@ -270,8 +293,10 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
                       isHidden={sheet.hiddenRows.includes(item.index)}
                       isSnapped={cellMode && hoverCell?.row === item.index && hoverCell.column === cell.columnIndex}
                       isStaged={stagedOnThisSheet !== undefined && inRange(stagedOnThisSheet.range, item.index, cell.columnIndex)}
+                      stepIds={stepIdsForCell(item.index, cell.columnIndex, recipeCells)}
+                      hoveredStepId={hoveredStepId}
                       onClick={cellMode ? undefined : () => { handleCellClick(item.index, cell.columnIndex, cell.isMergeLabel) }}
-                      onMouseEnter={cellMode ? () => { setHoverCell({ row: item.index, column: cell.columnIndex }) } : undefined}
+                      onMouseEnter={(stepIds) => { if (cellMode) setHoverCell({ row: item.index, column: cell.columnIndex }); reportHover(stepIds[0]) }}
                       onMouseDown={cellMode ? (event) => { handleCellMouseDown({ row: item.index, column: cell.columnIndex }, event) } : undefined}
                       onMouseUp={cellMode ? (event) => { handleCellMouseUp({ row: item.index, column: cell.columnIndex }, event) } : undefined}
                     />
@@ -386,44 +411,55 @@ const TYPE_COLOR: Record<RenderCell['type'], string> = {
 }
 
 interface GridCellBoxProps {
-  cell:          RenderCell
-  top:           number
-  isHeader:      boolean
-  isHidden:      boolean
+  cell:           RenderCell
+  top:            number
+  isHeader:       boolean
+  isHidden:       boolean
   /** The cell under the mouse in Cell mode: the one a click would stage. */
-  isSnapped:     boolean
+  isSnapped:      boolean
   /** Part of the staged selection. */
-  isStaged:      boolean
-  onClick?:      () => void
-  onMouseEnter?: () => void
-  onMouseDown?:  (event: React.MouseEvent) => void
-  onMouseUp?:    (event: React.MouseEvent) => void
+  isStaged:       boolean
+  /** The steps already reading this cell (issue #125). */
+  stepIds:        readonly string[]
+  hoveredStepId?: string
+  onClick?:       () => void
+  onMouseEnter?:  (stepIds: readonly string[]) => void
+  onMouseDown?:   (event: React.MouseEvent) => void
+  onMouseUp?:     (event: React.MouseEvent) => void
 }
 
-/** A staged cell is outlined purple, the one under the mouse blue, the rest the muted grid line. */
-function cellBorderColor (isStaged: boolean, isSnapped: boolean): string {
+/** A staged cell is outlined purple, the one under the mouse blue, one already in the recipe orange, the rest the muted grid line. */
+function cellBorderColor (isStaged: boolean, isSnapped: boolean, inRecipe: boolean): string {
   if (isStaged) return 'purple.fg'
+  if (isSnapped) return 'blue.fg'
 
-  return isSnapped ? 'blue.fg' : 'border.muted'
+  return inRecipe ? 'orange.solid' : 'border.muted'
 }
 
-/** A staged cell is filled purple; otherwise a picked header row yellow, a merged group's label light purple, any other cell plain. */
-function cellBackground (cell: RenderCell, isHeader: boolean, isStaged: boolean): string {
+/** A staged cell is filled purple, a hovered step's cells orange; otherwise a picked header row yellow, a merged group's label light purple, any other cell plain. */
+function cellBackground (cell: RenderCell, isHeader: boolean, isStaged: boolean, highlighted: boolean): string {
   if (isStaged) return 'purple.muted'
+  if (highlighted) return 'orange.subtle'
   if (isHeader) return 'yellow.subtle'
 
   return cell.isMergeLabel ? 'purple.subtle' : 'bg'
 }
 
-function GridCellBox ({ cell, top, isHeader, isHidden, isSnapped, isStaged, onClick, onMouseEnter, onMouseDown, onMouseUp }: GridCellBoxProps): React.ReactElement {
+function GridCellBox ({ cell, top, isHeader, isHidden, isSnapped, isStaged, stepIds, hoveredStepId, onClick, onMouseEnter, onMouseDown, onMouseUp }: GridCellBoxProps): React.ReactElement {
+  const inRecipe = stepIds.length > 0
+  const highlighted = hoveredStepId !== undefined && stepIds.includes(hoveredStepId)
+
   return (
     <Box
       data-testid={isSnapped ? 'snap-target' : (isStaged ? 'staged-cell' : 'grid-cell')}
+      data-step-ids={inRecipe ? stepIds.join(' ') : undefined}
+      data-highlighted={highlighted}
       position='absolute'
       style={{ top: `${String(top)}px`, left: `${String(cell.columnIndex * CELL_WIDTH)}px`, width: `${String(cell.colSpan * CELL_WIDTH)}px`, height: `${String(cell.rowSpan * ROW_HEIGHT)}px` }}
-      borderWidth='1px'
-      borderColor={cellBorderColor(isStaged, isSnapped)}
-      bg={cellBackground(cell, isHeader, isStaged)}
+      borderWidth={inRecipe ? '2px' : '1px'}
+      borderStyle={inRecipe && !highlighted ? 'dashed' : 'solid'}
+      borderColor={cellBorderColor(isStaged, isSnapped, inRecipe)}
+      bg={cellBackground(cell, isHeader, isStaged, highlighted)}
       opacity={isHidden ? 0.4 : 1}
       overflow='hidden'
       px={1}
@@ -432,10 +468,10 @@ function GridCellBox ({ cell, top, isHeader, isHidden, isSnapped, isStaged, onCl
       cursor={onClick === undefined ? 'cell' : 'pointer'}
       _hover={{ bg: isStaged ? 'purple.muted' : 'bg.emphasized' }}
       onClick={onClick}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={onMouseEnter === undefined ? undefined : () => { onMouseEnter(stepIds) }}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
-      title={isHidden ? 'Hidden row' : undefined}
+      title={inRecipe ? `In the recipe: ${stepIds.join(', ')}` : (isHidden ? 'Hidden row' : undefined)}
       truncate
     >
       {String(cell.value)}

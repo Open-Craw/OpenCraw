@@ -11,7 +11,7 @@ const SOURCE = { x: 60, y: 120, width: 840, height: 300, text: 'Fonte: UNRAE' }
 const VIEW: DeckDocumentView = {
   width:  960,
   height: 540,
-  slides: [{ number: 1, title: 'Incentivi giugno', hidden: false, shapes: [TITLE, SOURCE], shapeRows: [[0], [1]], tables: [], charts: [], notes: '' }],
+  slides: [{ number: 1, title: 'Incentivi giugno', hidden: false, shapes: [TITLE, SOURCE], shapeRows: [[0], [1]], tables: [], charts: [{ type: 'bar', title: 'Vendite', series: [{ name: 'Panda', categories: ['Apr'], values: [1] }] }], notes: '' }],
 }
 
 interface SentCommand { type: string, selector?: string }
@@ -36,11 +36,17 @@ function sentSelectors (fetchMock: jest.Mock): string[] {
   return fetchMock.mock.calls.map(([, init]) => JSON.parse((init as RequestInit).body as string) as SentCommand).filter(command => command.type === 'region-preview').map(command => command.selector ?? '')
 }
 
-function renderCanvas (onRegionPick: (card: OutlineCard) => void = () => {}) {
+interface HighlightProps {
+  steps?:         { id: string, kind: string, selector: string }[]
+  hoveredStepId?: string
+  onHoverStepId?: (stepId: string | undefined) => void
+}
+
+function renderCanvas (onRegionPick: (card: OutlineCard) => void = () => {}, highlight: HighlightProps = {}) {
   return render(
     <QueryClientProvider client={createStudioQueryClient()}>
       <ChakraProvider value={defaultSystem}>
-        <DeckCanvas recipeId='incentivi' stepPath='start' view={VIEW} onTablePick={() => {}} onChartPick={() => {}} onRegionPick={onRegionPick} />
+        <DeckCanvas recipeId='incentivi' stepPath='start' view={VIEW} onTablePick={() => {}} onChartPick={() => {}} onRegionPick={onRegionPick} {...highlight} />
       </ChakraProvider>
     </QueryClientProvider>,
   )
@@ -166,5 +172,28 @@ describe('DeckCanvas text mode (issue #122)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Text-box grid' }))
     fireEvent.click(screen.getByText(TITLE.text))
     expect(screen.getByText(/^table: /)).toBeTruthy()
+  })
+
+  it('draws the region steps already in the recipe, marks a chart a step reads, and reports the step a snapped box or a hovered chart belongs to (issue #125)', () => {
+    mockFetch()
+    const onHoverStepId = jest.fn()
+    const steps = [{ id: 'heading', kind: 'region', selector: 'slide=* x=59..901 y=29..91' }, { id: 'sales', kind: 'jsonpath', selector: '$.slides[0].charts[0].series' }]
+    renderCanvas(() => {}, { steps, hoveredStepId: 'sales', onHoverStepId })
+    const [region] = screen.getAllByTestId('recipe-region')
+    expect(region.dataset.stepId).toBe('heading')
+    expect(region.dataset.highlighted).toBe('false')
+    const chart = screen.getByTestId('deck-chart')
+    expect(chart.dataset.stepIds).toBe('sales')
+    expect(chart.dataset.highlighted).toBe('true')
+
+    const overlay = screen.getByTestId('deck-overlay')
+    fireEvent.mouseMove(overlay, ON_TITLE)
+    expect(onHoverStepId).toHaveBeenLastCalledWith('heading')
+    fireEvent.mouseMove(overlay, ON_SOURCE)
+    expect(onHoverStepId).toHaveBeenLastCalledWith(undefined)
+    fireEvent.mouseEnter(chart)
+    expect(onHoverStepId).toHaveBeenLastCalledWith('sales')
+    fireEvent.mouseLeave(chart)
+    expect(onHoverStepId).toHaveBeenLastCalledWith(undefined)
   })
 })

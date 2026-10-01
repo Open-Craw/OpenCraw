@@ -6,23 +6,33 @@ import { useRegionPreviewQuery, useTablePreviewQuery } from '../studio-client'
 import { cellBox, columnKeyFrom, escapedRowPattern, regionCardNode, regionIdFrom, regionSelector, tableCardNode, unionBox } from './pdf-pick.mapper'
 import type { PointsBox, TableDraft } from './pdf-pick.mapper'
 import { REGION_COLOR, SelectionChip } from './selection-chip.component'
+import { regionStepsAt, stepIdsForBox } from './step-highlight.mapper'
+import type { PickedStep } from './step-highlight.mapper'
 
 /** What clicking (or dragging) on the PDF canvas is currently picking: a line of text (issue #121, the default), or a `table` extract's header row, last row or column (issue #94's 5b). */
 export type PdfPickMode = 'text' | 'header' | 'until' | 'column'
 
 export interface PdfCanvasProps {
-  recipeId:     string
+  recipeId:       string
   /** The step path the snapshot (and this canvas's `table-preview`/`region-preview` calls) are cached against. */
-  stepPath:     string
+  stepPath:       string
   /** The document's cells and rows (`pdf-view`). */
-  view:         PdfDocumentView
+  view:           PdfDocumentView
   /** Where `pdf.js` fetches the raw bytes to render (`GET /api/pdf-bytes`). */
-  bytesUrl:     string
+  bytesUrl:       string
   /** Called with the `table` extract card every time a header/until/column pick changes it. */
-  onTablePick:  (card: OutlineCard) => void
+  onTablePick:    (card: OutlineCard) => void
   /** Called with a `region` extract card when a staged selection's "Add to recipe" is clicked (issue #121). */
-  onRegionPick: (card: OutlineCard) => void
+  onRegionPick:   (card: OutlineCard) => void
+  /** The recipe's extract steps, for drawing the regions already in it (issue #125); default none. */
+  steps?:         readonly PickedStep[]
+  /** The cross-panel highlight (issue #111): the step whose region lights up. */
+  hoveredStepId?: string
+  /** Reports the region step the line under the mouse belongs to (or `undefined`), the way the HTML canvas does. */
+  onHoverStepId?: (stepId: string | undefined) => void
 }
+
+const NO_STEPS: readonly PickedStep[] = []
 
 /** A selection staged on the canvas, not yet in the recipe: a box on one page, previewed through `region-preview` until added or cleared. */
 interface StagedRegion {
@@ -50,6 +60,8 @@ const ROW_COLORS = ['#2e86ab', '#3bb273']
 const HEADER_COLOR = '#e4572e'
 const MATCH_FILL = 'rgba(59, 178, 115, 0.18)'
 const SNAP_COLOR = '#1d4ed8'
+/** The colour of what is already in the recipe, the outline card's own highlight orange. */
+const RECIPE_COLOR = '#ea580c'
 
 /**
  * The PDF canvas (studio plan §3.4, issue #94's 5b): the page `pdf.js`
@@ -73,8 +85,13 @@ const SNAP_COLOR = '#1d4ed8'
  * `until`, a column band's click adds to `columns` — `onTablePick` fires the
  * whole card again each time, so the caller can upsert the one card in
  * place. Its live preview comes from `table-preview`.
+ *
+ * Cross-panel highlighting (issues #111, #125): every `region` step
+ * reading this page is drawn as a dashed box named after the step;
+ * hovering the step's card fills it in, and snapping to a line one of
+ * them reads lights the card up.
  */
-export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, onRegionPick }: PdfCanvasProps): React.ReactElement {
+export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, onRegionPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: PdfCanvasProps): React.ReactElement {
   const [pageIndex, setPageIndex] = useState(0)
   const [mode, setMode] = useState<PdfPickMode>('text')
   const [draft, setDraft] = useState<TableDraft>({})
@@ -82,8 +99,10 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
   const [staged, setStaged] = useState<StagedRegion | undefined>(undefined)
   const [drag, setDrag] = useState<DragBox | undefined>(undefined)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const reportedHoverRef = useRef<string | undefined>(undefined)
 
   const page = view.pages[pageIndex]
+  const recipeRegions = useMemo(() => regionStepsAt(steps, 'page', page?.number ?? -1), [steps, page?.number])
   const width = page === undefined ? 0 : Math.ceil(page.width * SCALE)
   const height = page === undefined ? 0 : Math.ceil(page.height * SCALE)
 
@@ -142,6 +161,13 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
     setStaged(extend && current !== undefined && current.page === page.number ? { page: page.number, box: unionBox(current.box, box) } : { page: page.number, box })
   }
 
+  /** Tells the other panels which step the mouse is over, once per change rather than per pixel. */
+  function reportHover (stepId: string | undefined): void {
+    if (onHoverStepId === undefined || reportedHoverRef.current === stepId) return
+    reportedHoverRef.current = stepId
+    onHoverStepId(stepId)
+  }
+
   function handleMouseMove (event: React.MouseEvent<SVGSVGElement>): void {
     if (mode !== 'text') return
     const point = pixelPoint(event)
@@ -150,7 +176,9 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
 
       return
     }
-    setHoverCell(nearestCell(page, point))
+    const cell = nearestCell(page, point)
+    setHoverCell(cell)
+    reportHover(cell === undefined ? undefined : stepIdsForBox(cellBox(cell), recipeRegions)[0])
   }
 
   function handleMouseDown (event: React.MouseEvent<SVGSVGElement>): void {
@@ -228,8 +256,24 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
             onMouseMove={handleMouseMove}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
-            onMouseLeave={() => { setHoverCell(undefined) }}
+            onMouseLeave={() => { setHoverCell(undefined); reportHover(undefined) }}
           >
+            {recipeRegions.map(region => (
+              <rect
+                key={`recipe:${region.id}`}
+                data-testid='recipe-region'
+                data-step-id={region.id}
+                data-highlighted={region.id === hoveredStepId}
+                {...boxRect(region.box, page.height)}
+                fill={region.id === hoveredStepId ? 'rgba(234, 88, 12, 0.22)' : 'rgba(234, 88, 12, 0.05)'}
+                stroke={RECIPE_COLOR}
+                strokeWidth={region.id === hoveredStepId ? 2 : 1}
+                strokeDasharray={region.id === hoveredStepId ? undefined : '4 3'}
+                pointerEvents='none'
+              >
+                <title>{`In the recipe: ${region.id}`}</title>
+              </rect>
+            ))}
             {page.rows.map((row, index) => (
               <RowOverlay
                 key={`${String(row.top)}:${String(row.bottom)}`}

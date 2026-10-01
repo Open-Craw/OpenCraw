@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Badge, Box, HStack, Select, Table, Text, VStack, createListCollection } from '@chakra-ui/react'
 import type { DeckDocumentView, DeckShapeView, DeckSlideView, GridSheetView, OutlineCard } from '@opencraw/studio'
 import { CARD_DRAG_MIME, cardDragData } from '../steps-outline'
@@ -7,6 +7,8 @@ import { columnHeaderText, columnKeyFrom, deckChartCardNode, deckTableCardNode, 
 import type { DeckDraft } from './deck-pick.mapper'
 import type { PointsBox } from './pdf-pick.mapper'
 import { REGION_COLOR, SelectionChip } from './selection-chip.component'
+import { regionStepsAt, stepIdForChart, stepIdsForBox } from './step-highlight.mapper'
+import type { PickedStep } from './step-highlight.mapper'
 
 /** What clicking (or dragging) on the deck canvas is currently picking: a text box (issue #122, the default), or a `table` extract's header row(s), last row, column or fill-down group (studio plan §3.4, issue #94's 5d). "fillDown" only applies to a native table (a merged-cell group); a text-box grid has none. */
 export type DeckPickMode = 'text' | 'header' | 'until' | 'column' | 'fillDown'
@@ -14,18 +16,26 @@ export type DeckPickMode = 'text' | 'header' | 'until' | 'column' | 'fillDown'
 export type DeckSource = 'table' | 'shapes'
 
 export interface DeckCanvasProps {
-  recipeId:     string
+  recipeId:       string
   /** The step path the snapshot (and this canvas's `deck-preview` calls) are cached against. */
-  stepPath:     string
+  stepPath:       string
   /** The document's slides (`deck-view`). */
-  view:         DeckDocumentView
+  view:           DeckDocumentView
   /** Called with the `table` extract card every time a slide/header/until/column/fillDown/shapes pick changes it. */
-  onTablePick:  (card: OutlineCard) => void
+  onTablePick:    (card: OutlineCard) => void
   /** Called with the `jsonpath` extract card the moment a chart is picked (issue #94's 5d: a chart pick is a single click, not a multi-step draft). */
-  onChartPick:  (card: OutlineCard) => void
+  onChartPick:    (card: OutlineCard) => void
   /** Called with a `region` extract card when a staged selection's "Add to recipe" is clicked (issue #122). */
-  onRegionPick: (card: OutlineCard) => void
+  onRegionPick:   (card: OutlineCard) => void
+  /** The recipe's extract steps, for drawing the regions and marking the charts already in it (issue #125); default none. */
+  steps?:         readonly PickedStep[]
+  /** The cross-panel highlight (issue #111): the step whose region or chart lights up. */
+  hoveredStepId?: string
+  /** Reports the step the text box (or chart) under the mouse belongs to (or `undefined`), the way the HTML canvas does. */
+  onHoverStepId?: (stepId: string | undefined) => void
 }
+
+const NO_STEPS: readonly PickedStep[] = []
 
 /** A selection staged on the canvas, not yet in the recipe: a box on one slide, previewed through `region-preview` until added or cleared. */
 interface StagedRegion {
@@ -47,6 +57,8 @@ const SNAP_DISTANCE = 24
 /** A mouse that moved less than this between down and up clicked; more, and it dragged a box. */
 const CLICK_SLOP = 4
 const SNAP_COLOR = '#1d4ed8'
+/** The colour of what is already in the recipe, the outline card's own highlight orange. */
+const RECIPE_COLOR = '#ea580c'
 
 /**
  * The deck canvas (studio plan §3.4, issue #94's 5d): every slide redrawn
@@ -76,8 +88,14 @@ const SNAP_COLOR = '#1d4ed8'
  * `onTablePick` fires the whole card again on every pick, so the caller can
  * upsert the one card in place (mirrors the PDF/grid canvases' own
  * "upgrade the last card" pattern).
+ *
+ * Cross-panel highlighting (issues #111, #125): every `region` step
+ * reading this slide is drawn as a dashed box named after the step, and a
+ * chart a `jsonpath` step reads carries the step's id in the side list;
+ * hovering the step's card fills them in, and snapping to a text box one
+ * of them reads (or hovering the chart) lights the card up.
  */
-export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick, onRegionPick }: DeckCanvasProps): React.ReactElement {
+export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick, onRegionPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: DeckCanvasProps): React.ReactElement {
   const [slideIndex, setSlideIndex] = useState(0)
   const [source, setSource] = useState<DeckSource>('table')
   const [tableIndex, setTableIndex] = useState(0)
@@ -86,8 +104,11 @@ export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick
   const [hoverShape, setHoverShape] = useState<DeckShapeView | undefined>(undefined)
   const [staged, setStaged] = useState<StagedRegion | undefined>(undefined)
   const [drag, setDrag] = useState<DragBox | undefined>(undefined)
+  const reportedHoverRef = useRef<string | undefined>(undefined)
 
   const slide = view.slides[slideIndex]
+  const recipeRegions = useMemo(() => regionStepsAt(steps, 'slide', slide?.number ?? -1), [steps, slide?.number])
+  const chartStepIds = useMemo(() => (slide?.charts ?? []).map((_, index) => stepIdForChart(steps, slideIndex, index)), [steps, slide?.charts, slideIndex])
   const activeTable: GridSheetView | undefined = source === 'table' ? slide?.tables[tableIndex] : undefined
   const headerRowIndexes = draft.headerRowIndex === undefined ? undefined : Array.from({ length: draft.headerRows ?? 1 }, (_, index) => (draft.headerRowIndex as number) + index)
 
@@ -210,6 +231,13 @@ export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick
     setStaged(extend && current !== undefined && current.slide === slide.number ? { slide: slide.number, box: unionBox(current.box, box) } : { slide: slide.number, box })
   }
 
+  /** Tells the other panels which step the mouse is over, once per change rather than per pixel. */
+  function reportHover (stepId: string | undefined): void {
+    if (onHoverStepId === undefined || reportedHoverRef.current === stepId) return
+    reportedHoverRef.current = stepId
+    onHoverStepId(stepId)
+  }
+
   function handleMouseMove (event: React.MouseEvent<SVGSVGElement>): void {
     const point = slidePoint(event)
     if (drag !== undefined) {
@@ -217,7 +245,9 @@ export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick
 
       return
     }
-    setHoverShape(nearestShape(slide, point))
+    const shape = nearestShape(slide, point)
+    setHoverShape(shape)
+    reportHover(shape === undefined ? undefined : stepIdsForBox(shapeBox(shape), recipeRegions)[0])
   }
 
   function handleMouseDown (event: React.MouseEvent<SVGSVGElement>): void {
@@ -299,8 +329,24 @@ export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick
                 onMouseMove={handleMouseMove}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
-                onMouseLeave={() => { setHoverShape(undefined) }}
+                onMouseLeave={() => { setHoverShape(undefined); reportHover(undefined) }}
               >
+                {recipeRegions.map(region => (
+                  <rect
+                    key={`recipe:${region.id}`}
+                    data-testid='recipe-region'
+                    data-step-id={region.id}
+                    data-highlighted={region.id === hoveredStepId}
+                    {...boxRect(region.box)}
+                    fill={region.id === hoveredStepId ? 'rgba(234, 88, 12, 0.22)' : 'rgba(234, 88, 12, 0.05)'}
+                    stroke={RECIPE_COLOR}
+                    strokeWidth={region.id === hoveredStepId ? 2 : 1}
+                    strokeDasharray={region.id === hoveredStepId ? undefined : '4 3'}
+                    pointerEvents='none'
+                  >
+                    <title>{`In the recipe: ${region.id}`}</title>
+                  </rect>
+                ))}
                 {hoverShape !== undefined && drag === undefined && (
                   <rect data-testid='snap-target' {...shapeRect(hoverShape)} fill='rgba(29, 78, 216, 0.08)' stroke={SNAP_COLOR} strokeWidth={1.5} strokeDasharray='3 2' pointerEvents='none' />
                 )}
@@ -339,7 +385,7 @@ export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick
           {!textMode && currentMatch !== undefined && <DeckPreviewPanel match={currentMatch} />}
         </Box>
         <Box flex='1' minW='220px' maxW='320px' borderLeftWidth='1px' overflow='auto' p={3}>
-          <SidePanel slide={slide} activeSource={source} activeTableIndex={tableIndex} onTablePick={pickTable} onChartPick={pickChart} />
+          <SidePanel slide={slide} activeSource={source} activeTableIndex={tableIndex} onTablePick={pickTable} onChartPick={pickChart} chartStepIds={chartStepIds} hoveredStepId={hoveredStepId} onHoverStepId={reportHover} />
         </Box>
       </Box>
     </Box>
@@ -511,10 +557,14 @@ interface SidePanelProps {
   activeTableIndex: number
   onTablePick:      (tableIndex: number) => void
   onChartPick:      (chartIndex: number) => void
+  /** Per chart, the id of the step already reading it (issue #125), or `undefined`. */
+  chartStepIds:     readonly (string | undefined)[]
+  hoveredStepId?:   string
+  onHoverStepId:    (stepId: string | undefined) => void
 }
 
 /** The slide's native tables, charts and notes, listed beside the canvas (studio plan §3.4, issue #94's 5d). */
-function SidePanel ({ slide, activeSource, activeTableIndex, onTablePick, onChartPick }: SidePanelProps): React.ReactElement {
+function SidePanel ({ slide, activeSource, activeTableIndex, onTablePick, onChartPick, chartStepIds, hoveredStepId, onHoverStepId }: SidePanelProps): React.ReactElement {
   return (
     <VStack align='stretch' gap={4}>
       <Box>
@@ -543,8 +593,27 @@ function SidePanel ({ slide, activeSource, activeTableIndex, onTablePick, onChar
         {slide.charts.length === 0 && <Text fontSize='xs' color='fg.muted'>None on this slide.</Text>}
         <VStack align='stretch' gap={1}>
           {slide.charts.map((chart, index) => (
-            <Box key={index} as='button' textAlign='left' p={2} borderWidth='1px' borderRadius='sm' onClick={() => { onChartPick(index) }}>
-              <Text fontSize='xs' fontWeight='medium'>{chart.title ?? chart.type}</Text>
+            <Box
+              key={index}
+              as='button'
+              data-testid='deck-chart'
+              data-step-ids={chartStepIds[index]}
+              data-highlighted={chartStepIds[index] !== undefined && chartStepIds[index] === hoveredStepId}
+              textAlign='left'
+              p={2}
+              borderWidth='1px'
+              borderRadius='sm'
+              borderColor={chartStepIds[index] === undefined ? undefined : 'orange.solid'}
+              borderStyle={chartStepIds[index] === undefined || chartStepIds[index] === hoveredStepId ? 'solid' : 'dashed'}
+              bg={chartStepIds[index] !== undefined && chartStepIds[index] === hoveredStepId ? 'orange.subtle' : undefined}
+              onClick={() => { onChartPick(index) }}
+              onMouseEnter={() => { onHoverStepId(chartStepIds[index]) }}
+              onMouseLeave={() => { onHoverStepId(undefined) }}
+            >
+              <HStack gap={1}>
+                <Text fontSize='xs' fontWeight='medium'>{chart.title ?? chart.type}</Text>
+                {chartStepIds[index] !== undefined && <Badge size='xs' colorPalette='orange' title='Already in the recipe: the step reading this'>{chartStepIds[index]}</Badge>}
+              </HStack>
               <Text fontSize='2xs' color='fg.muted'>{`${chart.type} · ${String(chart.series.length)} series`}</Text>
             </Box>
           ))}

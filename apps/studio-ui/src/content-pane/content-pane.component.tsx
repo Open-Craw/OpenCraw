@@ -12,6 +12,7 @@ import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardN
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
+import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
 import type { TreePickMode } from './tree-canvas.component'
 
@@ -98,6 +99,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const setHoveredNodeId = useStudioUiStore(state => state.setHoveredNodeId)
   const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
   const hoveredSelector = useMemo(() => selectorForStepId(recipe?.outline, hoveredStepId), [recipe?.outline, hoveredStepId])
+  const steps = useMemo(() => pickedSteps(recipe?.outline), [recipe?.outline])
   const handleHoverNode = (nodeId: string | undefined): void => {
     setHoveredNodeId(nodeId)
     setHoveredStepId(nodeId === undefined ? undefined : stepIdForNode(recipe?.outline, snapshot.data?.html, nodeId))
@@ -405,7 +407,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       )}
       <Box flex='1' minH='0'>
         {isDocumentTree && documentTree.data !== undefined && (
-          <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} />
+          <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
         )}
         {isDocumentTree && documentTree.isError && (
           <Box p={4} color='fg.error'><Text>{documentTree.error.message}</Text></Box>
@@ -418,6 +420,9 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH)}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onRegionPick={(card) => { void handleStagedPick(card) }}
+            steps={steps}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={setHoveredStepId}
           />
         )}
         {isPdf && pdfView.isError && (
@@ -430,6 +435,9 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             view={gridView.data}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onCellPick={(card) => { void handleStagedPick(card) }}
+            steps={steps}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={setHoveredStepId}
             csvOverride={csvOverride}
             onCsvOverrideChange={setCsvOverride}
           />
@@ -445,6 +453,9 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onChartPick={(card) => { void handleDeckChartPick(card) }}
             onRegionPick={(card) => { void handleStagedPick(card) }}
+            steps={steps}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={setHoveredStepId}
           />
         )}
         {isDeck && deckView.isError && (
