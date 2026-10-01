@@ -214,10 +214,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     })
   }
 
-  /** A dragged-region pick (issue #94's 5b): always a fresh `regex` card, never folded into the table draft's slot. */
+  /** The PDF canvas's "Add to recipe" (issue #121): a staged selection's `region` card, always a fresh one, never folded into the table draft's slot. */
   async function handlePdfRegionPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
-      setStatus(`regex: ${String(card.step.selector)}`)
+      setStatus(`region: ${String(card.step.id)} ← ${String(card.step.selector)}`)
 
       return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
     })

@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import type { OutlineView, RecipeListing } from '@opencraw/studio'
 import { resetRecordingStore, resetStudioUiStore, useRecordingStore, useStudioUiStore } from '../studio-store'
+import { CARD_DRAG_MIME } from './card-drop.model'
 import { StepsOutline } from './steps-outline.component'
 
 /**
@@ -182,6 +183,35 @@ describe('StepsOutline', () => {
     fireEvent.mouseLeave(card)
     expect(useStudioUiStore.getState().hoveredStepId).toBeUndefined()
     expect(card.dataset.highlighted).toBe('false')
+  })
+
+  it('appends a card dropped on the tab (a canvas\'s staged selection, issue #121) and saves it, re-pathed to its new slot', () => {
+    const outline: OutlineView = { recipe: { kind: 'input', id: 'books' }, steps: [{ kind: 'card', path: 'steps.0', stepType: 'request', sentence: [], step: { type: 'request', id: 'doc', url: '{{start.url}}' }, custom: false }] }
+    const onSaveOutline = jest.fn().mockResolvedValue(undefined)
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={onSaveOutline} />)
+    const card = { kind: 'card', path: 'staged', stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id: 'title', kind: 'region', selector: 'page=1 x=71..273 y=799..813' } }
+    const dataTransfer = { types: [CARD_DRAG_MIME], getData: (type: string) => (type === CARD_DRAG_MIME ? JSON.stringify(card) : ''), dropEffect: 'none' }
+    const tab = screen.getByTestId('steps-outline')
+
+    fireEvent.dragOver(tab, { dataTransfer })
+    expect(tab.dataset.cardOver).toBe('true')
+    fireEvent.drop(tab, { dataTransfer })
+
+    expect(tab.dataset.cardOver).toBe('false')
+    expect(onSaveOutline).toHaveBeenCalledTimes(1)
+    const [, saved] = onSaveOutline.mock.calls[0] as [string, OutlineView]
+    expect(stepsOf(saved)).toEqual([{ type: 'request', id: 'doc', url: '{{start.url}}' }, { type: 'extract', id: 'title', kind: 'region', selector: 'page=1 x=71..273 y=799..813' }])
+    expect(saved.steps[1].path).toBe('steps.1')
+  })
+
+  it('ignores a drop that carries no card (a pill, a file)', () => {
+    const outline: OutlineView = { recipe: {}, steps: [] }
+    const onSaveOutline = jest.fn().mockResolvedValue(undefined)
+    renderWithChakra(<StepsOutline recipe={recipeWith(outline)} onSaveOutline={onSaveOutline} />)
+
+    fireEvent.drop(screen.getByTestId('steps-outline'), { dataTransfer: { types: ['application/x-opencraw-pill'], getData: () => 'title', dropEffect: 'none' } })
+
+    expect(onSaveOutline).not.toHaveBeenCalled()
   })
 
   it('highlights a card when another panel sets its step id as the hovered one', () => {

@@ -3,6 +3,7 @@ import { Badge, Box, Button, HStack, Stack, Text } from '@chakra-ui/react'
 import type { OutlineNode, OutlineView, RecipeListing } from '@opencraw/studio'
 import { useRecordingStore } from '../studio-store'
 import type { RecordingNote } from '../studio-store'
+import { carriesCard, droppedCard } from './card-drop.model'
 import { newStepNode } from './new-step.factory'
 import type { OutlineActions } from './outline-actions'
 import { OutlineList, OutlineNodeView } from './outline-node.component'
@@ -48,6 +49,8 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
   const [outline, setOutline] = useState<OutlineView | undefined>(recipe?.outline)
   useEffect(() => { setOutline(recipe?.outline) }, [recipe?.file, recipe?.text])
   const [convertedNotes, setConvertedNotes] = useState<ReadonlySet<number>>(new Set())
+  /** A card (a canvas's staged selection, issue #121) is being dragged over the tab. */
+  const [cardOver, setCardOver] = useState(false)
 
   const recordingRecipeId = useRecordingStore(state => state.recipeId)
   const recordingActive = useRecordingStore(state => state.active)
@@ -130,8 +133,42 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
 
   const showRecording = recordingRecipeId === recipe.id && (recordingActive || recordingStopped)
 
+  /**
+   * A card dropped on the tab (issue #121: a canvas's staged selection,
+   * dragged here instead of clicking its "Add to recipe") is appended to the
+   * recipe's top-level steps, exactly as that button appends it through the
+   * content pane — re-pathed to its new slot, saved through the same `save`.
+   */
+  function dropCard (event: React.DragEvent<HTMLDivElement>): void {
+    if (!carriesCard(event.dataTransfer)) return
+    event.preventDefault()
+    setCardOver(false)
+    const node = droppedCard(event.dataTransfer)
+    if (node === undefined || outline === undefined) return
+    save({ ...outline, steps: [...outline.steps, { ...node, path: `steps.${String(outline.steps.length)}` }] })
+  }
+
+  function dragCardOver (event: React.DragEvent<HTMLDivElement>): void {
+    if (!carriesCard(event.dataTransfer)) return
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'copy'
+    setCardOver(true)
+  }
+
   return (
-    <Box h='full' overflow='auto' p={2}>
+    <Box
+      h='full'
+      overflow='auto'
+      p={2}
+      data-testid='steps-outline'
+      data-card-over={cardOver}
+      outline={cardOver ? '2px dashed' : undefined}
+      outlineColor='blue.solid'
+      outlineOffset='-4px'
+      onDragOver={dragCardOver}
+      onDragLeave={() => { setCardOver(false) }}
+      onDrop={dropCard}
+    >
       {/*
         Keyed on the recipe's own file: forces a fresh subtree (and so a
         fresh `StepForm`/TanStack Form instance per card) whenever the

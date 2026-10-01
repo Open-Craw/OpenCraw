@@ -1,7 +1,19 @@
-import type { OutlineCard } from '@opencraw/studio'
+import type { OutlineCard, PdfCellView } from '@opencraw/studio'
 
 const DEFAULT_TABLE_ID = 'table'
-const DEFAULT_REGEX_ID = 'value'
+const DEFAULT_REGION_ID = 'text'
+/** How many of a selection's words make its default step id: enough to tell `dealerDiscountsSeptember2026` from `note`, short enough to read as a pill. */
+const REGION_ID_WORDS = 4
+/** Points added around a snapped cell's own box, so a cell drawn a hair wider than its text layer still sits "at least half inside" the region the engine reads. */
+const CELL_BOX_PAD = 1
+
+/** A rectangle in PDF points, y growing upwards — the `region` extract's own coordinate space. */
+export interface PointsBox {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+}
 
 /**
  * The `table` extract card's options as the PDF canvas builds them, one pick
@@ -81,31 +93,72 @@ export function tableCardNode (draft: TableDraft, path: string, id: string = DEF
 }
 
 /**
- * Builds a `regex` extract card from a dragged region (issue #94's 5b): the
- * covered rows' own text (space-joined cells, tab in the real document —
- * either escapes to the same thing a person can read and edit), newline
- * between rows, escaped into a literal starting pattern — a candidate to
- * edit into a real pattern, not a guess at what varies, the same "safe
- * starting point" `readCardNode` gives a DOM pick.
+ * A `region` extract's selector for a box on a page (issue #121): whole
+ * points, ranges ordered — the same `page=1 x=72..252 y=640..664` shape
+ * `@opencraw/core`'s own `regionSelector` writes (mirrored here: this app
+ * never imports core's runtime, only `@opencraw/studio`'s types).
  *
- * @param rowTexts - The dragged rows' own text, top to bottom.
- * @param path - This node's outline path.
- * @param id - The step's own id; defaults to `"value"`.
- * @returns The outline card.
- * @throws Error when no row is covered by the drag.
+ * @param page - The 1-based page number.
+ * @param box - The box, in PDF points.
  */
-export function regexCardNode (rowTexts: readonly string[], path: string, id: string = DEFAULT_REGEX_ID): OutlineCard {
-  if (rowTexts.length === 0) throw new Error('regexCardNode: the dragged region covers no row')
-  const pattern = rowTexts.map(text => escapeRegexLiteral(text.trim())).join(String.raw`\n`)
+export function regionSelector (page: number, box: PointsBox): string {
+  const [x1, x2] = ordered(box.x1, box.x2)
+  const [y1, y2] = ordered(box.y1, box.y2)
 
+  return `page=${String(page)} x=${String(Math.round(x1))}..${String(Math.round(x2))} y=${String(Math.round(y1))}..${String(Math.round(y2))}`
+}
+
+/** The box around one cell, padded a point on every side (see `CELL_BOX_PAD`). */
+export function cellBox (cell: PdfCellView): PointsBox {
+  return { x1: cell.x - CELL_BOX_PAD, y1: cell.y - CELL_BOX_PAD, x2: cell.x + Math.max(cell.width, 1) + CELL_BOX_PAD, y2: cell.y + cell.height + CELL_BOX_PAD }
+}
+
+/** The smallest box holding both: a shift+click extending a selection to a second line. */
+export function unionBox (a: PointsBox, b: PointsBox): PointsBox {
+  return { x1: Math.min(a.x1, b.x1), y1: Math.min(a.y1, b.y1), x2: Math.max(a.x2, b.x2), y2: Math.max(a.y2, b.y2) }
+}
+
+/**
+ * A default step id for a selection, from its own first line: the first
+ * few words in lowerCamelCase (`DEALER DISCOUNTS - SEPTEMBER 2026` →
+ * `dealerDiscountsSeptember2026`), `text` when the line has no usable
+ * word — the same "a usable default, not a final name" convention
+ * `columnKeyFrom` follows.
+ *
+ * @param text - What the region reads (the preview's text).
+ */
+export function regionIdFrom (text: string): string {
+  const [firstLine = ''] = text.split('\n', 1)
+  // eslint-disable-next-line unicorn/prefer-string-replace-all -- apps/studio-ui's tsconfig lib is ["dom"] only (no ES2021 String#replaceAll), same as `columnKeyFrom` above.
+  const words = firstLine.trim().toLowerCase().replace(/[^\d a-z]/gi, ' ').trim().split(/\s+/).filter(word => word !== '').slice(0, REGION_ID_WORDS)
+  if (words.length === 0) return DEFAULT_REGION_ID
+  const [first, ...rest] = words
+
+  return first + rest.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')
+}
+
+/**
+ * Builds the `region` extract card for a staged selection (issue #121):
+ * what "Add to recipe" appends, and what dragging the selection's chip onto
+ * the Steps tab drops there.
+ *
+ * @param selector - The region selector ({@link regionSelector}).
+ * @param path - This node's outline path.
+ * @param id - The step's own id ({@link regionIdFrom}).
+ */
+export function regionCardNode (selector: string, path: string, id: string): OutlineCard {
   return {
     kind:     'card',
     path,
     stepType: 'extract',
     sentence: [],
     custom:   false,
-    step:     { type: 'extract', id, kind: 'regex', selector: pattern },
+    step:     { type: 'extract', id, kind: 'region', selector },
   }
+}
+
+function ordered (a: number, b: number): [number, number] {
+  return a <= b ? [a, b] : [b, a]
 }
 
 function escapeRegexLiteral (text: string): string {
