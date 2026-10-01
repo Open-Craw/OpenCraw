@@ -308,7 +308,7 @@ body is sent as JSON:
 
 | Step | Fields | Notes |
 |---|---|---|
-| `extract` | `selector`, `kind` (`css`, `xpath`, `jsonpath`, `regex`, `table`), `take?`, `many?`, `from?`; `namespaces?`, `ignoreNamespaces?` (`xpath` on XML) | §4. |
+| `extract` | `selector`, `kind` (`css`, `xpath`, `jsonpath`, `regex`, `table`, `region`), `take?`, `many?`, `from?`; `namespaces?`, `ignoreNamespaces?` (`xpath` on XML) | §4. |
 | `set` | `value` | A literal, or a template when it is a string. In an object or list every string, at any depth, is a template (a lone placeholder keeps its type), as in a request `body`. |
 | `collect` | `into` (an id), `value` | Appends `value` (a literal, or a template when it is a string, rendered all the way down like `set`) to the list `into` holds, in whichever enclosing scope binds it; a list value is appended item by item, a missing one adds nothing. `into` must be bound first, usually `{ "type": "set", "id": "all", "value": [] }` before the loop: the binding validator checks. The way to carry values out of `forEach` iterations or `paginate` pages (§3.6). |
 | `forEach` | `over` (a list id) **or** `selector` (web), `as` (variable), `steps`, `emit?` (`true`, or `{ output }` naming this recipe's output) | Runs `steps` once per item in a fresh child scope with the item bound as `as`. `as` follows the rules of a step `id`: it may not name `page`, `start`, `vars` or an id already bound on the path (§3.5). `emit: true` produces one record per iteration. `over` may name a single value; it is treated as a one-item list. `selector` iterates the live elements it matches (§3.7). |
@@ -533,7 +533,7 @@ Parallel is only faster if the site lets it be. Pair it with the per-site `throt
 | an id holding **text** | with `css`: the text as HTML (a fragment such as a `<tr>` is parsed as a fragment, so cells survive); with `table`: the HTML's `<table>`s (a Word or Markdown document, a page a `request` fetched: §4.11); with `jsonpath`: the text parsed as JSON | same |
 | an id holding a **list of texts** | with `jsonpath`: every entry that parses as JSON becomes one element of an array and the path runs over the array; with `table`: the tables of every fragment (`take: "html"`, `many: true`) | same |
 | an id holding **data** (an object, a list of objects) | with `jsonpath` | same |
-| an id holding a **read PDF** (a `request` with `as: "pdf"`) | with `table`, `regex` or `jsonpath` (§4.6) | same |
+| an id holding a **read PDF** (a `request` with `as: "pdf"`) | with `table`, `region`, `regex` or `jsonpath` (§4.6) | same |
 | an id holding a **read workbook** (a spreadsheet or a CSV) | with `table`, `regex` or `jsonpath` (§4.7) | same |
 | an id holding a **read deck** (a presentation) | with `table`, `regex` or `jsonpath` (§4.8) | same |
 
@@ -617,13 +617,20 @@ repeating element (`table.credit_group tr`, not `tr`) and check the first record
 `request` with `as: "pdf"` (or a response served as `application/pdf`, or a local `file:…pdf`) reads the
 PDF's text layer with pdf.js into pages of **rows**: text that sits side by side becomes a cell, cells whose
 vertical extents overlap become a row. A scanned page has no text layer and gives no rows; a PDF where no page
-has one fails the step (no OCR). Three extract kinds read it:
+has one fails the step (no OCR). Four extract kinds read it:
 
 | `kind` | Reads | Use for |
 |---|---|---|
 | `table` | tables, found by their header row | price lists, discount sheets, spec tables |
+| `region` | the text inside a box on a page: `page=1 x=72..252 y=640..664` (points from the page's bottom-left corner; `page=*` for every page) | a title, a date, a total — anything that sits at the same place on every issue of a document; what the studio's PDF canvas writes when you click a line |
 | `regex` | the text: one line per row, cells separated by a tab, pages by a blank line | a value next to a label: `Valid until\t(\S+)` |
 | `jsonpath` | the structure: `{ kind: "pdf", pages: [{ number, width, height, rows: [{ text, top, bottom, cells: [{ x, y, width, height, text }] }] }] }` | positions, a given page |
+
+A **region** reads every cell at least half inside its box, row by row: a row's cells joined by a space, rows by
+a newline — so a box around a wrapped paragraph gives its lines. A page with nothing in the box is no match (the
+step fails without `many`); with `page=*` and `many: true` you get one text per page that has something there, a
+running footer for instance. The box is in PDF points, which a `jsonpath` extract of a cell's `x`/`y`/`width`/
+`height` shows you — or the studio draws it for you.
 
 A **table** extract takes the header row's pattern as its `selector`, and returns one table per match, `many`
 for all of them:

@@ -176,7 +176,7 @@ steps; section 5).
 | `screenshot` | web | – | `path` |
 | `captcha` | web | – | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; for form captchas `image`, `refresh?`, `field`, `submit`; defaults from `session.captcha` |
 | `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`; relative to the current page, else a clear error), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
-| `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
+| `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table' \| 'region'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
 | `set` | both | value | `value` (template or literal) |
 | `collect` | both | – | `into` (a list id bound in an enclosing scope), `value` (template or literal); appends, so values outlive the `forEach` iteration or `paginate` page that found them |
 | `forEach` | both | – | `over` (a list id) or `selector` (web: live elements), `as` (variable), `steps`, `emit?: true \| { output }` |
@@ -200,7 +200,10 @@ directory. `allowedHosts` refuses `file:` URLs, relative or not.
 A PDF (`as: 'pdf'`) is read into pages of rows of positioned cells (pdf.js, text layer only; a scan fails).
 `table` finds tables by their header row and returns `{ page, title, header, rows }`, rows keyed by column:
 columns come from where the body's cells start, and lines of a wrapped cell are regrouped into their row.
-`regex` reads a PDF as text (one line per row, cells tab-separated), `jsonpath` reads its structure.
+`regex` reads a PDF as text (one line per row, cells tab-separated), `jsonpath` reads its structure. `region`
+reads the text inside a box on a page (`page=1 x=72..252 y=640..664`, points from the bottom-left corner, `page=*`
+for every page): the cells at least half inside it, a row's cells joined by a space, rows by a newline; a page
+with nothing in the box is no match.
 
 A CSV (`as: 'csv'`, `text/csv`, `.csv`/`.tsv`) is read into a workbook of one sheet of text cells: decoded from
 its BOM, `encoding`, the declared charset, UTF-8, else Windows-1252; delimiter detected among `,` `;` tab `|`

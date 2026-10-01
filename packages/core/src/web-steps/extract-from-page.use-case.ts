@@ -12,8 +12,8 @@ import { NoMatchError } from '../step-flow'
  * api mode reads a fetched document.
  */
 export async function extractFromPage (step: ExtractStep, page: Page, scope: ExtractionScope): Promise<void> {
-  // A bound fragment, or JSON a `request` fetched: read as api mode reads a document.
-  if (step.from !== undefined || step.kind === 'jsonpath') {
+  // A bound fragment, or JSON/a PDF a `request` fetched: read as api mode reads a document.
+  if (step.from !== undefined || step.kind === 'jsonpath' || step.kind === 'region') {
     extractFromDocument(step, scope)
 
     return
