@@ -705,7 +705,7 @@ The same three extract kinds read it:
 |---|---|---|
 | `table` | tables, found by their header row | the list itself, below any title lines |
 | `regex` | the text: cells separated by a tab, rows by a newline, sheets by a blank line | a date in a title line: `Estrazione del (\S+)` |
-| `jsonpath` | the structure: `{ kind: "workbook", sheets: [{ name, rows: [["cell", …], …] }], csv: { encoding, delimiter } }` | a file with no header row: `$.sheets[0].rows[*]`; `merges`, `hidden` and `hiddenRows` too, for a spreadsheet |
+| `jsonpath` | the structure: `{ kind: "workbook", sheets: [{ name, rows: [["cell", …], …] }], csv: { encoding, delimiter } }` | a file with no header row: `$.sheets[0].rows[*]`; one cell by position, a title or a date: `$.sheets[?(@.name=='Prices')].rows[0][0]` (a rectangle: `rows[1:3][0:2]`, read row by row — what OpenCraw Studio writes from a click on the grid); `merges`, `hidden` and `hiddenRows` too, for a spreadsheet |
 
 A grid needs no geometry, so a workbook table is simpler than a PDF one: column *i* of a row belongs to header
 cell *i*. The `selector` matches the header row (its non-empty cells joined by spaces, whitespace collapsed),

@@ -17,8 +17,10 @@ export interface SelectionChipProps {
 /**
  * The staged selection's own chip, just under its box (issues #121, #122):
  * the text the step will bind, "Add to recipe", and a handle to drag the
- * same card onto the Steps tab — the one chip the PDF and deck canvases
- * share, since a staged `region` reads the same way on both.
+ * same card onto the Steps tab — the one chip the PDF, deck and grid
+ * canvases share. Mouse presses and releases on it stay on it: the grid
+ * canvas clears a selection on a release over its background, and the
+ * chip sits inside that background.
  */
 export function SelectionChip ({ left, top, text, loading, onAdd, onClear, onDragStart }: SelectionChipProps): React.ReactElement {
   const empty = text === undefined && !loading
@@ -41,6 +43,8 @@ export function SelectionChip ({ left, top, text, loading, onAdd, onClear, onDra
       maxW='420px'
       draggable={text !== undefined}
       onDragStart={onDragStart}
+      onMouseDown={(event) => { event.stopPropagation() }}
+      onMouseUp={(event) => { event.stopPropagation() }}
       cursor={text === undefined ? 'default' : 'grab'}
       title={text === undefined ? undefined : 'Drag onto the Steps tab to add it there'}
     >

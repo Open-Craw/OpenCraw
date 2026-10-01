@@ -10,15 +10,16 @@ const LISTINO_FIXTURE = join(__dirname, '..', '..', 'core', 'src', 'workbook-doc
 const INCENTIVI_FIXTURE = join(__dirname, '..', '..', 'office-reader', 'src', 'spreadsheet', 'fixtures', 'incentivi.xlsx')
 
 /** A fresh recipes folder with an api-mode recipe whose `start.url` is a `file://` URL to one of the repository's own workbook fixtures — `HttpClient` reads `file:` URLs the same way it reads a fetched response, no fixture HTTP server needed (mirrors `pdf-canvas.e2e.test.ts`'s own `recipesFolder`). */
-function recipesFolder (id: string, fixture: string): string {
+/** The output fields the table picks below fill. */
+const TABLE_FIELDS: Record<string, { type: string }> = { marca: { type: 'string' }, modello: { type: 'string' }, price: { type: 'number' } }
+
+function recipesFolder (id: string, fixture: string, fields = TABLE_FIELDS): string {
   const folder = mkdtempSync(join(tmpdir(), `opencraw-e2e-grid-${id}-`))
   // Neither field is required: `listino.csv` has a continuation row with a blank "Marca"/"Modello" (the brand
   // written once, per `grid-table.algorithm.test.ts`), and a required-but-missing field would reject that whole
   // record instead of emitting it with a null (`map-record.use-case.ts`) — this suite counts records, so nothing
   // here is required.
-  writeFileSync(join(folder, `${id}.output.json`), JSON.stringify({
-    kind: 'output', id, version: 1, fields: { marca: { type: 'string' }, modello: { type: 'string' }, price: { type: 'number' } },
-  }))
+  writeFileSync(join(folder, `${id}.output.json`), JSON.stringify({ kind: 'output', id, version: 1, fields }))
   writeFileSync(join(folder, `${id}.input.json`), JSON.stringify({
     kind:    'input',
     id,
@@ -311,5 +312,52 @@ describe('studio phase 5c: the grid canvas (#94)', () => {
     expect(records[0]).toEqual({ marca: 'Fiat', modello: 'Pandina', price: 13_955.625 })
     expect(records[1]).toEqual({ marca: 'Fiat', modello: 'Pandina Cross', price: 15_706.25 })
     expect(records[2]).toEqual({ marca: 'Jeep', modello: 'Avenger', price: null }) // the missing-value policy on a non-required, non-key field
+  }, 30000)
+})
+
+/** Mirrors `apps/studio-ui/src/content-pane/grid-pick.mapper.ts`'s `cellSelector`: the sheet by name, the cell (or the slice of rows then of columns) by position. */
+function cellSelector (sheetName: string, top: number, left: number, bottom = top, right = left): string {
+  const rows = top === bottom ? `[${String(top)}]` : `[${String(top)}:${String(bottom + 1)}]`
+  const columns = left === right ? `[${String(left)}]` : `[${String(left)}:${String(right + 1)}]`
+
+  return `$.sheets[?(@.name=='${sheetName}')].rows${rows}${columns}`
+}
+
+describe('clicking a cell on the grid canvas: a jsonpath extract (#123)', () => {
+  let server: StudioServer
+  afterEach(async () => { await server?.close() })
+
+  it('writes the cell card the pick builds, and a real run binds the title cell and a rectangle of cells', async () => {
+    server = await startStudioServer({ uiRoot: emptyUiRoot() })
+    const folder = recipesFolder('listino', LISTINO_FIXTURE, { title: { type: 'string' }, header: { type: 'json' } })
+    const recipePath = join(folder, 'listino.input.json')
+    await post(server, { type: 'open-workspace', folder })
+    await post(server, { type: 'take-snapshot', recipeId: 'listino', path: 'start' })
+
+    // 1. The canvas lights up a cell off grid-view: the title line in A1, and the header row's first three cells.
+    const view = await post<WorkbookDocumentView>(server, { type: 'grid-view', recipeId: 'listino', path: 'start' })
+    const [sheet] = view.sheets
+    const title = String(sheet.rows[0][0].value)
+    expect(title).toMatch(/^Listino prezzi/)
+    const headerRowIndex = sheet.rows.findIndex(row => String(row[0]?.value).startsWith('Marca'))
+    const titleSelector = cellSelector(sheet.name, 0, 0)
+    const headerSelector = cellSelector(sheet.name, headerRowIndex, 0, headerRowIndex, 2)
+    expect(titleSelector).toBe("$.sheets[?(@.name=='listino')].rows[0][0]")
+
+    // 2. "Add to recipe": the jsonpath cards the picks build (`gridCellCardNode`), appended to the outline and saved.
+    const opened = await post<{ recipes: { id?: string, outline?: { steps: OutlineNode[] } & Record<string, unknown> }[] }>(server, { type: 'open-workspace', folder })
+    const listino = opened.recipes.find(recipe => recipe.id === 'listino')
+    if (listino?.outline === undefined) throw new Error('expected the listino recipe to have an outline')
+    const titleCard: OutlineNode = { kind: 'card', path: 'steps.1', stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id: 'title', kind: 'jsonpath', selector: titleSelector, take: 'json' } }
+    const headerCard: OutlineNode = { kind: 'card', path: 'steps.2', stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id: 'header', kind: 'jsonpath', selector: headerSelector, take: 'json', many: true } }
+    const emitCard: OutlineNode = { kind: 'card', path: 'steps.3', stepType: 'emit', sentence: [], custom: false, step: { type: 'emit' } }
+    await post(server, { type: 'save-outline', path: recipePath, outline: { ...listino.outline, steps: [...listino.outline.steps, titleCard, headerCard, emitCard] } })
+    const saved = JSON.parse(readFileSync(recipePath, 'utf8')) as Record<string, unknown> & { steps: unknown[] }
+    expect(saved.steps[1]).toEqual({ type: 'extract', id: 'title', kind: 'jsonpath', selector: titleSelector, take: 'json' })
+
+    // 3. A real run: the engine reads the same cells the canvas showed.
+    await post(server, { type: 'save-recipe', path: recipePath, recipe: { ...saved, mapping: { title: { from: 'title' }, header: { from: 'header' } } } })
+    const [record] = await runRecords(server, 'listino', 1)
+    expect(record).toEqual({ title, header: ['Marca', 'Modello', 'Versione'] })
   }, 30000)
 })

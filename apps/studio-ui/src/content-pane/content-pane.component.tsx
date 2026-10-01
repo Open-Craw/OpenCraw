@@ -214,10 +214,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     })
   }
 
-  /** The PDF (issue #121) and deck (issue #122) canvases' "Add to recipe": a staged selection's `region` card, always a fresh one, never folded into the table draft's slot. */
-  async function handleRegionPick (card: OutlineCard): Promise<void> {
+  /** The PDF (issue #121), deck (issue #122) and grid (issue #123) canvases' "Add to recipe": a staged selection's card (a `region`, or a `jsonpath` into a sheet's cells), always a fresh one, never folded into the table draft's slot. */
+  async function handleStagedPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
-      setStatus(`region: ${String(card.step.id)} ← ${String(card.step.selector)}`)
+      setStatus(`${String(card.step.kind)}: ${String(card.step.id)} ← ${String(card.step.selector)}`)
 
       return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
     })
@@ -417,7 +417,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             view={pdfView.data}
             bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH)}
             onTablePick={(card) => { void handleTableCardPick(card) }}
-            onRegionPick={(card) => { void handleRegionPick(card) }}
+            onRegionPick={(card) => { void handleStagedPick(card) }}
           />
         )}
         {isPdf && pdfView.isError && (
@@ -429,6 +429,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             stepPath={STEP_PATH}
             view={gridView.data}
             onTablePick={(card) => { void handleTableCardPick(card) }}
+            onCellPick={(card) => { void handleStagedPick(card) }}
             csvOverride={csvOverride}
             onCsvOverrideChange={setCsvOverride}
           />
@@ -443,7 +444,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             view={deckView.data}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onChartPick={(card) => { void handleDeckChartPick(card) }}
-            onRegionPick={(card) => { void handleRegionPick(card) }}
+            onRegionPick={(card) => { void handleStagedPick(card) }}
           />
         )}
         {isDeck && deckView.isError && (
