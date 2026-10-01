@@ -1,6 +1,10 @@
+import { useRef } from 'react'
 import { Button, HStack, Input, NativeSelect, Text } from '@chakra-ui/react'
 import type { RecipeListing } from '@opencraw/studio'
 import { NewRecipeDialog } from './new-recipe-dialog.component'
+
+/** What "Open document…" offers: every format the engine reads off disk (core's `formatOfFile`), as the file picker's filter. */
+const DOCUMENT_EXTENSIONS = '.pdf,.xlsx,.xls,.csv,.tsv,.pptx,.docx,.md,.markdown,.html,.htm,.json,.jsonl,.yaml,.yml,.xml'
 
 export interface ToolbarProps {
   folder:            string
@@ -13,13 +17,19 @@ export interface ToolbarProps {
   onSelectRecipe:    (recipeId: string) => void
   /** A new recipe pair was created and saved: select it, the same as picking it from the list below. */
   onRecipeCreated:   (recipeId: string) => void
+  /** "Open document…" picked a file: start a recipe from it (issue #120, the same flow as dropping it on the shell). */
+  onImportFile:      (file: File) => void
+  /** A document import is in progress: the button shows it and refuses a second one meanwhile. */
+  importing:         boolean
   running:           boolean
   onRunSample:       () => void
   onStop:            () => void
 }
 
-/** The shell's toolbar: the workspace folder, a recipe picker, "+ New recipe", and Run sample / Stop. */
-export function Toolbar ({ folder, onFolderChange, onOpen, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, running, onRunSample, onStop }: ToolbarProps) {
+/** The shell's toolbar: the workspace folder, a recipe picker, "+ New recipe", "Open document…", and Run sample / Stop. */
+export function Toolbar ({ folder, onFolderChange, onOpen, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, onImportFile, importing, running, onRunSample, onStop }: ToolbarProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   return (
     <HStack gap={2} p={2} borderBottomWidth='1px' wrap='wrap'>
       <Text fontWeight='semibold' flexShrink={0}>OpenCraw Studio</Text>
@@ -42,6 +52,21 @@ export function Toolbar ({ folder, onFolderChange, onOpen, openFolder, inputs, s
         </NativeSelect.Field>
       </NativeSelect.Root>
       <NewRecipeDialog folder={openFolder} onCreated={onRecipeCreated} />
+      <Button size='sm' variant='outline' onClick={() => { fileInputRef.current?.click() }} disabled={importing} loading={importing} title='Start a recipe from a PDF, spreadsheet, deck, Word, CSV, JSON, YAML, XML or Markdown file (or drop one anywhere)'>
+        Open document…
+      </Button>
+      <input
+        ref={fileInputRef}
+        type='file'
+        accept={DOCUMENT_EXTENSIONS}
+        aria-label='Open document'
+        hidden
+        onChange={event => {
+          const file = event.target.files?.[0]
+          event.target.value = '' // so picking the same file again still fires a change
+          if (file !== undefined) onImportFile(file)
+        }}
+      />
       <Button size='sm' colorPalette='blue' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
         Run sample
       </Button>

@@ -22,6 +22,8 @@ import {
   useWorkspaceQuery,
 } from '../studio-client'
 import { useRunSessionStore, useStudioUiStore } from '../studio-store'
+import { DocumentDropZone } from './document-drop-zone.component'
+import { useImportDocumentFlow } from './import-document.hook'
 import { Toolbar } from './toolbar.component'
 
 /** The studio's shell: the toolbar, the resizable content/editor split, and the preview strip along the bottom. */
@@ -75,6 +77,7 @@ function AppShell () {
   const saveRecipe = useSaveRecipeMutation()
   const saveOutline = useSaveOutlineMutation()
   const explainWhy = useExplainWhyMutation()
+  const importFlow = useImportDocumentFlow()
 
   useEffect(() => {
     if (client.initialFolder !== undefined) commitFolder(client.initialFolder)
@@ -115,10 +118,10 @@ function AppShell () {
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
-  const workspaceError = messageOf(workspace.error) ?? runError
+  const workspaceError = importFlow.error ?? messageOf(workspace.error) ?? runError
 
   return (
-    <Box h='100vh' display='flex' flexDirection='column'>
+    <DocumentDropZone onFile={file => { void importFlow.importFile(file) }} h='100vh' display='flex' flexDirection='column'>
       <Toolbar
         folder={folder}
         onFolderChange={setFolder}
@@ -128,6 +131,8 @@ function AppShell () {
         selectedRecipeId={selectedRecipeId}
         onSelectRecipe={selectRecipe}
         onRecipeCreated={selectRecipe}
+        onImportFile={file => { void importFlow.importFile(file) }}
+        importing={importFlow.pending}
         running={running}
         onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId }) }}
         onStop={() => { stopRun.mutate() }}
@@ -197,7 +202,7 @@ function AppShell () {
           />
         </Splitter.Panel>
       </Splitter.Root>
-    </Box>
+    </DocumentDropZone>
   )
 }
 

@@ -1,13 +1,15 @@
 export { main } from './main'
 export { startStudioServer } from './studio-server'
 export type { StudioServer, StudioServerOptions } from './studio-server'
-export { openWorkspace, saveRecipe } from './recipe-workspace'
+export { openWorkspace, saveRecipe, importDocument } from './recipe-workspace'
+export type { ImportedDocument } from './recipe-workspace'
 export { runSample, loadRecipePair } from './sample-run'
 export type { RecipePair, SampleRunCallbacks, SampleRunHandle, SampleRunRecord, SampleRunRejected, SampleRunResult, SampleStepSummary, SampleStoppedBy } from './sample-run'
 export { fetchStartPage } from './page-snapshot'
 export type { WhyFacts, WhyStepFact } from './explain-why'
 export {
-  sampleBudgetSchema, openWorkspaceCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, saveOutlineCommandSchema, takeSnapshotCommandSchema, verifySelectorCommandSchema, inferSelectorCommandSchema, missingWhyTargetSchema, rejectedWhyTargetSchema, whyTargetSchema, explainWhyCommandSchema, studioCommandSchema,
+  sampleBudgetSchema, openWorkspaceCommandSchema, importDocumentCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, saveOutlineCommandSchema, takeSnapshotCommandSchema, verifySelectorCommandSchema, inferSelectorCommandSchema, missingWhyTargetSchema, rejectedWhyTargetSchema, whyTargetSchema, explainWhyCommandSchema, studioCommandSchema,
+  importDocumentViewSchema,
   stoppedBySchema, fieldTraceSchema, traceLineEventSchema, recordEventSchema, recordRejectedEventSchema, runFinishedEventSchema, workspaceChangedEventSchema, studioEventSchema,
   recipeIssueSchema, recipeListingSchema, workspaceViewSchema,
   sampleRunRecordSchema, sampleRunViewSchema,
@@ -34,7 +36,8 @@ export {
   recordingCardEventSchema, recordingNoteEventSchema, recordingStoppedEventSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, ImportDocumentCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
+  ImportDocumentView,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,

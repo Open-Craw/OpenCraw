@@ -1,4 +1,4 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -7,6 +7,8 @@ export interface StudioClient {
   /** The folder `opencraw-studio` was started with, if the URL carries one. */
   initialFolder?: string
   openWorkspace:  (folder: string) => Promise<WorkspaceView>
+  /** Copies a dropped/opened file into `folder` (created when missing) and answers the copy's `file:` URL for a recipe's `start.url` (issue #120); `bytes` is the file's content, base64-encoded. */
+  importDocument: (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
   runSample:      (recipeId: string, budget?: SampleBudget) => Promise<void>
   stopRun:        () => Promise<void>
   saveRecipe:     (path: string, recipe: unknown) => Promise<void>
@@ -86,6 +88,7 @@ export function createStudioClient (): StudioClient {
     token,
     initialFolder,
     openWorkspace:  folder => send<WorkspaceView>(token, { type: 'open-workspace', folder } satisfies OpenWorkspaceCommand),
+    importDocument: (folder, name, bytes) => send<ImportDocumentView>(token, { type: 'import-document', folder, name, bytes } satisfies ImportDocumentCommand),
     runSample:      async (recipeId, budget) => { await send(token, { type: 'run-sample', recipeId, budget } satisfies RunSampleCommand) },
     stopRun:        async () => { await send(token, { type: 'stop-run' } satisfies StopRunCommand) },
     saveRecipe:     async (path, recipe) => { await send(token, { type: 'save-recipe', path, recipe: recipe as Record<string, unknown> } satisfies SaveRecipeCommand) },

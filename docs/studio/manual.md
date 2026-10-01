@@ -68,6 +68,14 @@ same pattern every recipe id follows), and **Create**. That writes a minimal, va
 `<id>.input.json` and `<id>.output.json` — into the open folder and selects it: a `web` recipe with one
 `goto` step, an `emit`, and no fields mapped yet. Everything from here builds on top of that.
 
+**Starting from a file?** Drop a PDF, spreadsheet, CSV, PowerPoint, Word, Markdown, JSON, YAML or XML
+file anywhere on the window — or click **Open document…** and pick one. The studio copies it into the
+workspace folder (next to the recipes, so the folder stays self-contained), writes a pair named after the
+file (`Q3 Report.pdf` → `q3-report`; a second `q3-report` becomes `q3-report-2`) whose one step reads the
+copy, and selects it. The content pane then shows the document on its own canvas
+([§8](#8-document-canvases)) — no URL to type, no placeholder to edit. No folder open yet? Type one in
+the folder box first; it's created on the drop.
+
 For this guide's example, open any folder and create a recipe with the id `books`.
 
 ## 3. The shell

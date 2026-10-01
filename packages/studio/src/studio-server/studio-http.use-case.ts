@@ -14,6 +14,7 @@ import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleGridPreview } from './grid-preview.handler'
 import { handleGridView } from './grid-view.handler'
+import { handleImportDocument } from './import-document.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleInspectPage } from './inspect-page.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
@@ -175,6 +176,8 @@ async function handleCommand (request: IncomingMessage, response: ServerResponse
 function dispatch (command: StudioCommand, state: StudioState): Promise<unknown> {
   switch (command.type) {
     case 'open-workspace': { return handleOpenWorkspace(state, command)
+    }
+    case 'import-document': { return handleImportDocument(command)
     }
     case 'run-sample': { return handleRunSample(state, command)
     }

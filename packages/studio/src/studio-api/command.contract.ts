@@ -302,8 +302,26 @@ export const stopRecordingCommandSchema = z.object({
   type: z.literal('stop-recording'),
 })
 
+/**
+ * Copies a document the person dropped on (or opened in) the studio into a
+ * workspace folder, so a recipe can point at it with a `file:` URL (issue
+ * #120). The bytes travel base64-encoded inside the JSON command envelope
+ * every other command uses: a local tool's own files are a few megabytes at
+ * most, not worth a second, multipart endpoint. `folder` is created when it
+ * does not exist yet, so a dropped file can also start a workspace; `name`
+ * is a plain file name (no directories), kept as the copy's name unless one
+ * is already there, in which case a numbered one is used.
+ */
+export const importDocumentCommandSchema = z.object({
+  type:   z.literal('import-document'),
+  folder: z.string().min(1),
+  name:   z.string().min(1),
+  bytes:  z.string(),
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
+  importDocumentCommandSchema,
   runSampleCommandSchema,
   stopRunCommandSchema,
   saveRecipeCommandSchema,
@@ -328,6 +346,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
 export type OpenWorkspaceCommand = z.infer<typeof openWorkspaceCommandSchema>
+export type ImportDocumentCommand = z.infer<typeof importDocumentCommandSchema>
 export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
 export type StopRunCommand = z.infer<typeof stopRunCommandSchema>
 export type SaveRecipeCommand = z.infer<typeof saveRecipeCommandSchema>

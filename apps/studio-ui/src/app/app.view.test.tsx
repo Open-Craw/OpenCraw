@@ -52,4 +52,11 @@ describe('App shell', () => {
     render(<App />)
     expect(screen.getByRole('button', { name: '+ New recipe' }).hasAttribute('disabled')).toBe(true)
   })
+
+  it('offers "Open document…" and a drop zone over the whole shell, from the very first screen (issue #120)', () => {
+    render(<App />)
+    expect(screen.getByRole('button', { name: 'Open document…' }).hasAttribute('disabled')).toBe(false)
+    expect(screen.getByLabelText('Open document').getAttribute('accept')).toContain('.pdf')
+    expect(screen.getByTestId('document-drop-zone')).toBeTruthy()
+  })
 })
