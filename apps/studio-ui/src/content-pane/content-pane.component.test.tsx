@@ -130,7 +130,7 @@ describe('ContentPane', () => {
     await waitFor(() => { expect(screen.getByText('table 1')).toBeTruthy() }) // the native table entry in the side list
     expect(screen.queryByText(/not built yet/i)).toBeNull()
     expect(document.querySelector('iframe')).toBeNull()
-    expect(screen.getByText('Native table')).toBeTruthy() // a source toggle, not the DOM picker's "Read" button
+    expect(screen.getByRole('button', { name: 'Text' })).toBeTruthy() // the deck canvas's own Text mode (#122), not the DOM picker's "Read" button
     expect(screen.queryByText('Read')).toBeNull()
     expect(screen.getByText('Immatricolazioni')).toBeTruthy() // the chart entry in the side list
     expect(screen.getByText('Prezzi IVA inclusa.')).toBeTruthy() // the notes

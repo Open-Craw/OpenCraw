@@ -1,8 +1,11 @@
-import type { OutlineCard } from '@opencraw/studio'
+import type { DeckShapeView, OutlineCard } from '@opencraw/studio'
 import { escapedRowPattern } from './pdf-pick.mapper'
+import type { PointsBox } from './pdf-pick.mapper'
 
 const DEFAULT_TABLE_ID = 'table'
 const DEFAULT_CHART_ID = 'value'
+/** Points added around a snapped text box's own box, so a box a hair wider than its text still sits "at least half inside" the region the engine reads (mirrors `pdf-pick.mapper.ts`'s `CELL_BOX_PAD`). */
+const SHAPE_BOX_PAD = 1
 
 /**
  * The `table` extract card's options as the deck canvas builds them, one
@@ -114,5 +117,17 @@ export function deckChartCardNode (slideIndex: number, chartIndex: number, path:
   }
 }
 
-export { columnKeyFrom, escapedRowPattern } from './pdf-pick.mapper'
+export { columnKeyFrom, escapedRowPattern, regionCardNode, regionIdFrom, regionSelector, unionBox } from './pdf-pick.mapper'
 export { columnHeaderText, fillDownKeyFor, filledGridOf, rowPickText } from './grid-pick.mapper'
+
+/**
+ * The box around one text box of a slide, padded a point on every side (see
+ * `SHAPE_BOX_PAD`), in the deck's own points (y down from the top) — what a
+ * click in the deck canvas's Text mode stages (issue #122), the deck's
+ * counterpart of `pdf-pick.mapper.ts`'s `cellBox`.
+ *
+ * @param shape - The text box (`deck-view`'s own geometry).
+ */
+export function shapeBox (shape: DeckShapeView): PointsBox {
+  return { x1: shape.x - SHAPE_BOX_PAD, y1: shape.y - SHAPE_BOX_PAD, x2: shape.x + Math.max(shape.width, 1) + SHAPE_BOX_PAD, y2: shape.y + Math.max(shape.height, 1) + SHAPE_BOX_PAD }
+}

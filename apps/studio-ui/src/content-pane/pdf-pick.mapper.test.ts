@@ -69,7 +69,8 @@ describe('tableCardNode', () => {
 
 describe('regionSelector / cellBox / unionBox (issue #121)', () => {
   it('writes the engine\'s own selector shape in whole points, ranges ordered', () => {
-    expect(regionSelector(1, { x1: 252.4, y1: 663.6, x2: 72, y2: 640 })).toBe('page=1 x=72..252 y=640..664')
+    expect(regionSelector('page', 1, { x1: 252.4, y1: 663.6, x2: 72, y2: 640 })).toBe('page=1 x=72..252 y=640..664')
+    expect(regionSelector('slide', 3, { x1: 59.6, y1: 29.5, x2: 900.4, y2: 90 })).toBe('slide=3 x=60..900 y=30..90')
   })
 
   it('a cell\'s box is its text box padded a point on every side, a zero-width cell still a point wide', () => {

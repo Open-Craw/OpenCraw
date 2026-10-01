@@ -214,8 +214,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     })
   }
 
-  /** The PDF canvas's "Add to recipe" (issue #121): a staged selection's `region` card, always a fresh one, never folded into the table draft's slot. */
-  async function handlePdfRegionPick (card: OutlineCard): Promise<void> {
+  /** The PDF (issue #121) and deck (issue #122) canvases' "Add to recipe": a staged selection's `region` card, always a fresh one, never folded into the table draft's slot. */
+  async function handleRegionPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
       setStatus(`region: ${String(card.step.id)} ← ${String(card.step.selector)}`)
 
@@ -417,7 +417,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             view={pdfView.data}
             bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH)}
             onTablePick={(card) => { void handleTableCardPick(card) }}
-            onRegionPick={(card) => { void handlePdfRegionPick(card) }}
+            onRegionPick={(card) => { void handleRegionPick(card) }}
           />
         )}
         {isPdf && pdfView.isError && (
@@ -443,6 +443,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             view={deckView.data}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onChartPick={(card) => { void handleDeckChartPick(card) }}
+            onRegionPick={(card) => { void handleRegionPick(card) }}
           />
         )}
         {isDeck && deckView.isError && (

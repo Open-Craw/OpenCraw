@@ -7,7 +7,7 @@ const REGION_ID_WORDS = 4
 /** Points added around a snapped cell's own box, so a cell drawn a hair wider than its text layer still sits "at least half inside" the region the engine reads. */
 const CELL_BOX_PAD = 1
 
-/** A rectangle in PDF points, y growing upwards — the `region` extract's own coordinate space. */
+/** A rectangle in points — the `region` extract's own coordinate space: y growing upwards on a PDF page, downwards on a deck slide. */
 export interface PointsBox {
   x1: number
   y1: number
@@ -93,19 +93,21 @@ export function tableCardNode (draft: TableDraft, path: string, id: string = DEF
 }
 
 /**
- * A `region` extract's selector for a box on a page (issue #121): whole
- * points, ranges ordered — the same `page=1 x=72..252 y=640..664` shape
+ * A `region` extract's selector for a box on a PDF page (issue #121) or a
+ * deck slide (issue #122): whole points, ranges ordered — the same
+ * `page=1 x=72..252 y=640..664` / `slide=3 x=60..900 y=30..90` shape
  * `@opencraw/core`'s own `regionSelector` writes (mirrored here: this app
  * never imports core's runtime, only `@opencraw/studio`'s types).
  *
- * @param page - The 1-based page number.
- * @param box - The box, in PDF points.
+ * @param on - `page` for a PDF (y up from the bottom), `slide` for a deck (y down from the top).
+ * @param at - The 1-based page or slide number.
+ * @param box - The box, in points.
  */
-export function regionSelector (page: number, box: PointsBox): string {
+export function regionSelector (on: 'page' | 'slide', at: number, box: PointsBox): string {
   const [x1, x2] = ordered(box.x1, box.x2)
   const [y1, y2] = ordered(box.y1, box.y2)
 
-  return `page=${String(page)} x=${String(Math.round(x1))}..${String(Math.round(x2))} y=${String(Math.round(y1))}..${String(Math.round(y2))}`
+  return `${on}=${String(at)} x=${String(Math.round(x1))}..${String(Math.round(x2))} y=${String(Math.round(y1))}..${String(Math.round(y2))}`
 }
 
 /** The box around one cell, padded a point on every side (see `CELL_BOX_PAD`). */

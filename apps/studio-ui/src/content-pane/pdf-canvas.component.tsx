@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Badge, Box, Button, CloseButton, HStack, Select, Text, createListCollection } from '@chakra-ui/react'
+import { Badge, Box, HStack, Select, Text, createListCollection } from '@chakra-ui/react'
 import type { OutlineCard, PdfCellView, PdfDocumentView, PdfPageView, PdfRowView, TablePreviewMatchView } from '@opencraw/studio'
 import { CARD_DRAG_MIME, cardDragData } from '../steps-outline'
 import { useRegionPreviewQuery, useTablePreviewQuery } from '../studio-client'
 import { cellBox, columnKeyFrom, escapedRowPattern, regionCardNode, regionIdFrom, regionSelector, tableCardNode, unionBox } from './pdf-pick.mapper'
 import type { PointsBox, TableDraft } from './pdf-pick.mapper'
+import { REGION_COLOR, SelectionChip } from './selection-chip.component'
 
 /** What clicking (or dragging) on the PDF canvas is currently picking: a line of text (issue #121, the default), or a `table` extract's header row, last row or column (issue #94's 5b). */
 export type PdfPickMode = 'text' | 'header' | 'until' | 'column'
@@ -49,7 +50,6 @@ const ROW_COLORS = ['#2e86ab', '#3bb273']
 const HEADER_COLOR = '#e4572e'
 const MATCH_FILL = 'rgba(59, 178, 115, 0.18)'
 const SNAP_COLOR = '#1d4ed8'
-const REGION_COLOR = '#9b5de5'
 
 /**
  * The PDF canvas (studio plan §3.4, issue #94's 5b): the page `pdf.js`
@@ -94,7 +94,7 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
     [preview.data, page?.number],
   )
 
-  const stagedSelector = staged === undefined ? undefined : regionSelector(staged.page, staged.box)
+  const stagedSelector = staged === undefined ? undefined : regionSelector('page', staged.page, staged.box)
   const regionPreview = useRegionPreviewQuery(recipeId, stepPath, stagedSelector)
   const stagedMatch = regionPreview.data?.matches.find(match => match.page === staged?.page)
   const stagedText = stagedMatch?.text
@@ -281,51 +281,6 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
         </Box>
       </Box>
     </Box>
-  )
-}
-
-interface SelectionChipProps {
-  left:        number
-  top:         number
-  /** What the engine reads in the box; `undefined` while the preview loads, or when nothing sits in the box. */
-  text?:       string
-  loading:     boolean
-  onAdd:       () => void
-  onClear:     () => void
-  onDragStart: (event: React.DragEvent<HTMLDivElement>) => void
-}
-
-/** The staged selection's own chip, just under its box: the text the step will bind, "Add to recipe", and a handle to drag the same card onto the Steps tab. */
-function SelectionChip ({ left, top, text, loading, onAdd, onClear, onDragStart }: SelectionChipProps): React.ReactElement {
-  const empty = text === undefined && !loading
-  const [firstLine = ''] = (text ?? '').split('\n', 1)
-
-  return (
-    <HStack
-      data-testid='region-chip'
-      position='absolute'
-      style={{ left: `${String(left)}px`, top: `${String(top)}px` }}
-      zIndex='docked'
-      gap={2}
-      px={2}
-      py={1}
-      bg='bg.panel'
-      borderWidth='1px'
-      borderColor={REGION_COLOR}
-      borderRadius='md'
-      shadow='md'
-      maxW='420px'
-      draggable={text !== undefined}
-      onDragStart={onDragStart}
-      cursor={text === undefined ? 'default' : 'grab'}
-      title={text === undefined ? undefined : 'Drag onto the Steps tab to add it there'}
-    >
-      <Text fontSize='xs' fontFamily='mono' truncate flex='1' color={empty ? 'fg.muted' : 'fg'}>
-        {loading && text === undefined ? 'reading…' : (empty ? 'nothing to read here' : firstLine)}
-      </Text>
-      <Button size='2xs' colorPalette='blue' onClick={onAdd} disabled={text === undefined}>Add to recipe</Button>
-      <CloseButton size='2xs' aria-label='Clear selection' onClick={onClear} />
-    </HStack>
   )
 }
 
