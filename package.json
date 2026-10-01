@@ -101,6 +101,7 @@
     "apps/*"
   ],
   "overrides": {
+    "axios": "^1.20.0",
     "@verdaccio/config": {
       "js-yaml": "^5.4.2"
     },
