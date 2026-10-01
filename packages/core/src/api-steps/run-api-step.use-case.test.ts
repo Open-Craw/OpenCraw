@@ -282,7 +282,7 @@ describe('ApiStepRunner', () => {
     const sender: HttpSender = { send: async request => ({ status: 200, url: request.url, headers: {}, body: pdf }) }
     const titleCell = pdf.pages[0].rows.flatMap(row => row.cells).find(cell => cell.text.startsWith('DEALER DISCOUNTS'))
     if (titleCell === undefined) throw new Error('the fixture lost its title line')
-    const titleBox = regionSelector({ page: 1, x1: titleCell.x, y1: titleCell.y, x2: titleCell.x + titleCell.width, y2: titleCell.y + titleCell.height })
+    const titleBox = regionSelector({ on: 'page', at: 1, x1: titleCell.x, y1: titleCell.y, x2: titleCell.x + titleCell.width, y2: titleCell.y + titleCell.height })
     const reading: InputRecipe = {
       ...recipe,
       start: [{ url: 'http://shop/discounts.pdf' }],

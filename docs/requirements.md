@@ -226,7 +226,9 @@ placeholders positioned through layout and master, group transforms applied; sli
 left out), native tables as sheets with merges, charts from their caches, notes, hidden flag. `table` reads
 native tables through the workbook algorithm, or text boxes (`shapes: true`) through the PDF algorithm, one
 box per cell; `slide` picks slides by title, and returns `{ slide, slideTitle, title, header, rows }`. `regex`
-reads the slides' text, `jsonpath` the deck. `.ppt`, encrypted files and `.odp` fail with what to do.
+reads the slides' text, `jsonpath` the deck, `region` (`slide=<number|*> x=<from>..<to> y=<from>..<to>`,
+points from the top-left corner) the text boxes at least half inside the box, in reading order, one value
+per matching slide, hidden slides skipped under `slide=*`. `.ppt`, encrypted files and `.odp` fail with what to do.
 
 YAML (`as: 'yaml'`, `application/yaml` and kin, `.yaml`/`.yml`) is parsed with the `yaml` package into JSON data
 (several documents: an array): version pinned to 1.2 core whatever the document declares, merge keys applied,

@@ -770,6 +770,11 @@ a password-protected file or an `.odp` fails the step, with what to do.
 | `table` | native tables, or with `shapes: true` text boxes laid out as a table | price and incentive tables |
 | `regex` | per visible slide: its text boxes, its tables' rows (cells separated by a tab), then `Notes: …`; slides separated by a blank line | a validity date in the notes: `Notes: .*fino al (\d+ \w+)` |
 | `jsonpath` | the structure above | chart data: `$.slides[?(@.title=='Vendite')].charts[*].series[*]` |
+| `region` | the text boxes at least half inside a box on one slide (`slide=3 x=60..900 y=30..90`, points from the top-left corner) or on every visible slide (`slide=*`), in reading order, one line per box | a source line under a chart, a title in a fixed place on every slide |
+
+A `region` on a deck is the PDF one (§4.6) with `slide=` instead of `page=` and y counted down from the top,
+as the deck's shapes are: `slide=*` reads the same box off every visible slide, one value per slide that has
+something in it. OpenCraw Studio writes the selector from a click on the slide.
 
 A **native table** reads like a spreadsheet table (§4.7). Merged cells are filled, `headerRows` joins a header
 spread over several rows, and `slide` (a pattern on slide titles) picks the slides:

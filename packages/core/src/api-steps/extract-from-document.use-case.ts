@@ -1,4 +1,4 @@
-import { deckText, findDeckTables, isDeckDocument } from '../deck-document'
+import { deckRegionText, deckText, findDeckTables, isDeckDocument } from '../deck-document'
 import type { ExtractionScope, ScopeDocument } from '../extraction-scope'
 import { findTables, isPdfDocument, parseRegion, pdfText, regionText } from '../pdf-document'
 import type { TableQuery } from '../pdf-document'
@@ -16,7 +16,8 @@ import { NoMatchError } from '../step-flow'
  * it, `jsonpath` reads JSON (or a read PDF, workbook or deck as data), `table`
  * reads the tables of a PDF, a workbook (a spreadsheet, a CSV), a deck (a
  * presentation) or HTML (its `<table>`s), `regex` reads any document as text,
- * `region` reads the text inside a box on a PDF page (`page=1 x=72..252 y=640..664`).
+ * `region` reads the text inside a box on a PDF page (`page=1 x=72..252 y=640..664`)
+ * or a deck slide (`slide=3 x=60..900 y=30..90`).
  *
  * A `jsonpath` extract whose `from` is text parses that text as JSON, and a
  * list of texts (every `<script type="application/ld+json">` of a page) becomes
@@ -67,8 +68,7 @@ export function extractFromDocument (step: ExtractStep, scope: ExtractionScope):
       break
     }
     case 'region': {
-      if (document.kind !== 'pdf') throw new Error(`region reads a PDF; the current document is ${document.kind}${document.kind === 'html' ? '' : ' (request it with "as": "pdf")'}`)
-      values = regionText(document, parseRegion(selector)).map(match => match.text)
+      values = readRegion(document, selector)
 
       break
     }
@@ -146,10 +146,31 @@ function tableQuery (step: ExtractStep, selector: string): TableQuery {
   return { header: patternOf(selector, 'selector'), until: optionalPattern(step.until, 'until'), columns, align: step.align }
 }
 
+/**
+ * What a `region` extract reads: the text inside its box, on a PDF's pages
+ * (`page=`) or a deck's slides (`slide=`) — the keyword must match the
+ * document, since the two count different things in different coordinate
+ * spaces (see `pdf-document/pdf-region.algorithm.ts`'s `DocumentRegion`).
+ */
+function readRegion (document: ScopeDocument, selector: string): string[] {
+  const region = parseRegion(selector)
+  if (document.kind === 'pdf') {
+    if (region.on !== 'page') throw new Error('region: "slide=" reads a deck; the current document is a PDF (name a "page=")')
+
+    return regionText(document, region).map(match => match.text)
+  }
+  if (document.kind === 'deck') {
+    if (region.on !== 'slide') throw new Error('region: "page=" reads a PDF; the current document is a deck (name a "slide=")')
+
+    return deckRegionText(document, region).map(match => match.text)
+  }
+  throw new Error(`region reads a PDF or a deck (a presentation); the current document is ${document.kind}${document.kind === 'html' ? '' : ' (request it with "as": "pdf" or "pptx")'}`)
+}
+
 /** What a `css` extract should have used instead, for a document that is not markup. */
 function readHint (kind: ScopeDocument['kind']): string {
-  if (kind === 'pdf') return ' (read it with kind "table", "region", "regex" or "jsonpath")'
-  if (kind === 'workbook' || kind === 'deck') return ' (read it with kind "table", "regex" or "jsonpath")'
+  if (kind === 'pdf' || kind === 'deck') return ' (read it with kind "table", "region", "regex" or "jsonpath")'
+  if (kind === 'workbook') return ' (read it with kind "table", "regex" or "jsonpath")'
 
   return ''
 }
@@ -227,7 +248,7 @@ function documentFor (step: ExtractStep, scope: ExtractionScope): ScopeDocument 
   const source = scope.get(step.from)
   if (source === undefined) throw new Error(`"${step.from}" is not bound`)
   if (isPdfDocument(source) || isWorkbookDocument(source) || isDeckDocument(source) || isXmlDocument(source)) return source
-  if (step.kind === 'region') throw new Error(`"${step.from}" is not a read PDF; region reads a PDF (request it with "as": "pdf")`)
+  if (step.kind === 'region') throw new Error(`"${step.from}" is not a read PDF or deck; region reads those (request it with "as": "pdf" or "pptx")`)
   if (step.kind === 'xpath') {
     if (typeof source !== 'string') throw new Error(`"${step.from}" is not markup; xpath reads XML or HTML text`)
 
