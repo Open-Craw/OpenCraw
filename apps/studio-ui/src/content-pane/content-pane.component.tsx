@@ -12,6 +12,7 @@ import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardN
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
+import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
 import type { TreePickMode } from './tree-canvas.component'
 
@@ -98,6 +99,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const setHoveredNodeId = useStudioUiStore(state => state.setHoveredNodeId)
   const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
   const hoveredSelector = useMemo(() => selectorForStepId(recipe?.outline, hoveredStepId), [recipe?.outline, hoveredStepId])
+  const steps = useMemo(() => pickedSteps(recipe?.outline), [recipe?.outline])
   const handleHoverNode = (nodeId: string | undefined): void => {
     setHoveredNodeId(nodeId)
     setHoveredStepId(nodeId === undefined ? undefined : stepIdForNode(recipe?.outline, snapshot.data?.html, nodeId))
@@ -214,10 +216,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     })
   }
 
-  /** A dragged-region pick (issue #94's 5b): always a fresh `regex` card, never folded into the table draft's slot. */
-  async function handlePdfRegionPick (card: OutlineCard): Promise<void> {
+  /** The PDF (issue #121), deck (issue #122) and grid (issue #123) canvases' "Add to recipe": a staged selection's card (a `region`, or a `jsonpath` into a sheet's cells), always a fresh one, never folded into the table draft's slot. */
+  async function handleStagedPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
-      setStatus(`regex: ${String(card.step.selector)}`)
+      setStatus(`${String(card.step.kind)}: ${String(card.step.id)} ← ${String(card.step.selector)}`)
 
       return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
     })
@@ -405,7 +407,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       )}
       <Box flex='1' minH='0'>
         {isDocumentTree && documentTree.data !== undefined && (
-          <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} />
+          <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
         )}
         {isDocumentTree && documentTree.isError && (
           <Box p={4} color='fg.error'><Text>{documentTree.error.message}</Text></Box>
@@ -417,7 +419,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             view={pdfView.data}
             bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH)}
             onTablePick={(card) => { void handleTableCardPick(card) }}
-            onRegionPick={(card) => { void handlePdfRegionPick(card) }}
+            onRegionPick={(card) => { void handleStagedPick(card) }}
+            steps={steps}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={setHoveredStepId}
           />
         )}
         {isPdf && pdfView.isError && (
@@ -429,6 +434,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             stepPath={STEP_PATH}
             view={gridView.data}
             onTablePick={(card) => { void handleTableCardPick(card) }}
+            onCellPick={(card) => { void handleStagedPick(card) }}
+            steps={steps}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={setHoveredStepId}
             csvOverride={csvOverride}
             onCsvOverrideChange={setCsvOverride}
           />
@@ -443,6 +452,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             view={deckView.data}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onChartPick={(card) => { void handleDeckChartPick(card) }}
+            onRegionPick={(card) => { void handleStagedPick(card) }}
+            steps={steps}
+            hoveredStepId={hoveredStepId}
+            onHoverStepId={setHoveredStepId}
           />
         )}
         {isDeck && deckView.isError && (

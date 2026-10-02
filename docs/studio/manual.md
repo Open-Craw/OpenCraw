@@ -68,6 +68,14 @@ same pattern every recipe id follows), and **Create**. That writes a minimal, va
 `<id>.input.json` and `<id>.output.json` — into the open folder and selects it: a `web` recipe with one
 `goto` step, an `emit`, and no fields mapped yet. Everything from here builds on top of that.
 
+**Starting from a file?** Drop a PDF, spreadsheet, CSV, PowerPoint, Word, Markdown, JSON, YAML or XML
+file anywhere on the window — or click **Open document…** and pick one. The studio copies it into the
+workspace folder (next to the recipes, so the folder stays self-contained), writes a pair named after the
+file (`Q3 Report.pdf` → `q3-report`; a second `q3-report` becomes `q3-report-2`) whose one step reads the
+copy, and selects it. The content pane then shows the document on its own canvas
+([§8](#8-document-canvases)) — no URL to type, no placeholder to edit. No folder open yet? Type one in
+the folder box first; it's created on the drop.
+
 For this guide's example, open any folder and create a recipe with the id `books`.
 
 ## 3. The shell
@@ -114,7 +122,10 @@ book instead of one for the whole page.
 
 A card's **pill** — the small coloured `books`, `book`, `title` labels — is the id the next card downstream
 can read `from`. Hovering a card highlights every matching element in the content pane with a count, so you
-can confirm a selector actually matches what you expect before moving on. Container steps (`forEach`,
+can confirm a selector actually matches what you expect before moving on. The document canvases do the same
+in both directions: a tree node, a region of a PDF page or a slide, a chart, or a cell a step already reads
+is marked with the step's id (a dashed box, a pill), hovering the card fills it in, and hovering the marked
+node, line, text box, chart or cell lights the card up. Container steps (`forEach`,
 `paginate`, `if`) draw as brackets around their children: a card can only use a pill from its own bracket or
 an outer one, so the outline can never let you build a binding error the loader would later reject.
 
@@ -193,9 +204,9 @@ pane's **canvas** changes, to fit what it's actually showing:
 |---|---|---|
 | A web page, or Word/Markdown (read as HTML) | the snapshot iframe from [§4](#4-the-steps-tab-picking-on-a-live-page) | a CSS selector |
 | JSON, YAML, XML, JSON Lines | a tree — click a value to read it, `[*]` reads every item of a list | a `jsonpath` (or `xpath` for XML); a "next" value offers the `paginate` cursor |
-| PDF | the page rendered with the engine's own detected cells and rows drawn over it | the header row gives `selector`, the last row `until`, a column its name |
-| Excel, CSV | a grid: sheet tabs, hidden sheets/rows marked, merged cells shown as one | a sheet tab gives `sheet`, the header row `headerRows`, a merged group `fillDown` |
-| PowerPoint | each slide redrawn from its shapes, with tables and charts listed apart | a table gives `table`/`slide`; a chart a `jsonpath` into its series |
+| PDF | the page rendered with the engine's own detected cells and rows drawn over it | in **Text** mode (the default) the line under the mouse snaps; a click stages it, shift+click extends to another line, dragging stages the box drawn — a chip shows exactly what the engine reads there, with **Add to recipe** (a `region` extract: `page=1 x=72..252 y=640..664`) or drag the chip onto the Steps tab. In the table modes, the header row gives `selector`, the last row `until`, a column its name |
+| Excel, CSV | a grid: sheet tabs, hidden sheets/rows marked, merged cells shown as one | in **Cell** mode (the default) the cell under the mouse lights up; a click stages it, shift+click (or press on one cell and release on another) stages the rectangle between — the chip shows the values, with **Add to recipe** (a `jsonpath` into the sheet by name and the cell by position: `$.sheets[?(@.name=='Prices')].rows[0][0]`, a rectangle a list) or drag it onto the Steps tab. In the table modes a sheet tab gives `sheet`, the header row `headerRows`, a merged group `fillDown` |
+| PowerPoint | each slide redrawn from its shapes, with tables and charts listed apart | in **Text** mode (the default) the text box under the mouse snaps; a click stages it, shift+click extends, dragging stages the box drawn — the same chip as the PDF's, with **Add to recipe** (a `region` extract: `slide=3 x=60..900 y=30..90`, points from the slide's top-left corner) or drag it onto the Steps tab. In the table modes a table gives `table`/`slide`; a chart a `jsonpath` into its series |
 
 Every one of these writes the matching `extract` step the same way a page pick does — the outline, the
 Record tab and the JSON tab don't know or care which canvas produced it.

@@ -18,4 +18,18 @@ describe('handleOpenWorkspace', () => {
     expect(state.folder).toBe(folder)
     expect(received).toEqual([JSON.stringify({ type: 'workspace-changed' })])
   })
+
+  it('re-opening the folder already open re-reads it but tells nobody: a client re-fetching on workspace-changed must not be answered with another workspace-changed', async () => {
+    const folder = mkdtempSync(join(tmpdir(), 'opencraw-handler-'))
+    const state = createStudioState()
+    const received: string[] = []
+    state.sockets.add({ send: text => { received.push(text) }, close: () => {}, onMessage: () => {}, onClose: () => {} })
+
+    await handleOpenWorkspace(state, { type: 'open-workspace', folder })
+    writeFileSync(join(folder, 'book.output.json'), JSON.stringify({ kind: 'output', id: 'book', version: 1, fields: {} }))
+    const again = await handleOpenWorkspace(state, { type: 'open-workspace', folder })
+
+    expect(again.recipes).toHaveLength(1) // a fresh read every time, not a cached one
+    expect(received).toHaveLength(1) // the first open only
+  })
 })

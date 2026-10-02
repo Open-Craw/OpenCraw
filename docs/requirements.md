@@ -176,7 +176,7 @@ steps; section 5).
 | `screenshot` | web | – | `path` |
 | `captcha` | web | – | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; for form captchas `image`, `refresh?`, `field`, `submit`; defaults from `session.captcha` |
 | `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`; relative to the current page, else a clear error), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
-| `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
+| `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table' \| 'region'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
 | `set` | both | value | `value` (template or literal) |
 | `collect` | both | – | `into` (a list id bound in an enclosing scope), `value` (template or literal); appends, so values outlive the `forEach` iteration or `paginate` page that found them |
 | `forEach` | both | – | `over` (a list id) or `selector` (web: live elements), `as` (variable), `steps`, `emit?: true \| { output }` |
@@ -200,7 +200,10 @@ directory. `allowedHosts` refuses `file:` URLs, relative or not.
 A PDF (`as: 'pdf'`) is read into pages of rows of positioned cells (pdf.js, text layer only; a scan fails).
 `table` finds tables by their header row and returns `{ page, title, header, rows }`, rows keyed by column:
 columns come from where the body's cells start, and lines of a wrapped cell are regrouped into their row.
-`regex` reads a PDF as text (one line per row, cells tab-separated), `jsonpath` reads its structure.
+`regex` reads a PDF as text (one line per row, cells tab-separated), `jsonpath` reads its structure. `region`
+reads the text inside a box on a page (`page=1 x=72..252 y=640..664`, points from the bottom-left corner, `page=*`
+for every page): the cells at least half inside it, a row's cells joined by a space, rows by a newline; a page
+with nothing in the box is no match.
 
 A CSV (`as: 'csv'`, `text/csv`, `.csv`/`.tsv`) is read into a workbook of one sheet of text cells: decoded from
 its BOM, `encoding`, the declared charset, UTF-8, else Windows-1252; delimiter detected among `,` `;` tab `|`
@@ -223,7 +226,9 @@ placeholders positioned through layout and master, group transforms applied; sli
 left out), native tables as sheets with merges, charts from their caches, notes, hidden flag. `table` reads
 native tables through the workbook algorithm, or text boxes (`shapes: true`) through the PDF algorithm, one
 box per cell; `slide` picks slides by title, and returns `{ slide, slideTitle, title, header, rows }`. `regex`
-reads the slides' text, `jsonpath` the deck. `.ppt`, encrypted files and `.odp` fail with what to do.
+reads the slides' text, `jsonpath` the deck, `region` (`slide=<number|*> x=<from>..<to> y=<from>..<to>`,
+points from the top-left corner) the text boxes at least half inside the box, in reading order, one value
+per matching slide, hidden slides skipped under `slide=*`. `.ppt`, encrypted files and `.odp` fail with what to do.
 
 YAML (`as: 'yaml'`, `application/yaml` and kin, `.yaml`/`.yml`) is parsed with the `yaml` package into JSON data
 (several documents: an array): version pinned to 1.2 core whatever the document declares, merge keys applied,

@@ -1,62 +1,108 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Badge, Box, HStack, Select, Text, createListCollection } from '@chakra-ui/react'
-import type { OutlineCard, PdfDocumentView, PdfRowView, TablePreviewMatchView } from '@opencraw/studio'
-import { useTablePreviewQuery } from '../studio-client'
-import { columnKeyFrom, escapedRowPattern, regexCardNode, tableCardNode } from './pdf-pick.mapper'
-import type { TableDraft } from './pdf-pick.mapper'
+import type { OutlineCard, PdfCellView, PdfDocumentView, PdfPageView, PdfRowView, TablePreviewMatchView } from '@opencraw/studio'
+import { CARD_DRAG_MIME, cardDragData } from '../steps-outline'
+import { useRegionPreviewQuery, useTablePreviewQuery } from '../studio-client'
+import { cellBox, columnKeyFrom, escapedRowPattern, regionCardNode, regionIdFrom, regionSelector, tableCardNode, unionBox } from './pdf-pick.mapper'
+import type { PointsBox, TableDraft } from './pdf-pick.mapper'
+import { REGION_COLOR, SelectionChip } from './selection-chip.component'
+import { regionStepsAt, stepIdsForBox } from './step-highlight.mapper'
+import type { PickedStep } from './step-highlight.mapper'
 
-/** What clicking (or dragging) on the PDF canvas is currently picking (studio plan §3.4, issue #94's 5b). */
-export type PdfPickMode = 'header' | 'until' | 'column' | 'region'
+/** What clicking (or dragging) on the PDF canvas is currently picking: a line of text (issue #121, the default), or a `table` extract's header row, last row or column (issue #94's 5b). */
+export type PdfPickMode = 'text' | 'header' | 'until' | 'column'
 
 export interface PdfCanvasProps {
-  recipeId:     string
-  /** The step path the snapshot (and this canvas's `table-preview` calls) are cached against. */
-  stepPath:     string
+  recipeId:       string
+  /** The step path the snapshot (and this canvas's `table-preview`/`region-preview` calls) are cached against. */
+  stepPath:       string
   /** The document's cells and rows (`pdf-view`). */
-  view:         PdfDocumentView
+  view:           PdfDocumentView
   /** Where `pdf.js` fetches the raw bytes to render (`GET /api/pdf-bytes`). */
-  bytesUrl:     string
+  bytesUrl:       string
   /** Called with the `table` extract card every time a header/until/column pick changes it. */
-  onTablePick:  (card: OutlineCard) => void
-  /** Called with a `regex` extract card from a dragged region. */
-  onRegionPick: (card: OutlineCard) => void
+  onTablePick:    (card: OutlineCard) => void
+  /** Called with a `region` extract card when a staged selection's "Add to recipe" is clicked (issue #121). */
+  onRegionPick:   (card: OutlineCard) => void
+  /** The recipe's extract steps, for drawing the regions already in it (issue #125); default none. */
+  steps?:         readonly PickedStep[]
+  /** The cross-panel highlight (issue #111): the step whose region lights up. */
+  hoveredStepId?: string
+  /** Reports the region step the line under the mouse belongs to (or `undefined`), the way the HTML canvas does. */
+  onHoverStepId?: (stepId: string | undefined) => void
+}
+
+const NO_STEPS: readonly PickedStep[] = []
+
+/** A selection staged on the canvas, not yet in the recipe: a box on one page, previewed through `region-preview` until added or cleared. */
+interface StagedRegion {
+  page: number
+  box:  PointsBox
+}
+
+/** A drag in flight on the canvas, in canvas pixels. */
+interface DragBox {
+  startX:   number
+  startY:   number
+  currentX: number
+  currentY: number
 }
 
 /** Rendering scale: PDF points -> canvas pixels (mirrors `capture.mjs`'s `pdfFigure`, whose scale is also 2 by default). */
 const SCALE = 1.5
 /** `pdfFigure`'s own cell-box padding: a cell is drawn a bit taller than its own font-size height. */
 const CELL_HEIGHT_PAD = 1.2
+/** How far (in pixels) from a cell's box the pointer may be and still snap to it. */
+const SNAP_DISTANCE = 24
+/** A mouse that moved less than this (in pixels) between down and up clicked; more, and it dragged a box. */
+const CLICK_SLOP = 4
 const ROW_COLORS = ['#2e86ab', '#3bb273']
 const HEADER_COLOR = '#e4572e'
 const MATCH_FILL = 'rgba(59, 178, 115, 0.18)'
+const SNAP_COLOR = '#1d4ed8'
+/** The colour of what is already in the recipe, the outline card's own highlight orange. */
+const RECIPE_COLOR = '#ea580c'
 
 /**
  * The PDF canvas (studio plan §3.4, issue #94's 5b): the page `pdf.js`
  * renders, with every cell `readPdf` found outlined and each row in
  * alternating colours — porting `docs/how-it-works/capture/capture.mjs`'s
  * `pdfFigure` drawing math to React, over an SVG overlay (rather than a
- * second canvas) so row/column hit-testing is plain DOM event handling.
+ * second canvas) so hit-testing is plain DOM event handling.
  *
- * Picking builds one `table` extract card incrementally: the header row's
- * click gives `selector`, the boundary ("last") row's click gives `until`,
- * a column band's click adds to `columns` — `onTablePick` fires the whole
- * card again each time, so the caller can upsert the one card in place
- * (mirrors the DOM picker's own "upgrade the last card" pattern). A dragged
- * region is a one-off `regex` pick instead (`onRegionPick`), never folded
- * into the table draft.
+ * **Text** (issue #121, the default mode): moving the mouse snaps to the
+ * nearest line of text (the cell under or next to the pointer), a click
+ * stages it as a selection, shift+click extends the selection to another
+ * line, dragging stages the box drawn. A staged selection is previewed
+ * through `region-preview` — the engine's own reading, so the highlighted
+ * cells and the text in the chip are exactly what the step will bind — and
+ * sits there until "Add to recipe" appends its `region` card, the chip is
+ * dragged onto the Steps tab (the same card, dropped), or it is cleared.
+ * Nothing is written to the recipe before that.
  *
- * The live preview (the current draft's matched rows, filled in as options
- * change) comes from `table-preview`, a pure, instant computation over the
- * already-cached document — no re-fetch per keystroke/click.
+ * **Table** modes build one `table` extract card incrementally: the header
+ * row's click gives `selector`, the boundary ("last") row's click gives
+ * `until`, a column band's click adds to `columns` — `onTablePick` fires the
+ * whole card again each time, so the caller can upsert the one card in
+ * place. Its live preview comes from `table-preview`.
+ *
+ * Cross-panel highlighting (issues #111, #125): every `region` step
+ * reading this page is drawn as a dashed box named after the step;
+ * hovering the step's card fills it in, and snapping to a line one of
+ * them reads lights the card up.
  */
-export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, onRegionPick }: PdfCanvasProps): React.ReactElement {
+export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, onRegionPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: PdfCanvasProps): React.ReactElement {
   const [pageIndex, setPageIndex] = useState(0)
-  const [mode, setMode] = useState<PdfPickMode>('header')
+  const [mode, setMode] = useState<PdfPickMode>('text')
   const [draft, setDraft] = useState<TableDraft>({})
-  const [drag, setDrag] = useState<{ startY: number, currentY: number } | undefined>(undefined)
+  const [hoverCell, setHoverCell] = useState<PdfCellView | undefined>(undefined)
+  const [staged, setStaged] = useState<StagedRegion | undefined>(undefined)
+  const [drag, setDrag] = useState<DragBox | undefined>(undefined)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const reportedHoverRef = useRef<string | undefined>(undefined)
 
   const page = view.pages[pageIndex]
+  const recipeRegions = useMemo(() => regionStepsAt(steps, 'page', page?.number ?? -1), [steps, page?.number])
   const width = page === undefined ? 0 : Math.ceil(page.width * SCALE)
   const height = page === undefined ? 0 : Math.ceil(page.height * SCALE)
 
@@ -66,6 +112,11 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
     () => preview.data?.matches.find(match => match.page === page?.number),
     [preview.data, page?.number],
   )
+
+  const stagedSelector = staged === undefined ? undefined : regionSelector('page', staged.page, staged.box)
+  const regionPreview = useRegionPreviewQuery(recipeId, stepPath, stagedSelector)
+  const stagedMatch = regionPreview.data?.matches.find(match => match.page === staged?.page)
+  const stagedText = stagedMatch?.text
 
   useEffect(() => {
     if (draft.header === undefined) return
@@ -104,56 +155,125 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
     setDraft(previous => ({ ...previous, columns: { ...previous.columns, [columnKeyFrom(bandName)]: escapedRowPattern(bandName) } }))
   }
 
-  function toPoints (pixelY: number): number {
-    return page.height - pixelY / SCALE
+  /** Stages `box` on this page, or widens the current selection to hold it too when extending (shift). */
+  function stage (box: PointsBox, extend: boolean): void {
+    const current = staged
+    setStaged(extend && current !== undefined && current.page === page.number ? { page: page.number, box: unionBox(current.box, box) } : { page: page.number, box })
   }
 
-  function handlePointerDown (event: React.PointerEvent<SVGSVGElement>): void {
-    if (mode !== 'region') return
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const y = event.clientY - bounds.top
-    setDrag({ startY: y, currentY: y })
+  /** Tells the other panels which step the mouse is over, once per change rather than per pixel. */
+  function reportHover (stepId: string | undefined): void {
+    if (onHoverStepId === undefined || reportedHoverRef.current === stepId) return
+    reportedHoverRef.current = stepId
+    onHoverStepId(stepId)
   }
 
-  function handlePointerMove (event: React.PointerEvent<SVGSVGElement>): void {
-    if (drag === undefined) return
-    const bounds = event.currentTarget.getBoundingClientRect()
-    setDrag({ ...drag, currentY: event.clientY - bounds.top })
+  function handleMouseMove (event: React.MouseEvent<SVGSVGElement>): void {
+    if (mode !== 'text') return
+    const point = pixelPoint(event)
+    if (drag !== undefined) {
+      setDrag({ ...drag, currentX: point.x, currentY: point.y })
+
+      return
+    }
+    const cell = nearestCell(page, point)
+    setHoverCell(cell)
+    reportHover(cell === undefined ? undefined : stepIdsForBox(cellBox(cell), recipeRegions)[0])
   }
 
-  function handlePointerUp (): void {
-    if (drag === undefined) return
-    const [fromY, toYPixel] = [Math.min(drag.startY, drag.currentY), Math.max(drag.startY, drag.currentY)]
-    const [fromPoints, toPointsValue] = [toPoints(toYPixel), toPoints(fromY)]
-    const covered = page.rows.filter(row => row.bottom <= toPointsValue && row.top >= fromPoints)
+  function handleMouseDown (event: React.MouseEvent<SVGSVGElement>): void {
+    if (mode !== 'text' || event.button !== 0) return
+    const point = pixelPoint(event)
+    setDrag({ startX: point.x, startY: point.y, currentX: point.x, currentY: point.y })
+  }
+
+  function handleMouseUp (event: React.MouseEvent<SVGSVGElement>): void {
+    if (mode !== 'text' || drag === undefined) return
+    const point = pixelPoint(event)
     setDrag(undefined)
-    if (covered.length === 0) return
-    onRegionPick(regexCardNode(covered.map(row => rowText(row)), stepPath))
+    const dragged = Math.abs(point.x - drag.startX) + Math.abs(point.y - drag.startY) > CLICK_SLOP
+    if (dragged) {
+      stage(pointsBox(page, drag.startX, drag.startY, point.x, point.y), event.shiftKey)
+
+      return
+    }
+    const cell = nearestCell(page, point)
+    if (cell === undefined) {
+      if (!event.shiftKey) setStaged(undefined)
+
+      return
+    }
+    stage(cellBox(cell), event.shiftKey)
   }
+
+  /** The `region` card the staged selection would add — `undefined` until the preview has read something in the box. */
+  function stagedCard (): OutlineCard | undefined {
+    if (stagedSelector === undefined || stagedText === undefined) return undefined
+
+    return regionCardNode(stagedSelector, stepPath, regionIdFrom(stagedText))
+  }
+
+  function addStaged (): void {
+    const card = stagedCard()
+    if (card === undefined) return
+    onRegionPick(card)
+    setStaged(undefined)
+  }
+
+  function handleChipDragStart (event: React.DragEvent<HTMLDivElement>): void {
+    const card = stagedCard()
+    if (card === undefined || stagedText === undefined) return
+    event.dataTransfer.setData(CARD_DRAG_MIME, cardDragData(card))
+    event.dataTransfer.setData('text/plain', stagedText)
+    event.dataTransfer.effectAllowed = 'copy'
+  }
+
+  const textMode = mode === 'text'
+  const stagedOnThisPage = staged !== undefined && staged.page === page.number ? staged : undefined
 
   return (
     <Box h='full' display='flex' flexDirection='column'>
       <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} flexWrap='wrap'>
         {view.pages.length > 1 && <PageSelect pages={view.pages.length} value={pageIndex} onChange={setPageIndex} />}
+        <ModeButton label='Text' active={textMode} onClick={() => { setMode('text') }} />
         <ModeButton label='Header row' active={mode === 'header'} onClick={() => { setMode('header') }} />
         <ModeButton label='Last row (until)' active={mode === 'until'} onClick={() => { setMode('until') }} />
         <ModeButton label='Column' active={mode === 'column'} onClick={() => { setMode('column') }} />
-        <ModeButton label='Drag a region' active={mode === 'region'} onClick={() => { setMode('region') }} />
         <Text fontSize='xs' color='fg.muted'>{`${String(page.rowCount)} rows, ${String(page.cellCount)} cells${page.hasTextLayer ? '' : ' — no text layer (a scan?)'}`}</Text>
+        {textMode && staged === undefined && <Text fontSize='xs' color='fg.muted'>Click a line (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
         {draft.header !== undefined && <Badge size='sm' colorPalette='green'>{`table: ${draft.header}${draft.until === undefined ? '' : ` until ${draft.until}`}`}</Badge>}
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
+        {regionPreview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{regionPreview.data.error}</Badge>}
       </HStack>
       <Box flex='1' minH='0' overflow='auto' position='relative'>
         <Box position='relative' width={`${String(width)}px`} height={`${String(height)}px`}>
           <canvas ref={canvasRef} width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }} />
           <svg
+            data-testid='pdf-overlay'
             width={width}
             height={height}
-            style={{ position: 'absolute', top: 0, left: 0, cursor: mode === 'region' ? 'crosshair' : 'pointer' }}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
+            style={{ position: 'absolute', top: 0, left: 0, cursor: textMode ? 'crosshair' : 'pointer' }}
+            onMouseMove={handleMouseMove}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={() => { setHoverCell(undefined); reportHover(undefined) }}
           >
+            {recipeRegions.map(region => (
+              <rect
+                key={`recipe:${region.id}`}
+                data-testid='recipe-region'
+                data-step-id={region.id}
+                data-highlighted={region.id === hoveredStepId}
+                {...boxRect(region.box, page.height)}
+                fill={region.id === hoveredStepId ? 'rgba(234, 88, 12, 0.22)' : 'rgba(234, 88, 12, 0.05)'}
+                stroke={RECIPE_COLOR}
+                strokeWidth={region.id === hoveredStepId ? 2 : 1}
+                strokeDasharray={region.id === hoveredStepId ? undefined : '4 3'}
+                pointerEvents='none'
+              >
+                <title>{`In the recipe: ${region.id}`}</title>
+              </rect>
+            ))}
             {page.rows.map((row, index) => (
               <RowOverlay
                 key={`${String(row.top)}:${String(row.bottom)}`}
@@ -162,31 +282,96 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
                 highlighted={currentMatch?.matchedRowIndices.includes(index) ?? false}
                 scale={SCALE}
                 pageHeight={page.height}
-                onClick={() => { pickHeaderOrUntil(row) }}
+                cursor={textMode ? 'crosshair' : 'pointer'}
+                onClick={textMode ? undefined : () => { pickHeaderOrUntil(row) }}
               />
             ))}
             {mode === 'column' && currentMatch !== undefined && currentMatch.bands.map(band => (
               <BandOverlay key={band.column} band={band} scale={SCALE} pageHeight={page.height} onClick={() => { pickColumn(band.name) }} />
             ))}
+            {textMode && hoverCell !== undefined && drag === undefined && (
+              <rect data-testid='snap-target' {...cellRect(hoverCell, page.height)} fill='rgba(29, 78, 216, 0.08)' stroke={SNAP_COLOR} strokeWidth={1.5} strokeDasharray='3 2' pointerEvents='none' />
+            )}
+            {stagedOnThisPage !== undefined && (
+              <rect data-testid='staged-region' {...boxRect(stagedOnThisPage.box, page.height)} fill='rgba(155, 93, 229, 0.12)' stroke={REGION_COLOR} strokeWidth={1.5} pointerEvents='none' />
+            )}
+            {stagedOnThisPage !== undefined && stagedMatch?.cells.map(cell => (
+              <rect key={cellKey(cell)} data-testid='staged-cell' {...cellRect(cell, page.height)} fill='rgba(155, 93, 229, 0.28)' pointerEvents='none' />
+            ))}
             {drag !== undefined && (
               <rect
-                x={0}
+                x={Math.min(drag.startX, drag.currentX)}
                 y={Math.min(drag.startY, drag.currentY)}
-                width={width}
+                width={Math.abs(drag.currentX - drag.startX)}
                 height={Math.abs(drag.currentY - drag.startY)}
                 fill='rgba(155, 93, 229, 0.2)'
-                stroke='#9b5de5'
+                stroke={REGION_COLOR}
+                strokeDasharray='4 2'
+                pointerEvents='none'
               />
             )}
           </svg>
+          {stagedOnThisPage !== undefined && (
+            <SelectionChip
+              left={Math.min(stagedOnThisPage.box.x1, stagedOnThisPage.box.x2) * SCALE}
+              top={(page.height - Math.min(stagedOnThisPage.box.y1, stagedOnThisPage.box.y2)) * SCALE + 6}
+              text={stagedText}
+              loading={regionPreview.isPending}
+              onAdd={addStaged}
+              onClear={() => { setStaged(undefined) }}
+              onDragStart={handleChipDragStart}
+            />
+          )}
         </Box>
       </Box>
     </Box>
   )
 }
 
-function rowText (row: PdfRowView): string {
-  return row.cells.map(cell => cell.text).join('\t')
+/** The pointer's position in canvas pixels, from the overlay's own top-left corner. */
+function pixelPoint (event: React.MouseEvent<SVGSVGElement>): { x: number, y: number } {
+  const bounds = event.currentTarget.getBoundingClientRect()
+
+  return { x: event.clientX - bounds.left, y: event.clientY - bounds.top }
+}
+
+/** A stable React key for a cell: its position (cells carry no id). */
+function cellKey (cell: PdfCellView): string {
+  return `staged:${String(cell.x)}:${String(cell.y)}`
+}
+
+/** A cell's box in canvas pixels, `pdfFigure`'s own math: `left = x * scale`, `top = (pageHeight - y - height) * scale`, drawn `height * scale * 1.2` tall. */
+function cellRect (cell: PdfCellView, pageHeight: number): { x: number, y: number, width: number, height: number } {
+  return { x: cell.x * SCALE, y: (pageHeight - cell.y - cell.height) * SCALE, width: Math.max(cell.width, 1) * SCALE, height: cell.height * SCALE * CELL_HEIGHT_PAD }
+}
+
+/** A points box in canvas pixels (y flips: points grow upwards, pixels downwards). */
+function boxRect (box: PointsBox, pageHeight: number): { x: number, y: number, width: number, height: number } {
+  const [x1, x2] = [Math.min(box.x1, box.x2), Math.max(box.x1, box.x2)]
+  const [y1, y2] = [Math.min(box.y1, box.y2), Math.max(box.y1, box.y2)]
+
+  return { x: x1 * SCALE, y: (pageHeight - y2) * SCALE, width: (x2 - x1) * SCALE, height: (y2 - y1) * SCALE }
+}
+
+/** A dragged pixel rectangle as a points box on the page. */
+function pointsBox (page: PdfPageView, x1: number, y1: number, x2: number, y2: number): PointsBox {
+  return { x1: x1 / SCALE, y1: page.height - y1 / SCALE, x2: x2 / SCALE, y2: page.height - y2 / SCALE }
+}
+
+/** The cell under the pointer, else the nearest one within `SNAP_DISTANCE` pixels of its box; `undefined` on an empty stretch of page. */
+function nearestCell (page: PdfPageView, point: { x: number, y: number }): PdfCellView | undefined {
+  let best: { cell: PdfCellView, distance: number } | undefined
+  for (const row of page.rows) {
+    for (const cell of row.cells) {
+      const rect = cellRect(cell, page.height)
+      const dx = Math.max(rect.x - point.x, 0, point.x - (rect.x + rect.width))
+      const dy = Math.max(rect.y - point.y, 0, point.y - (rect.y + rect.height))
+      const distance = Math.hypot(dx, dy)
+      if (distance <= SNAP_DISTANCE && (best === undefined || distance < best.distance)) best = { cell, distance }
+    }
+  }
+
+  return best?.cell
 }
 
 function ModeButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }): React.ReactElement {
@@ -237,13 +422,14 @@ interface RowOverlayProps {
   highlighted: boolean
   scale:       number
   pageHeight:  number
-  onClick:     () => void
+  cursor:      string
+  onClick?:    () => void
 }
 
-/** One row's cell outlines, in `pdfFigure`'s own box math: `left = x * scale`, `top = (pageHeight - y - height) * scale`, a cell drawn `height * scale * 1.2` tall. */
-function RowOverlay ({ row, colour, highlighted, scale, pageHeight, onClick }: RowOverlayProps): React.ReactElement {
+/** One row's cell outlines, in `pdfFigure`'s own box math (see `cellRect`). */
+function RowOverlay ({ row, colour, highlighted, scale, pageHeight, cursor, onClick }: RowOverlayProps): React.ReactElement {
   return (
-    <g onClick={onClick} style={{ cursor: 'pointer' }}>
+    <g onClick={onClick} style={{ cursor }}>
       {highlighted && row.cells.length > 0 && (
         <rect
           x={Math.min(...row.cells.map(cell => cell.x)) * scale}

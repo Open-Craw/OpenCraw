@@ -167,6 +167,20 @@ export const tablePreviewCommandSchema = z.object({
 })
 
 /**
+ * The live preview of a `region` extract's selector against a cached PDF
+ * snapshot (`document-view`'s `region-preview.use-case.ts`, issue #121: the
+ * PDF canvas's click-to-snap selection): the text the step would bind and
+ * the cells to highlight, recomputed as the box changes — call
+ * `take-snapshot` first.
+ */
+export const regionPreviewCommandSchema = z.object({
+  type:     z.literal('region-preview'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  selector: z.string().min(1),
+})
+
+/**
  * The grid canvas's sheets and cells (`document-view`'s `workbook-view.mapper.ts`,
  * studio plan §3.4, issue #94's 5c), off the same cached snapshot
  * `take-snapshot`/`document-tree` already use — call `take-snapshot` first.
@@ -302,8 +316,26 @@ export const stopRecordingCommandSchema = z.object({
   type: z.literal('stop-recording'),
 })
 
+/**
+ * Copies a document the person dropped on (or opened in) the studio into a
+ * workspace folder, so a recipe can point at it with a `file:` URL (issue
+ * #120). The bytes travel base64-encoded inside the JSON command envelope
+ * every other command uses: a local tool's own files are a few megabytes at
+ * most, not worth a second, multipart endpoint. `folder` is created when it
+ * does not exist yet, so a dropped file can also start a workspace; `name`
+ * is a plain file name (no directories), kept as the copy's name unless one
+ * is already there, in which case a numbered one is used.
+ */
+export const importDocumentCommandSchema = z.object({
+  type:   z.literal('import-document'),
+  folder: z.string().min(1),
+  name:   z.string().min(1),
+  bytes:  z.string(),
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
+  importDocumentCommandSchema,
   runSampleCommandSchema,
   stopRunCommandSchema,
   saveRecipeCommandSchema,
@@ -318,6 +350,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   documentTreeCommandSchema,
   pdfViewCommandSchema,
   tablePreviewCommandSchema,
+  regionPreviewCommandSchema,
   gridViewCommandSchema,
   gridPreviewCommandSchema,
   deckViewCommandSchema,
@@ -328,6 +361,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
 export type OpenWorkspaceCommand = z.infer<typeof openWorkspaceCommandSchema>
+export type ImportDocumentCommand = z.infer<typeof importDocumentCommandSchema>
 export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
 export type StopRunCommand = z.infer<typeof stopRunCommandSchema>
 export type SaveRecipeCommand = z.infer<typeof saveRecipeCommandSchema>
@@ -342,6 +376,7 @@ export type DocumentTreeCommand = z.infer<typeof documentTreeCommandSchema>
 export type PdfViewCommand = z.infer<typeof pdfViewCommandSchema>
 export type TablePreviewOptions = z.infer<typeof tablePreviewOptionsSchema>
 export type TablePreviewCommand = z.infer<typeof tablePreviewCommandSchema>
+export type RegionPreviewCommand = z.infer<typeof regionPreviewCommandSchema>
 export type GridViewCommand = z.infer<typeof gridViewCommandSchema>
 export type GridPreviewOptions = z.infer<typeof gridPreviewOptionsSchema>
 export type GridPreviewCommand = z.infer<typeof gridPreviewCommandSchema>

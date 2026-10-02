@@ -3,6 +3,14 @@ import { escapedRowPattern } from './pdf-pick.mapper'
 
 const DEFAULT_TABLE_ID = 'table'
 
+/** A rectangle of cells on one sheet, 0-based and inclusive at both ends — what the grid canvas's Cell mode stages (issue #123). */
+export interface CellRange {
+  top:    number
+  left:   number
+  bottom: number
+  right:  number
+}
+
 /** A cell's own value — mirrors `@opencraw/core`'s `WorkbookCell`, which `@opencraw/studio`'s wire types do not re-export by name (a leaf slice/app declares its own structural type instead of reaching for one — `vertical-feature-slices.md`). */
 export type GridCellValue = string | number | boolean
 
@@ -156,4 +164,85 @@ export function gridTableCardNode (draft: GridDraft, path: string, id: string = 
   }
 }
 
-export { columnKeyFrom, escapedRowPattern } from './pdf-pick.mapper'
+export { columnKeyFrom, escapedRowPattern, regionIdFrom } from './pdf-pick.mapper'
+
+/**
+ * A `jsonpath` extract's selector for one cell, or a rectangle of cells, of
+ * a sheet (issue #123): the sheet by its exact name (not its position, so a
+ * sheet inserted before it does not move the read), the row and the column
+ * by their 0-based positions, as `@opencraw/core` exposes a read workbook
+ * to `jsonpath` (`{ sheets: [{ name, rows: [[cell, …], …] }] }`, authoring
+ * §4.7). A rectangle is a slice of rows then a slice of columns —
+ * `rows[1:3][0:2]` — which jsonpath-plus flattens row by row, so the step
+ * reads the cells in reading order.
+ *
+ * @param sheetName - The sheet's own name, quoted as a jsonpath-plus filter string.
+ * @param range - The cell(s), 0-based, both ends inclusive.
+ */
+export function cellSelector (sheetName: string, range: CellRange): string {
+  const rows = range.top === range.bottom ? `[${String(range.top)}]` : `[${String(range.top)}:${String(range.bottom + 1)}]`
+  const columns = range.left === range.right ? `[${String(range.left)}]` : `[${String(range.left)}:${String(range.right + 1)}]`
+
+  return `$.sheets[?(@.name==${quoted(sheetName)})].rows${rows}${columns}`
+}
+
+/** The smallest rectangle holding both: a shift+click extending a selection to a second cell. */
+export function unionRange (a: CellRange, b: CellRange): CellRange {
+  return { top: Math.min(a.top, b.top), left: Math.min(a.left, b.left), bottom: Math.max(a.bottom, b.bottom), right: Math.max(a.right, b.right) }
+}
+
+/** Whether `range` is one cell: the step then binds a single value (`many` absent) rather than a list. */
+export function isSingleCell (range: CellRange): boolean {
+  return range.top === range.bottom && range.left === range.right
+}
+
+/**
+ * What the engine reads in a range: its cells' own values, as stored (a
+ * merged range's value sits in its top-left cell only, the covered cells
+ * read `''`), a row's cells joined by a space and rows by a newline — the
+ * same joining the PDF and deck chips show. Cells beyond a ragged row's end
+ * are skipped, as jsonpath skips them.
+ *
+ * @param sheet - The sheet (`grid-view`'s own cells).
+ * @param range - The cell(s), 0-based, both ends inclusive.
+ */
+export function rangeText (sheet: GridSheetView, range: CellRange): string {
+  const lines: string[] = []
+  for (let row = range.top; row <= range.bottom; row += 1) {
+    const cells = sheet.rows[row]?.slice(range.left, range.right + 1) ?? []
+    lines.push(cells.map(cell => String(cell.value)).join(' '))
+  }
+
+  return lines.join('\n')
+}
+
+/**
+ * Builds the `jsonpath` extract card for a staged cell or range (issue
+ * #123): what "Add to recipe" appends, and what dragging the selection's
+ * chip onto the Steps tab drops there. `take: "json"` keeps a number a
+ * number (the default `text` would stringify it); a rectangle of cells is
+ * a list (`many`), one cell a single value.
+ *
+ * @param selector - The selector ({@link cellSelector}).
+ * @param path - This node's outline path.
+ * @param id - The step's own id (`regionIdFrom` of the range's text).
+ * @param many - Whether the selector covers more than one cell.
+ */
+export function gridCellCardNode (selector: string, path: string, id: string, many: boolean): OutlineCard {
+  return {
+    kind:     'card',
+    path,
+    stepType: 'extract',
+    sentence: [],
+    custom:   false,
+    step:     { type: 'extract', id, kind: 'jsonpath', selector, take: 'json', ...(many && { many: true }) },
+  }
+}
+
+/** A sheet name as a jsonpath-plus string literal: single-quoted, or double-quoted when the name itself holds a single quote (`Bob's`). */
+function quoted (name: string): string {
+  if (!name.includes("'")) return `'${name}'`
+
+  // eslint-disable-next-line unicorn/prefer-string-replace-all -- apps/studio-ui's tsconfig lib is ["dom"] only (no ES2021 String#replaceAll), same as pdf-pick.mapper.ts.
+  return `"${name.replace(/["\\]/g, String.raw`\$&`)}"`
+}

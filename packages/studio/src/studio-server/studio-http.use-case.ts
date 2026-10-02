@@ -14,6 +14,7 @@ import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleGridPreview } from './grid-preview.handler'
 import { handleGridView } from './grid-view.handler'
+import { handleImportDocument } from './import-document.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleInspectPage } from './inspect-page.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
@@ -21,6 +22,7 @@ import { handlePdfBytes } from './pdf-bytes.handler'
 import { handlePdfView } from './pdf-view.handler'
 import { handleStartRecording, handleStopRecording } from './recording.handler'
 import { handleResponsesSeen } from './responses-seen.handler'
+import { handleRegionPreview } from './region-preview.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
@@ -176,6 +178,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
   switch (command.type) {
     case 'open-workspace': { return handleOpenWorkspace(state, command)
     }
+    case 'import-document': { return handleImportDocument(command)
+    }
     case 'run-sample': { return handleRunSample(state, command)
     }
     case 'stop-run': { return handleStopRun(state, command)
@@ -203,6 +207,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'pdf-view': { return Promise.resolve(handlePdfView(state, command))
     }
     case 'table-preview': { return Promise.resolve(handleTablePreview(state, command))
+    }
+    case 'region-preview': { return Promise.resolve(handleRegionPreview(state, command))
     }
     case 'grid-view': { return handleGridView(state, command)
     }

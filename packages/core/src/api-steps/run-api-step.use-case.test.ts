@@ -6,7 +6,7 @@ import { ExtractionScope } from '../extraction-scope'
 import { HookRegistry } from '../hooks'
 import { HttpClient, HttpError } from '../http-session'
 import type { HttpRequest, HttpResponse, HttpSender } from '../http-session'
-import { readPdf } from '../pdf-document'
+import { readPdf, regionSelector } from '../pdf-document'
 import { csvWorkbook } from '../workbook-document'
 import type { InputRecipe } from '../recipe-schema'
 import { runSteps } from '../step-flow'
@@ -276,10 +276,13 @@ describe('ApiStepRunner', () => {
     await expect(crawl(unbound, fakeSender())).rejects.toThrow('"nowhere" is not bound: set it to [] before collecting into it')
   })
 
-  it('reads a PDF: tables by header, regex over its rows, jsonpath over its structure', async () => {
+  it('reads a PDF: tables by header, regex over its rows, jsonpath over its structure, region by a box on a page', async () => {
     const bytes = readFileSync(join(__dirname, '..', 'pdf-document', 'fixtures', 'discounts.pdf'))
     const pdf = await readPdf(new Uint8Array(bytes))
     const sender: HttpSender = { send: async request => ({ status: 200, url: request.url, headers: {}, body: pdf }) }
+    const titleCell = pdf.pages[0].rows.flatMap(row => row.cells).find(cell => cell.text.startsWith('DEALER DISCOUNTS'))
+    if (titleCell === undefined) throw new Error('the fixture lost its title line')
+    const titleBox = regionSelector({ on: 'page', at: 1, x1: titleCell.x, y1: titleCell.y, x2: titleCell.x + titleCell.width, y2: titleCell.y + titleCell.height })
     const reading: InputRecipe = {
       ...recipe,
       start: [{ url: 'http://shop/discounts.pdf' }],
@@ -287,13 +290,18 @@ describe('ApiStepRunner', () => {
         { type: 'request', id: 'doc', url: '{{start.url}}', as: 'pdf' },
         { type: 'extract', id: 'month', selector: String.raw`DISCOUNTS - (\w+ \d{4})`, kind: 'regex' },
         { type: 'extract', id: 'first', from: 'doc', selector: '$.pages[1].rows[0].text', kind: 'jsonpath' },
+        { type: 'extract', id: 'title', selector: titleBox, kind: 'region' },
+        { type: 'extract', id: 'titleAgain', from: 'doc', selector: titleBox, kind: 'region' },
+        { type: 'extract', id: 'everyPage', selector: 'page=* x=0..595 y=0..842', kind: 'region', many: true },
         { type: 'extract', id: 'tables', selector: '^models', kind: 'table', many: true, until: String.raw`^(note|\*)`, columns: { model: '^models', discount: String.raw`^(discount|\(promo)`, extra: '^extra' } },
         { type: 'forEach', over: 'tables', as: 'table', steps: [{ type: 'set', id: 'rows', value: '{{table.rows}}' }, { type: 'forEach', over: 'rows', as: 'row', emit: true, steps: [] }] },
       ],
     }
     const emitted = await crawl(reading, sender)
     expect(emitted).toHaveLength(12)
-    expect(emitted[0]).toMatchObject({ month: 'SEPTEMBER 2026', first: 'MODELS GAMMA\tDiscount %*\tExtras*', table: { title: 'MODELS ALPHA' }, row: { model: 'CITY (model 101)', discount: '19,0%', extra: '+3% registration bonus' } })
+    expect(emitted[0]).toMatchObject({ month: 'SEPTEMBER 2026', first: 'MODELS GAMMA\tDiscount %*\tExtras*', title: titleCell.text, titleAgain: titleCell.text, table: { title: 'MODELS ALPHA' }, row: { model: 'CITY (model 101)', discount: '19,0%', extra: '+3% registration bonus' } })
+    expect(emitted[0].everyPage).toHaveLength(2) // one text per page: the whole-page box with many
+    expect((emitted[0].everyPage as string[])[0].startsWith(titleCell.text)).toBe(true)
     expect(emitted.at(-1)).toMatchObject({ table: { page: 2 }, row: { model: 'G3 BEV', discount: '5,0%' } })
   })
 

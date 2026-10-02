@@ -1704,7 +1704,8 @@
                 "xpath",
                 "jsonpath",
                 "regex",
-                "table"
+                "table",
+                "region"
               ]
             },
             "take": {

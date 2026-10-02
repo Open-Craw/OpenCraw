@@ -3,3 +3,5 @@ export type { DeckDocument, DeckSlide, DeckShape, DeckChart } from './deck-docum
 export { readPptxDeck } from './read-pptx.client'
 export { findDeckTables } from './deck-table.algorithm'
 export type { DeckTable, DeckTableQuery } from './deck-table.algorithm'
+export { deckRegionText } from './deck-region.algorithm'
+export type { DeckRegionMatch } from './deck-region.algorithm'
