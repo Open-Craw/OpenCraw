@@ -1,4 +1,4 @@
-import { bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/core'
+import { UnknownHookError, bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/core'
 import type { BrowserSessionConfig, Crawler, CrawlEvent } from '@opencraw/core'
 import type { SampleBudget } from '../studio-api'
 import { loadRecipePair } from './load-recipe-pair.use-case'
@@ -126,7 +126,7 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
       rejected:   0,
       duplicates: 0,
       durationMs: 0,
-      error:      error instanceof Error ? error.message : String(error),
+      error:      failureMessage(error),
       records,
       rejectedRecords,
       // eslint-disable-next-line unicorn/prefer-iterator-to-array -- `.toArray()` needs a `lib` newer than this repo's `es2022` (tsconfig.base.json)
@@ -135,4 +135,12 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
   } finally {
     await crawler.close()
   }
+}
+
+/** What a run that could not start reports. A hook is the author's own code, which Studio never loads (issue #150): say so, instead of leaving "unknown hook" to read as a typo. */
+function failureMessage (error: unknown): string {
+  if (error instanceof UnknownHookError) return `${error.message}. Studio does not load hooks, so a recipe that uses one cannot be sample-run here; run it with the cli or the mcp server, or temporarily replace the hook step to preview the rest.`
+  if (error instanceof Error) return error.message
+
+  return String(error)
 }

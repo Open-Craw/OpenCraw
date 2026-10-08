@@ -69,6 +69,7 @@ describe('runSample', () => {
     expect(result.recipeId).toBe('items')
     expect(result.emitted).toBe(0)
     expect(result.error).toContain('nope')
+    expect(result.error).toContain('Studio does not load hooks')
   })
 
   it('stops at the given sample budget and reports it', async () => {
