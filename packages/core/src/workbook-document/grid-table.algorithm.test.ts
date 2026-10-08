@@ -5,7 +5,9 @@ import { fillDown, findGridTables } from './grid-table.algorithm'
 import type { Sheet, WorkbookDocument } from './workbook-document.model'
 
 const bytes = readFileSync(join(__dirname, 'fixtures', 'listino.csv'))
-const listino = csvWorkbook(new TextDecoder('windows-1252').decode(bytes), { name: 'listino', encoding: 'windows-1252' })
+// The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131); `decodeText` is covered by text-decoding.algorithm.test.ts.
+const text = bytes.toString('latin1').replaceAll('', '€').replaceAll('', '–')
+const listino = csvWorkbook(text, { name: 'listino', encoding: 'windows-1252' })
 
 function book (...sheets: Sheet[]): WorkbookDocument {
   return { kind: 'workbook', sheets }

@@ -306,7 +306,8 @@ describe('ApiStepRunner', () => {
   })
 
   it('reads a CSV as a workbook: tables with filled groups, regex over its rows, jsonpath over its cells', async () => {
-    const text = new TextDecoder('windows-1252').decode(readFileSync(join(__dirname, '..', 'workbook-document', 'fixtures', 'listino.csv')))
+    // The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131); `decodeText` is covered by text-decoding.algorithm.test.ts.
+    const text = readFileSync(join(__dirname, '..', 'workbook-document', 'fixtures', 'listino.csv')).toString('latin1').replaceAll('', '€').replaceAll('', '–')
     const workbook = csvWorkbook(text, { name: 'listino', encoding: 'windows-1252' })
     const sender: HttpSender = { send: async request => ({ status: 200, url: request.url, headers: {}, body: workbook }) }
     const reading: InputRecipe = {
