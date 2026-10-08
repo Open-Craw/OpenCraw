@@ -67,7 +67,7 @@ describe('NewRecipeDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: '+ New recipe' }))
     fireEvent.change(await screen.findByPlaceholderText('books'), { target: { value: 'widgets' } })
     fireEvent.change(screen.getByPlaceholderText('https://example.com/books'), { target: { value: 'shop.test' } })
-    expect((screen.getByRole('button', { name: 'Create' })).disabled).toBe(true)
+    expect(screen.getByRole('button', { name: 'Create' })).toHaveProperty('disabled', true)
     fireEvent.change(screen.getByPlaceholderText('https://example.com/books'), { target: { value: 'https://shop.test/catalog' } })
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
 

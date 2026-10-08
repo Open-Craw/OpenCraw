@@ -1,3 +1,4 @@
+import { invalidateStaleSnapshot } from '../page-snapshot'
 import { saveRecipe } from '../recipe-workspace'
 import type { SaveRecipeCommand } from '../studio-api'
 import { broadcast } from './workspace.store'
@@ -13,7 +14,9 @@ import type { StudioState } from './workspace.store'
  * @returns `{ saved: true }` once the write has completed.
  */
 export async function handleSaveRecipe (state: StudioState, command: SaveRecipeCommand): Promise<{ saved: true }> {
-  await saveRecipe(command.path, command.recipe)
+  const recipe = command.recipe
+  await invalidateStaleSnapshot(state.snapshots, command.path, recipe)
+  await saveRecipe(command.path, recipe)
   broadcast(state, { type: 'workspace-changed' })
 
   return { saved: true }
