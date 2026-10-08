@@ -35,6 +35,8 @@ export function Toolbar ({ folder, onFolderChange, onOpen, openFolder, inputs, s
       <Text fontWeight='semibold' flexShrink={0}>OpenCraw Studio</Text>
       <Input
         size='sm'
+        flex='1 1 8em'
+        minW='8em'
         maxW='24em'
         placeholder='recipe folder'
         value={folder}
@@ -42,7 +44,7 @@ export function Toolbar ({ folder, onFolderChange, onOpen, openFolder, inputs, s
         onKeyDown={event => { if (event.key === 'Enter') onOpen() }}
       />
       <Button size='sm' onClick={onOpen}>Open</Button>
-      <NativeSelect.Root size='sm' maxW='16em' disabled={inputs.length === 0}>
+      <NativeSelect.Root size='sm' flex='1 1 8em' minW='8em' maxW='16em' disabled={inputs.length === 0}>
         <NativeSelect.Field
           value={selectedRecipeId ?? ''}
           onChange={event => { onSelectRecipe(event.target.value) }}
@@ -67,12 +69,14 @@ export function Toolbar ({ folder, onFolderChange, onOpen, openFolder, inputs, s
           if (file !== undefined) onImportFile(file)
         }}
       />
-      <Button size='sm' colorPalette='blue' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
-        Run sample
-      </Button>
-      <Button size='sm' variant='outline' onClick={onStop} disabled={!running}>
-        Stop
-      </Button>
+      <HStack gap={2} flexShrink={0}>
+        <Button size='sm' colorPalette='blue' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
+          Run sample
+        </Button>
+        <Button size='sm' variant='outline' onClick={onStop} disabled={!running}>
+          Stop
+        </Button>
+      </HStack>
     </HStack>
   )
 }
