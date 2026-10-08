@@ -18,6 +18,10 @@ describe('hasVisibleContent', () => {
     expect(hasVisibleContent('<body><input></body>')).toBe(true)
   })
 
+  it('is true for a small page of headings and links, as a shop catalog (issue #145)', () => {
+    expect(hasVisibleContent('<body><h1>Catalog, page 1</h1><ul><li><a href="/product/11">Trail runner</a></li></ul></body>')).toBe(true)
+  })
+
   it('ignores text that only sits in scripts and styles', () => {
     expect(hasVisibleContent('<body><script>var x = "hello"</script><style>p { }</style></body>')).toBe(false)
   })
