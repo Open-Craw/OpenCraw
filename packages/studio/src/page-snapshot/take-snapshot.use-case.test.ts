@@ -1,6 +1,7 @@
 import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import type { InputRecipe } from '@opencraw/core'
 import { takeSnapshot } from './take-snapshot.use-case'
 
@@ -13,11 +14,12 @@ describe('takeSnapshot (api mode: web mode needs a real browser, exercised by pa
     const folder = mkdtempSync(join(tmpdir(), 'opencraw-snapshot-'))
     const file = join(folder, 'page.html')
     writeFileSync(file, '<!doctype html><html><body><a href="/next">go</a><p class="price">£10</p></body></html>')
-    const snapshot = await takeSnapshot(apiRecipe(`file://${file}`), 'start')
+    const url = pathToFileURL(file).href
+    const snapshot = await takeSnapshot(apiRecipe(url), 'start')
     expect(snapshot.html).toContain('data-oc-node="n0"')
-    expect(snapshot.html).toContain('href="file:///next"') // new URL('/next', baseUrl) resolves against the file: URL's root, not its directory — real URL semantics, not a bug
+    expect(snapshot.html).toContain(`href="${new URL('/next', url).href}"`) // new URL('/next', baseUrl) resolves against the file: URL's root, not its directory — real URL semantics, not a bug
     expect(snapshot.nodeCount).toBeGreaterThan(0)
-    expect(snapshot.baseUrl).toBe(`file://${file}`)
+    expect(snapshot.baseUrl).toBe(url)
   })
 
   it('rejects a recipe with no start point', async () => {

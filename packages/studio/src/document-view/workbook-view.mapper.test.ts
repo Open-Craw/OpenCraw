@@ -4,13 +4,18 @@ import { csvWorkbook, readXlsxWorkbook } from '@opencraw/core'
 import type { WorkbookDocument } from '@opencraw/core'
 import { workbookDocumentView } from './workbook-view.mapper'
 
+// The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131).
+function windows1252Text (bytes: Buffer): string {
+  return bytes.toString('latin1').replaceAll('', '€').replaceAll('', '–')
+}
+
 const listinoPath = join(__dirname, '..', '..', '..', 'core', 'src', 'workbook-document', 'fixtures', 'listino.csv')
 const incentiviPath = join(__dirname, '..', '..', '..', 'office-reader', 'src', 'spreadsheet', 'fixtures', 'incentivi.xlsx')
 
 describe('workbookDocumentView', () => {
   it('carries a CSV sheet\'s cells over as text, and the detected delimiter/encoding', () => {
     const bytes = readFileSync(listinoPath)
-    const document = csvWorkbook(new TextDecoder('windows-1252').decode(bytes), { name: 'listino', encoding: 'windows-1252' })
+    const document = csvWorkbook(windows1252Text(bytes), { name: 'listino', encoding: 'windows-1252' })
     const view = workbookDocumentView(document)
     expect(view.sheets).toHaveLength(1)
     expect(view.csv).toEqual({ encoding: 'windows-1252', delimiter: ';' })
