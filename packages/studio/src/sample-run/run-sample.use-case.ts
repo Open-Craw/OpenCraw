@@ -66,7 +66,7 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
       }
     },
   })
-  const result = runToResult(crawler, set, records, rejectedRecords, steps)
+  const result = runToResult(crawler, set, recipeId, records, rejectedRecords, steps)
 
   return { stop: () => crawler.close(), result }
 }
@@ -95,7 +95,13 @@ function trackStep (steps: Map<string, SampleStepSummary>, event: CrawlEvent): v
   }
 }
 
-async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], records: SampleRunRecord[], rejectedRecords: SampleRunRejected[], steps: Map<string, SampleStepSummary>): Promise<SampleRunResult> {
+/**
+ * Awaits the run and shapes its result. A throw from `crawler.run` (an unknown
+ * hook, a recipe that cannot start) becomes the run's `error` instead of a
+ * rejection: nothing awaits `result` but a `.then`, and an unhandled rejection
+ * would take the whole Studio server down (issue #148).
+ */
+async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], recipeId: string, records: SampleRunRecord[], rejectedRecords: SampleRunRejected[], steps: Map<string, SampleStepSummary>): Promise<SampleRunResult> {
   try {
     const report = await crawler.run(set)
     const recipe = report.recipes[0]
@@ -108,6 +114,19 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
       durationMs: recipe.durationMs,
       error:      recipe.error,
       stoppedBy:  recipe.stoppedBy,
+      records,
+      rejectedRecords,
+      // eslint-disable-next-line unicorn/prefer-iterator-to-array -- `.toArray()` needs a `lib` newer than this repo's `es2022` (tsconfig.base.json)
+      steps:      [...steps.values()],
+    }
+  } catch (error) {
+    return {
+      recipeId,
+      emitted:    0,
+      rejected:   0,
+      duplicates: 0,
+      durationMs: 0,
+      error:      error instanceof Error ? error.message : String(error),
       records,
       rejectedRecords,
       // eslint-disable-next-line unicorn/prefer-iterator-to-array -- `.toArray()` needs a `lib` newer than this repo's `es2022` (tsconfig.base.json)

@@ -62,6 +62,14 @@ describe('useRunSessionStore', () => {
     expect(state.records).toHaveLength(1)
   })
 
+  it('finishRun keeps an error from the run itself (issue #148)', () => {
+    act(() => { useRunSessionStore.getState().startRun() })
+    act(() => { useRunSessionStore.getState().finishRun('unknown hook "positive"') })
+    const state = useRunSessionStore.getState()
+    expect(state.running).toBe(false)
+    expect(state.error).toBe('unknown hook "positive"')
+  })
+
   it('setError records a message an onError handler can show', () => {
     act(() => { useRunSessionStore.getState().setError('could not start') })
     expect(useRunSessionStore.getState().error).toBe('could not start')
