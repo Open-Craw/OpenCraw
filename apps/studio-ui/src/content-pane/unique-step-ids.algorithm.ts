@@ -6,7 +6,7 @@ import type { OutlineNode } from '@opencraw/studio'
  * `id "table" is already bound on this path`, and a pick only ever proposes
  * the same default (`value`, `table`, `items`, `item`).
  *
- * A clashing name gets the first free `-2`, `-3`… suffix. References inside
+ * A clashing name gets the first free `_2`, `_3`… suffix (ids are words: letters, digits and underscores, so a hyphen would be rejected by the engine, issue #164). References inside
  * the same picked node (`over`, `from`) follow their rename, so a picked list
  * keeps pointing at its own items. Names the picked nodes do not define are
  * left alone.
@@ -29,8 +29,8 @@ export function withUniqueStepIds (existing: readonly OutlineNode[], incoming: r
     for (const name of own) {
       if (!taken.has(name)) continue
       let counter = 2
-      while (taken.has(`${name}-${counter}`) || own.has(`${name}-${counter}`)) counter++
-      renames.set(name, `${name}-${counter}`)
+      while (taken.has(`${name}_${counter}`) || own.has(`${name}_${counter}`)) counter++
+      renames.set(name, `${name}_${counter}`)
     }
     for (const [name, renamedTo] of renames) earlier.set(name, renamedTo)
     const renamed = renames.size === 0 && earlier.size === 0 ? node : rename(node, renames, earlier)

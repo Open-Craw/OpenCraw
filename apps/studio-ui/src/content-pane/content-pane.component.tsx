@@ -9,7 +9,7 @@ import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
-import { appendIndex, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
@@ -193,6 +193,20 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         return
       }
       await writeOutline((steps) => {
+        if (mode === 'list') {
+          const withField = addJsonListField(steps, node)
+          if (withField !== undefined) {
+            setStatus(`Added to the list: ${String(node.listPath)}`)
+
+            return withField
+          }
+          const listNodes = documentListOutlineNodes(node, `steps.${appendIndex(steps)}`)
+          if (listNodes !== undefined) {
+            setStatus(`List: ${String(node.listPath)} (${String(node.listCount ?? 0)} items)`)
+
+            return spliceTopLevel(steps, undefined, listNodes)
+          }
+        }
         const card = documentReadCardNode(node, `steps.${steps.length}`, { generalize: mode === 'list', namespaces: documentTree.data?.namespaces })
         setStatus(`Read card: ${card.step.selector}${mode === 'list' ? ` (${String(node.listCount ?? 0)} items)` : ''}`)
 

@@ -1,5 +1,5 @@
 import type { DocumentTreeNodeView, FieldPick, InferSelectorView } from '@opencraw/studio'
-import { appendIndex, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 
 const priceField: FieldPick = { selector: '.price_color', tier: 'class', take: 'text', matches: 20 }
 const linkField: FieldPick = { selector: 'h3 a', tier: 'structure', take: 'attr:href', matches: 20 }
@@ -130,5 +130,42 @@ describe('paginateFromNextNode', () => {
 
   it('refuses an XML pick: paginate.next has no xpath form', () => {
     expect(() => paginateFromNextNode(xmlLeaf, 'steps.1')).toThrow(/jsonpath/)
+  })
+})
+
+describe('documentListOutlineNodes (issue #163)', () => {
+  const nameInList: DocumentTreeNodeView = { id: '$.items[0].name', label: 'name', valueType: 'string', preview: 'Gadget 1', jsonpath: '$.items[0].name', listPath: '$.items[*].name', listCount: 5, children: [] }
+  const priceInList: DocumentTreeNodeView = { id: '$.items[0].price', label: 'price', valueType: 'number', preview: '10', jsonpath: '$.items[0].price', listPath: '$.items[*].price', listCount: 5, children: [] }
+
+  it('builds the items extract, an emitting forEach, and the field read from the item', () => {
+    const nodes = documentListOutlineNodes(nameInList, 'steps.1')
+    expect(nodes?.[0].step).toEqual({ type: 'extract', id: 'items', selector: '$.items[*]', kind: 'jsonpath', take: 'json', many: true })
+    expect(nodes?.[1].step).toEqual({ type: 'forEach', over: 'items', as: 'item', emit: true, steps: [] })
+    expect(nodes?.[1].children.at(0)?.step).toEqual({ type: 'extract', id: 'value', from: 'item', selector: '$.name', kind: 'jsonpath', take: 'json' })
+    expect(nodes?.[1].children.at(0)?.path).toBe('steps.2.steps.0')
+  })
+
+  it('reads a list of plain values as $ from the item', () => {
+    const tag: DocumentTreeNodeView = { ...nameInList, listPath: '$.tags[*]', jsonpath: '$.tags[0]' }
+    expect(documentListOutlineNodes(tag, 'steps.0')?.[1].children.at(0)?.step.selector).toBe('$')
+  })
+
+  it('has no list shape for a node outside a list or for an XML node', () => {
+    expect(documentListOutlineNodes({ ...nameInList, listPath: undefined }, 'steps.0')).toBeUndefined()
+    expect(documentListOutlineNodes({ id: 'x', label: 'a', valueType: 'string', preview: '', xpath: '/a', listPath: '/a[*]', children: [] }, 'steps.0')).toBeUndefined()
+  })
+
+  it('adds a second field of the same list to the existing loop, with its own id', () => {
+    const [items, loop] = documentListOutlineNodes(nameInList, 'steps.0') as NonNullable<ReturnType<typeof documentListOutlineNodes>>
+    const steps = addJsonListField([items, loop], priceInList)
+    const forEach = steps?.[1] as typeof loop
+    expect(steps).toHaveLength(2)
+    expect(forEach.children.map(child => child.step.id)).toEqual(['value', 'value_2'])
+    expect(forEach.children.at(1)?.step.selector).toBe('$.price')
+    expect(forEach.children.at(1)?.path).toBe('steps.1.steps.1')
+  })
+
+  it('answers undefined when no loop is over this list yet', () => {
+    expect(addJsonListField([], nameInList)).toBeUndefined()
   })
 })
