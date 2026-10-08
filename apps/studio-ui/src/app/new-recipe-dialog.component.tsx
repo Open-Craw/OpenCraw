@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, CloseButton, Dialog, Field, Input, Portal, Text } from '@chakra-ui/react'
 import { useSaveRecipeMutation } from '../studio-client'
-import { RECIPE_ID_PATTERN, newRecipeFiles } from './new-recipe.mapper'
+import { RECIPE_ID_PATTERN, newRecipeFiles, startUrlError } from './new-recipe.mapper'
 
 export interface NewRecipeDialogProps {
   /** The open workspace folder the new files are written into; the button is disabled without one. */
@@ -21,21 +21,24 @@ export interface NewRecipeDialogProps {
 export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState('')
+  const [startUrl, setStartUrl] = useState('')
   const [error, setError] = useState<string>()
   const saveRecipe = useSaveRecipeMutation()
 
   const idError = id.length === 0 ? undefined : idErrorFor(id)
+  const urlError = startUrlError(startUrl)
 
   function reset (): void {
     setOpen(false)
     setId('')
+    setStartUrl('')
     setError(undefined)
   }
 
   async function create (): Promise<void> {
-    if (folder === undefined || idErrorFor(id) !== undefined) return
+    if (folder === undefined || idErrorFor(id) !== undefined || startUrlError(startUrl) !== undefined) return
     setError(undefined)
-    const files = newRecipeFiles(folder, id)
+    const files = newRecipeFiles(folder, id, startUrl.trim() === '' ? undefined : startUrl.trim())
     try {
       await saveRecipe.mutateAsync({ path: files.outputPath, recipe: files.output })
       await saveRecipe.mutateAsync({ path: files.inputPath, recipe: files.input })
@@ -73,6 +76,17 @@ export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
                 />
                 {idError !== undefined && <Field.ErrorText>{idError}</Field.ErrorText>}
               </Field.Root>
+              <Field.Root invalid={urlError !== undefined}>
+                <Field.Label>Start URL (optional)</Field.Label>
+                <Input
+                  size='sm'
+                  placeholder='https://example.com/books'
+                  value={startUrl}
+                  onChange={event => { setStartUrl(event.target.value) }}
+                  onKeyDown={event => { if (event.key === 'Enter') void create() }}
+                />
+                {urlError !== undefined && <Field.ErrorText>{urlError}</Field.ErrorText>}
+              </Field.Root>
               <Text fontSize='xs' color='fg.muted'>
                 Writes <Text as='span' fontFamily='mono'>{id || '<id>'}.input.json</Text> and{' '}
                 <Text as='span' fontFamily='mono'>{id || '<id>'}.output.json</Text> into the open folder: a `web` recipe with one
@@ -84,7 +98,7 @@ export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
                 colorPalette='blue'
                 alignSelf='flex-end'
                 onClick={() => { void create() }}
-                disabled={id.length === 0 || idError !== undefined || saveRecipe.isPending}
+                disabled={id.length === 0 || idError !== undefined || urlError !== undefined || saveRecipe.isPending}
                 loading={saveRecipe.isPending}
               >
                 Create
