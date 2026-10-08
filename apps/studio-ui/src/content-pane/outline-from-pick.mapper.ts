@@ -1,3 +1,4 @@
+import { withUniqueStepIds } from './unique-step-ids.algorithm'
 import type { DocumentTreeNodeView, FieldPick, InferSelectorView, OutlineBracket, OutlineCard, OutlineNode } from '@opencraw/studio'
 
 /** A safe default field id: a `Read` card's picked value has no name from the user in v1 (naming fields is the Record tab's job, phase 3, #92) — `value` is renamed in the JSON/Record tab like any other id. */
@@ -139,12 +140,14 @@ export function listOutlineNodes (
  * @param steps - The current top-level outline nodes.
  * @param replaceAt - The top-level index to replace (e.g. the single `Read` card a first pick made, now upgraded by a second pick into the list shape), or `undefined` to append.
  * @param nodes - The node(s) to insert.
- * @returns A new top-level step list, with every node after the insertion point given a fresh `steps.<n>` path.
+ * @returns A new top-level step list, with every node after the insertion point given a fresh `steps.<n>` path. Inserted nodes are renamed where their ids or aliases would clash with the recipe's (`unique-step-ids.algorithm.ts`, issue #132).
  */
 export function spliceTopLevel (steps: readonly OutlineNode[], replaceAt: number | undefined, nodes: readonly OutlineNode[]): OutlineNode[] {
+  const kept = replaceAt === undefined ? steps : steps.filter((_, index) => index !== replaceAt)
+  const unique = withUniqueStepIds(kept, nodes)
   const next = replaceAt === undefined
-    ? [...steps, ...nodes]
-    : [...steps.slice(0, replaceAt), ...nodes, ...steps.slice(replaceAt + 1)]
+    ? [...steps, ...unique]
+    : [...steps.slice(0, replaceAt), ...unique, ...steps.slice(replaceAt + 1)]
 
   return next.map((node, index) => reindexed(node, `steps.${index}`))
 }
