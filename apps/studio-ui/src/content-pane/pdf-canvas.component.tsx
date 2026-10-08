@@ -127,12 +127,12 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
   useEffect(() => {
     const canvas = canvasRef.current
     if (canvas === null || page === undefined) return
-    let cancelled = false
-    void renderPdfPage(canvas, bytesUrl, page.number, SCALE).catch((error: unknown) => {
-      if (!cancelled) console.error('PDF canvas: could not render the page', error)
+    const controller = new AbortController()
+    void renderPdfPage(canvas, bytesUrl, page.number, SCALE, controller.signal).catch((error: unknown) => {
+      if (!controller.signal.aborted) console.error('PDF canvas: could not render the page', error)
     })
 
-    return () => { cancelled = true }
+    return () => { controller.abort() }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- re-render only on a real page change (`page.number`), not on `view`'s own identity churning every render.
   }, [bytesUrl, page?.number])
 
@@ -486,9 +486,10 @@ function BandOverlay ({ band, scale, pageHeight, onClick }: BandOverlayProps): R
  * legacy build, browser side — `@opencraw/core`'s own dependency, per the
  * studio plan). Skips drawing (but does not throw) when the canvas has no
  * 2d context — a headless/test environment, where the overlay (built from
- * `pdf-view`'s geometry, not the bitmap) still works.
+ * `pdf-view`'s geometry, not the bitmap) still works. `signal` aborts the
+ * draw (the page changed or the pane unmounted) so the next render can use the canvas.
  */
-async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageNumber: number, scale: number): Promise<void> {
+async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageNumber: number, scale: number, signal: AbortSignal): Promise<void> {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs')
   const workerModule = await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')
   pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default
@@ -496,12 +497,15 @@ async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageN
   const document = await loadingTask.promise
   try {
     const pdfPage = await document.getPage(pageNumber)
+    if (signal.aborted) return
     const viewport = pdfPage.getViewport({ scale })
     canvas.width = Math.ceil(viewport.width)
     canvas.height = Math.ceil(viewport.height)
     const context = canvas.getContext('2d')
     if (context === null) return
-    await pdfPage.render({ canvas, canvasContext: context, viewport }).promise
+    const task = pdfPage.render({ canvas, canvasContext: context, viewport })
+    signal.addEventListener('abort', () => { task.cancel() }) // a canvas takes one render at a time: a superseded one must let go of it
+    await task.promise
   } finally {
     await loadingTask.destroy()
   }

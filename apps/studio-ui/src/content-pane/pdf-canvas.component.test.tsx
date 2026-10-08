@@ -7,7 +7,7 @@ import { createStudioQueryClient } from '../studio-client'
 import { PdfCanvas } from './pdf-canvas.component'
 
 // `renderPdfPage` loads pdf.js on the fly to draw the bitmap; the overlay under test is built from `pdf-view`'s geometry alone.
-const mockPdfPage = { getViewport: () => ({ width: 1, height: 1 }), render: () => ({ promise: Promise.resolve() }) }
+const mockPdfPage = { getViewport: () => ({ width: 1, height: 1 }), render: () => ({ promise: Promise.resolve(), cancel: () => undefined }) }
 const mockDocument = { getPage: async () => mockPdfPage }
 jest.mock('pdfjs-dist/legacy/build/pdf.mjs', () => ({
   GlobalWorkerOptions: {},
