@@ -1,4 +1,4 @@
-import { Box, CloseButton, Dialog, Portal } from '@chakra-ui/react'
+import { Box, CloseButton, Dialog, Portal, Text } from '@chakra-ui/react'
 import type { PreviewRecord } from './records-table.component'
 
 export interface RecordDetailDialogProps {
@@ -22,7 +22,10 @@ export function RecordDetailDialog ({ record, index, onClose }: RecordDetailDial
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-              <Dialog.Title>Record {index === undefined ? '' : index + 1}{record?.key == null ? '' : ` · ${record.key}`}</Dialog.Title>
+              <Box minW={0}>
+                <Dialog.Title>Record {index === undefined ? '' : index + 1}</Dialog.Title>
+                {record?.key != null && <Text fontSize='xs' color='fg.muted' truncate title={record.key}>{record.key}</Text>}
+              </Box>
               <Dialog.CloseTrigger asChild>
                 <CloseButton size='sm' aria-label='Close record' />
               </Dialog.CloseTrigger>
