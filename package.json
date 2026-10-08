@@ -41,6 +41,7 @@
     "azure-host:start": "nx run azure-host:start",
     "studio:qa": "nx run studio:lint && nx run studio:test",
     "studio:build": "nx run studio:build",
+    "studio:e2e": "nx run studio:e2e",
     "studio-ui:qa": "nx run studio-ui:lint && nx run studio-ui:test",
     "studio-ui:build": "nx run studio-ui:build",
     "studio-ui:start": "nx run studio-ui:serve",
