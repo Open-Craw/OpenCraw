@@ -52,16 +52,16 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@mnci/eslint-config": ">=0.1.0 <1.0.0",
-    "@nx/esbuild": "23.2.0",
-    "@nx/eslint": "23.2.0",
-    "@nx/eslint-plugin": "23.2.0",
-    "@nx/jest": "23.2.0",
-    "@nx/js": "23.2.0",
-    "@nx/node": "^23.2.0",
-    "@nx/react": "^23.2.0",
-    "@nx/rollup": "23.2.0",
-    "@nx/vite": "23.2.0",
-    "@nx/web": "23.2.0",
+    "@nx/esbuild": "23.3.0",
+    "@nx/eslint": "23.3.0",
+    "@nx/eslint-plugin": "23.3.0",
+    "@nx/jest": "23.3.0",
+    "@nx/js": "23.3.0",
+    "@nx/node": "^23.3.0",
+    "@nx/react": "^23.3.0",
+    "@nx/rollup": "23.3.0",
+    "@nx/vite": "23.3.0",
+    "@nx/web": "23.3.0",
     "@swc-node/register": "1.11.1",
     "@swc/cli": "~0.8.1",
     "@swc/core": "1.15.8",
@@ -87,7 +87,7 @@
     "jest-environment-node": "~30.3.0",
     "jest-util": "~30.3.0",
     "jiti": "2.4.2",
-    "nx": "23.2.0",
+    "nx": "23.3.0",
     "rollup": "^4.14.0",
     "swc-loader": "0.1.15",
     "ts-jest": "^29.4.7",
@@ -102,6 +102,9 @@
   ],
   "overrides": {
     "axios": "^1.20.0",
+    "@istanbuljs/load-nyc-config": {
+      "js-yaml": "^4.1.1"
+    },
     "@verdaccio/config": {
       "js-yaml": "^5.4.2"
     },
@@ -110,7 +113,8 @@
     },
     "nx": {
       "brace-expansion": "^5.0.9",
-      "smol-toml": "^1.7.1"
+      "smol-toml": "^1.7.1",
+      "undici": "^7.29.1"
     },
     "@nx/js": {
       "brace-expansion": "^5.0.9"
@@ -129,6 +133,9 @@
     },
     "brace-expansion@4.0.0 - 5.0.8": "^5.0.9",
     "uuid": "^11.1.1",
+    "compression": "^1.8.2",
+    "http-cache-semantics": "^4.3.0",
+    "source-map-js": "^1.2.2",
     "@nx/react": {
       "express": ">=4.0.0 <6.0.0"
     }
