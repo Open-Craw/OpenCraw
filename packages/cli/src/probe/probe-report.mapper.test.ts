@@ -5,6 +5,11 @@ import { csvWorkbook, HttpClient, parseXml, readMarkdown } from '@opencraw/core'
 import { describeDeck, describeHtml, describeJson, describeWorkbook, describeXml, findData } from '@opencraw/probe'
 import { deckReport, jsonReport, probeReport, workbookReport, xmlReport } from './probe-report.mapper'
 
+// The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131).
+function windows1252Text (bytes: Buffer): string {
+  return bytes.toString('latin1').replaceAll('', '€').replaceAll('', '–')
+}
+
 // The findings mappers' own shape is exercised by @opencraw/probe's tests (they moved there with the
 // code, #93); these tests are `probe-report.mapper`'s own: given a findings result, does the printed
 // report read right. They lived beside the findings mappers' tests before the extraction, so each one
@@ -41,7 +46,7 @@ describe('jsonReport', () => {
 describe('workbookReport', () => {
   it('names the encoding and the delimiter, and lists headers before rows', () => {
     const bytes = readFileSync(join(__dirname, '..', '..', '..', 'core', 'src', 'workbook-document', 'fixtures', 'listino.csv'))
-    const listino = csvWorkbook(new TextDecoder('windows-1252').decode(bytes), { name: 'listino', encoding: 'windows-1252' })
+    const listino = csvWorkbook(windows1252Text(bytes), { name: 'listino', encoding: 'windows-1252' })
     const report = workbookReport('http://x/listino.csv', describeWorkbook(listino))
     expect(report.split('\n', 1)[0]).toBe('http://x/listino.csv (CSV, windows-1252, delimited by semicolons)')
     expect(report).toContain('  listino r3  ^Marca\n        Marca | Modello | Versione | Prezzo € | Sconto %')

@@ -4,6 +4,11 @@ import { csvWorkbook, readPdf, readPptxDeck } from '@opencraw/core'
 import type { DeckDocument, PdfDocument, WorkbookDocument } from '@opencraw/core'
 import { previewDeckTable, previewGridTable, previewPdfTable } from './table-preview.use-case'
 
+// The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131).
+function windows1252Text (bytes: Buffer): string {
+  return bytes.toString('latin1').replaceAll('', '€').replaceAll('', '–')
+}
+
 const fixture = join(__dirname, '..', '..', '..', '..', 'packages', 'core', 'src', 'pdf-document', 'fixtures', 'discounts.pdf')
 const listinoPath = join(__dirname, '..', '..', '..', '..', 'packages', 'core', 'src', 'workbook-document', 'fixtures', 'listino.csv')
 const incentiviPptxPath = join(__dirname, '..', '..', '..', 'office-reader', 'src', 'presentation', 'fixtures', 'incentivi.pptx')
@@ -68,7 +73,7 @@ describe('previewPdfTable', () => {
 
 describe('previewGridTable', () => {
   const bytes = readFileSync(listinoPath)
-  const listino: WorkbookDocument = csvWorkbook(new TextDecoder('windows-1252').decode(bytes), { name: 'listino', encoding: 'windows-1252' })
+  const listino: WorkbookDocument = csvWorkbook(windows1252Text(bytes), { name: 'listino', encoding: 'windows-1252' })
 
   it('matches the same tables findGridTables would, named by the header cells', () => {
     const result = previewGridTable(listino, { header: '^Marca Modello', until: '^Totale' })
