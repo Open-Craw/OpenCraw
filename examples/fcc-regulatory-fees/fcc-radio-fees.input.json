@@ -40,12 +40,6 @@
       "as": "row",
       "emit": true,
       "steps": []
-    },
-    {
-      "type": "extract",
-      "id": "value",
-      "selector": "html > body",
-      "kind": "css"
     }
   ],
   "mapping": {

@@ -43,16 +43,6 @@
       "as": "row",
       "emit": true,
       "steps": []
-    },
-    {
-      "type": "extract",
-      "id": "table",
-      "kind": "table",
-      "selector": "^Headlines Current Status Impact RAG Change",
-      "slide": "^Weatherbury College\nManagement Accounts for the period to 31 January 202X$",
-      "columns": {
-        "impact": "^Impact"
-      }
     }
   ],
   "mapping": {
