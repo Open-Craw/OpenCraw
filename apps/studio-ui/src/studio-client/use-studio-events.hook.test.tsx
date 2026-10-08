@@ -137,7 +137,7 @@ describe('useStudioEvents', () => {
     await waitFor(() => { expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['snapshot'] }) })
   })
 
-  it('invalidates the workspace query on workspace-changed', async () => {
+  it('invalidates the workspace and snapshot queries on workspace-changed (issue #159)', async () => {
     const queryClient = createStudioQueryClient()
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries')
     function wrapper ({ children }: PropsWithChildren): React.ReactElement {
@@ -147,5 +147,6 @@ describe('useStudioEvents', () => {
 
     send({ type: 'workspace-changed' })
     await waitFor(() => { expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['workspace'] }) })
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['snapshot'] })
   })
 })
