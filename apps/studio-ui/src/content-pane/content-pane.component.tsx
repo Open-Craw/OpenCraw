@@ -501,7 +501,13 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             </Splitter.Panel>
           </Splitter.Root>
         )}
-        {!snapshot.isFetching && snapshot.data === undefined && (
+        {snapshot.isError && (
+          <Box p={4} color='fg.error' role='alert'>
+            <Text fontWeight='semibold'>Could not take a snapshot of this recipe's page.</Text>
+            <Text>{snapshot.error.message}</Text>
+          </Box>
+        )}
+        {!snapshot.isFetching && !snapshot.isError && snapshot.data === undefined && (
           <Box p={4} color='fg.muted'><Text>Run a sample, or open a recipe, to see its snapshot here.</Text></Box>
         )}
       </Box>
