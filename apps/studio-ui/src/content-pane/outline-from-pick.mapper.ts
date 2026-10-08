@@ -131,22 +131,39 @@ export function listOutlineNodes (
 }
 
 /**
+ * Where a new pick goes when it replaces nothing: the end of the top-level
+ * steps, but before a trailing `emit`, which has to stay last for the picked
+ * reads to run before the record is emitted (issue #155).
+ *
+ * @param steps - The current top-level outline nodes.
+ * @returns The index a new node is inserted at.
+ */
+export function appendIndex (steps: readonly OutlineNode[]): number {
+  // eslint-disable-next-line unicorn/prefer-at -- apps/studio-ui's tsconfig lib is ["dom"] only (no ES2022 Array#at)
+  const last = steps[steps.length - 1] as OutlineNode | undefined
+
+  return last?.kind === 'card' && last.stepType === 'emit' ? steps.length - 1 : steps.length
+}
+
+/**
  * Inserts (or, at an existing top-level index, replaces) one or more nodes
  * into a recipe's top-level step list — the studio's v1 insertion point:
- * picking always writes to the end of the recipe's own steps, never inside
+ * picking always writes to the end of the recipe's own steps (before a
+ * trailing `emit`, see {@link appendIndex}), never inside
  * an existing `forEach`/`if`. Reaching into a nested scope from a pick is a
  * real gap, not attempted here (see this phase's final report).
  *
  * @param steps - The current top-level outline nodes.
- * @param replaceAt - The top-level index to replace (e.g. the single `Read` card a first pick made, now upgraded by a second pick into the list shape), or `undefined` to append.
+ * @param replaceAt - The top-level index to replace (e.g. the single `Read` card a first pick made, now upgraded by a second pick into the list shape), or `undefined` to append (at `appendIndex`).
  * @param nodes - The node(s) to insert.
  * @returns A new top-level step list, with every node after the insertion point given a fresh `steps.<n>` path. Inserted nodes are renamed where their ids or aliases would clash with the recipe's (`unique-step-ids.algorithm.ts`, issue #132).
  */
 export function spliceTopLevel (steps: readonly OutlineNode[], replaceAt: number | undefined, nodes: readonly OutlineNode[]): OutlineNode[] {
   const kept = replaceAt === undefined ? steps : steps.filter((_, index) => index !== replaceAt)
   const unique = withUniqueStepIds(kept, nodes)
+  const at = appendIndex(steps)
   const next = replaceAt === undefined
-    ? [...steps, ...unique]
+    ? [...steps.slice(0, at), ...unique, ...steps.slice(at)]
     : [...steps.slice(0, replaceAt), ...unique, ...steps.slice(replaceAt + 1)]
 
   return next.map((node, index) => reindexed(node, `steps.${index}`))

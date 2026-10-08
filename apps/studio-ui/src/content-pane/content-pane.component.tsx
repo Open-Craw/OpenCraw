@@ -9,7 +9,7 @@ import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
-import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { appendIndex, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
@@ -146,7 +146,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         return
       }
       await writeOutline((steps) => {
-        insertedAtRef.current = steps.length
+        insertedAtRef.current = appendIndex(steps)
         setStatus(`Read card: ${result.field.selector} (${result.field.matches} match${result.field.matches === 1 ? '' : 'es'})`)
 
         return spliceTopLevel(steps, undefined, [readCardNode(result.field, `steps.${steps.length}`)])
@@ -163,7 +163,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     await writeOutline((steps) => {
       const replaceAt = insertedAtRef.current
       insertedAtRef.current = undefined
-      const at = replaceAt ?? steps.length
+      const at = replaceAt ?? appendIndex(steps)
       setStatus(`List: ${result.item.selector} (${result.item.matches} items) → ${result.field.selector}`)
 
       return spliceTopLevel(steps, replaceAt, listOutlineNodes(result, `steps.${at}`))
@@ -213,11 +213,12 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
    */
   async function handleTableCardPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
-      const at = tableInsertedAtRef.current ?? steps.length
+      const replaceAt = tableInsertedAtRef.current
+      const at = replaceAt ?? appendIndex(steps)
       tableInsertedAtRef.current = at
       setStatus(`table: ${String(card.step.selector)}`)
 
-      return spliceTopLevel(steps, tableInsertedAtRef.current, [{ ...card, path: `steps.${at}` }])
+      return spliceTopLevel(steps, replaceAt, [{ ...card, path: `steps.${at}` }])
     })
   }
 
