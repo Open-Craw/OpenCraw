@@ -109,7 +109,8 @@ describe('RecordsPanel', () => {
     renderWithChakra(<RecordsPanel records={RECORDS} />)
     fireEvent.click(screen.getByText('Gadget'))
 
-    expect(await screen.findByText('Record 2 · a2')).toBeTruthy()
+    expect(await screen.findByText('Record 2')).toBeTruthy()
+    expect(screen.getByText('a2')).toBeTruthy() // the key, as a subtitle
     expect(screen.getByText(/"name": "Gadget"/)).toBeTruthy()
   })
 
@@ -118,7 +119,7 @@ describe('RecordsPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'JSONL' }))
     fireEvent.click(screen.getByText('{"name":"Widget","price":9.5}'))
 
-    expect(await screen.findByText('Record 1 · a1')).toBeTruthy()
+    expect(await screen.findByText('Record 1')).toBeTruthy()
     expect(screen.getByText(/"price": 9\.5/)).toBeTruthy()
   })
 })
