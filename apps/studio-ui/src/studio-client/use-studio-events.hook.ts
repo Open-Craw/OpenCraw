@@ -40,7 +40,7 @@ export function useStudioEvents (): void {
           break
         }
         case 'run-finished': {
-          finishRun()
+          finishRun(event.error)
           break
         }
         case 'recording-card': {

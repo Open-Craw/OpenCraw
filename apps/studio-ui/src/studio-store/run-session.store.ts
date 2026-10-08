@@ -32,8 +32,8 @@ export interface RunSessionActions {
   appendTraceLine: (line: string) => void
   appendRecord:    (record: PreviewRecord) => void
   appendRejected:  (rejected: RejectedRecord) => void
-  /** `run-finished` arrived (or the run failed to start): stop showing it as running. */
-  finishRun:       () => void
+  /** `run-finished` arrived (or the run failed to start): stop showing it as running; `error` is the run's own failure, shown with the other errors (issue #148). */
+  finishRun:       (error?: string) => void
   setError:        (message: string | undefined) => void
 }
 
@@ -53,7 +53,7 @@ export const useRunSessionStore = create<RunSessionStore>((set) => ({
   appendTraceLine: line => { set(state => ({ traceLines: [...state.traceLines, line] })) },
   appendRecord:    record => { set(state => ({ records: [...state.records, record] })) },
   appendRejected:  rejected => { set(state => ({ rejected: [...state.rejected, rejected] })) },
-  finishRun:       () => { set({ running: false }) },
+  finishRun:       error => { set(error === undefined ? { running: false } : { running: false, error }) },
   setError:        message => { set({ error: message }) },
 }))
 

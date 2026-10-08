@@ -54,6 +54,23 @@ describe('runSample', () => {
     expect(traceLines.some(line => line.includes('■'))).toBe(true)
   })
 
+  it('reports a recipe the engine refuses to start as an error on the run, not a rejection (issue #148)', async () => {
+    const folder = folderOf({})
+    const dataFile = join(folder, 'data.json')
+    writeFileSync(dataFile, JSON.stringify(DATA))
+    writeFileSync(join(folder, 'item.output.json'), JSON.stringify(OUTPUT))
+    const recipe = inputRecipe(dataFile) as { mapping: Record<string, unknown> }
+    recipe.mapping.price = { from: 'item.price', transform: [{ op: 'hook', name: 'nope' }] }
+    writeFileSync(join(folder, 'items.input.json'), JSON.stringify(recipe))
+
+    const handle = await runSample(folder, 'items', undefined, { onTraceLine: () => undefined, onRecord: () => undefined })
+    const result = await handle.result
+
+    expect(result.recipeId).toBe('items')
+    expect(result.emitted).toBe(0)
+    expect(result.error).toContain('nope')
+  })
+
   it('stops at the given sample budget and reports it', async () => {
     const folder = folderOf({})
     const dataFile = join(folder, 'data.json')
