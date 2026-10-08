@@ -6,6 +6,7 @@ import { allSteps, stepById } from '../steps-outline'
 import type { GridViewOverride } from '../studio-client'
 import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
 import { useRecordingStore, useStudioUiStore } from '../studio-store'
+import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
 import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
@@ -14,6 +15,7 @@ import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageState
 import { SnapshotFrame } from './snapshot-frame.component'
 import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
+import { hasVisibleContent } from './visible-content.algorithm'
 import type { TreePickMode } from './tree-canvas.component'
 
 /**
@@ -83,6 +85,9 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const isPdf = format === 'pdf'
   const isGrid = format !== undefined && GRID_FORMATS.has(format)
   const isDeck = format !== undefined && DECK_FORMATS.has(format)
+  const isHtmlSnapshot = !isDocumentTree && !isPdf && !isGrid && !isDeck
+  const snapshotHtml = snapshot.data?.html
+  const snapshotHasContent = useMemo(() => snapshotHtml === undefined || hasVisibleContent(snapshotHtml), [snapshotHtml])
   const documentTree = useDocumentTreeQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isDocumentTree)
   const pdfView = usePdfViewQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isPdf)
   const [csvOverride, setCsvOverride] = useState<GridViewOverride | undefined>(undefined)
@@ -405,6 +410,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
           </Button>
         </HStack>
       )}
+      {isHtmlSnapshot && snapshot.data !== undefined && !snapshotHasContent && <BlankSnapshotNotice />}
       <Box flex='1' minH='0'>
         {isDocumentTree && documentTree.data !== undefined && (
           <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
