@@ -1,5 +1,5 @@
 import type { DocumentTreeNodeView, FieldPick, InferSelectorView } from '@opencraw/studio'
-import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { appendIndex, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 
 const priceField: FieldPick = { selector: '.price_color', tier: 'class', take: 'text', matches: 20 }
 const linkField: FieldPick = { selector: 'h3 a', tier: 'structure', take: 'attr:href', matches: 20 }
@@ -58,6 +58,17 @@ describe('spliceTopLevel', () => {
     const result = spliceTopLevel(existing, undefined, [readCardNode(linkField, 'x', 'new')])
     expect(result.map(node => node.step.id)).toEqual(['existing', 'new'])
     expect(result.map(node => node.path)).toEqual(['steps.0', 'steps.1'])
+  })
+
+  it('appends before a trailing emit, so the picked read runs before the record is emitted (issue #155)', () => {
+    const emit = { kind: 'card' as const, path: 'steps.1', stepType: 'emit', sentence: [], custom: false, step: { type: 'emit' } }
+    const withEmit = [existing[0], emit]
+    const result = spliceTopLevel(withEmit, undefined, [readCardNode(linkField, 'x', 'new')])
+    expect(result.map(node => node.stepType)).toEqual(['extract', 'extract', 'emit'])
+    expect(result.map(node => node.path)).toEqual(['steps.0', 'steps.1', 'steps.2'])
+    expect(appendIndex(withEmit)).toBe(1)
+    expect(appendIndex(existing)).toBe(1)
+    expect(appendIndex([])).toBe(0)
   })
 
   it('replaces the node at replaceAt (a single Read card upgraded into the list shape)', () => {
