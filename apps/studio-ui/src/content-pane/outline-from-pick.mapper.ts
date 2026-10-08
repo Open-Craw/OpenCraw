@@ -130,6 +130,71 @@ export function listOutlineNodes (
   return [items, forEach]
 }
 
+/** Splits a JSON list pick's `listPath` (`$.items[*].name`) at its last `[*]`: the path of every item, and the field path read from one item (`$.name`, or `$` for a list of plain values). */
+function jsonListParts (node: DocumentTreeNodeView): { items: string, field: string } | undefined {
+  if (node.jsonpath === undefined || node.listPath === undefined) return undefined
+  const at = node.listPath.lastIndexOf('[*]')
+  if (at === -1) return undefined
+  const rest = node.listPath.slice(at + 3)
+
+  return { items: node.listPath.slice(0, at + 3), field: rest === '' ? '$' : `$${rest}` }
+}
+
+function jsonFieldCard (field: string, path: string, itemAlias: string, id: string): OutlineCard {
+  return { kind: 'card', path, stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id, from: itemAlias, selector: field, kind: 'jsonpath', take: 'json' } }
+}
+
+/**
+ * The list shape for a JSON tree pick (issue #163), the same one the DOM
+ * picker builds: an `extract` of every item (`$.items[*]`, `take: json`,
+ * `many`), and a `forEach` over them (`emit: true`) whose one child reads the
+ * picked field `from` the item. A YAML/XML pick, or a node outside a list,
+ * has no such shape here and answers `undefined` (the caller falls back to a
+ * single Read card).
+ *
+ * @param node - The picked tree node.
+ * @param path - The item `extract`'s outline path; the `forEach` is its sibling.
+ * @returns The two top-level nodes, or `undefined` when `node` is not a JSON list value.
+ */
+export function documentListOutlineNodes (node: DocumentTreeNodeView, path: string): [OutlineCard, OutlineBracket] | undefined {
+  const parts = jsonListParts(node)
+  if (parts === undefined) return undefined
+  const forEachPath = siblingPath(path)
+  const items: OutlineCard = { kind: 'card', path, stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id: DEFAULT_ITEMS_ID, selector: parts.items, kind: 'jsonpath', take: 'json', many: true } }
+  const forEach: OutlineBracket = {
+    kind:     'bracket',
+    path:     forEachPath,
+    stepType: 'forEach',
+    sentence: [],
+    children: [jsonFieldCard(parts.field, `${forEachPath}.steps.0`, DEFAULT_ITEM_ALIAS, DEFAULT_FIELD_ID)],
+    step:     { type: 'forEach', over: DEFAULT_ITEMS_ID, as: DEFAULT_ITEM_ALIAS, emit: true, steps: [] },
+  }
+
+  return [items, forEach]
+}
+
+/**
+ * A second pick in a list the recipe already loops over: adds the picked
+ * field as one more read inside that `forEach` instead of building the loop
+ * again (issue #163).
+ *
+ * @param steps - The current top-level outline nodes.
+ * @param node - The picked tree node.
+ * @returns The new top-level list, or `undefined` when no existing loop is over this node's list.
+ */
+export function addJsonListField (steps: readonly OutlineNode[], node: DocumentTreeNodeView): OutlineNode[] | undefined {
+  const parts = jsonListParts(node)
+  if (parts === undefined) return undefined
+  const itemsCard = steps.find(step => step.kind === 'card' && step.step.type === 'extract' && step.step.kind === 'jsonpath' && step.step.selector === parts.items && step.step.many === true)
+  const loopIndex = steps.findIndex(step => step.kind === 'bracket' && step.stepType === 'forEach' && step.step.over === itemsCard?.step.id)
+  const loop = steps[loopIndex]
+  if (itemsCard === undefined || loop?.kind !== 'bracket') return undefined
+  const [field] = withUniqueStepIds(steps, [jsonFieldCard(parts.field, `${loop.path}.steps.${loop.children.length}`, String(loop.step.as), DEFAULT_FIELD_ID)])
+  const next = steps.map((step, index) => index === loopIndex ? { ...loop, children: [...loop.children, field] } : step)
+
+  return next.map((step, index) => reindexed(step, `steps.${index}`))
+}
+
 /**
  * Where a new pick goes when it replaces nothing: the end of the top-level
  * steps, but before a trailing `emit`, which has to stay last for the picked
