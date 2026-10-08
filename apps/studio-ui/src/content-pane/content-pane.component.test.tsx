@@ -68,6 +68,16 @@ describe('ContentPane', () => {
     await waitFor(() => { expect(document.querySelector('iframe')).toBeTruthy() })
   })
 
+  it('says why when the snapshot fails, instead of the empty-state text (issue #142)', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({ error: 'connect ECONNREFUSED 127.0.0.1:4580' }) })
+    Object.defineProperty(globalThis, 'fetch', { value: fetchMock, configurable: true })
+    renderWithProviders(<ContentPane recipe={recipe()} />)
+
+    const alert = await screen.findByRole('alert')
+    expect(alert.textContent).toContain('ECONNREFUSED')
+    expect(screen.queryByText(/run a sample, or open a recipe/i)).toBeNull()
+  })
+
   it('shows the Read button, to enter pick mode', async () => {
     mockFetch({ html: '<p data-oc-node="n0">£10</p>', nodeCount: 1, baseUrl: 'https://x/' })
     renderWithProviders(<ContentPane recipe={recipe()} />)
