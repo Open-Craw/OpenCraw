@@ -21,6 +21,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run core:e2e
+      - run: npm run studio:e2e
       - run: npm run office-reader:e2e
       - run: npm run captcha-tesseract:e2e
       # Every example's recipes load and bind; the examples that run offline run.
