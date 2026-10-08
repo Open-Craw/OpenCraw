@@ -166,7 +166,16 @@ export function spliceTopLevel (steps: readonly OutlineNode[], replaceAt: number
     ? [...steps.slice(0, at), ...unique, ...steps.slice(at)]
     : [...steps.slice(0, replaceAt), ...unique, ...steps.slice(replaceAt + 1)]
 
-  return next.map((node, index) => reindexed(node, `steps.${index}`))
+  const emitsInLoop = unique.some(node => node.kind === 'bracket' && node.stepType === 'forEach' && node.step.emit === true)
+  // eslint-disable-next-line unicorn/prefer-at -- apps/studio-ui's tsconfig lib is ["dom"] only (no ES2022 Array#at)
+  const settled = emitsInLoop && isBareEmit(next[next.length - 1]) ? next.slice(0, -1) : next
+
+  return settled.map((node, index) => reindexed(node, `steps.${index}`))
+}
+
+/** A top-level `emit` card, the starter recipe's closing step. Once a picked `forEach` emits each item, it would emit one more record outside the loop (issue #157). */
+function isBareEmit (node: OutlineNode | undefined): boolean {
+  return node?.kind === 'card' && node.stepType === 'emit'
 }
 
 function reindexed (node: OutlineNode, path: string): OutlineNode {

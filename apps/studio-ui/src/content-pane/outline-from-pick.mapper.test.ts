@@ -71,6 +71,13 @@ describe('spliceTopLevel', () => {
     expect(appendIndex([])).toBe(0)
   })
 
+  it('drops the starters bare emit once a picked forEach emits each item (issue #157)', () => {
+    const emit = { kind: 'card' as const, path: 'steps.1', stepType: 'emit', sentence: [], custom: false, step: { type: 'emit' } }
+    const [items, forEach] = listOutlineNodes({ kind: 'list', item: { selector: 'li', tier: 'structure', matches: 2 }, field: linkField }, 'steps.0')
+    const result = spliceTopLevel([emit], undefined, [items, forEach])
+    expect(result.map(node => node.stepType)).toEqual(['extract', 'forEach'])
+  })
+
   it('replaces the node at replaceAt (a single Read card upgraded into the list shape)', () => {
     const [items, forEach] = listOutlineNodes({ kind: 'list', item: { selector: 'article.product_pod', tier: 'class', matches: 20 }, field: priceField }, 'steps.0')
     const result = spliceTopLevel(existing, 0, [items, forEach])
