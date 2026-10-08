@@ -1,4 +1,5 @@
 import { Box, Table, Text } from '@chakra-ui/react'
+import type { MouseEvent } from 'react'
 import type { FieldTraceView } from '@opencraw/studio'
 
 /** One record of a sample run, as kept for the Records tab and the Record tab's transform-chain trace (issue #92): `scope`/`mapping` ride along on the `record` WebSocket event now that `run-sample` keeps them (studio plan §4.2/§4.4). */
@@ -21,10 +22,12 @@ export interface RecordsTableProps {
   highlightedField?: string
   /** Hovering a column: the field on enter, `undefined` on leave. Omitted (no hover wiring) when the caller has nothing to resolve a column to. */
   onHoverField?:     (field: string | undefined) => void
+  /** A row was clicked: its position in `records`, to open that entry in a detail modal (issue #107). A null cell's own click (Why?) does not also select the row. */
+  onSelectRecord?:   (recordIndex: number) => void
 }
 
 /** The Records tab: one column per output field (from the records seen so far), missing values marked and clickable (issue #92's Why? tab). */
-export function RecordsTable ({ records, onCellClick, highlightedField, onHoverField }: RecordsTableProps) {
+export function RecordsTable ({ records, onCellClick, highlightedField, onHoverField, onSelectRecord }: RecordsTableProps) {
   if (records.length === 0) {
     return (
       <Box p={4} color='fg.muted'>
@@ -56,13 +59,17 @@ export function RecordsTable ({ records, onCellClick, highlightedField, onHoverF
         </Table.Header>
         <Table.Body>
           {records.map((record, index) => (
-            <Table.Row key={record.key ?? `row-${index}`}>
+            <Table.Row
+              key={record.key ?? `row-${index}`}
+              cursor={onSelectRecord === undefined ? undefined : 'pointer'}
+              onClick={onSelectRecord === undefined ? undefined : () => { onSelectRecord(index) }}
+            >
               {fields.map(field => (
                 <Cell
                   key={field}
                   value={record.data[field]}
                   highlighted={field === highlightedField}
-                  onClick={onCellClick === undefined ? undefined : () => { onCellClick(index, field) }}
+                  onClick={onCellClick === undefined ? undefined : (event) => { event.stopPropagation(); onCellClick(index, field) }}
                   {...hoverProps(field)}
                 />
               ))}
@@ -74,7 +81,7 @@ export function RecordsTable ({ records, onCellClick, highlightedField, onHoverF
   )
 }
 
-function Cell ({ value, onClick, highlighted = false, onMouseEnter, onMouseLeave }: { value: unknown, onClick?: () => void, highlighted?: boolean, onMouseEnter?: () => void, onMouseLeave?: () => void }) {
+function Cell ({ value, onClick, highlighted = false, onMouseEnter, onMouseLeave }: { value: unknown, onClick?: (event: MouseEvent) => void, highlighted?: boolean, onMouseEnter?: () => void, onMouseLeave?: () => void }) {
   const bg = highlighted ? 'orange.subtle' : undefined
   if (value === undefined) return <Table.Cell color='fg.muted' fontStyle='italic' bg={bg} data-highlighted={highlighted} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>missing</Table.Cell>
   if (value === null) {

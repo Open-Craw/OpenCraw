@@ -3,6 +3,7 @@ import { Box, Button, CloseButton, Dialog, HStack, NativeSelect, Portal } from '
 import type { PreviewRecord } from './records-table.component'
 import { RecordsTable } from './records-table.component'
 import { RecordsJsonl } from './records-jsonl.component'
+import { RecordDetailDialog } from './record-detail-dialog.component'
 import type { RecordsExportFormat } from './records-export.mapper'
 import { buildRecordsExportFile } from './records-export.mapper'
 
@@ -34,6 +35,7 @@ type RecordsView = 'table' | 'jsonl'
 export function RecordsPanel ({ records, onCellClick, highlightedField, onHoverField }: RecordsPanelProps) {
   const [view, setView] = useState<RecordsView>('table')
   const [enlarged, setEnlarged] = useState(false)
+  const [selected, setSelected] = useState<number | undefined>()
 
   function handleExport (format: RecordsExportFormat): void {
     const file = buildRecordsExportFile(records, format)
@@ -44,7 +46,7 @@ export function RecordsPanel ({ records, onCellClick, highlightedField, onHoverF
     <Box flex='1' minH='0' display='flex' flexDirection='column'>
       <RecordsToolbar view={view} onViewChange={setView} onExport={handleExport} onEnlarge={() => { setEnlarged(true) }} exportDisabled={records.length === 0} />
       <Box flex='1' minH='0' overflow='auto'>
-        <RecordsView view={view} records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} />
+        <RecordsView view={view} records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} onSelectRecord={setSelected} />
       </Box>
       <Dialog.Root open={enlarged} onOpenChange={(details) => { setEnlarged(details.open) }} size='cover' placement='center'>
         <Portal>
@@ -60,27 +62,29 @@ export function RecordsPanel ({ records, onCellClick, highlightedField, onHoverF
               <Dialog.Body flex='1' minH='0' display='flex' flexDirection='column' gap={2} pb={4}>
                 <RecordsToolbar view={view} onViewChange={setView} onExport={handleExport} exportDisabled={records.length === 0} />
                 <Box flex='1' minH='0' overflow='auto'>
-                  <RecordsView view={view} records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} />
+                  <RecordsView view={view} records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} onSelectRecord={setSelected} />
                 </Box>
               </Dialog.Body>
             </Dialog.Content>
           </Dialog.Positioner>
         </Portal>
       </Dialog.Root>
+      <RecordDetailDialog record={selected === undefined ? undefined : records[selected]} index={selected} onClose={() => { setSelected(undefined) }} />
     </Box>
   )
 }
 
-function RecordsView ({ view, records, onCellClick, highlightedField, onHoverField }: {
+function RecordsView ({ view, records, onCellClick, highlightedField, onHoverField, onSelectRecord }: {
   view:              RecordsView
   records:           PreviewRecord[]
   onCellClick?:      (recordIndex: number, field: string) => void
   highlightedField?: string
   onHoverField?:     (field: string | undefined) => void
+  onSelectRecord:    (recordIndex: number) => void
 }) {
   return view === 'table'
-    ? <RecordsTable records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} />
-    : <RecordsJsonl records={records} />
+    ? <RecordsTable records={records} onCellClick={onCellClick} highlightedField={highlightedField} onHoverField={onHoverField} onSelectRecord={onSelectRecord} />
+    : <RecordsJsonl records={records} onSelectRecord={onSelectRecord} />
 }
 
 /** The toolbar shared by the inline panel and the enlarge dialog: Table/JSONL toggle, export select and (inline only) the Enlarge button. */
