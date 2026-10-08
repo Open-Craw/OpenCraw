@@ -43,6 +43,12 @@
       "as": "row",
       "emit": true,
       "steps": []
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "kind": "table",
+      "selector": "^3 AL Huntsville Madison October 1 March 31 141 74"
     }
   ],
   "mapping": {
