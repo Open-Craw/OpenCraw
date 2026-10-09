@@ -9,7 +9,8 @@ export interface StudioClient {
   openWorkspace:  (folder: string) => Promise<WorkspaceView>
   /** Copies a dropped/opened file into `folder` (created when missing) and answers the copy's `file:` URL for a recipe's `start.url` (issue #120); `bytes` is the file's content, base64-encoded. */
   importDocument: (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
-  runSample:      (recipeId: string, budget?: SampleBudget) => Promise<void>
+  /** `stubs` are values a hook answers with instead of being called, by hook name, for this run only (issue #201). */
+  runSample:      (recipeId: string, budget?: SampleBudget, stubs?: Record<string, unknown>) => Promise<void>
   stopRun:        () => Promise<void>
   saveRecipe:     (path: string, recipe: unknown) => Promise<void>
   saveOutline:    (path: string, outline: OutlineView) => Promise<void>
@@ -91,7 +92,7 @@ export function createStudioClient (): StudioClient {
     initialFolder,
     openWorkspace:  folder => send<WorkspaceView>(token, { type: 'open-workspace', folder } satisfies OpenWorkspaceCommand),
     importDocument: (folder, name, bytes) => send<ImportDocumentView>(token, { type: 'import-document', folder, name, bytes } satisfies ImportDocumentCommand),
-    runSample:      async (recipeId, budget) => { await send(token, { type: 'run-sample', recipeId, budget } satisfies RunSampleCommand) },
+    runSample:      async (recipeId, budget, stubs) => { await send(token, { type: 'run-sample', recipeId, budget, ...(stubs !== undefined && { stubs }) } satisfies RunSampleCommand) },
     stopRun:        async () => { await send(token, { type: 'stop-run' } satisfies StopRunCommand) },
     saveRecipe:     async (path, recipe) => { await send(token, { type: 'save-recipe', path, recipe: recipe as Record<string, unknown> } satisfies SaveRecipeCommand) },
     saveOutline:    async (path, outline) => { await send(token, { type: 'save-outline', path, outline } satisfies SaveOutlineCommand) },

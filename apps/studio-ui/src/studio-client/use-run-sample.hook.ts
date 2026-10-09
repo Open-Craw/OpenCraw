@@ -7,6 +7,8 @@ import { useStudioClient } from './use-studio-client.hook'
 export interface RunSampleInput {
   recipeId: string
   budget?:  SampleBudget
+  /** Values a hook answers with instead of being called, by hook name (issue #201). */
+  stubs?:   Record<string, unknown>
 }
 
 /**
@@ -28,7 +30,7 @@ export function useRunSampleMutation (): UseMutationResult<void, Error, RunSampl
   const setError = useRunSessionStore(state => state.setError)
 
   return useMutation({
-    mutationFn: ({ recipeId, budget }: RunSampleInput) => client.runSample(recipeId, budget),
+    mutationFn: ({ recipeId, budget, stubs }: RunSampleInput) => client.runSample(recipeId, budget, stubs),
     onMutate:   () => { startRun() },
     onError:    (error) => {
       finishRun()
