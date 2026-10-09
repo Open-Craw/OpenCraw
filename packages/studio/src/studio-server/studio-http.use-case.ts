@@ -2,6 +2,7 @@ import { createServer } from 'node:http'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { dirname, join } from 'node:path'
 import type { Duplex } from 'node:stream'
+import { stripVTControlCharacters } from 'node:util'
 import { fileURLToPath } from 'node:url'
 import type { BrowserSessionConfig } from '@opencraw/core'
 import { studioCommandSchema } from '../studio-api'
@@ -147,7 +148,7 @@ async function handlePdfBytesRequest (response: ServerResponse, state: StudioSta
     response.writeHead(200, { 'content-type': 'application/pdf', 'content-length': bytes.byteLength })
     response.end(Buffer.from(bytes))
   } catch (error) {
-    respondJson(response, 500, { error: error instanceof Error ? error.message : String(error) })
+    respondJson(response, 500, { error: messageOf(error) })
   }
 }
 
@@ -163,14 +164,14 @@ async function handleCommand (request: IncomingMessage, response: ServerResponse
     }
     command = parsed.data
   } catch (error) {
-    respondJson(response, 400, { error: error instanceof Error ? error.message : String(error) })
+    respondJson(response, 400, { error: messageOf(error) })
 
     return
   }
   try {
     respondJson(response, 200, await dispatch(command, state))
   } catch (error) {
-    respondJson(response, 500, { error: error instanceof Error ? error.message : String(error) })
+    respondJson(response, 500, { error: messageOf(error) })
   }
 }
 
@@ -249,4 +250,9 @@ function handleUpgrade (request: IncomingMessage, socket: Duplex, token: string,
   const connection = acceptWebSocket(request, socket)
   state.sockets.add(connection)
   connection.onClose(() => { state.sockets.delete(connection) })
+}
+
+/** An error's message as plain text: Playwright colours its call logs with ANSI codes, which a browser would show as raw escapes (issue #187). */
+function messageOf (error: unknown): string {
+  return stripVTControlCharacters(error instanceof Error ? error.message : String(error))
 }
