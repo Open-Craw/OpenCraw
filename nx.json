@@ -153,6 +153,12 @@
     }
   },
   "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build",
+        "typecheck"
+      ]
+    },
     "lint": {
       "dependsOn": [
         "^build"
