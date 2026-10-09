@@ -7,6 +7,8 @@ export type { RecipeSetSource, RecipeSource, RecipeBytes, RecipeDocument, Bindin
 export { parseInputRecipe, parseOutputRecipe, RecipeValidationError, inputRecipeJsonSchema, outputRecipeJsonSchema, inputRecipeSchema, outputRecipeSchema, retryRuleSchema, BODY_KINDS } from './recipe-schema'
 export type { InputRecipe, OutputRecipe, FieldSpec, Step, StepType, MappingRule, TransformRule, ErrorPolicy, PaginateNext, SessionSpec, SessionAccess, CaptchaSettings, CaptchaStep, CaptchaCheck, CaptchaSubmitStep, RecipeMatrix, VarValue, RetryRule, RecipeIssue, MissingPolicy, BodyKind } from './recipe-schema'
 export type { Hook, HookMap, HookContext } from './hooks'
+export { commandHook, httpHook, CalloutError, calloutJsonSchemas, calloutRequestSchema, calloutResponseSchema } from './callout'
+export type { CommandHookOptions, HttpHookOptions, CalloutRequest, CalloutResponse, CalloutKind } from './callout'
 export { UnknownHookError } from './hooks'
 export type { FieldTrace, MappingTrace, OutputRecord } from './output-mapping'
 export { RecordRejectedError, MappingFailedError, resolveMissingPolicy, isMissing } from './output-mapping'
