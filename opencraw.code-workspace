@@ -2,7 +2,7 @@
   "folders": [
     {
       "path": ".",
-      "name": "OpenCraw"
+      "name": "opencraw"
     }
   ],
   "settings": {
@@ -246,7 +246,7 @@
         "request": "launch",
         "name": "mnci: build",
         "command": "npm run build",
-        "cwd": "${workspaceFolder:OpenCraw}",
+        "cwd": "${workspaceFolder:opencraw}",
         "presentation": {
           "group": "mnci",
           "order": 1
@@ -257,7 +257,7 @@
         "request": "launch",
         "name": "mnci: test",
         "command": "npm run test",
-        "cwd": "${workspaceFolder:OpenCraw}",
+        "cwd": "${workspaceFolder:opencraw}",
         "presentation": {
           "group": "mnci",
           "order": 2
@@ -268,7 +268,7 @@
         "request": "launch",
         "name": "mnci: lint",
         "command": "npm run lint",
-        "cwd": "${workspaceFolder:OpenCraw}",
+        "cwd": "${workspaceFolder:opencraw}",
         "presentation": {
           "group": "mnci",
           "order": 3
@@ -279,7 +279,7 @@
         "request": "launch",
         "name": "mnci: typecheck",
         "command": "npm run typecheck",
-        "cwd": "${workspaceFolder:OpenCraw}",
+        "cwd": "${workspaceFolder:opencraw}",
         "presentation": {
           "group": "mnci",
           "order": 4
