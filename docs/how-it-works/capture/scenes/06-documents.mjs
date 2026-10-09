@@ -15,7 +15,7 @@ const ENPAM = 'https://www.enpam.it/wp-content/uploads/STELLANTIS-SCONTI-e-cod-p
 const FIXTURE_PDF = 'packages/core/src/pdf-document/fixtures/discounts.pdf'
 const FCC_DOCX = 'examples/fcc-regulatory-fees/fy2026-regulatory-fees-media-bureau.docx'
 
-const BLOB = 'https://github.com/russoedu/open.craw/blob/main/'
+const BLOB = 'https://github.com/Open-Craw/OpenCraw/blob/main/'
 
 /** `repoFile({ url })`: a file of this repository, named by its GitHub URL, as a `file:` URL into the checkout. */
 const hooks = {

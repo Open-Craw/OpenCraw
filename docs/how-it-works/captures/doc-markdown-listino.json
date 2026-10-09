@@ -40,7 +40,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
         },
         "file": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
         "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
@@ -161,7 +161,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
         },
         "file": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
         "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",
@@ -282,7 +282,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
         },
         "file": "file://<repo>/packages/core/src/markdown-document/fixtures/listino.md",
         "front": "{\"title\":\"Listino giugno\",\"updated\":\"2026-06-01\",\"brand\":\"Fiat\",\"market\":\"NO\"}",

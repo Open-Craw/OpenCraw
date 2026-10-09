@@ -1,6 +1,6 @@
 # Temporary workarounds for mnci
 
-Tracked by issue [#184](https://github.com/russoedu/open.craw/issues/184). `tools/check-mnci-workarounds.mjs`
+Tracked by issue [#184](https://github.com/Open-Craw/OpenCraw/issues/184). `tools/check-mnci-workarounds.mjs`
 runs in CI (`after-install` slot of `ci.yml`) and as `npm run check:mnci`.
 
 | Workaround | Why | Upstream | Remove when |

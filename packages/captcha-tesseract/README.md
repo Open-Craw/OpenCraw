@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # @opencraw/captcha-tesseract
 
-A captcha reader for [OpenCraw](https://github.com/russoedu/open.craw/blob/main/README.md): it reads the code in an image captcha with Tesseract and fills
+A captcha reader for [OpenCraw](https://github.com/Open-Craw/OpenCraw/blob/main/README.md): it reads the code in an image captcha with Tesseract and fills
 the form's answer field. The engine then posts the form, checks the page and retries.
 
 It is meant for simple image captchas: a short code drawn in a clean font, like the public Vahan registrations
@@ -145,5 +145,5 @@ load lost), or **refused** (refreshed for free, never submitted):
 of both cases. Over 80 codes, with the cross-check, 75% are right, 16% refused, 9% wrong. The misses are the
 letters mixed case makes ambiguous (`j`/`J`, `s`/`S`, `y`/`Y`): both reads agree on the wrong case.
 
-Solving a site's captcha can break its terms of service. Read OpenCraw's [captcha guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/captcha.md)
+Solving a site's captcha can break its terms of service. Read OpenCraw's [captcha guide](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/captcha.md)
 first.

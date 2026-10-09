@@ -38,7 +38,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
         "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {
@@ -230,7 +230,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
         "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {
@@ -422,7 +422,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
         "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {
@@ -614,7 +614,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
         },
         "file": "file://<repo>/packages/core/src/workbook-document/fixtures/listino.csv",
         "listino": {

@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # @opencraw/mcp
 
-An MCP (Model Context Protocol) server exposing [`@opencraw/core`](https://github.com/russoedu/open.craw/blob/main/packages/core) as tools an agent can call
+An MCP (Model Context Protocol) server exposing [`@opencraw/core`](https://github.com/Open-Craw/OpenCraw/blob/main/packages/core) as tools an agent can call
 directly: probe a page, validate recipes, run a crawl, list what's already authored, compare two runs. Local transport only
-(stdio) — the host launches it as a subprocess, the same shape as the [`opencraw` cli](https://github.com/russoedu/open.craw/blob/main/packages/cli).
+(stdio) — the host launches it as a subprocess, the same shape as the [`opencraw` cli](https://github.com/Open-Craw/OpenCraw/blob/main/packages/cli).
 
 For a shared, remote endpoint that authors recipes where they will run (and publishes them to a crawl host), see
-[`@opencraw/azure-durable`](https://github.com/russoedu/open.craw/blob/main/packages/azure-durable/README.md#write-recipes-over-mcp)'s `/mcp`.
+[`@opencraw/azure-durable`](https://github.com/Open-Craw/OpenCraw/blob/main/packages/azure-durable/README.md#write-recipes-over-mcp)'s `/mcp`.
 
 This does **not** auto-author recipes from a sentence. The five tools are, `list_recipes` aside, the same
 primitives the `opencraw` cli gives a terminal; the calling agent still writes the JSON recipes, using `probe` and
@@ -40,7 +40,7 @@ a module whose default export is `{ name: function }` is read as hooks alone. On
 names it, never a tool call, so an agent can run recipes that use your plugins but can't make the server load
 a module of its choosing.
 
-`OPENCRAW_ACCESS` points at an access config ([access.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/access.md)): proxy profiles, with
+`OPENCRAW_ACCESS` points at an access config ([access.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/access.md)): proxy profiles, with
 credentials as `{{env.NAME}}` read from the server's environment. The `probe` and `run` tools then take an
 `access` argument naming a profile. The file and the credentials never pass through a tool call.
 

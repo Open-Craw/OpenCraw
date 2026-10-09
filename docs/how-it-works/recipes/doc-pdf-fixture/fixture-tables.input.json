@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "fixture-tables",
   "output": "fixture-row",
@@ -7,7 +7,7 @@
   "description": "The four tables of packages/core/src/pdf-document/fixtures/discounts.pdf, read twice: with until, then without it. The second pass adds two records, the last rows of ALPHA and GAMMA with the note under each table glued to them; its other rows repeat the first pass and count as duplicates.",
   "start": [
     {
-      "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
+      "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/pdf-document/fixtures/discounts.pdf"
     }
   ],
   "steps": [

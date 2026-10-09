@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # A fee table in a Word document: US radio station regulatory fees
@@ -61,7 +61,7 @@ Population Served | AM Class A | AM Class B | AM Class C | AM Class D | FM Class
 - **Two values in one cell.** Each cell holds the payment type code, then the fee, on two lines. Two mapping
   rules read the same cell: `regex` `^\s*(\d{4})` for the code, `regex` `\$\s*([\d,.]+)` then `number` for the fee.
   The line break between them reads as a space, so the cell arrives as `2659 $560` (before
-  [#72](https://github.com/russoedu/open.craw/issues/72), `@opencraw/core` 0.1.10 and earlier glued it into
+  [#72](https://github.com/Open-Craw/OpenCraw/issues/72), `@opencraw/core` 0.1.10 and earlier glued it into
   `2659$560`; the patterns accept both).
 - **Dotted targets build objects.** `amClassA.paymentTypeCode` and `amClassA.feeUsd` fill the `amClassA` object
   the output declares.
@@ -69,7 +69,7 @@ Population Served | AM Class A | AM Class B | AM Class C | AM Class D | FM Class
   pattern `^FM Classes\s*A` matches it with or without the space the break becomes.
   `opencraw probe fy2026-regulatory-fees-media-bureau.docx` suggests this table's selector,
   `^Population Served`, and the three simpler ones below it (before
-  [#73](https://github.com/russoedu/open.craw/issues/73), the digits in `B1` and `C3` hid this header from it).
+  [#73](https://github.com/Open-Craw/OpenCraw/issues/73), the digits in `B1` and `C3` hid this header from it).
 
 The same document has three simpler tables (`Regulatory Fee Group or Category | Regulatory Fee | Payment Type
 Code`, and two like it), a good next recipe to write.

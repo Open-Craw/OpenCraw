@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # @opencraw/azure-durable
 
-[OpenCraw](https://github.com/russoedu/open.craw/blob/main/README.md) over HTTP, on Azure Durable Functions. One deployed Function App holds the browser,
+[OpenCraw](https://github.com/Open-Craw/OpenCraw/blob/main/README.md) over HTTP, on Azure Durable Functions. One deployed Function App holds the browser,
 the captcha readers and the proxies; every crawler calls it with recipes instead of bundling Playwright itself.
 
 ```sh
@@ -125,5 +125,5 @@ Service authentication and set `identify`.
 
 ## Deploy it
 
-See [docs/recipes/azure-durable.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/azure-durable.md): the Dockerfile, `host.json`, the plan,
+See [docs/recipes/azure-durable.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/azure-durable.md): the Dockerfile, `host.json`, the plan,
 and the rules a warm pool needs (one instance per singleton job, enough activity slots).
