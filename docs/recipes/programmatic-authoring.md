@@ -48,6 +48,29 @@ you keep them apart, `loadRecipeSet({ output, inputs })` takes each part separat
 mix of objects, JSON text, JSON Lines text, file paths and directories, so you can build some recipes in
 code and keep the rest as files.
 
+## Type checking in TypeScript
+
+`@opencraw/core` exports the recipe types, so no builder function is needed: `satisfies` checks an object
+literal against the type and keeps its own narrow type.
+
+```ts
+import type { InputRecipe } from '@opencraw/core'
+
+const recipe = {
+  kind:   'input',
+  id:     'shop-a',
+  output: 'product',
+  mode:   'web',
+  start:  [{ url: 'https://a.example/catalog' }],
+  steps:  [{ type: 'goto', url: '{{start.url}}' }, { type: 'emit' }],
+  mapping: {},
+} satisfies InputRecipe
+```
+
+A misspelt step type (`'gotoo'`) is a compile error that suggests `'goto'`, and the editor completes step
+types and keys. `OutputRecipe` does the same for an output recipe. Template expressions and bindings are
+still checked at load time, as above.
+
 ## What is checked, and when
 
 Objects get exactly the validation a file gets: the schema, the template expressions, the binding of each
