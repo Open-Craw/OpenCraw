@@ -18,18 +18,23 @@ import type { StudioState } from './workspace.store'
  */
 export async function handleStartRecording (state: StudioState, command: StartRecordingCommand): Promise<{ started: true }> {
   if (state.folder === undefined) throw new Error('open a workspace first')
-  await state.activeRecording?.stop()
+  await settleRecording(state)
   const { input } = await loadRecipePair(state.folder, command.recipeId)
   const point = input.start[0]
   if (point === undefined) throw new Error(`recipe "${command.recipeId}" has no start point`)
-  const handle = await openRecorderSession(
+  const opening = openRecorderSession(
     { startUrl: point.url, profileDir: state.recorderProfileDir, browser: state.browser },
     {
       onCard: (node, secret) => { broadcast(state, { type: 'recording-card', node, secret }) },
       onNote: (note) => { broadcast(state, { type: 'recording-note', kind: note.kind, message: note.message }) },
     },
   )
-  state.activeRecording = handle
+  state.openingRecording = opening
+  try {
+    state.activeRecording = await opening
+  } finally {
+    state.openingRecording = undefined
+  }
 
   return { started: true }
 }
@@ -40,18 +45,35 @@ export async function handleStartRecording (state: StudioState, command: StartRe
  * build "make this the login" (`session.bootstrap`) or "keep as steps"
  * without asking the server again. Also broadcasts `recording-stopped`, so
  * every connected client (not only the one that asked) knows the window
- * closed.
+ * closed, even when nothing was open (a UI waiting on it would stay stuck).
+ * A stop that arrives while the window is still opening waits for it.
  *
  * @param state - The server state holding the active recording, if any.
  * @param _command - The command (carries nothing beyond its type).
  * @returns Every step recorded, in order; empty when nothing was recording.
  */
 export async function handleStopRecording (state: StudioState, _command: StopRecordingCommand): Promise<{ steps: Record<string, unknown>[] }> {
+  await waitForOpening(state)
   const recording = state.activeRecording
   state.activeRecording = undefined
-  if (recording === undefined) return { steps: [] }
-  const { steps } = await recording.stop()
+  const { steps } = recording === undefined ? { steps: [] } : await recording.stop()
   broadcast(state, { type: 'recording-stopped', steps })
 
   return { steps }
+}
+
+/** Closes the recording in progress, waiting first for one still opening (issue #174). */
+export async function settleRecording (state: StudioState): Promise<void> {
+  await waitForOpening(state)
+  await state.activeRecording?.stop()
+  state.activeRecording = undefined
+}
+
+/** Waits for a window still opening; a failed open is `start-recording`'s own error to report, not the stopper's. */
+async function waitForOpening (state: StudioState): Promise<void> {
+  try {
+    await state.openingRecording
+  } catch {
+    // reported to the caller of start-recording
+  }
 }

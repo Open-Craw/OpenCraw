@@ -116,4 +116,22 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
     expect(written.steps[2].steps?.map(step => [step.id, step.selector])).toEqual([['value', '$.name'], ['value_2', '$.price']])
     await page.close()
   })
+
+  it('Record opens the recorder window, shows the banner, and Stop leaves a stopped bar with nothing to keep (issue #95)', async () => {
+    const page = await browser.newPage()
+    await page.goto(server.url)
+    await page.getByText('Read', { exact: true }).first().waitFor()
+
+    await page.getByText('Record', { exact: true }).first().click()
+    await page.getByTestId('recording-banner').waitFor()
+    await page.getByText('Stop recording', { exact: true }).click()
+
+    const bar = page.getByTestId('recording-stopped-bar')
+    await bar.waitFor()
+    await bar.getByText(/0 steps recorded/).waitFor()
+    expect(await bar.getByRole('button', { name: 'Keep as steps' }).isDisabled()).toBe(true)
+    await bar.getByRole('button', { name: 'Discard' }).click()
+    await bar.waitFor({ state: 'detached' })
+    await page.close()
+  }, 60000)
 })
