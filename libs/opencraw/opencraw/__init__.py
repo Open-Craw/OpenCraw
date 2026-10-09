@@ -1,6 +1,7 @@
 """Build OpenCraw recipes in Python, drive the real CLI, and write hooks. See README.md."""
 
 from .build_recipe_algorithm import input_recipe, output_recipe, step
+from .hook_pending_error import HookPending
 from .opencraw_cli_client import cli_command, run, validate
 from .opencraw_contract import (
     HookContext,
@@ -15,6 +16,7 @@ from .write_recipes_use_case import write_recipes
 
 __all__ = [
     "HookContext",
+    "HookPending",
     "HookRequest",
     "OpenCrawError",
     "Recipe",

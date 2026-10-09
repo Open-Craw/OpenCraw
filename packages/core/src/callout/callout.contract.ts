@@ -28,8 +28,8 @@ export type CalloutRequest = z.infer<typeof calloutRequestSchema>
 
 /**
  * What a handler answers with. `ok` carries the result in `output`; `error` says why in `error`;
- * `pending` is reserved for a handler that will post its result later (the callback handler, a later
- * slice of issue #201) and is refused until that exists.
+ * `pending` says the work is not done: the caller asks again, after `retryAfterMs`, with the same
+ * request (and so the same idempotency key) until the handler settles or the wait runs out.
  */
 export const calloutResponseSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('ok'), output: z.unknown().optional() }),
@@ -37,3 +37,5 @@ export const calloutResponseSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('pending'), retryAfterMs: z.number().int().nonnegative().optional() }),
 ])
 export type CalloutResponse = z.infer<typeof calloutResponseSchema>
+/** The answer of a handler that is still working. */
+export type CalloutPending = Extract<CalloutResponse, { status: 'pending' }>
