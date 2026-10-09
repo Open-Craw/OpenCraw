@@ -4,7 +4,7 @@
 
 # Authoring a recipe: the reference
 
-A crawl is described by JSON files, never code. **One output recipe** declares the records you want.
+A crawl is described by JSON files, never code (you may still generate that JSON from code: see [programmatic-authoring.md](./programmatic-authoring.md)). **One output recipe** declares the records you want.
 **One or more input recipes** declare how to get them from a site. The engine runs the inputs one after
 another and writes records that all match the output. Anything the JSON cannot express goes into a
 **hook**, a named function you register in code.

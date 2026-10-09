@@ -8,6 +8,7 @@
 |---|---|
 | [authoring.md](./authoring.md) | You are writing a recipe and need every field, step, transform and rule, with the reasoning behind each. The reference. |
 | [quick-guide.md](./quick-guide.md) | You want the short version: one page, the common shapes. |
+| [programmatic-authoring.md](./programmatic-authoring.md) | You generate many similar recipes (per shop, region or login) and want to build them as objects in code instead of typing JSON. |
 | [How OpenCraw works](../how-it-works/README.md) | You want to see what the engine does with each part of a recipe: every step, template, transform and policy run on real sites, APIs and documents, with screenshots, traces and the records they gave, and the engineering of the PDF, spreadsheet, PowerPoint and Word readers. |
 | [examples/](../../examples/README.md) | You want recipes that run: every example, what it shows and how to start it. |
 | [examples/movies](../../examples/movies/README.md), [examples/filmography](../../examples/filmography/README.md) | You want to see real recipes end to end: five movies from Netflix and IMDb, then movie → lead actor → filmography on TMDB and Letterboxd, with the decisions, the traces and the bugs met on the way. |
