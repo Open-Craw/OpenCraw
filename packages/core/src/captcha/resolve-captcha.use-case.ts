@@ -150,7 +150,7 @@ async function solveOnce (plan: CaptchaAttemptPlan, challenge: CaptchaChallenge,
     try {
       const verify = plan.verify === undefined ? undefined : { selector: plan.verify.selector, failure: plan.verify.failure }
 
-      return outcomeOf(await plan.solver.solve(challenge, { page: plan.page, lease: plan.lease, attempt, signal: controller.signal, log, verify }))
+      return outcomeOf(await plan.solver.solve(challenge, { recipeId: plan.recipeId, page: plan.page, lease: plan.lease, attempt, signal: controller.signal, log, verify }))
     } catch (error) {
       return { status: 'failed', reason: error instanceof Error ? error.message : String(error) }
     }

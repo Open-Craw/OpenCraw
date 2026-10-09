@@ -1,6 +1,8 @@
+import { createServer } from 'node:http'
 import type { Server } from 'node:http'
+import type { AddressInfo } from 'node:net'
 import type { Page } from 'playwright'
-import { createCrawler, loadRecipes, memorySink } from '../src/index'
+import { createCrawler, httpCaptchaSolver, loadRecipes, memorySink } from '../src/index'
 import type { CaptchaSolver, CrawlEvent } from '../src/index'
 import { browserConfig, CAPTCHA_SITE_KEY, CAPTCHA_TOKEN, FIXTURE_BASE, startFixtureSite, stopFixtureSite } from './fixture-site'
 
@@ -106,6 +108,32 @@ describe('captcha solving (real chromium, fake reCAPTCHA)', () => {
     expect(report.recipes[0].error).toContain('solves are spent')
     expect(ofType(events, 'captcha:solve')).toHaveLength(1)
     expect(ofType(events, 'captcha:budget')).toEqual([expect.objectContaining({ max: 1 })])
+  }, 60000)
+
+  it('solves through a service behind HTTP: the challenge goes out, the token it answers with goes on the page', async () => {
+    const asked: { kind: string, name: string, input: { challenge: { kind: string, siteKey: string, url: string }, attempt: number } }[] = []
+    const service = createServer((request, response) => {
+      let body = ''
+      request.on('data', (chunk: Buffer) => { body += chunk.toString('utf8') })
+      request.on('end', () => {
+        asked.push(JSON.parse(body) as (typeof asked)[number])
+        response.writeHead(200, { 'content-type': 'application/json' })
+        response.end(JSON.stringify({ status: 'ok', output: { token: CAPTCHA_TOKEN } }))
+      })
+    })
+    await new Promise<void>(resolve => service.listen(0, '127.0.0.1', resolve))
+    try {
+      const url = `http://127.0.0.1:${String((service.address() as AddressInfo).port)}/solve`
+      const { records, events, report } = await crawl([recipe('remote', afterClick, { captcha: { solver: 'remote' } })], [httpCaptchaSolver('remote', url)])
+
+      expect(report.recipes[0].error).toBeUndefined()
+      expect(records).toEqual(['Pandina', '600e'])
+      expect(asked).toHaveLength(1)
+      expect(asked[0]).toMatchObject({ kind: 'captcha', name: 'remote', input: { attempt: 1, challenge: { kind: 'recaptcha-v2', siteKey: CAPTCHA_SITE_KEY, url: `${FIXTURE_BASE}/captcha/gate` } } })
+      expect(ofType(events, 'captcha:solved')).toEqual([expect.objectContaining({ solver: 'remote', attempt: 1 })])
+    } finally {
+      await new Promise(resolve => service.close(resolve))
+    }
   }, 60000)
 
   it('fails before any page loads when a recipe names a solver nobody registered', async () => {
