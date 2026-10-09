@@ -1,4 +1,4 @@
-# The OpenCraw host as an Azure Functions container: Node 22, the Functions
+# The OpenCraw host as an Azure Functions container: Node 24, the Functions
 # runtime, Chromium for web recipes. Build it from the pruned output, which
 # carries its own lockfile and the workspace packages it depends on:
 #
@@ -7,7 +7,7 @@
 #
 # Chromium needs a plan that runs containers: Elastic Premium or App Service
 # (Linux). The Consumption plan cannot run it.
-FROM mcr.microsoft.com/azure-functions/node:4-node22
+FROM mcr.microsoft.com/azure-functions/node:4-node24
 
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true \

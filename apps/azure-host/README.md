@@ -37,7 +37,7 @@ apps/azure-host/
     shipped-recipes.ts         the recipe sets the deployment ships, by name and version
     assets/recipes/            the recipes themselves (JSON)
   host.json                    Durable settings the pools need
-  Dockerfile                   Functions runtime + Node 22 + Chromium
+  Dockerfile                   Functions runtime + Node 24 + Chromium
   deploy/deploy.sh             every Azure resource, with the Azure CLI
   local.settings.example.json  the settings for `func start`
 ```

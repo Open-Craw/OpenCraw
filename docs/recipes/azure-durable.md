@@ -52,11 +52,11 @@ my-crawler-host/
 
 [`apps/azure-host`](../../apps/azure-host/README.md) is a complete app built this way. Its
 [Dockerfile](../../apps/azure-host/Dockerfile) installs the pruned build (`npx nx run @opencraw/azure-host:prune`:
-the app's own `package.json`, lockfile and the workspace packages it uses) on the Functions Node 22 image, then
+the app's own `package.json`, lockfile and the workspace packages it uses) on the Functions Node 24 image, then
 Chromium:
 
 ```dockerfile
-FROM mcr.microsoft.com/azure-functions/node:4-node22
+FROM mcr.microsoft.com/azure-functions/node:4-node24
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
