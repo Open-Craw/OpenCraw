@@ -41,6 +41,29 @@ beforeEach(() => {
 })
 
 describe('httpHook', () => {
+  it('posts the same request again after a pending answer, until the service settles', async () => {
+    const keys: string[] = []
+    let calls = 0
+    respond = (reply) => {
+      keys.push(seen.headers['idempotency-key'] as string)
+      calls += 1
+      reply(200, JSON.stringify(calls < 3 ? { status: 'pending', retryAfterMs: 5 } : { status: 'ok', output: 'finally' }))
+    }
+
+    expect(await httpHook('slug', url)('a', {}, context)).toBe('finally')
+
+    expect(calls).toBe(3)
+    expect(new Set(keys).size).toBe(1)
+  })
+
+  it('fails when the service stays pending past maxWaitMs', async () => {
+    respond = (reply) => {
+      reply(200, JSON.stringify({ status: 'pending', retryAfterMs: 10 }))
+    }
+
+    await expect(httpHook('slug', url, { maxWaitMs: 50 })('a', {}, context)).rejects.toThrow(/still pending after 50 ms/)
+  })
+
   it('posts the request as JSON and returns the output of an ok answer', async () => {
     const hook = httpHook('slug', url)
 

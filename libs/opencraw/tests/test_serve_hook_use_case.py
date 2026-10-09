@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from typing import Any
 
-from opencraw import HookRequest, serve_hook
+from opencraw import HookPending, HookRequest, serve_hook
 
 CORE = (
     Path(__file__).resolve().parents[3] / "packages" / "core" / "dist" / "index.esm.js"
@@ -63,6 +63,20 @@ class ServeHookTest(unittest.TestCase):
         self.assertEqual(
             answer_to(REQUEST, handler), {"status": "error", "error": "no such price"}
         )
+
+    def test_raising_hook_pending_answers_pending_with_the_wait(self) -> None:
+        def handler(_value: Any, _args: dict[str, Any], _request: HookRequest) -> None:
+            raise HookPending(250)
+
+        self.assertEqual(
+            answer_to(REQUEST, handler), {"status": "pending", "retryAfterMs": 250}
+        )
+
+    def test_hook_pending_without_a_wait_leaves_it_to_the_caller(self) -> None:
+        def handler(_value: Any, _args: dict[str, Any], _request: HookRequest) -> None:
+            raise HookPending()
+
+        self.assertEqual(answer_to(REQUEST, handler), {"status": "pending"})
 
     def test_an_exception_without_a_message_names_its_type(self) -> None:
         def handler(_value: Any, _args: dict[str, Any], _request: HookRequest) -> None:

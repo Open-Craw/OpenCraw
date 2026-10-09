@@ -1114,7 +1114,31 @@ logged at `debug`. `idempotencyKey` is the same for the same call, so a service 
 it already has. A command is an argument list, never a shell string; both kinds time out (30 s by default). An
 endpoint is named in the module, not in a recipe: `tokenEnv` and `signingKeyEnv` name environment variables (a
 bearer token, and a secret that signs the body as `x-opencraw-signature: sha256=…`), and `allowedHosts` refuses an
-endpoint outside the hosts you list. A service that needs longer than one request can wait, and captcha solvers and
+endpoint outside the hosts you list.
+
+**Work that takes a while.** A handler that is not done answers `{ "status": "pending", "retryAfterMs": 5000 }`.
+OpenCraw waits that long (a second when it says nothing) and asks again with the same request and the same
+`idempotencyKey`, until the handler answers `ok` or `error`. `maxWaitMs` bounds the whole wait (120 s by default) and
+the call fails with "still pending" when it passes. The handler starts the work on the first request and looks it
+up by the key on later ones, which is what makes the repeat safe:
+
+```js
+price: httpHook('price', 'https://rates.example.com/price', { maxWaitMs: 300_000 }),
+```
+
+```python
+from opencraw import HookPending, serve_hook
+
+def price(value, args, request):
+    job = jobs.get(request["idempotencyKey"]) or jobs.start(value)
+    if not job.done:
+        raise HookPending(retry_after_ms=2000)
+    return job.result
+
+serve_hook(price)
+```
+
+Waiting for a push instead of asking, with a single-use resume token on the durable host, and captcha solvers and
 access plugins behind the same schema, are tracked in issue #201.
 
 ### 6.1 Captcha solvers

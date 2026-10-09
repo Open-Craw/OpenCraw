@@ -1,3 +1,6 @@
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import type { HookContext } from '../hooks'
 import { calloutRequestSchema } from './callout.contract'
 import { CalloutError } from './callout.error'
@@ -15,6 +18,20 @@ const READ_STDIN = "let text = ''; process.stdin.on('data', c => { text += c });
 
 describe('commandHook', () => {
   beforeEach(() => { logs.length = 0 })
+
+  it('runs the program again after a pending answer, with the same request, until it settles', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'opencraw-pending-'))
+    const counter = join(directory, 'runs')
+    const script = [
+      "const fs = require('fs')",
+      `const file = ${JSON.stringify(counter)}`,
+      "const runs = fs.existsSync(file) ? Number(fs.readFileSync(file, 'utf8')) + 1 : 1",
+      'fs.writeFileSync(file, String(runs))',
+      "process.stdout.write(JSON.stringify(runs < 3 ? { status: 'pending', retryAfterMs: 5 } : { status: 'ok', output: 'run ' + runs }))",
+    ].join('; ')
+
+    expect(await nodeHook(script)('a', {}, context)).toBe('run 3')
+  })
 
   it('sends the request on stdin and returns the output of an ok answer', async () => {
     const hook = nodeHook(`${READ_STDIN} const request = JSON.parse(text); process.stdout.write(JSON.stringify({ status: 'ok', output: String(request.input).toUpperCase() })) })`)
