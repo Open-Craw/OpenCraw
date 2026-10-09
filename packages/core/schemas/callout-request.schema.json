@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "hook",
+        "captcha",
+        "access"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input": {},
+    "args": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "recipeId": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "required": [
+        "recipeId",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    "idempotencyKey": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "name",
+    "args",
+    "context",
+    "idempotencyKey"
+  ],
+  "additionalProperties": false,
+  "$id": "https://opencraw/schemas/callout-request.schema.json",
+  "title": "OpenCraw callout request"
+}

@@ -1070,6 +1070,48 @@ load a module; only the command line that started it can.
 types as it loads; only syntax that is just types works (no `enum`, no parameter properties). On older Node,
 compile it first.
 
+**Hooks in any language, or behind an API.** A hook does not have to be JavaScript. `commandHook` runs a
+program, and `httpHook` calls a service; both answer to the same request and response, so the recipe still
+says `{ "op": "hook", "name": "slug" }` and the module decides where the code runs.
+
+```js
+// hooks.mjs
+import { commandHook, httpHook } from '@opencraw/core'
+
+export const hooks = {
+  slug:  commandHook('slug', ['python3', 'hooks/slug.py']),
+  price: httpHook('price', 'https://rates.example.com/price', { tokenEnv: 'RATES_TOKEN', allowedHosts: ['rates.example.com'] }),
+}
+```
+
+The program (or the service) gets one JSON request and answers with one JSON response. The shapes are published
+as `schemas/callout-request.schema.json` and `schemas/callout-response.schema.json`:
+
+```json
+{ "kind": "hook", "name": "slug", "input": "Hello World", "args": {}, "context": { "recipeId": "books", "scope": {} }, "idempotencyKey": "9f2c…" }
+```
+
+```json
+{ "status": "ok", "output": "hello-world" }
+```
+
+```python
+# hooks/slug.py: the request is on stdin, the answer goes to stdout
+import json, re, sys
+
+request = json.load(sys.stdin)
+slug = re.sub(r"[^a-z0-9]+", "-", str(request["input"]).lower()).strip("-")
+print(json.dumps({"status": "ok", "output": slug}))
+```
+
+`{ "status": "error", "error": "why" }` fails the step with that reason. Anything the program writes to stderr is
+logged at `debug`. `idempotencyKey` is the same for the same call, so a service can answer a repeat with the result
+it already has. A command is an argument list, never a shell string; both kinds time out (30 s by default). An
+endpoint is named in the module, not in a recipe: `tokenEnv` and `signingKeyEnv` name environment variables (a
+bearer token, and a secret that signs the body as `x-opencraw-signature: sha256=…`), and `allowedHosts` refuses an
+endpoint outside the hosts you list. A service that needs longer than one request can wait, and captcha solvers and
+access plugins behind the same schema, are tracked in issue #201.
+
 ### 6.1 Captcha solvers
 
 A captcha solver gets past one challenge on the live page. The engine does the rest: finding challenges,
