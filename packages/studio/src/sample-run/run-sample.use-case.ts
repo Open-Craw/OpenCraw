@@ -3,6 +3,7 @@ import { UnknownHookError, bindRecipeSet, createCrawler, memorySink, traceLine }
 import type { BrowserSessionConfig, Crawler, CrawlEvent } from '@opencraw/core'
 import type { SampleBudget } from '../studio-api'
 import type { TrustedPlugins } from '../trusted-plugins'
+import { calloutHooks } from './callout-hooks.use-case'
 import { loadRecipePair } from './load-recipe-pair.use-case'
 import type { SampleRunRecord, SampleRunRejected, SampleRunResult, SampleStepSummary } from './sample-run-record.contract'
 
@@ -39,10 +40,11 @@ export interface SampleRunHandle {
  * @param callbacks - Where trace lines and records go as the run proceeds.
  * @param browser - Browser launch settings for a web-mode recipe (an executable path override, headless…); the server-wide setting `studio-http.use-case.ts`'s `StudioServerOptions.browser` carries in, e.g. `OPENCRAW_CHROMIUM` in a sandbox with no full Playwright install.
  * @param plugins - Hooks, access plugins and captcha solvers the person started Studio with (`--hooks`, issue #150); none when it was started without.
+ * @param stubs - Values a hook answers with instead of being called, by hook name, for this run only (issue #201): how a sample skips a slow or paid callout.
  * @returns A handle: `stop` closes the crawler cleanly, `result` resolves when the run ends.
  * @throws RecipeValidationError, RecipeBindingError, Error when the recipe or its output cannot be loaded or bound.
  */
-export async function runSample (folder: string, recipeId: string, budget: SampleBudget | undefined, callbacks: SampleRunCallbacks, browser?: BrowserSessionConfig, plugins?: TrustedPlugins): Promise<SampleRunHandle> {
+export async function runSample (folder: string, recipeId: string, budget: SampleBudget | undefined, callbacks: SampleRunCallbacks, browser?: BrowserSessionConfig, plugins?: TrustedPlugins, stubs?: Record<string, unknown>): Promise<SampleRunHandle> {
   const { input, output } = await loadRecipePair(folder, recipeId)
   const set = bindRecipeSet(output, [input])
   const sink = memorySink()
@@ -54,7 +56,7 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
     debug:          true,
     sample:         budget,
     browser,
-    hooks:          plugins?.hooks,
+    hooks:          calloutHooks(plugins?.hooks, stubs, callbacks.onTraceLine),
     accessPlugins:  plugins?.accessPlugins,
     captchaSolvers: plugins?.captchaSolvers,
     onEvent:        (event: CrawlEvent) => {

@@ -1,6 +1,7 @@
 import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { commandHook, httpHook } from '@opencraw/core'
 import { handleOpenWorkspace } from './open-workspace.handler'
 import { createStudioState } from './workspace.store'
 
@@ -31,5 +32,29 @@ describe('handleOpenWorkspace', () => {
 
     expect(again.recipes).toHaveLength(1) // a fresh read every time, not a cached one
     expect(received).toHaveLength(1) // the first open only
+  })
+
+  it('says which of the loaded hooks call outside the process, so the UI can warn and offer a stub', async () => {
+    const folder = mkdtempSync(join(tmpdir(), 'opencraw-handler-'))
+    const state = createStudioState()
+    state.plugins = { source: 'hooks.mjs', hooks: { local: () => 1, price: httpHook('price', 'https://svc.example/price'), slug: commandHook('slug', ['python3', 'slug.py']) } }
+
+    const view = await handleOpenWorkspace(state, { type: 'open-workspace', folder })
+
+    expect(view.hooks).toEqual({
+      source: 'hooks.mjs',
+      names:  ['local', 'price', 'slug'],
+      remote: [{ kind: 'hook', name: 'price', label: 'POST https://svc.example/price' }, { kind: 'hook', name: 'slug', label: 'command python3 slug.py' }],
+    })
+  })
+
+  it('leaves `remote` out when everything runs in the process', async () => {
+    const folder = mkdtempSync(join(tmpdir(), 'opencraw-handler-'))
+    const state = createStudioState()
+    state.plugins = { source: 'hooks.mjs', hooks: { local: () => 1 } }
+
+    const view = await handleOpenWorkspace(state, { type: 'open-workspace', folder })
+
+    expect(view.hooks).toEqual({ source: 'hooks.mjs', names: ['local'] })
   })
 })

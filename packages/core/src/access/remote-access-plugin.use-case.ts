@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { calloutRequest, CalloutError } from '../callout-protocol'
-import { commandTransport, httpTransport, settleCallout } from '../callout-transport'
+import { commandTransport, httpTransport, markCallout, settleCallout } from '../callout-transport'
 import type { CalloutPollingOptions, CalloutTransport, CommandTransportOptions, HttpTransportOptions } from '../callout-transport'
 import { accessCalloutOutputSchema } from './access-callout.contract'
 import type { AccessCalloutInput } from './access-callout.contract'
@@ -28,7 +28,7 @@ export function accessPluginVia (name: string, transport: CalloutTransport, opti
     return await settleCallout(transport.label, request.idempotencyKey, async () => await transport.call(request, NO_LOG), { ...options, parkable: false })
   }
 
-  return {
+  const plugin: AccessPlugin = {
     name,
     lease: async (request) => {
       const output = await ask(request.recipeId, {
@@ -59,6 +59,8 @@ export function accessPluginVia (name: string, transport: CalloutTransport, opti
       return given
     },
   }
+
+  return markCallout(plugin, transport.label)
 }
 
 /**

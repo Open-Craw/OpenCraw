@@ -1,6 +1,7 @@
 import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { httpHook } from '@opencraw/core'
 import type { SampleRunRecord } from './sample-run-record.contract'
 import { runSample } from './run-sample.use-case'
 
@@ -100,5 +101,43 @@ describe('runSample', () => {
 
     expect(result.emitted).toBe(2)
     expect(result.stoppedBy).toBe('sample-maxRecords')
+  })
+
+  it('answers a stubbed callout hook with the stub, calls nothing, and says so in the trace (issue #201)', async () => {
+    const folder = folderOf({})
+    const dataFile = join(folder, 'data.json')
+    writeFileSync(dataFile, JSON.stringify(DATA))
+    writeFileSync(join(folder, 'item.output.json'), JSON.stringify(OUTPUT))
+    const recipe = inputRecipe(dataFile) as { mapping: Record<string, unknown> }
+    recipe.mapping.price = { from: 'item.price', transform: [{ op: 'hook', name: 'quote' }] }
+    writeFileSync(join(folder, 'items.input.json'), JSON.stringify(recipe))
+    const lines: string[] = []
+    // Nothing listens on this port: the run only works because the hook is not called.
+    const hooks = { quote: httpHook('quote', 'http://127.0.0.1:1/quote', { timeoutMs: 200 }) }
+
+    const handle = await runSample(folder, 'items', undefined, { onTraceLine: (line) => { lines.push(line) }, onRecord: () => undefined }, undefined, { source: 'hooks.mjs', hooks }, { quote: 42 })
+    const result = await handle.result
+
+    expect(result.error).toBeUndefined()
+    expect(result.records.map(record => record.data.price)).toEqual([42, 42, 42])
+    expect(lines.filter(line => line.startsWith('☎'))).toHaveLength(3)
+    expect(lines.find(line => line.startsWith('☎'))).toContain('hook "quote" is stubbed')
+  })
+
+  it('warns in the trace that a callout hook it does call is slow and may cost (issue #201)', async () => {
+    const folder = folderOf({})
+    const dataFile = join(folder, 'data.json')
+    writeFileSync(dataFile, JSON.stringify({ items: [{ name: 'a1', price: '1' }] }))
+    writeFileSync(join(folder, 'item.output.json'), JSON.stringify(OUTPUT))
+    const recipe = inputRecipe(dataFile) as { mapping: Record<string, unknown> }
+    recipe.mapping.price = { from: 'item.price', transform: [{ op: 'hook', name: 'quote' }] }
+    writeFileSync(join(folder, 'items.input.json'), JSON.stringify(recipe))
+    const lines: string[] = []
+    const hooks = { quote: httpHook('quote', 'http://127.0.0.1:1/quote', { timeoutMs: 200, maxWaitMs: 1 }) }
+
+    const handle = await runSample(folder, 'items', undefined, { onTraceLine: (line) => { lines.push(line) }, onRecord: () => undefined }, undefined, { source: 'hooks.mjs', hooks })
+    await handle.result
+
+    expect(lines.some(line => line.includes('hook "quote" calls POST http://127.0.0.1:1/quote (slow, and it may cost'))).toBe(true)
   })
 })
