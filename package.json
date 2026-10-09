@@ -7,6 +7,7 @@
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
     "typecheck": "nx run-many -t typecheck",
+    "check:mnci": "node tools/check-mnci-workarounds.mjs",
     "affected": "nx affected -t lint,typecheck,test,build",
     "graph": "nx graph",
     "release:preview": "nx release --dry-run",
@@ -95,7 +96,8 @@
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "vite": "^8.0.0"
+    "vite": "^8.0.0",
+    "@mnci/cli": ">=4.0.0 <5.0.0"
   },
   "workspaces": [
     "packages/*",
@@ -115,6 +117,7 @@
     "nx": {
       "brace-expansion": "^5.0.9",
       "smol-toml": "^1.7.1",
+      "axios": "^1.20.0",
       "undici": "^7.29.1"
     },
     "@nx/js": {

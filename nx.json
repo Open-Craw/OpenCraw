@@ -16,7 +16,8 @@
     "sharedGlobals": [
       "{workspaceRoot}/eslint.config.mjs",
       "{workspaceRoot}/tsconfig.base.json",
-      "{workspaceRoot}/package.json"
+      "{workspaceRoot}/package.json",
+      "{workspaceRoot}/eslint.config.mnci.mjs"
     ]
   },
   "plugins": [
@@ -75,6 +76,8 @@
     "projects": [
       "packages/*",
       "python-packages/*",
+      "tag:type:vscode-extension",
+      "tag:release:go",
       "!tag:type:go-lib"
     ],
     "releaseTag": {
@@ -86,7 +89,7 @@
       "push": true
     },
     "version": {
-      "preVersionCommand": "npx nx run-many -t build --projects=packages/*,python-packages/*",
+      "preVersionCommand": "npx nx run-many -t build --projects=packages/*,python-packages/*,tag:type:vscode-extension",
       "conventionalCommits": true,
       "preserveMatchingDependencyRanges": false,
       "fallbackCurrentVersionResolver": "disk",
