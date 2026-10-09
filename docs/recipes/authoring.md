@@ -1138,8 +1138,12 @@ def price(value, args, request):
 serve_hook(price)
 ```
 
-Waiting for a push instead of asking, with a single-use resume token on the durable host, and captcha solvers and
-access plugins behind the same schema, are tracked in issue #201.
+**Pushing the result back.** On a host that can receive it (the durable host), the request also carries
+`callback: { "url": "…" }`, a URL valid for that one call. A handler that answers `pending` may then post
+its result there instead of being asked again: the same `{ "status": "ok", "output": … }` or
+`{ "status": "error", "error": … }` (published as `schemas/callout-resolution.schema.json`), never `pending`
+again. The host side of this is tracked in issue #201, together with captcha solvers and access plugins
+behind the same schema.
 
 ### 6.1 Captcha solvers
 

@@ -44,6 +44,19 @@
     },
     "idempotencyKey": {
       "type": "string"
+    },
+    "callback": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [

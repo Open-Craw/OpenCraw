@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process'
 import type { Hook } from '../hooks'
 import { hookRequest } from './callout-request.algorithm'
-import { settleCallout } from './callout-polling.use-case'
-import type { CalloutPollingOptions } from './callout-polling.use-case'
+import { withCallback } from './callout-waiter.store'
+import { settleCallout } from './settle-callout.use-case'
+import type { CalloutPollingOptions } from './settle-callout.use-case'
 import { answerOf, parseAnswer } from './callout-response.algorithm'
 import type { CalloutResponse } from './callout.contract'
 import { CalloutError } from './callout.error'
@@ -37,7 +38,7 @@ export function commandHook (name: string, command: readonly [string, ...string[
   const limit = options.maxOutputBytes ?? DEFAULT_MAX_OUTPUT_BYTES
 
   return async (input, args, context) => {
-    const request = hookRequest(name, input, args, context)
+    const request = withCallback(hookRequest(name, input, args, context))
     const attempt = async (): Promise<CalloutResponse> => {
       const stdout = await new Promise<string>((resolve, reject) => {
         const child = spawn(command[0], command.slice(1), { cwd: options.cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true })
@@ -88,6 +89,6 @@ export function commandHook (name: string, command: readonly [string, ...string[
       return answerOf(label, parseAnswer(label, stdout))
     }
 
-    return settleCallout(label, attempt, options)
+    return settleCallout(label, request.idempotencyKey, attempt, options)
   }
 }

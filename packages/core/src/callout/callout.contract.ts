@@ -11,6 +11,10 @@ export type CalloutKind = z.infer<typeof calloutKindSchema>
  */
 const valuesSchema = z.record(z.string(), z.unknown())
 
+/** Where a handler that answered `pending` posts its `CalloutResolution`: sent only when the host can receive it, and valid for this one call. */
+export const calloutCallbackSchema = z.strictObject({ url: z.string().url() })
+export type CalloutCallback = z.infer<typeof calloutCallbackSchema>
+
 export const calloutRequestSchema = z.strictObject({
   kind:    calloutKindSchema,
   name:    z.string().min(1),
@@ -23,6 +27,8 @@ export const calloutRequestSchema = z.strictObject({
   }),
   /** The same for the same call, so a service can answer a replay (a retry, or a durable function re-running) with the result it already has. */
   idempotencyKey: z.string(),
+  /** Present when the host waits for results pushed back instead of asking again: post the `CalloutResolution` here. */
+  callback:       calloutCallbackSchema.optional(),
 })
 export type CalloutRequest = z.infer<typeof calloutRequestSchema>
 
@@ -31,11 +37,21 @@ export type CalloutRequest = z.infer<typeof calloutRequestSchema>
  * `pending` says the work is not done: the caller asks again, after `retryAfterMs`, with the same
  * request (and so the same idempotency key) until the handler settles or the wait runs out.
  */
+const okAnswerSchema = z.strictObject({ status: z.literal('ok'), output: z.unknown().optional() })
+const errorAnswerSchema = z.strictObject({ status: z.literal('error'), error: z.string() })
+
 export const calloutResponseSchema = z.discriminatedUnion('status', [
-  z.strictObject({ status: z.literal('ok'), output: z.unknown().optional() }),
-  z.strictObject({ status: z.literal('error'), error: z.string() }),
+  okAnswerSchema,
+  errorAnswerSchema,
   z.strictObject({ status: z.literal('pending'), retryAfterMs: z.number().int().nonnegative().optional() }),
 ])
 export type CalloutResponse = z.infer<typeof calloutResponseSchema>
+/**
+ * What a handler posts to `callback.url` after it answered `pending`: the same `ok` or `error` it would
+ * have answered with, and never `pending` again.
+ */
+export const calloutResolutionSchema = z.discriminatedUnion('status', [okAnswerSchema, errorAnswerSchema])
+export type CalloutResolution = z.infer<typeof calloutResolutionSchema>
+
 /** The answer of a handler that is still working. */
 export type CalloutPending = Extract<CalloutResponse, { status: 'pending' }>

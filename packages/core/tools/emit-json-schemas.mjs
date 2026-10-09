@@ -11,7 +11,7 @@ const { accessConfigJsonSchema, calloutJsonSchemas, inputRecipeJsonSchema, outpu
 const target = join(here, '..', 'schemas')
 mkdirSync(target, { recursive: true })
 const callout = calloutJsonSchemas()
-for (const [name, schema] of [['input-recipe', inputRecipeJsonSchema()], ['output-recipe', outputRecipeJsonSchema()], ['access-config', accessConfigJsonSchema()], ['callout-request', callout.request], ['callout-response', callout.response]]) {
+for (const [name, schema] of [['input-recipe', inputRecipeJsonSchema()], ['output-recipe', outputRecipeJsonSchema()], ['access-config', accessConfigJsonSchema()], ['callout-request', callout.request], ['callout-response', callout.response], ['callout-resolution', callout.resolution]]) {
   const path = join(target, `${name}.schema.json`)
   writeFileSync(path, `${JSON.stringify(schema, null, 2)}\n`)
   console.log(`wrote ${path}`)
