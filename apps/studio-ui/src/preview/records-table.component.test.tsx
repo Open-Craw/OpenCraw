@@ -16,6 +16,11 @@ describe('RecordsTable', () => {
     expect(onCellClick).toHaveBeenCalledWith(0, 'price')
   })
 
+  it('says so when records were emitted but no output field is mapped, instead of an empty table', () => {
+    renderWithChakra(<RecordsTable records={[{ key: null, data: {} }, { key: null, data: {} }]} />)
+    expect(screen.getByText(/2 records emitted, but no output field is mapped yet/)).toBeTruthy()
+  })
+
   it('does not make a null cell clickable without onCellClick', () => {
     renderWithChakra(<RecordsTable records={[{ key: 'a', data: { price: null } }]} />)
     const cell = screen.getByText('null')
