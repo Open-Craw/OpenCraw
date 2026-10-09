@@ -17,4 +17,11 @@ describe('HooksBar', () => {
     renderBar({ source: 'hooks.mjs', names: ['positive', 'slug'] })
     expect(screen.getByTestId('hooks-bar').textContent).toBe('Hooks loaded from hooks.mjs (runs as your code): positive, slug')
   })
+
+  it('says which hooks call outside the machine, and offers a stub for them (issue #201)', () => {
+    renderBar({ source: 'hooks.mjs', names: ['price', 'slug'], remote: [{ kind: 'hook', name: 'price', label: 'POST https://svc.example/price' }] })
+
+    expect(screen.getByTestId('hook-stubs').textContent).toContain('call outside this machine')
+    expect(screen.getByTestId('remote-price').textContent).toContain('hook price → POST https://svc.example/price')
+  })
 })

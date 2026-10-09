@@ -8,6 +8,7 @@ import { PreviewStrip } from '../preview'
 import { RecordEditor, fieldToStepIdOf } from '../record-editor'
 import type { MappingRuleJson } from '../record-editor'
 import { HookNamesContext } from '../hook-names'
+import { activeStubs, useHookStubsStore } from '../hook-stubs'
 import { StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
@@ -75,6 +76,7 @@ function AppShell () {
   const runError = useRunSessionStore(state => state.error)
 
   const runSample = useRunSampleMutation()
+  const stubEntries = useHookStubsStore(state => state.entries)
   const stopRun = useStopRunMutation()
   const saveRecipe = useSaveRecipeMutation()
   const saveOutline = useSaveOutlineMutation()
@@ -137,7 +139,7 @@ function AppShell () {
           onImportFile={file => { void importFlow.importFile(file) }}
           importing={importFlow.pending}
           running={running}
-          onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId }) }}
+          onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId, stubs: activeStubs(stubEntries) }) }}
           onStop={() => { stopRun.mutate() }}
         />
         <HooksBar hooks={workspace.data?.hooks} />
