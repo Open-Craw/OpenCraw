@@ -235,6 +235,20 @@
         "script": "probe:build",
         "problemMatcher": [],
         "group": "build"
+      },
+      {
+        "label": "opencraw: qa",
+        "type": "npm",
+        "script": "opencraw:qa",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "opencraw: build",
+        "type": "npm",
+        "script": "opencraw:build",
+        "problemMatcher": [],
+        "group": "build"
       }
     ]
   },

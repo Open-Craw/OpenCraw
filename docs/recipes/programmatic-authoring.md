@@ -71,6 +71,14 @@ A misspelt step type (`'gotoo'`) is a compile error that suggests `'goto'`, and 
 types and keys. `OutputRecipe` does the same for an output recipe. Template expressions and bindings are
 still checked at load time, as above.
 
+## From Python
+
+`python-packages/opencraw` is a small standard-library package for building the same recipe dicts in Python
+and driving the real CLI: `input_recipe`, `output_recipe` and `step` save typing, `write_recipes` writes the
+files, `validate` and `run` call `opencraw validate` and `opencraw run` and hand back the records as dicts.
+It restates no schema, so the engine stays the one place that says what is valid. See its
+[README](../../python-packages/opencraw/README.md). It is not published to PyPI yet.
+
 ## What is checked, and when
 
 Objects get exactly the validation a file gets: the schema, the template expressions, the binding of each
