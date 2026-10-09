@@ -274,7 +274,7 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
         {view.csv !== undefined && (
           <CsvFormatControls format={view.csv} override={csvOverride} onChange={onCsvOverrideChange} />
         )}
-        {cellMode && staged === undefined && <Text fontSize='xs' color='fg.muted'>Click a cell (shift+click, or press and release, for a range), then add it to the recipe or drag it onto the Steps tab.</Text>}
+        {cellMode && <Text fontSize='xs' color='fg.muted' visibility={staged === undefined ? 'visible' : 'hidden'}>Click a cell (shift+click, or press and release, for a range), then add it to the recipe or drag it onto the Steps tab.</Text>}
         {draft.header !== undefined && <Badge size='sm' colorPalette='green'>{`table: ${draft.header}${draft.until === undefined ? '' : ` until ${draft.until}`}`}</Badge>}
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
       </HStack>
