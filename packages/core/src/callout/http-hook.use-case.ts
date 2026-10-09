@@ -2,8 +2,9 @@ import { createHmac } from 'node:crypto'
 import type { Hook } from '../hooks'
 import { HostAllowlist } from '../host-allowlist'
 import { hookRequest } from './callout-request.algorithm'
-import { settleCallout } from './callout-polling.use-case'
-import type { CalloutPollingOptions } from './callout-polling.use-case'
+import { withCallback } from './callout-waiter.store'
+import { settleCallout } from './settle-callout.use-case'
+import type { CalloutPollingOptions } from './settle-callout.use-case'
 import { answerOf, parseAnswer } from './callout-response.algorithm'
 import type { CalloutResponse } from './callout.contract'
 import { CalloutError } from './callout.error'
@@ -40,7 +41,7 @@ export function httpHook (name: string, url: string, options: HttpHookOptions = 
   HostAllowlist.of(options.allowedHosts)?.assert(url)
 
   return async (input, args, context) => {
-    const request = hookRequest(name, input, args, context)
+    const request = withCallback(hookRequest(name, input, args, context))
     const body = JSON.stringify(request)
     const headers: Record<string, string> = { 'content-type': 'application/json', 'idempotency-key': request.idempotencyKey }
     if (options.tokenEnv !== undefined) headers.authorization = `Bearer ${secret(label, options.tokenEnv)}`
@@ -61,7 +62,7 @@ export function httpHook (name: string, url: string, options: HttpHookOptions = 
       return answerOf(label, parseAnswer(label, text))
     }
 
-    return settleCallout(label, attempt, options)
+    return settleCallout(label, request.idempotencyKey, attempt, options)
   }
 }
 

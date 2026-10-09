@@ -5,6 +5,8 @@ import type { AddressInfo } from 'node:net'
 import { HostNotAllowedError } from '../host-allowlist'
 import type { HookContext } from '../hooks'
 import { CalloutError } from './callout.error'
+import { CalloutParkedError } from './callout-parked.error'
+import { withCalloutWaiter } from './callout-waiter.store'
 import { httpHook } from './http-hook.use-case'
 
 const context: HookContext = { recipeId: 'books', scope: {}, log: () => undefined }
@@ -54,6 +56,19 @@ describe('httpHook', () => {
 
     expect(calls).toBe(3)
     expect(new Set(keys).size).toBe(1)
+  })
+
+  it('sends the callback of the waiter, and parks instead of polling when the service answers pending', async () => {
+    respond = (reply) => {
+      reply(200, JSON.stringify({ status: 'pending', retryAfterMs: 5 }))
+    }
+    const waiter = { resolutions: {}, callbackFor: (key: string) => ({ url: `https://host/callouts/${key}` }), parked: [] }
+
+    await expect(withCalloutWaiter(waiter, () => httpHook('slug', url)('a', {}, context) as Promise<unknown>)).rejects.toBeInstanceOf(CalloutParkedError)
+
+    const request = JSON.parse(seen.body) as { idempotencyKey: string, callback: { url: string } }
+    expect(request.callback.url).toBe(`https://host/callouts/${request.idempotencyKey}`)
+    expect(waiter.parked).toHaveLength(1)
   })
 
   it('fails when the service stays pending past maxWaitMs', async () => {
