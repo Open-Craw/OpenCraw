@@ -25,17 +25,19 @@ export type CaptchaLog = (level: 'debug' | 'info' | 'warn' | 'error', message: s
 
 /** What a solver gets besides the challenge. */
 export interface CaptchaContext {
+  /** The recipe that met the challenge. */
+  recipeId: string
   /** The live page: the solver may inject a token, fill a field, click. */
-  page:    Page
+  page:     Page
   /** The access in use: token services often need the same IP (proxy) as the browser. */
-  lease?:  AccessLease
+  lease?:   AccessLease
   /** 1, 2, … within one solve loop. */
-  attempt: number
+  attempt:  number
   /** Aborted when the engine's timeout for this attempt runs out. */
-  signal:  AbortSignal
-  log:     CaptchaLog
+  signal:   AbortSignal
+  log:      CaptchaLog
   /** How the engine will confirm the solve: the element that shows when it worked, and the one that shows when it did not. */
-  verify?: { selector?: string, failure?: string }
+  verify?:  { selector?: string, failure?: string }
 }
 
 /**

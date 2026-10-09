@@ -153,6 +153,50 @@ export const mySolver: CaptchaSolver = {
 [`examples/captcha-solver/capsolver.mjs`](../../examples/captcha-solver/capsolver.mjs) is a complete solver for
 CapSolver: reCAPTCHA v2 and v3, Turnstile and image captchas, with tests against a faked API.
 
+## A solver in any language, or behind an API
+
+A solver does not have to be JavaScript. `commandCaptchaSolver` runs a program and `httpCaptchaSolver` calls a
+service; both put the answer on the page themselves, so the program or the service never needs a browser.
+
+```js
+// solvers.mjs
+import { commandCaptchaSolver, httpCaptchaSolver } from '@opencraw/core'
+
+export const captchaSolvers = [
+  httpCaptchaSolver('capsolver', 'https://solver.example.com/solve', { tokenEnv: 'SOLVER_TOKEN', allowedHosts: ['solver.example.com'] }),
+  commandCaptchaSolver('reader', ['python3', 'solvers/read_image.py']),
+]
+```
+
+A recipe names it as any solver (`"solver": "capsolver"`). The request is the callout request of
+[authoring §6](authoring.md#6-hooks) with `kind: "captcha"`, and its `input` is published as
+`schemas/callout-captcha-input.schema.json`:
+
+```json
+{ "kind": "captcha", "name": "capsolver", "idempotencyKey": "…", "args": {}, "context": { "recipeId": "shop", "scope": {} },
+  "input": { "challenge": { "kind": "recaptcha-v2", "url": "https://shop.example/gate", "siteKey": "6Lc…" }, "attempt": 1 } }
+```
+
+It answers with a `token` (a widget) or the `text` of an image captcha
+(`schemas/callout-captcha-output.schema.json`):
+
+```json
+{ "status": "ok", "output": { "token": "03AGdBq…" } }
+```
+
+- **A token** goes into the widget's response fields (`g-recaptcha-response`, `h-captcha-response`,
+  `cf-turnstile-response`), then the widget's `data-callback` runs, or its form is submitted when it has none.
+  `submit: "none"` stops there, for a recipe whose `submit` steps do it.
+- **`text`** is typed into the challenge's answer field (a `captcha` step with `image` names it in `field`).
+- **An image challenge** carries its picture in `input.image` (PNG, base64) when it names the image's selector.
+- **The proxy** of the access lease is sent in `input.proxy` only with `sendProxy: true`, since it carries the
+  proxy's credentials; services that tie a token to an IP need it.
+- **Slow services** may answer `{ "status": "pending", "retryAfterMs": 3000 }`: the solver asks again with the
+  same request until `maxWaitMs` or the solve's timeout (`timeoutMs`, 120 s). A captcha is always polled, never
+  parked on a durable host, because the page it belongs to has to stay open.
+- `{ "status": "error", "error": "out of balance" }` fails that attempt with the reason in the trace; the engine
+  retries, rotates and counts it against `maxSolves` as for any solver.
+
 ## Api recipes
 
 An api recipe has no page to solve on. With `session.captcha`, a fetched page that shows a widget fails as a
