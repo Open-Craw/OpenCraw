@@ -1,6 +1,6 @@
 export { registerOpenCraw, hostJsonWarnings } from './open-craw-host'
 export type { OpenCrawHost } from './open-craw-host'
-export type { OpenCrawHostOptions, PoolSettings, McpSettings, HostSettings } from './host-options'
+export type { OpenCrawHostOptions, PoolSettings, McpSettings, CalloutSettings, HostSettings } from './host-options'
 export { memoryRecipes, blobRecipes, RecipeStoreError } from './recipe-store'
 export type { RecipeStore, StoredRecipes, BlobRecipesOptions } from './recipe-store'
 export { blobResults } from './result-store'

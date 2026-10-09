@@ -1142,8 +1142,9 @@ serve_hook(price)
 `callback: { "url": "…" }`, a URL valid for that one call. A handler that answers `pending` may then post
 its result there instead of being asked again: the same `{ "status": "ok", "output": … }` or
 `{ "status": "error", "error": … }` (published as `schemas/callout-resolution.schema.json`), never `pending`
-again. The host side of this is tracked in issue #201, together with captcha solvers and access plugins
-behind the same schema.
+again. The durable host takes it with its `callouts` option (see
+[azure-durable.md](azure-durable.md#8-hooks-that-take-a-while)); captcha solvers and access plugins behind the
+same schema are tracked in issue #201.
 
 ### 6.1 Captcha solvers
 

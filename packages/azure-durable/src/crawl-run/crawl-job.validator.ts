@@ -7,6 +7,7 @@ const crawlJobSchema = z.object({
   output:       z.unknown(),
   inputs:       z.array(z.unknown()).min(1),
   dedupe:       z.enum(['recipe', 'off']).optional(),
+  callbackBase: z.string().optional(),
 })
 
 /**

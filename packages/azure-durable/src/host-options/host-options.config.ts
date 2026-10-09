@@ -43,6 +43,20 @@ export interface OpenCrawHostOptions {
   authLevel?:        'anonymous' | 'function' | 'admin'
   /** Prepended to every route: `'opencraw'` gives `/api/opencraw/crawl`. Default none. */
   routePrefix?:      string
+  /**
+   * Lets a hook that answers `pending` post its result back (`POST /callouts/{token}/resolve`) instead of
+   * being asked again. Off by default: a pending hook is then polled inside the activity.
+   */
+  callouts?:         CalloutSettings
+}
+
+export interface CalloutSettings {
+  /** The name of the environment variable holding the key that signs resume tokens. A secret: never in code or a recipe. */
+  signingKeyEnv: string
+  /** The base URL handlers post to (`https://app.example.com/api`), when the request URL is not it (a proxy, a custom domain). Default: derived from the request that started the job. */
+  publicUrl?:    string
+  /** How long a job waits for a posted-back result before the recipe fails. Default 1 hour. */
+  waitMs?:       number
 }
 
 export interface McpSettings {
@@ -62,7 +76,7 @@ export interface PoolSettings {
 }
 
 /** The options with their defaults. */
-export interface HostSettings extends Omit<OpenCrawHostOptions, 'pools' | 'inlineLimitBytes' | 'routePrefix' | 'authLevel' | 'mcp' | 'canPromote'> {
+export interface HostSettings extends Omit<OpenCrawHostOptions, 'pools' | 'inlineLimitBytes' | 'routePrefix' | 'authLevel' | 'mcp' | 'canPromote' | 'callouts'> {
   inlineLimitBytes: number
   routePrefix:      string
   authLevel:        'anonymous' | 'function' | 'admin'
@@ -70,10 +84,13 @@ export interface HostSettings extends Omit<OpenCrawHostOptions, 'pools' | 'inlin
   /** `undefined` when the endpoint is off. */
   mcp?:             Required<McpSettings>
   canPromote:       (caller: string | undefined) => boolean
+  /** `undefined` when posted-back results are off. */
+  callouts?:        Required<Pick<CalloutSettings, 'signingKeyEnv' | 'waitMs'>> & Pick<CalloutSettings, 'publicUrl'>
 }
 
 const KIB = 1024
 const MINUTE_MS = 60_000
+const HOUR_MS = 60 * MINUTE_MS
 
 /**
  * @param options - As given.
@@ -85,11 +102,13 @@ export function resolveHostOptions (options: OpenCrawHostOptions): HostSettings 
   const authLevel = options.authLevel ?? 'function'
   const mcp = options.mcp === undefined || options.mcp === false ? undefined : { sampleRecords: 20, sampleMs: MINUTE_MS, ...(options.mcp !== true && options.mcp) }
   if (mcp !== undefined && authLevel === 'anonymous' && options.identify === undefined) throw new Error('the MCP endpoint needs authentication: keep authLevel "function", or put the app behind App Service authentication and set identify')
-  const { mcp: _mcp, canPromote, ...rest } = options
+  const callouts = options.callouts === undefined ? undefined : calloutSettings(options.callouts)
+  const { mcp: _mcp, canPromote, callouts: _callouts, ...rest } = options
 
   return {
     ...rest,
     ...(mcp !== undefined && { mcp }),
+    ...(callouts !== undefined && { callouts }),
     canPromote:       canPromote ?? ((): boolean => false),
     inlineLimitBytes: options.inlineLimitBytes ?? 256 * KIB,
     routePrefix:      (options.routePrefix ?? '').replaceAll(/^\/+|\/+$/g, ''),
@@ -100,6 +119,13 @@ export function resolveHostOptions (options: OpenCrawHostOptions): HostSettings 
       maxWindows: options.pools?.maxWindows ?? 8,
     },
   }
+}
+
+function calloutSettings (options: CalloutSettings): NonNullable<HostSettings['callouts']> {
+  const key = process.env[options.signingKeyEnv]
+  if (key === undefined || key === '') throw new Error(`callouts.signingKeyEnv names ${options.signingKeyEnv}, which is not set: it must hold the key that signs resume tokens`)
+
+  return { signingKeyEnv: options.signingKeyEnv, waitMs: options.waitMs ?? HOUR_MS, ...(options.publicUrl !== undefined && { publicUrl: options.publicUrl }) }
 }
 
 /**

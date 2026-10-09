@@ -145,3 +145,36 @@ await Promise.all(inFlight)
 The pool grows only while every window is busy, and lets a window go once it has waited `windows.idle.afterMs`.
 So a caller that keeps one more item in flight than the pool has windows lets it grow, and a caller that slows
 down lets it shrink.
+
+## 8. Hooks that take a while
+
+A hook behind a service (`httpHook`, or a `commandHook` that starts a job) can answer `pending`. Without
+`callouts`, the activity asks again until the service settles (`maxWaitMs` on the hook, 120 s by default),
+which holds the activity for that long. With `callouts` the run does not wait inside the activity:
+
+```ts
+registerOpenCraw({
+  allowedHosts: ['example.com'],
+  hooks:        { price: httpHook('price', 'https://rates.example.com/price', { tokenEnv: 'RATES_TOKEN' }) },
+  callouts:     { signingKeyEnv: 'OPENCRAW_CALLOUT_KEY', waitMs: 2 * 60 * 60 * 1000 },
+})
+```
+
+- The request to the service carries `callback: { "url": "https://app/api/callouts/<token>/resolve" }`. The
+  service answers `{ "status": "pending" }` and, when it is done, posts `{ "status": "ok", "output": … }` (or
+  `{ "status": "error", "error": "…" }`) to that URL. The shapes are `callout-request.schema.json` and
+  `callout-resolution.schema.json` in `@opencraw/core`.
+- The recipe stops, and the orchestration waits for that result with a durable timer beside it. When the
+  result is posted, the recipe **runs again from the start**, and the call that was waiting returns the result
+  without being made: steps before it run twice, so this suits fetch and extract steps, and a service must
+  answer a repeat of a call (same `idempotencyKey`) with what it already has.
+- A recipe whose result does not arrive within `waitMs` (default 1 hour) fails with the handler named; the
+  other recipes of the job are not affected. A recipe is resumed at most 25 times.
+- **The token is the credential.** The resolve route is registered with `authLevel: 'anonymous'` because the
+  services that post back hold no function key. The token is an HMAC (with the key in `signingKeyEnv`) of the
+  job, the recipe and the call, with an expiry, so a token settles that one call and nothing else, and a
+  second post finds the job no longer waiting and gets 410. Keep the key in the Function App settings, like the
+  other secrets; rotating it refuses the tokens in flight.
+- `publicUrl` is where services post to (`https://app.example.com/api`). Left out, it is the start URL of the
+  job without `/crawl`: set it behind a proxy or a custom domain.
+- Only `POST /crawl` takes it. Jobs started through `/mcp` and items sent to `/jobs` poll a pending hook, as without `callouts`.
