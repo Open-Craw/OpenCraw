@@ -1,4 +1,4 @@
-import { BrowserClient, HttpClient } from '@opencraw/core'
+import { BrowserClient, HttpClient, sessionStateOf } from '@opencraw/core'
 import type { BodyKind, BrowserSessionConfig, HttpBody, InputRecipe } from '@opencraw/core'
 import { ensureBrowserLaunch } from '../browser-provisioning'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
@@ -66,13 +66,32 @@ export async function takeSnapshot (input: InputRecipe, stepPath: string, browse
   const point = input.start[0]
   if (point === undefined) throw new Error(`recipe "${input.id}" has no start point`)
 
-  return input.mode === 'web' ? snapshotWeb(point.url, browser) : snapshotApi(point.url)
+  const storageState = await loginState(input, browser)
+
+  return input.mode === 'web' ? snapshotWeb(point.url, storageState, browser) : snapshotApi(point.url, storageState)
 }
 
-async function snapshotWeb (url: string, browser?: BrowserSessionConfig): Promise<SnapshotResult> {
+/** What the recipe's own login leaves behind, so the snapshot shows the page as the crawl sees it (issue #185); nothing when it declares no login. */
+async function loginState (input: InputRecipe, browser?: BrowserSessionConfig): ReturnType<typeof sessionStateOf> {
+  if (input.session === undefined) return undefined
+  let client: BrowserClient | undefined
+  try {
+    return await sessionStateOf(input, {
+      browser: async () => {
+        client = await ensureBrowserLaunch(browser, () => BrowserClient.launch(browser))
+
+        return client
+      },
+    })
+  } finally {
+    await client?.close()
+  }
+}
+
+async function snapshotWeb (url: string, storageState: Awaited<ReturnType<typeof sessionStateOf>>, browser?: BrowserSessionConfig): Promise<SnapshotResult> {
   const client = await ensureBrowserLaunch(browser, () => BrowserClient.launch(browser))
   try {
-    const session = await client.newSession()
+    const session = await client.newSession({ storageState })
     try {
       await session.page.goto(url)
       await session.page.evaluate(hiddenMarksScript(HIDDEN_ATTRIBUTE))
@@ -89,8 +108,8 @@ async function snapshotWeb (url: string, browser?: BrowserSessionConfig): Promis
   }
 }
 
-async function snapshotApi (url: string): Promise<SnapshotResult> {
-  const client = await HttpClient.open({})
+async function snapshotApi (url: string, storageState: Awaited<ReturnType<typeof sessionStateOf>>): Promise<SnapshotResult> {
+  const client = await HttpClient.open({ storageState })
   try {
     const response = await client.send({ url })
     const text = textOf(response.body)
