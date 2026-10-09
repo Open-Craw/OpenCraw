@@ -342,7 +342,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
 
   return (
     <Box h='full' display='flex' flexDirection='column'>
-      <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0}>
+      <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} minH='38px'>
         {!isDocumentTree && !isPdf && !isGrid && !isDeck && (
           <>
             <Text

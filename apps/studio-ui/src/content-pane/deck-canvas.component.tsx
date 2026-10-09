@@ -311,7 +311,7 @@ export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick
         <ModeButton label='Last row (until)' active={mode === 'until'} onClick={() => { setMode('until') }} />
         <ModeButton label='Column' active={mode === 'column'} onClick={() => { setMode('column') }} />
         {!textMode && source === 'table' && <ModeButton label='Fill down' active={mode === 'fillDown'} onClick={() => { setMode('fillDown') }} />}
-        {textMode && staged === undefined && <Text fontSize='xs' color='fg.muted'>Click a text box (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
+        {textMode && <Text fontSize='xs' color='fg.muted' visibility={staged === undefined ? 'visible' : 'hidden'}>Click a text box (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
         {draft.header !== undefined && <Badge size='sm' colorPalette='green'>{`table: ${draft.header}${draft.until === undefined ? '' : ` until ${draft.until}`}`}</Badge>}
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
         {regionPreview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{regionPreview.data.error}</Badge>}

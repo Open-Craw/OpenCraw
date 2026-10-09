@@ -1,6 +1,7 @@
 import { cpSync, existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import type { Server } from 'node:http'
 import { chromium } from 'playwright'
 import type { Browser } from 'playwright'
@@ -132,6 +133,33 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
     expect(await bar.getByRole('button', { name: 'Keep as steps' }).isDisabled()).toBe(true)
     await bar.getByRole('button', { name: 'Discard' }).click()
     await bar.waitFor({ state: 'detached' })
+    await page.close()
+  }, 60000)
+
+  it('keeps the PDF page where it is while a line is picked and added to the recipe (issue #190)', async () => {
+    const pdf = join(__dirname, '..', '..', 'core', 'src', 'pdf-document', 'fixtures', 'discounts.pdf')
+    const recipe = { kind: 'input', id: 'books', output: 'book', mode: 'api', start: [{ url: pathToFileURL(pdf).href }], steps: [{ type: 'request', id: 'doc', url: '{{start.url}}' }], mapping: {} }
+    writeFileSync(join(folder, 'books.input.json'), JSON.stringify(recipe))
+    const page = await browser.newPage({ viewport: { width: 1400, height: 900 } })
+    await page.goto(server.url)
+    const overlay = page.getByTestId('pdf-overlay')
+    await overlay.waitFor()
+    const top = async (): Promise<number> => {
+      const box = await overlay.boundingBox()
+
+      return box?.y ?? NaN
+    }
+    const before = await top()
+
+    await page.getByText('Text', { exact: true }).first().click()
+    const box = await overlay.boundingBox()
+    await page.mouse.click((box?.x ?? 0) + 100, (box?.y ?? 0) + 80)
+    await page.getByRole('button', { name: 'Add to recipe' }).waitFor()
+    expect(await top()).toBe(before)
+
+    await page.getByRole('button', { name: 'Add to recipe' }).click()
+    await page.getByText(/^region:/).waitFor()
+    expect(await top()).toBe(before)
     await page.close()
   }, 60000)
 })

@@ -240,7 +240,7 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
         <ModeButton label='Last row (until)' active={mode === 'until'} onClick={() => { setMode('until') }} />
         <ModeButton label='Column' active={mode === 'column'} onClick={() => { setMode('column') }} />
         <Text fontSize='xs' color='fg.muted'>{`${String(page.rowCount)} rows, ${String(page.cellCount)} cells${page.hasTextLayer ? '' : ' — no text layer (a scan?)'}`}</Text>
-        {textMode && staged === undefined && <Text fontSize='xs' color='fg.muted'>Click a line (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
+        {textMode && <Text fontSize='xs' color='fg.muted' visibility={staged === undefined ? 'visible' : 'hidden'}>Click a line (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
         {draft.header !== undefined && <Badge size='sm' colorPalette='green'>{`table: ${draft.header}${draft.until === undefined ? '' : ` until ${draft.until}`}`}</Badge>}
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
         {regionPreview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{regionPreview.data.error}</Badge>}
