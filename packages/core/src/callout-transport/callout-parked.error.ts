@@ -1,4 +1,4 @@
-import { CalloutError } from './callout.error'
+import { CalloutError } from '../callout-protocol'
 
 /**
  * A callout answered `pending` and the host will run the recipe again once the result has been posted

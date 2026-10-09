@@ -4,9 +4,9 @@ import type { IncomingHttpHeaders, Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { HostNotAllowedError } from '../host-allowlist'
 import type { HookContext } from '../hooks'
-import { CalloutError } from './callout.error'
-import { CalloutParkedError } from './callout-parked.error'
-import { withCalloutWaiter } from './callout-waiter.store'
+import { CalloutError } from '../callout-protocol'
+import { CalloutParkedError } from '../callout-transport'
+import { withCalloutWaiter } from '../callout-transport'
 import { httpHook } from './http-hook.use-case'
 
 const context: HookContext = { recipeId: 'books', scope: {}, log: () => undefined }

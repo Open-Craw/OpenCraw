@@ -1,5 +1,5 @@
-import type { CalloutResponse } from './callout.contract'
-import { CalloutError } from './callout.error'
+import type { CalloutResponse } from '../callout-protocol'
+import { CalloutError } from '../callout-protocol'
 import { CalloutParkedError } from './callout-parked.error'
 import { withCalloutWaiter } from './callout-waiter.store'
 import type { CalloutWaiter } from './callout-waiter.store'
@@ -100,6 +100,23 @@ describe('settleCallout', () => {
       expect(waiter.parked).toEqual([{ handler: 'svc', idempotencyKey: 'key', retryAfterMs: 5000 }])
       expect(calls).toHaveLength(2)
       expect(Date.now() - started).toBeLessThan(1000)
+    })
+
+    it('polls a call that cannot be parked, even with a waiter', async () => {
+      const waiter = waiterWith()
+      const { attempt, calls } = answers({ status: 'pending', retryAfterMs: 5 }, { status: 'ok', output: 'live' })
+
+      const output = await withCalloutWaiter(waiter, () => settleCallout('svc', 'key', attempt, { parkable: false }))
+
+      expect(output).toBe('live')
+      expect(calls).toHaveLength(2)
+      expect(waiter.parked).toEqual([])
+    })
+
+    it('stops waiting when the signal aborts', async () => {
+      const { attempt } = answers({ status: 'pending', retryAfterMs: 60_000 })
+
+      await expect(settleCallout('svc', 'key', attempt, { maxWaitMs: 120_000, signal: AbortSignal.timeout(30) })).rejects.toThrow(/was aborted/)
     })
 
     it('still returns an ok answer straight away', async () => {
