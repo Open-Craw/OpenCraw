@@ -242,13 +242,6 @@
         "script": "opencraw:qa",
         "problemMatcher": [],
         "group": "qa"
-      },
-      {
-        "label": "opencraw: build",
-        "type": "npm",
-        "script": "opencraw:build",
-        "problemMatcher": [],
-        "group": "build"
       }
     ]
   },

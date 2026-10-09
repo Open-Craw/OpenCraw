@@ -1,0 +1,26 @@
+{
+  "name": "opencraw",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/opencraw",
+  "targets": {
+    "lint": {
+      "executor": "@mnci/nx-python-pip:lint",
+      "options": {}
+    },
+    "test": {
+      "executor": "@mnci/nx-python-pip:test",
+      "options": {},
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "typecheck": {
+      "executor": "@mnci/nx-python-pip:typecheck",
+      "options": {}
+    }
+  },
+  "implicitDependencies": [
+    "@opencraw/cli"
+  ]
+}
