@@ -1,7 +1,7 @@
 import type { SentencePart } from './outline.model'
 
 /** Step types the plan doc names as always going to a "custom" card: nothing here renders their meaning as a sentence. */
-const ALWAYS_CUSTOM = new Set(['evaluate', 'hook', 'captcha'])
+const ALWAYS_CUSTOM = new Set(['evaluate', 'captcha'])
 
 export interface StepSentence {
   parts:  SentencePart[]
@@ -88,6 +88,7 @@ const BUILDERS: Record<string, (step: Record<string, unknown>) => SentencePart[]
   forEach:    step => forEachSentence(step),
   paginate:   step => paginateSentence(step),
   if:         step => [word('If'), codeField(step, 'test')],
+  hook:       step => [word('Run hook'), pillField(step, 'name', '(choose a hook)')],
   emit:       step => emitSentence(step),
 }
 

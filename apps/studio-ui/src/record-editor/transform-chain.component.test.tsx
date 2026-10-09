@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
+import { HookNamesContext } from '../hook-names'
 import { TransformChain } from './transform-chain.component'
 
 function renderWithChakra (element: React.ReactElement) {
@@ -49,11 +50,38 @@ describe('TransformChain', () => {
     expect(onChange).toHaveBeenCalledWith([{ op: 'lowercase' }, { op: 'trim' }])
   })
 
-  it('renders a hook block by name only, with no options form', () => {
+  it('renders a hook block by name, with a name picker and no options form', () => {
     renderWithChakra(<TransformChain transforms={[{ op: 'hook', name: 'myHook' }]} onChange={() => {}} />)
     expect(screen.getByText('hook: myHook')).toBeTruthy()
     fireEvent.click(screen.getByText('hook: myHook'))
     expect(screen.queryByText('pattern')).toBeNull()
+    expect(screen.getByLabelText('Hook name')).toHaveProperty('value', 'myHook')
+  })
+
+  it('adds a hook transform named after the first loaded hook, so the recipe stays valid (issue #202)', () => {
+    const onChange = jest.fn()
+    renderWithChakra(
+      <HookNamesContext.Provider value={['positive', 'slug']}>
+        <TransformChain transforms={[]} onChange={onChange} />
+      </HookNamesContext.Provider>,
+    )
+    fireEvent.click(screen.getByText('+ transform'))
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'hook' } })
+    expect(onChange).toHaveBeenCalledWith([{ op: 'hook', name: 'positive' }])
+  })
+
+  it('picks the name of a hook transform from the loaded hooks', () => {
+    const onChange = jest.fn()
+    renderWithChakra(
+      <HookNamesContext.Provider value={['positive', 'slug']}>
+        <TransformChain transforms={[{ op: 'hook', name: 'positive' }]} onChange={onChange} />
+      </HookNamesContext.Provider>,
+    )
+
+    fireEvent.click(screen.getByText('hook: positive'))
+    fireEvent.change(screen.getByLabelText('Hook name'), { target: { value: 'slug' } })
+
+    expect(onChange).toHaveBeenCalledWith([{ op: 'hook', name: 'slug' }])
   })
 
   it('edits an op\'s option inline', () => {

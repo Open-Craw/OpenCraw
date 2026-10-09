@@ -1,7 +1,7 @@
 import { optionFieldsOf, TRANSFORM_OPS } from './transform-op.catalog'
 
 describe('TRANSFORM_OPS', () => {
-  it('never includes hook: out of scope for this phase (custom, non-editable block)', () => {
+  it('never includes hook: the chain offers it on its own, with a name picker instead of an options form', () => {
     expect(TRANSFORM_OPS).not.toContain('hook')
   })
 })

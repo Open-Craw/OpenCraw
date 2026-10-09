@@ -97,6 +97,36 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
     await page.close()
   })
 
+  it('adds a Hook step and picks its name from the hooks Studio was started with (issue #202)', async () => {
+    const withHooks = await startStudioServer({
+      uiRoot:        UI_ROOT,
+      initialFolder: folder,
+      browser:       browserConfig(),
+      plugins:       { source: 'hooks.mjs', hooks: { positive: (value: unknown) => value, slug: (value: unknown) => value } },
+    })
+    const page = await browser.newPage()
+    try {
+      page.setDefaultTimeout(8000)
+      await page.goto(withHooks.url)
+      await page.getByText(/Hooks loaded from hooks.mjs/).waitFor()
+
+      await page.getByLabel(/after this step/).first().selectOption({ label: 'Hook' })
+      await page.getByTestId('outline-card-steps.1').getByText('Run hook').click()
+      await page.getByLabel('hook', { exact: true }).selectOption('slug')
+
+      const steps = async (): Promise<{ type: string, name?: string }[]> => (JSON.parse(readFileSync(join(folder, 'books.input.json'), 'utf8')) as { steps: { type: string, name?: string }[] }).steps
+      let written = await steps()
+      for (let attempt = 0; attempt < 50 && written[1]?.name !== 'slug'; attempt += 1) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        written = await steps()
+      }
+      expect(written).toEqual([{ type: 'goto', url: '{{start.url}}' }, { type: 'hook', name: 'slug' }, { type: 'emit' }])
+    } finally {
+      await page.close()
+      await withHooks.close()
+    }
+  }, 60000)
+
   it('builds the per-item record loop from a JSON list pick, with ids the engine accepts (issues #163, #164)', async () => {
     const file = join(folder, 'books.input.json')
     const recipe = { kind: 'input', id: 'books', output: 'book', mode: 'api', start: [{ url: 'http://127.0.0.1:4599/products' }], steps: [{ type: 'request', id: 'response', url: '{{start.url}}', as: 'json' }], mapping: {} }

@@ -4,6 +4,7 @@ import type { OutlineNode, OutlineView, RecipeListing } from '@opencraw/studio'
 import { useRecordingStore } from '../studio-store'
 import type { RecordingNote } from '../studio-store'
 import { carriesCard, droppedCard } from './card-drop.model'
+import { useHookNames } from '../hook-names'
 import { newStepNode } from './new-step.factory'
 import type { OutlineActions } from './outline-actions'
 import { OutlineList, OutlineNodeView } from './outline-node.component'
@@ -52,6 +53,7 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
   /** A card (a canvas's staged selection, issue #121) is being dragged over the tab. */
   const [cardOver, setCardOver] = useState(false)
 
+  const hookNames = useHookNames()
   const recordingRecipeId = useRecordingStore(state => state.recipeId)
   const recordingActive = useRecordingStore(state => state.active)
   const recordingStopped = useRecordingStore(state => state.stoppedSteps !== undefined)
@@ -100,7 +102,7 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
       if (outline === undefined) return
       const list = listAt(outline, listId)
       const path = `${listPathPrefix(listId)}.${index}`
-      const node = newStepNode(stepType, path)
+      const node = newStepNode(stepType, path, hookNames?.[0])
       save(withList(outline, listId, [...list.slice(0, index), node, ...list.slice(index)]))
     },
   }

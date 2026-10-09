@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Box, Checkbox, Field, Input, NativeSelect, Stack, Text, Textarea } from '@chakra-ui/react'
 import { useForm } from '@tanstack/react-form'
+import { HookNameField } from '../hook-names'
 import { STEP_FIELDS } from './step-field.catalog'
 import type { FieldSpec } from './step-field.catalog'
 
@@ -113,6 +114,14 @@ function FieldControl ({ field, value, onChange, onCommit }: { field: FieldSpec,
             {field.options?.map(option => <option key={option} value={option}>{option}</option>)}
           </NativeSelect.Field>
         </NativeSelect.Root>
+      </Field.Root>
+    )
+  }
+  if (field.kind === 'hook') {
+    return (
+      <Field.Root>
+        <Field.Label fontSize='xs'>{field.label}</Field.Label>
+        <HookNameField ariaLabel={field.label} value={typeof value === 'string' ? value : ''} onChange={onChange} onCommit={onCommit} />
       </Field.Root>
     )
   }

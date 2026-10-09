@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Badge, Box, Button, HStack, IconButton, Input, NativeSelect, Stack, Text } from '@chakra-ui/react'
 import type { FieldTraceView } from '@opencraw/studio'
+import { DEFAULT_HOOK_NAME, HookNameField, useHookNames } from '../hook-names'
 import { optionFieldsOf, TRANSFORM_OPS } from './transform-op.catalog'
 
 /** One transform of a mapping rule's chain, as plain JSON (`{ op, ...its own fields }`) — never `@opencraw/core`'s `TransformRule` type directly: the browser bundle only ever gets types from `@opencraw/studio`, not runtime code or types from `@opencraw/core` (see `studio-client/studio-client.ts`'s own doc comment on that boundary). */
@@ -15,13 +16,14 @@ export interface TransformChainProps {
 
 /**
  * The transform-chain editor (issue #92): each block is one transform, with
- * add/remove/reorder and its own options inline; a hook (`op: 'hook'`) shows
- * only its name, never an options form (out of scope for this phase). When a
+ * add/remove/reorder and its own options inline; a hook (`op: 'hook'`) opens
+ * a name picker fed by the hooks Studio loaded (issue #202), never an options form. When a
  * trace is given, each block shows the real value it produced on the last
  * sample's selected record right underneath it.
  */
 export function TransformChain ({ transforms, trace, onChange }: TransformChainProps) {
   const [adding, setAdding] = useState(false)
+  const hookNames = useHookNames()
 
   const update = (index: number, next: TransformJson): void => {
     onChange(transforms.map((transform, i) => (i === index ? next : transform)))
@@ -37,7 +39,7 @@ export function TransformChain ({ transforms, trace, onChange }: TransformChainP
     onChange(next)
   }
   const add = (op: string): void => {
-    onChange([...transforms, { op }])
+    onChange([...transforms, op === 'hook' ? { op, name: hookNames?.[0] ?? DEFAULT_HOOK_NAME } : { op }])
     setAdding(false)
   }
 
@@ -65,6 +67,7 @@ export function TransformChain ({ transforms, trace, onChange }: TransformChainP
               >
                 <option value='' disabled>op…</option>
                 {TRANSFORM_OPS.map(op => <option key={op} value={op}>{op}</option>)}
+                <option value='hook'>hook (your code)</option>
               </NativeSelect.Field>
             </NativeSelect.Root>
           )
@@ -88,16 +91,17 @@ function TransformBlock ({ transform, value, failed, onChange, onRemove, onMoveL
   const [open, setOpen] = useState(false)
   const isHook = transform.op === 'hook'
   const fields = isHook ? [] : optionFieldsOf(transform.op)
+  const editable = isHook || fields.length > 0
 
   return (
     <Box borderWidth='1px' borderRadius='md' borderColor={failed ? 'red.subtle' : undefined} px={2} py={1} fontSize='xs'>
       <HStack gap={1}>
         {onMoveLeft !== undefined && <IconButton aria-label='Move left' size='2xs' variant='ghost' onClick={onMoveLeft}>‹</IconButton>}
         <Text
-          as={isHook || fields.length === 0 ? 'span' : 'button'}
+          as={editable ? 'button' : 'span'}
           fontWeight='medium'
-          cursor={!isHook && fields.length > 0 ? 'pointer' : undefined}
-          onClick={!isHook && fields.length > 0 ? () => { setOpen(!open) } : undefined}
+          cursor={editable ? 'pointer' : undefined}
+          onClick={editable ? () => { setOpen(!open) } : undefined}
         >
           {transform.op}{isHook && typeof transform.name === 'string' ? `: ${transform.name}` : ''}
         </Text>
@@ -108,6 +112,16 @@ function TransformBlock ({ transform, value, failed, onChange, onRemove, onMoveL
         <Badge mt={1} size='sm' colorPalette={failed ? 'red' : 'gray'} fontFamily='mono' maxW='160px' overflow='hidden' textOverflow='ellipsis'>
           → {typeof value === 'object' ? JSON.stringify(value) : String(value)}
         </Badge>
+      )}
+      {open && isHook && (
+        <Stack mt={1} gap={1}>
+          <HookNameField
+            size='xs'
+            ariaLabel='Hook name'
+            value={typeof transform.name === 'string' ? transform.name : ''}
+            onChange={name => { onChange({ ...transform, name }) }}
+          />
+        </Stack>
       )}
       {open && fields.length > 0 && (
         <Stack mt={1} gap={1}>

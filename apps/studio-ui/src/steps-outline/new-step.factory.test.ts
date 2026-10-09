@@ -8,6 +8,12 @@ describe('newStep', () => {
     }
   })
 
+  it('offers a hook step, named so the recipe stays valid: the first loaded hook, else a placeholder (issue #202)', () => {
+    expect(NEW_STEP_OPTIONS.map(option => option.stepType)).toContain('hook')
+    expect(newStep('hook')).toEqual({ type: 'hook', name: 'myHook' })
+    expect(newStep('hook', 'slug')).toEqual({ type: 'hook', name: 'slug' })
+  })
+
   it('gives a container type an empty "steps" array', () => {
     expect(newStep('forEach').steps).toEqual([])
     expect(newStep('if').steps).toEqual([])
