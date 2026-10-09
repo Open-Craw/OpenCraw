@@ -13,13 +13,14 @@ if (manifest.overrides?.nx?.undici === undefined) {
 }
 
 // npm on Windows prunes these optional nested entries; Linux `npm ci` then fails with "Missing: @emnapi/core ... from lock file".
-const nested = Object.keys(lock.packages).filter(key => /wasm32-wasi\/node_modules\/@emnapi\/(core|runtime)$/.test(key))
+const nested = Object.keys(lock.packages).filter(key => /wasm32-wasi\/node_modules\/@emnapi\/(?:core|runtime)$/.test(key))
 if (nested.length < 4) {
   problems.push(`package-lock.json has ${nested.length} of 4 nested @emnapi/core and @emnapi/runtime entries under the wasm32-wasi bindings: a Windows npm install pruned them and \`npm ci\` fails on Linux. Restore them from the lockfile on main.`)
 }
 
 if (problems.length > 0) {
   for (const problem of problems) console.error(`✖ ${problem}`)
-  process.exit(1)
+  process.exitCode = 1
+} else {
+  console.log('mnci workarounds in place')
 }
-console.log('mnci workarounds in place')
