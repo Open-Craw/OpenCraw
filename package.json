@@ -7,6 +7,7 @@
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
     "typecheck": "nx run-many -t typecheck",
+    "check:mnci": "node tools/check-mnci-workarounds.mjs",
     "affected": "nx affected -t lint,typecheck,test,build",
     "graph": "nx graph",
     "release:preview": "nx release --dry-run",

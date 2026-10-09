@@ -72,6 +72,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # mnci:slot after-install  (your own steps go between these two lines; mnci upgrade keeps them)
+      - run: npm run check:mnci
+        name: Check the temporary mnci workarounds (docs/mnci-workarounds.md)
       # mnci:slot-end after-install
 
       # Everything from here to the release is a command of the mnci CLI, a
