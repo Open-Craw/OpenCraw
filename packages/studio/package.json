@@ -77,7 +77,7 @@
           "^production"
         ],
         "options": {
-          "command": "npx nx run @opencraw/studio-ui:build --skip-nx-cache && tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
+          "command": "vite build -c ../../apps/studio-ui/vite.config.mts && tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
           "cwd": "packages/studio"
         }
       }
