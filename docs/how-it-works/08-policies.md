@@ -202,7 +202,7 @@ the `■` line in the trace does.)
 ## Coercion failures follow the full precedence
 
 A value that can't be converted to the field's type goes through the same precedence as a missing one (fixed
-in [#65](https://github.com/russoedu/open.craw/issues/65): before, the output recipe's `onMissing` was
+in [#65](https://github.com/Open-Craw/OpenCraw/issues/65): before, the output recipe's `onMissing` was
 ignored). If it resolves to `skip-record`, the record is rejected. **Anything else fails the mapping**: a
 `null` or `default` policy doesn't replace a value that is there but wrong.
 

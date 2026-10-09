@@ -1,12 +1,12 @@
 {
-  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "dfe-student-numbers-local",
   "output": "student-numbers",
   "mode": "api",
   "start": [
     {
-      "url": "https://github.com/russoedu/open.craw/blob/main/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx"
+      "url": "https://github.com/Open-Craw/OpenCraw/blob/main/examples/dfe-college-accounts/management-accounts-model-march-2026.pptx"
     }
   ],
   "steps": [

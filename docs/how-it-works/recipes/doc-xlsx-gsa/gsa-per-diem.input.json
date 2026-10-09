@@ -1,12 +1,12 @@
 {
-  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "gsa-per-diem-local",
   "output": "per-diem-rate",
   "mode": "api",
   "start": [
     {
-      "url": "https://github.com/russoedu/open.craw/blob/main/examples/gsa-per-diem/gsa-per-diem-fy2026.xlsx"
+      "url": "https://github.com/Open-Craw/OpenCraw/blob/main/examples/gsa-per-diem/gsa-per-diem-fy2026.xlsx"
     }
   ],
   "steps": [

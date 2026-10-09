@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "listino-md",
   "output": "markdown-price",
@@ -7,7 +7,7 @@
   "description": "The repository's Markdown fixture: YAML front matter, a GitHub table with an escaped pipe and a short row, a task list, raw HTML with a table and a script.",
   "start": [
     {
-      "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
+      "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/markdown-document/fixtures/listino.md"
     }
   ],
   "steps": [

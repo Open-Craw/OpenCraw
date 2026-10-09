@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # @opencraw/core
 
-The recipe-driven crawler engine. See the [repository README](https://github.com/russoedu/open.craw/blob/main/README.md) for the concept, the
-[recipe guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/authoring.md) for authoring recipes and [`docs/requirements.md`](https://github.com/russoedu/open.craw/blob/main/docs/requirements.md)
+The recipe-driven crawler engine. See the [repository README](https://github.com/Open-Craw/OpenCraw/blob/main/README.md) for the concept, the
+[recipe guide](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/authoring.md) for authoring recipes and [`docs/requirements.md`](https://github.com/Open-Craw/OpenCraw/blob/main/docs/requirements.md)
 for the specification.
 
 ```sh
@@ -20,16 +20,16 @@ npx playwright install chromium   # web recipes and browser bootstraps only
 | `loadRecipes(source)` | Reads, validates and binds recipes from one source holding all of them, the output recipe found by its `kind`. The source is any of the forms below. Throws `RecipeValidationError` / `RecipeBindingError` with every problem and its JSON path. |
 | `loadRecipeSet({ output, inputs })` | The same, with the output recipe given apart; each part is any of the forms below. |
 | `readRecipeSource(source)` | Decodes recipes without validating them, each with where it came from, for tooling. |
-| `createCrawler(options)` | Builds an engine: `hooks`, `sink` (`memorySink()` default, `jsonLinesSink(path, { append? })`), `onEvent`, `browser` settings, `dedupe` (`run` / `recipe` / `off`; `work` defaults to `recipe`, per item), `onRecipeError` (`continue` / `stop`), `resume` (skip keys the sink already has), `access` + `accessPlugins` (proxy profiles, see [access.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/access.md)), `captchaSolvers` (see [captcha.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/captcha.md)), `throttle` (per-site politeness), `retry` (requests that fail in passing), `parallel` (input recipes at once), `profilesDir` (persistent browser profiles), `allowedHosts` (the only hosts any request may reach). |
+| `createCrawler(options)` | Builds an engine: `hooks`, `sink` (`memorySink()` default, `jsonLinesSink(path, { append? })`), `onEvent`, `browser` settings, `dedupe` (`run` / `recipe` / `off`; `work` defaults to `recipe`, per item), `onRecipeError` (`continue` / `stop`), `resume` (skip keys the sink already has), `access` + `accessPlugins` (proxy profiles, see [access.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/access.md)), `captchaSolvers` (see [captcha.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/captcha.md)), `throttle` (per-site politeness), `retry` (requests that fail in passing), `parallel` (input recipes at once), `profilesDir` (persistent browser profiles), `allowedHosts` (the only hosts any request may reach). |
 | `loadAccessConfig(path)`, `AccessBroker`, `ACCESS_PRESETS` | Access configs: load and validate one, lease a profile outside a crawl (the cli's `probe` does), list the provider presets. |
 | `crawler.run(set)` | Runs every input recipe (in sequence, or `parallel` at a time); returns a `CrawlReport`. |
-| `crawler.work(set, source, { windows, classify })`, `createWorkInbox()`, `workFrom(items)` | Worker mode: work items run on a pool of long-lived windows that grows and shrinks (see [worker-mode.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/worker-mode.md)). |
+| `crawler.work(set, source, { windows, classify })`, `createWorkInbox()`, `workFrom(items)` | Worker mode: work items run on a pool of long-lived windows that grows and shrinks (see [worker-mode.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/worker-mode.md)). |
 | `diffRecords(previous, current, options)`, `diffOptionsFor(output)`, `readRecordsFile(path)` | Change detection between two runs. |
 | `HostAllowlist`, `HostNotAllowedError` | The host allowlist behind `CrawlOptions.allowedHosts`, for tooling that fetches on a crawler's behalf. |
 | `crawler.close()` | Closes the browser, if one was launched. |
 | `readPdf(bytes)`, `findTables(pdf, query)`, `pdfText(pdf)` | The PDF reader and table extractor `request as: "pdf"` and `extract kind: "table"` use, for tooling. |
-| `csvWorkbook(text, options)`, `parseCsv(text, delimiter)`, `detectDelimiter(text)`, `findGridTables(workbook, query)`, `workbookText(workbook)` | The CSV reader and the workbook table extractor `request as: "csv"` / `"xlsx"` and `extract kind: "table"` use, for tooling. Spreadsheets are read by [`@opencraw/office-reader`](https://github.com/russoedu/open.craw/blob/main/packages/office-reader). |
-| `findDeckTables(deck, query)`, `deckText(deck)` | The deck table extractor and text `request as: "pptx"` uses, for tooling; presentations are read by [`@opencraw/office-reader`](https://github.com/russoedu/open.craw/blob/main/packages/office-reader). |
+| `csvWorkbook(text, options)`, `parseCsv(text, delimiter)`, `detectDelimiter(text)`, `findGridTables(workbook, query)`, `workbookText(workbook)` | The CSV reader and the workbook table extractor `request as: "csv"` / `"xlsx"` and `extract kind: "table"` use, for tooling. Spreadsheets are read by [`@opencraw/office-reader`](https://github.com/Open-Craw/OpenCraw/blob/main/packages/office-reader). |
+| `findDeckTables(deck, query)`, `deckText(deck)` | The deck table extractor and text `request as: "pptx"` uses, for tooling; presentations are read by [`@opencraw/office-reader`](https://github.com/Open-Craw/OpenCraw/blob/main/packages/office-reader). |
 | `HttpClient`, `BrowserClient` | The same clients the engine's runners use, for tooling built on top of `@opencraw/core` (`@opencraw/cli`'s `probe` command uses both). |
 | `parseInputRecipe`, `parseOutputRecipe`, `inputRecipeJsonSchema`, `outputRecipeJsonSchema`, `accessConfigJsonSchema` | The contracts, for tooling. |
 
@@ -60,7 +60,7 @@ step or a `hook` transform.
 
 ## Layout
 
-`src/` is a set of flat, role-suffixed slices (see the [ADR](https://github.com/russoedu/open.craw/blob/main/docs/architecture/vertical-feature-slices.md)):
+`src/` is a set of flat, role-suffixed slices (see the [ADR](https://github.com/Open-Craw/OpenCraw/blob/main/docs/architecture/vertical-feature-slices.md)):
 
 ```text
 recipe-schema     zod contracts, validation, JSON Schema      template          {{ }} rendering, dotted paths

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "incentivi-xlsx",
   "output": "dealer-incentive",
@@ -7,7 +7,7 @@
   "description": "The office-reader workbook fixture: a title merged across the sheet, a header over two rows with Prezzo merged over Listino and Netto, a brand merged down two rows, a formula, a percentage, dates, booleans, an error, a hidden row, a hidden sheet and a chart sheet.",
   "start": [
     {
-      "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
+      "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/office-reader/src/spreadsheet/fixtures/incentivi.xlsx"
     }
   ],
   "steps": [

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # Every US federal per diem rate, from an Excel workbook
@@ -68,7 +68,7 @@ Master r5  2 | AL | Gulf Shores | Baldwin | October 1 | February 28 | 134 | 74
 
 `opencraw probe gsa-per-diem-fy2026.xlsx` lists the sheet, its first rows, and this header with its selector
 (`Master r2 ^ID`). A digit inside a word, like `FY26`, doesn't stop a row being a header; before
-[#73](https://github.com/russoedu/open.craw/issues/73) it did, and the selector was written by hand.
+[#73](https://github.com/Open-Craw/OpenCraw/issues/73) it did, and the selector was written by hand.
 
 ## Source
 

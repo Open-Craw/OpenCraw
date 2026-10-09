@@ -38,7 +38,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
         },
         "file": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
         "native": {
@@ -174,7 +174,7 @@
       "scope": {
         "vars": {},
         "start": {
-          "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
+          "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
         },
         "file": "file://<repo>/packages/office-reader/src/presentation/fixtures/incentivi.pptx",
         "native": {

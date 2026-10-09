@@ -38,7 +38,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/russoedu/open.craw.git",
+    "url": "git+https://github.com/Open-Craw/OpenCraw.git",
     "directory": "packages/studio"
   },
   "keywords": [

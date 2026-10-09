@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # @opencraw/office-reader
@@ -21,7 +21,7 @@ Reads Office files into plain objects:
 - **Safe on hostile files.** Zip entries are capped by size. XML entities a file declares are never expanded
   (no "billion laughs"), and no external entity is ever fetched (no XXE). Nothing in the file runs.
 
-It is part of [OpenCraw](https://github.com/russoedu/open.craw), which uses it to crawl price lists and
+It is part of [OpenCraw](https://github.com/Open-Craw/OpenCraw), which uses it to crawl price lists and
 incentive sheets, but it depends on nothing from it.
 
 ## Install

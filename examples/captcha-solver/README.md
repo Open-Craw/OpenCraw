@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # A CapSolver captcha solver, end to end
@@ -18,7 +18,7 @@ The example runs a real crawl with it, in one of two ways:
   [Google's reCAPTCHA demo page](https://www.google.com/recaptcha/api2/demo), which exists for testing
   integrations. Each run costs one solve. This mode isn't run in CI.
 
-Solving a captcha can break a site's terms. Read [Captchas: first, should you?](https://github.com/russoedu/open.craw/blob/main/docs/recipes/captcha.md#first-should-you)
+Solving a captcha can break a site's terms. Read [Captchas: first, should you?](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/captcha.md#first-should-you)
 before pointing a solver at a real site.
 
 ## Run it
@@ -101,4 +101,4 @@ A recipe names it:
 
 The engine aborts the solve (`signal`) after `session.captcha.timeoutMs`, so a stuck task stops polling. The
 whole flow (detection, verification, retries, rotation, the solve budget) is in
-[docs/recipes/captcha.md](https://github.com/russoedu/open.craw/blob/main/docs/recipes/captcha.md).
+[docs/recipes/captcha.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/captcha.md).

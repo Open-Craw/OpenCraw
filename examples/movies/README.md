@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # Movies from Netflix and IMDb
@@ -37,7 +37,7 @@ from a flagged IP (cloud machines, CI runners). From a normal machine it works.
 ## How the recipes were written
 
 The decisions behind the recipes, and what happened when they first ran. The
-[authoring guide](https://github.com/russoedu/open.craw/blob/main/docs/recipes/authoring.md) says what each key means.
+[authoring guide](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/authoring.md) says what each key means.
 
 **Output** (`movie.output.json`): `title`, `genres` (array), `actors` (array), plus generated `source`,
 `url`, `scrapedAt`. Key: `title` + `source`, so the same film from two sites stays two records.

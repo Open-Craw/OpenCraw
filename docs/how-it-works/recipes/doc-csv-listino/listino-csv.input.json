@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "listino-csv",
   "output": "list-price",
@@ -7,7 +7,7 @@
   "description": "The repository's CSV fixture: Windows-1252 with no charset, semicolons with decimal commas, a title line and a blank line above the header, a quoted field holding a semicolon and a line break, a brand and a model written once over two versions, and a total line.",
   "start": [
     {
-      "url": "https://github.com/russoedu/open.craw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
+      "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/core/src/workbook-document/fixtures/listino.csv"
     }
   ],
   "steps": [

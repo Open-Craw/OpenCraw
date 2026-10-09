@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/russoedu/open.craw/main/packages/core/schemas/input-recipe.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json",
   "kind": "input",
   "id": "incentivi-pptx",
   "output": "grid-price",
@@ -7,7 +7,7 @@
   "description": "The office-reader deck fixture, read four ways: a native table under a two-row merged header, a price grid of text boxes in a scaled group (shapes: true), a bar chart by jsonpath, the notes by regex.",
   "start": [
     {
-      "url": "https://github.com/russoedu/open.craw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
+      "url": "https://github.com/Open-Craw/OpenCraw/blob/main/packages/office-reader/src/presentation/fixtures/incentivi.pptx"
     }
   ],
   "steps": [

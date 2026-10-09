@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/russoedu/open.craw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
+  <img src="https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/docs/assets/opencraw-logo.svg" alt="OpenCraw" width="360">
 </p>
 
 # @opencraw/studio
 
-A visual editor for [OpenCraw](https://github.com/russoedu/open.craw) recipes: open a site or a document,
+A visual editor for [OpenCraw](https://github.com/Open-Craw/OpenCraw) recipes: open a site or a document,
 click the data you want, and get a recipe that runs — the same engine, the same JSON files, no hidden state.
 
 ## Install
@@ -32,6 +32,6 @@ Workspace: /home/you/project/recipes
 
 ## Learn more
 
-[**The OpenCraw Studio manual**](https://github.com/russoedu/open.craw/blob/main/docs/studio/manual.md)
+[**The OpenCraw Studio manual**](https://github.com/Open-Craw/OpenCraw/blob/main/docs/studio/manual.md)
 builds one real recipe end to end, tab by tab: picking on a live page, the Record tab's mapping, the
 document canvases (JSON, PDF, Excel/CSV, PowerPoint), recording a login, and the JSON editor.

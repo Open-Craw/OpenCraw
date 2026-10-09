@@ -1,6 +1,6 @@
 # Distributed, cluster-scale crawling: recommendation
 
-- **Status:** Recommendation for review (issue [#97](https://github.com/russoedu/open.craw/issues/97))
+- **Status:** Recommendation for review (issue [#97](https://github.com/Open-Craw/OpenCraw/issues/97))
 - **Basis:** a reading of the code and docs (`work-item.contract.ts`, `worker-mode.md`,
   `azure-durable.md`, the dedupe and resume options). Nothing here was measured on a cluster.
 
