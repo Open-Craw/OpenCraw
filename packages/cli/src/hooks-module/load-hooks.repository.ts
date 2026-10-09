@@ -33,7 +33,7 @@ const PLUGIN_EXPORTS = ['hooks', 'accessPlugins', 'captchaSolvers'] as const
  * The module runs with the caller's privileges, like any code the caller
  * imports: point this only at a file you trust.
  *
- * @param path - A `.mjs` / `.js` / `.cjs` file.
+ * @param path - A `.mjs` / `.js` / `.cjs` file, or a `.ts` / `.mts` file on a Node that strips types (22.18+).
  * @param importModule - How to import it; `import()` unless a test says otherwise.
  * @returns The hooks and plugins.
  * @throws Error naming the file when it cannot be imported, provides nothing,

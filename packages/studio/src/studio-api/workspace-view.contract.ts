@@ -20,12 +20,20 @@ export const recipeListingSchema = z.object({
   outline: outlineViewSchema.optional(),
 })
 
-/** What `open-workspace` answers with: every recipe file directly inside the folder. */
+/** The hooks Studio was started with (`opencraw studio --hooks <file>`, issue #150): where they came from and what they are called, for the warning bar and the hook-name suggestions. */
+export const loadedHooksSchema = z.object({
+  source: z.string(),
+  names:  z.array(z.string()),
+})
+
+/** What `open-workspace` answers with: every recipe file directly inside the folder, and the hooks Studio runs them with, if any. */
 export const workspaceViewSchema = z.object({
   folder:  z.string(),
   recipes: z.array(recipeListingSchema),
+  hooks:   loadedHooksSchema.optional(),
 })
 
 export type RecipeIssue = z.infer<typeof recipeIssueSchema>
 export type RecipeListing = z.infer<typeof recipeListingSchema>
+export type LoadedHooks = z.infer<typeof loadedHooksSchema>
 export type WorkspaceView = z.infer<typeof workspaceViewSchema>

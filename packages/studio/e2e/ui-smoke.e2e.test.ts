@@ -85,7 +85,7 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
     await page.goto(server.url)
     await page.getByRole('button', { name: 'Run sample' }).click()
 
-    await page.getByText(/Studio does not load hooks/).waitFor()
+    await page.getByText(/Studio was started without hooks/).waitFor()
     await page.getByRole('button', { name: 'Run sample' }).waitFor()
     expect(await page.getByRole('button', { name: 'Run sample' }).isEnabled()).toBe(true)
     const stillUp = await fetch(`${new URL(server.url).origin}/api/command`, {

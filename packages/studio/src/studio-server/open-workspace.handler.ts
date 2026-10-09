@@ -25,5 +25,5 @@ export async function handleOpenWorkspace (state: StudioState, command: OpenWork
   state.folder = command.folder
   if (switched) broadcast(state, { type: 'workspace-changed' })
 
-  return view
+  return state.plugins === undefined ? view : { ...view, hooks: { source: state.plugins.source, names: Object.keys(state.plugins.hooks).sort((a, b) => a.localeCompare(b)) } }
 }

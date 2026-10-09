@@ -7,6 +7,7 @@ import type { SnapshotCache } from '../page-snapshot'
 import { createLastRunCache } from '../sample-run'
 import type { LastRunCache, SampleRunHandle } from '../sample-run'
 import type { StudioEvent } from '../studio-api'
+import type { TrustedPlugins } from '../trusted-plugins'
 import type { WsConnection } from './websocket.client'
 
 /** Where the studio's own recorder profile lives when `StudioServerOptions.recorderProfileDir` is not given: never a crawl's own `session.browserProfile` directory, never the person's default browser profile. */
@@ -26,6 +27,8 @@ export interface StudioState {
   lastRuns:           LastRunCache
   /** Set once at server start (`StudioServerOptions.browser`); every web-mode command reads it from here rather than each accepting its own. */
   browser?:           BrowserSessionConfig
+  /** Set once at server start (`StudioServerOptions.plugins`): the hooks and plugins the person started Studio with (issue #150). Never set by a request. */
+  plugins?:           TrustedPlugins
   /** Set once at server start (`StudioServerOptions.recorderProfileDir`), else `defaultRecorderProfileDir()`. */
   recorderProfileDir: string
 }

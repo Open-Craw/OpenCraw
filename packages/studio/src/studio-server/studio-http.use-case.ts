@@ -29,6 +29,7 @@ import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
 import { serveStatic } from './static-file.handler'
 import { handleTablePreview } from './table-preview.handler'
+import type { TrustedPlugins } from '../trusted-plugins'
 import { handleTakeSnapshot } from './take-snapshot.handler'
 import { handleVerifySelector } from './verify-selector.handler'
 import { acceptWebSocket } from './websocket.client'
@@ -55,6 +56,8 @@ export interface StudioServerOptions {
   initialFolder?:      string
   /** Browser launch settings every web-mode command shares (`take-snapshot`, `verify-selector`, `run-sample`, `start-recording`); an executable path override (e.g. `OPENCRAW_CHROMIUM`, read by the caller — the server itself has no opinion on env vars) for a sandbox with no full Playwright install. Default: Playwright's own bundled browser. `start-recording` always forces `headless: false` regardless of what this sets. */
   browser?:            BrowserSessionConfig
+  /** Hooks, access plugins and captcha solvers to run recipes with, loaded by the caller from a file the person named at launch (`opencraw studio --hooks`, issue #150). The server never loads code itself and no request can set this. Default: none. */
+  plugins?:            TrustedPlugins
   /** Where the studio's own recorder profile lives (issue #95); default: a fixed directory under the OS temp folder, never a crawl's own profile directory, never the person's default browser. */
   recorderProfileDir?: string
 }
@@ -82,6 +85,7 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
   const state = createStudioState()
   if (options.initialFolder !== undefined) state.folder = options.initialFolder
   state.browser = options.browser
+  state.plugins = options.plugins
   if (options.recorderProfileDir !== undefined) state.recorderProfileDir = options.recorderProfileDir
   const server = createServer((request, response) => { void handleRequest(request, response, token, state, uiRoot) })
   server.on('upgrade', (request, socket) => { handleUpgrade(request, socket, token, state) })

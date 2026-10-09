@@ -2,6 +2,7 @@ import { stripVTControlCharacters } from 'node:util'
 import { UnknownHookError, bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/core'
 import type { BrowserSessionConfig, Crawler, CrawlEvent } from '@opencraw/core'
 import type { SampleBudget } from '../studio-api'
+import type { TrustedPlugins } from '../trusted-plugins'
 import { loadRecipePair } from './load-recipe-pair.use-case'
 import type { SampleRunRecord, SampleRunRejected, SampleRunResult, SampleStepSummary } from './sample-run-record.contract'
 
@@ -37,10 +38,11 @@ export interface SampleRunHandle {
  * @param budget - The sample budget; unset runs the recipe to completion (still capped by its own `limits`).
  * @param callbacks - Where trace lines and records go as the run proceeds.
  * @param browser - Browser launch settings for a web-mode recipe (an executable path override, headless…); the server-wide setting `studio-http.use-case.ts`'s `StudioServerOptions.browser` carries in, e.g. `OPENCRAW_CHROMIUM` in a sandbox with no full Playwright install.
+ * @param plugins - Hooks, access plugins and captcha solvers the person started Studio with (`--hooks`, issue #150); none when it was started without.
  * @returns A handle: `stop` closes the crawler cleanly, `result` resolves when the run ends.
  * @throws RecipeValidationError, RecipeBindingError, Error when the recipe or its output cannot be loaded or bound.
  */
-export async function runSample (folder: string, recipeId: string, budget: SampleBudget | undefined, callbacks: SampleRunCallbacks, browser?: BrowserSessionConfig): Promise<SampleRunHandle> {
+export async function runSample (folder: string, recipeId: string, budget: SampleBudget | undefined, callbacks: SampleRunCallbacks, browser?: BrowserSessionConfig, plugins?: TrustedPlugins): Promise<SampleRunHandle> {
   const { input, output } = await loadRecipePair(folder, recipeId)
   const set = bindRecipeSet(output, [input])
   const sink = memorySink()
@@ -49,10 +51,13 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
   const steps = new Map<string, SampleStepSummary>()
   const crawler: Crawler = createCrawler({
     sink,
-    debug:   true,
-    sample:  budget,
+    debug:          true,
+    sample:         budget,
     browser,
-    onEvent: (event: CrawlEvent) => {
+    hooks:          plugins?.hooks,
+    accessPlugins:  plugins?.accessPlugins,
+    captchaSolvers: plugins?.captchaSolvers,
+    onEvent:        (event: CrawlEvent) => {
       const line = traceLine(event)
       if (line !== undefined) callbacks.onTraceLine(line)
       trackStep(steps, event)
@@ -67,7 +72,7 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
       }
     },
   })
-  const result = runToResult(crawler, set, recipeId, records, rejectedRecords, steps)
+  const result = runToResult(crawler, set, recipeId, records, rejectedRecords, steps, plugins)
 
   return { stop: () => crawler.close(), result }
 }
@@ -102,7 +107,7 @@ function trackStep (steps: Map<string, SampleStepSummary>, event: CrawlEvent): v
  * rejection: nothing awaits `result` but a `.then`, and an unhandled rejection
  * would take the whole Studio server down (issue #148).
  */
-async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], recipeId: string, records: SampleRunRecord[], rejectedRecords: SampleRunRejected[], steps: Map<string, SampleStepSummary>): Promise<SampleRunResult> {
+async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], recipeId: string, records: SampleRunRecord[], rejectedRecords: SampleRunRejected[], steps: Map<string, SampleStepSummary>, plugins?: TrustedPlugins): Promise<SampleRunResult> {
   try {
     const report = await crawler.run(set)
     const recipe = report.recipes[0]
@@ -127,7 +132,7 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
       rejected:   0,
       duplicates: 0,
       durationMs: 0,
-      error:      failureMessage(error),
+      error:      failureMessage(error, plugins),
       records,
       rejectedRecords,
       // eslint-disable-next-line unicorn/prefer-iterator-to-array -- `.toArray()` needs a `lib` newer than this repo's `es2022` (tsconfig.base.json)
@@ -138,9 +143,14 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
   }
 }
 
-/** What a run that could not start reports. A hook is the author's own code, which Studio never loads (issue #150): say so, instead of leaving "unknown hook" to read as a typo. */
-function failureMessage (error: unknown): string {
-  if (error instanceof UnknownHookError) return `${stripVTControlCharacters(error.message)}. Studio does not load hooks, so a recipe that uses one cannot be sample-run here; run it with the cli or the mcp server, or temporarily replace the hook step to preview the rest.`
+/** What a run that could not start reports. A hook is the author's own code, which Studio only runs when it was started with `--hooks` (issue #150): say which case this is, instead of leaving "unknown hook" to read as a typo. */
+function failureMessage (error: unknown, plugins?: TrustedPlugins): string {
+  if (error instanceof UnknownHookError) {
+    const message = stripVTControlCharacters(error.message)
+    if (plugins !== undefined) return `${message}. It is not one of the hooks in ${plugins.source}: ${Object.keys(plugins.hooks).join(', ') || 'none exported'}.`
+
+    return `${message}. Studio was started without hooks: restart it with \`opencraw studio --hooks <file>\` (a module you trust; it runs as your code), or temporarily replace the hook step to preview the rest.`
+  }
   if (error instanceof Error) return stripVTControlCharacters(error.message)
 
   return stripVTControlCharacters(String(error))

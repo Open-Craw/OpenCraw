@@ -21,7 +21,7 @@ export async function handleRunSample (state: StudioState, command: RunSampleCom
     onTraceLine: line => { broadcast(state, { type: 'trace-line', line }) },
     onRecord:    record => { broadcast(state, { type: 'record', recipeId: command.recipeId, key: record.key, data: record.data, scope: record.scope, mapping: record.mapping }) },
     onRejected:  rejected => { broadcast(state, { type: 'record-rejected', recipeId: command.recipeId, field: rejected.field, reason: rejected.reason, scope: rejected.scope }) },
-  }, state.browser)
+  }, state.browser, state.plugins)
   state.activeRun = handle
   void handle.result.then((result) => {
     if (state.activeRun === handle) state.activeRun = undefined

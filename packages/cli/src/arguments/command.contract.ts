@@ -64,7 +64,9 @@ export type Command =
     options: CommonOptions
   } |
   {
-    name:    'studio'
+    name:     'studio'
     /** The recipe folder to open; the current directory when not given. */
-    folder?: string
+    folder?:  string
+    /** A hooks or plugins module to run recipes with (`--hooks`, `--plugins`, `OPENCRAW_HOOKS`, `OPENCRAW_PLUGINS`; issue #150). */
+    plugins?: string
   }

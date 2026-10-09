@@ -133,7 +133,7 @@ export function parseArguments (argv: readonly string[], env: Record<string, str
     case 'studio': {
       if (rest.length > 1) throw new Error('studio takes at most one folder')
 
-      return { name: 'studio', folder: rest[0] }
+      return { name: 'studio', folder: rest[0], plugins: options.plugins }
     }
     default: { throw new Error(`unknown command "${name}"`)
     }
