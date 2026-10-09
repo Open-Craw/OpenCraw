@@ -1071,6 +1071,14 @@ its form has a list of the hooks to pick from. In a field's transform chain, **+
 adds a hook transform, and clicking it opens the same list. A name the recipe already has that is not loaded
 stays selectable and is marked. With no hooks loaded the name is a text field (a new hook is called `myHook`).
 
+**Hooks that call out, in the Studio.** A hook made with `commandHook` or `httpHook`, a solver made with
+`commandCaptchaSolver` or `httpCaptchaSolver`, and a plugin made with `commandAccessPlugin` or
+`httpAccessPlugin` call outside the process: a sample run waits for them and they may cost. The bar under the
+toolbar lists them with what they call, a sample run's trace says `☎ hook "price" calls POST https://…` for each
+call, and each hook has **stub with**: a JSON value (`{"amount": 9}`, `"abc"`, `null`) the run answers with
+instead of calling it. A stub lasts for the session and is never written to a recipe; a value that is not JSON
+is ignored, so the hook is called. Solvers and plugins are listed but cannot be stubbed.
+
 **TypeScript:** the module may be a `.ts` file on Node 22.18 or newer (Node 24 included), which strips the
 types as it loads; only syntax that is just types works (no `enum`, no parameter properties). On older Node,
 compile it first.

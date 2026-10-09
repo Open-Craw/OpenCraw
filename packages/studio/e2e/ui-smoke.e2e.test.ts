@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { Server } from 'node:http'
+import { httpHook } from '@opencraw/core'
 import { chromium } from 'playwright'
 import type { Browser } from 'playwright'
 import { startStudioServer } from '../src/studio-server'
@@ -124,6 +125,50 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
     } finally {
       await page.close()
       await withHooks.close()
+    }
+  }, 60000)
+
+  it('says which hooks call outside the machine, and answers a stubbed one without calling it (issue #201)', async () => {
+    const data = join(folder, 'data.json')
+    writeFileSync(data, JSON.stringify({ items: [{ price: '1' }] }))
+    const file = join(folder, 'books.input.json')
+    const recipe = {
+      kind:   'input',
+      id:     'books',
+      output: 'book',
+      mode:   'api',
+      start:  [{ url: pathToFileURL(data).href }],
+      steps:  [
+        { type: 'request', id: 'list', url: '{{start.url}}', as: 'json' },
+        { type: 'extract', id: 'entries', from: 'list', selector: '$.items[*]', kind: 'jsonpath', take: 'json', many: true },
+        { type: 'forEach', over: 'entries', as: 'item', emit: true, steps: [] },
+      ],
+      mapping: { price: { from: 'item.price', transform: [{ op: 'hook', name: 'quote' }] } },
+    }
+    writeFileSync(file, JSON.stringify(recipe))
+    // Nothing listens on this port: the run only works because the hook is stubbed.
+    const remote = await startStudioServer({
+      uiRoot:        UI_ROOT,
+      initialFolder: folder,
+      browser:       browserConfig(),
+      plugins:       { source: 'hooks.mjs', hooks: { quote: httpHook('quote', 'http://127.0.0.1:1/quote', { timeoutMs: 200, maxWaitMs: 1 }) } },
+    })
+    const page = await browser.newPage()
+    try {
+      page.setDefaultTimeout(8000)
+      await page.goto(remote.url)
+      await page.getByText(/call outside this machine/).waitFor()
+      expect(await page.getByTestId('remote-quote').textContent()).toContain('POST http://127.0.0.1:1/quote')
+
+      await page.getByText('stub quote', { exact: true }).click()
+      await page.getByLabel('stub value of quote').fill('"stubbed-9"')
+      await page.getByRole('button', { name: 'Run sample' }).click()
+
+      await page.getByText(/hook "quote" is stubbed/).first().waitFor({ state: 'attached' })
+      await page.getByText('stubbed-9').first().waitFor()
+    } finally {
+      await page.close()
+      await remote.close()
     }
   }, 60000)
 
