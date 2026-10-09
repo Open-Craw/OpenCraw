@@ -21,7 +21,7 @@ to take items from one list without taking the same item. `WorkSource.next/done/
 seam, and its own doc says claiming is the source's job.
 
 An open-ended crawl that discovers new targets as it runs is the case a frontier serves. The engine has no
-such recipe shape today (`follow` and `paginate` run inside one run), so there is nothing to feed it.
+such recipe shape today (`paginate` and `forEach` run inside one run, over what that run's pages show), so there is nothing to feed it.
 
 ## 2. If one were needed, what would be shared
 
@@ -32,7 +32,7 @@ frontier".
 
 ## 3. What `azure-durable` covers, and where it stops
 
-It fans out one activity per pushed item and bounds concurrency through the Functions scale settings. It
+It fans out one activity per pushed item and bounds concurrency through `host.json` and the scale limit; a Function App scaled to several instances has one pool per instance for the same crawl id (`azure-durable.md` §4). It
 does not stop two callers, or one caller retrying a timed-out request, from running the same item twice.
 Avoiding that is the caller's job (an idempotent item id and a queue that claims), the same as for any
 worker pool.
