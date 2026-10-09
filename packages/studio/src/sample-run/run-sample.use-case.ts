@@ -1,3 +1,4 @@
+import { stripVTControlCharacters } from 'node:util'
 import { UnknownHookError, bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/core'
 import type { BrowserSessionConfig, Crawler, CrawlEvent } from '@opencraw/core'
 import type { SampleBudget } from '../studio-api'
@@ -139,8 +140,8 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
 
 /** What a run that could not start reports. A hook is the author's own code, which Studio never loads (issue #150): say so, instead of leaving "unknown hook" to read as a typo. */
 function failureMessage (error: unknown): string {
-  if (error instanceof UnknownHookError) return `${error.message}. Studio does not load hooks, so a recipe that uses one cannot be sample-run here; run it with the cli or the mcp server, or temporarily replace the hook step to preview the rest.`
-  if (error instanceof Error) return error.message
+  if (error instanceof UnknownHookError) return `${stripVTControlCharacters(error.message)}. Studio does not load hooks, so a recipe that uses one cannot be sample-run here; run it with the cli or the mcp server, or temporarily replace the hook step to preview the rest.`
+  if (error instanceof Error) return stripVTControlCharacters(error.message)
 
-  return String(error)
+  return stripVTControlCharacters(String(error))
 }
