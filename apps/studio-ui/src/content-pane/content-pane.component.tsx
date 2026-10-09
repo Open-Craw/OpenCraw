@@ -121,7 +121,9 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const isRecordingThis = recordingRecipeId === recipeId && recordingActive
   const recordingStoppedForThis = recordingRecipeId === recipeId ? recordingStoppedSteps : undefined
 
-  const [status, setStatus] = useState<string | undefined>(undefined)
+  const [status, setStatus] = useState<{ text: string, ok: boolean } | undefined>(undefined)
+  const note = (text: string | undefined): void => { setStatus(text === undefined ? undefined : { text, ok: true }) }
+  const warn = (text: string | undefined): void => { setStatus(text === undefined ? undefined : { text, ok: false }) }
   /** The top-level index a first pick's Read card landed at, so a following second pick upgrades it in place instead of adding a duplicate. */
   const insertedAtRef = useRef<number | undefined>(undefined)
   /** Same idea as `insertedAtRef`, but for the PDF, grid and deck canvases' `table` card (issue #94's 5b/5c/5d): every header/until/column/sheet/slide/fillDown/shapes pick re-sends the whole card, so it always replaces the same slot rather than piling up duplicates. Shared between the three canvases since only one of them is ever shown for a given recipe's format. */
@@ -141,13 +143,13 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     if (outcome.kind === 'first') {
       const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [nodeId] })
       if (result.kind !== 'field') {
-        setStatus(result.kind === 'unsupported' ? result.reason : undefined)
+        warn(result.kind === 'unsupported' ? result.reason : undefined)
 
         return
       }
       await writeOutline((steps) => {
         insertedAtRef.current = appendIndex(steps)
-        setStatus(`Read card: ${result.field.selector} (${result.field.matches} match${result.field.matches === 1 ? '' : 'es'})`)
+        note(`Read card: ${result.field.selector} (${result.field.matches} match${result.field.matches === 1 ? '' : 'es'})`)
 
         return spliceTopLevel(steps, undefined, [readCardNode(result.field, `steps.${steps.length}`)])
       })
@@ -156,7 +158,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     }
     const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [outcome.firstNodeId, nodeId] })
     if (result.kind !== 'list') {
-      setStatus(result.kind === 'unsupported' ? result.reason : undefined)
+      warn(result.kind === 'unsupported' ? result.reason : undefined)
 
       return
     }
@@ -164,7 +166,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       const replaceAt = insertedAtRef.current
       insertedAtRef.current = undefined
       const at = replaceAt ?? appendIndex(steps)
-      setStatus(`List: ${result.item.selector} (${result.item.matches} items) → ${result.field.selector}`)
+      note(`List: ${result.item.selector} (${result.item.matches} items) → ${result.field.selector}`)
 
       return spliceTopLevel(steps, replaceAt, listOutlineNodes(result, `steps.${at}`))
     })
@@ -185,7 +187,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       if (mode === 'next') {
         await writeOutline((steps) => {
           const bracket = paginateFromNextNode(node, `steps.${steps.length}`)
-          setStatus(`Paginate: next from ${node.jsonpath}`)
+          note(`Paginate: next from ${node.jsonpath}`)
 
           return spliceTopLevel(steps, undefined, [bracket])
         })
@@ -196,24 +198,24 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         if (mode === 'list') {
           const withField = addJsonListField(steps, node)
           if (withField !== undefined) {
-            setStatus(`Added to the list: ${String(node.listPath)}`)
+            note(`Added to the list: ${String(node.listPath)}`)
 
             return withField
           }
           const listNodes = documentListOutlineNodes(node, `steps.${appendIndex(steps)}`)
           if (listNodes !== undefined) {
-            setStatus(`List: ${String(node.listPath)} (${String(node.listCount ?? 0)} items)`)
+            note(`List: ${String(node.listPath)} (${String(node.listCount ?? 0)} items)`)
 
             return spliceTopLevel(steps, undefined, listNodes)
           }
         }
         const card = documentReadCardNode(node, `steps.${steps.length}`, { generalize: mode === 'list', namespaces: documentTree.data?.namespaces })
-        setStatus(`Read card: ${card.step.selector}${mode === 'list' ? ` (${String(node.listCount ?? 0)} items)` : ''}`)
+        note(`Read card: ${card.step.selector}${mode === 'list' ? ` (${String(node.listCount ?? 0)} items)` : ''}`)
 
         return spliceTopLevel(steps, undefined, [card])
       })
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : String(error))
+      warn(error instanceof Error ? error.message : String(error))
     }
   }
 
@@ -230,7 +232,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       const replaceAt = tableInsertedAtRef.current
       const at = replaceAt ?? appendIndex(steps)
       tableInsertedAtRef.current = at
-      setStatus(`table: ${String(card.step.selector)}`)
+      note(`table: ${String(card.step.selector)}`)
 
       return spliceTopLevel(steps, replaceAt, [{ ...card, path: `steps.${at}` }])
     })
@@ -239,7 +241,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   /** The PDF (issue #121), deck (issue #122) and grid (issue #123) canvases' "Add to recipe": a staged selection's card (a `region`, or a `jsonpath` into a sheet's cells), always a fresh one, never folded into the table draft's slot. */
   async function handleStagedPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
-      setStatus(`${String(card.step.kind)}: ${String(card.step.id)} ← ${String(card.step.selector)}`)
+      note(`${String(card.step.kind)}: ${String(card.step.id)} ← ${String(card.step.selector)}`)
 
       return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
     })
@@ -248,7 +250,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   /** A deck canvas chart pick (issue #94's 5d): a single-click `jsonpath` card, always a fresh one — a chart pick has no draft to upgrade in place, unlike the deck's own table card. */
   async function handleDeckChartPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
-      setStatus(`jsonpath: ${String(card.step.selector)}`)
+      note(`jsonpath: ${String(card.step.selector)}`)
 
       return spliceTopLevel(steps, undefined, [{ ...card, path: `steps.${steps.length}` }])
     })
@@ -265,7 +267,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     if (recipeId === undefined || recipe?.outline === undefined) return
     const url = recipeStartUrl(recipe.outline.recipe)
     if (url === undefined) {
-      setStatus('this recipe has no start point to record from')
+      warn('this recipe has no start point to record from')
 
       return
     }
@@ -292,7 +294,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     const saveTo = suggestedStorageStatePath(recipe.file, recipeId ?? 'recipe')
     const session = { ...existingSession, bootstrap: suggestedBootstrap(startUrl, recordingStoppedForThis, existingBootstrap, saveTo) }
     await onSaveOutline?.(recipe.file, { ...recipe.outline, recipe: { ...recipe.outline.recipe, session } })
-    setStatus(`Made the login: session.bootstrap, ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
+    note(`Made the login: session.bootstrap, ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
     dismissRecordingStopped()
   }
 
@@ -316,7 +318,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
 
       return spliceTopLevel(steps, undefined, [gotoNode, ...cards.map(card => card.node)])
     })
-    setStatus(`Kept as steps: ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
+    note(`Kept as steps: ${recordingStoppedForThis.length} step${recordingStoppedForThis.length === 1 ? '' : 's'}`)
     dismissRecordingStopped()
   }
 
@@ -386,16 +388,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to read it; [*] reads every item of a list.</Text>}
         {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching) || (isGrid && gridView.isFetching) || (isDeck && deckView.isFetching)) && <Spinner size='xs' />}
         {status !== undefined && (
-          <Badge
-            size='sm'
-            colorPalette={
-              status.startsWith('List') || status.startsWith('Read') || status.startsWith('Paginate') || status.startsWith('table') ||
-              status.startsWith('regex') || status.startsWith('jsonpath') || status.startsWith('Made') || status.startsWith('Kept')
-                ? 'green'
-                : 'orange'
-            }
-          >
-            {status}
+          <Badge size='sm' colorPalette={status.ok ? 'green' : 'orange'}>
+            {status.text}
           </Badge>
         )}
       </HStack>
