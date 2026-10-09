@@ -6,13 +6,14 @@
       "version": "3.12"
     },
     "ghcr.io/devcontainers/features/go:1": {
-      "version": "latest"
+      "version": "1.27",
+      "golangciLintVersion": "2.14.0"
     },
     "ghcr.io/devcontainers/features/dotnet:2": {
       "version": "10.0"
     }
   },
-  "postCreateCommand": "npm install -g npm@11 && npm ci && npx mnci ci setup",
+  "postCreateCommand": "npm install -g npm@12 && npm ci && npx mnci ci setup",
   "customizations": {
     "vscode": {
       "extensions": [

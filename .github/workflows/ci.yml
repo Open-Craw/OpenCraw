@@ -63,7 +63,7 @@ jobs:
       # is part of the contract: npm 11 reuses an already-installed tree instead
       # of re-resolving, so it applies `overrides` differently from npm 10. See
       # NPM_VERSION's remarks for the measurement.
-      - run: npm install -g npm@11
+      - run: npm install -g npm@12
         name: Pin npm to the major mnci verifies against
 
       - run: npm ci

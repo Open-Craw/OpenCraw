@@ -1,7 +1,7 @@
-import mnci from '@mnci/eslint-config'
+import mnci from './eslint.config.mnci.mjs'
 
 export default [
-  ...mnci({ workspaceRoot: import.meta.dirname, verticalSlices: ['packages/*/src/**/*.ts'] }),
+  ...mnci({ verticalSlices: ['packages/*/src/**/*.ts'] }),
   { name: 'local/test-fixtures-are-data', ignores: ['packages/*/src/**/fixtures/**/*.{html,json,txt}'] },
   {
     name:  'local/contract-regexes-are-flag-free',
