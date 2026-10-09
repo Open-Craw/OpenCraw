@@ -3,6 +3,7 @@ import { startOrchestration } from '@mnci/az-durable'
 import type { TypedOrchestration } from '@mnci/az-durable'
 import { loadRecipes } from '@opencraw/core'
 import type { DurableClient } from 'durable-functions'
+import { callbackBaseOf } from '../callout-resume'
 import { callerAccess } from '../caller-access'
 import type { HostSettings } from '../host-options'
 import { problem, readJson } from '../http-reply'
@@ -45,6 +46,7 @@ export async function startCrawl (request: HttpRequest, client: DurableClient, s
     output,
     inputs:       recipes.filter(recipe => recipe !== output),
     ...(parsed.data.options?.dedupe !== undefined && { dedupe: parsed.data.options.dedupe }),
+    ...(settings.callouts !== undefined && { callbackBase: callbackBaseOf(request.url, settings) }),
   }
   const instanceId = await startOrchestration(client, orchestration, job)
 

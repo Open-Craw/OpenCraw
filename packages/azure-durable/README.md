@@ -53,6 +53,7 @@ Everything that is code or a secret stays in the host: hooks, captcha solvers, a
 | `hooks`, `captchaSolvers`, `access`, `accessPlugins`, `browser` | As in `createCrawler`. `captchaSolvers` is a factory: each crawler gets its own set. |
 | `pools` | `windows` (the default policy), `maxWindows` (the cap per pool, default 8), `idleTtlMs` (a pool with no item this long closes, default 10 minutes). |
 | `authLevel`, `routePrefix` | Default `function` (a function key) and no prefix. |
+| `callouts` | Lets a hook that answers `pending` post its result back, `POST /callouts/{token}/resolve`, instead of being asked again: `{ signingKeyEnv, publicUrl?, waitMs? }`. See [the guide](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/azure-durable.md#8-hooks-that-take-a-while). Off by default. |
 
 ## Call it
 

@@ -17,12 +17,13 @@ export interface Instance {
   done:          Promise<void>
 }
 
-/** A scheduled activity, or a fan-out or race over them. */
+/** A scheduled activity, or a fan-out or race over them; a timer also carries `cancel`. */
 interface Scheduled {
   kind:         'activity' | 'all' | 'any'
   promise:      Promise<unknown>
   result?:      unknown
   isCompleted?: boolean
+  cancel?:      () => void
 }
 
 /** What a scheduled task resolves to; for a race, the winning task, its result set as the SDK does. */
@@ -39,7 +40,9 @@ async function settle (task: Scheduled): Promise<unknown> {
  * A Durable Functions stand-in that runs orchestrations and activities in
  * this process, for tests: activities start when scheduled (so a fan-out
  * runs in parallel), `Task.all` waits for all, `Task.any` returns the first
- * to finish. No replay, no task hub: the orchestration code and the
+ * to finish. External events wait until `client.raiseEvent` posts them (or
+ * take one raised earlier), and timers fire after their delay unless
+ * cancelled. No replay, no task hub: the orchestration code and the
  * activities are the real ones.
  *
  * @param orchestrations - The orchestrations, by name.
@@ -50,6 +53,15 @@ export function inProcessDurable (orchestrations: Orchestration[], activities: R
   const instances = new Map<string, Instance>()
   const starts: string[] = []
   let next = 0
+  // Events raised before anything waited for them, and the waits that have not been answered yet.
+  const queued = new Map<string, unknown[]>()
+  const waiting = new Map<string, ((data: unknown) => void)[]>()
+  const waitFor = (instanceId: string, name: string): Promise<unknown> => new Promise((resolve) => {
+    const key = `${instanceId}|${name}`
+    const early = queued.get(key)
+    if (early !== undefined && early.length > 0) resolve(early.shift())
+    else waiting.set(key, [...(waiting.get(key) ?? []), resolve])
+  })
 
   const schedule = (name: string, input: unknown): Scheduled => {
     const activity = activities[name]
@@ -61,11 +73,22 @@ export function inProcessDurable (orchestrations: Orchestration[], activities: R
     const context = {
       df: {
         instanceId,
-        isReplaying:        false,
-        currentUtcDateTime: new Date(),
-        callActivity:       schedule,
-        setCustomStatus:    (status: unknown) => { instance.customStatus = structuredClone(status) },
-        Task:               {
+        isReplaying:          false,
+        currentUtcDateTime:   new Date(),
+        callActivity:         schedule,
+        waitForExternalEvent: (name: string): Scheduled => ({ kind: 'activity', promise: waitFor(instanceId, name) }),
+        createTimer:          (fireAt: Date): Scheduled => {
+          let handle: NodeJS.Timeout | undefined
+          const timer: Scheduled = {
+            kind:    'activity',
+            promise: new Promise((resolve) => { handle = setTimeout(resolve, Math.max(0, fireAt.getTime() - Date.now())) }),
+            cancel:  () => { clearTimeout(handle) },
+          }
+
+          return timer
+        },
+        setCustomStatus: (status: unknown) => { instance.customStatus = structuredClone(status) },
+        Task:            {
           all: (tasks: Scheduled[]): Scheduled => ({ kind: 'all', promise: Promise.all(tasks.map(task => task.promise)) }),
           any: (tasks: Scheduled[]): Scheduled => ({
             kind:    'any',
@@ -117,6 +140,16 @@ export function inProcessDurable (orchestrations: Orchestration[], activities: R
       if (instance === undefined) throw new Error(`DurableClient error: Durable Functions extension replied with HTTP 404 response for "${instanceId}"`)
 
       return { instanceId, name: instance.name, input: instance.input, runtimeStatus: instance.runtimeStatus, output: instance.output, customStatus: instance.customStatus }
+    },
+    raiseEvent: async (instanceId: string, name: string, data: unknown): Promise<void> => {
+      const key = `${instanceId}|${name}`
+      const pending = waiting.get(key)
+      const resolve = pending?.shift()
+      if (resolve === undefined) {
+        queued.set(key, [...(queued.get(key) ?? []), data])
+      } else {
+        resolve(data)
+      }
     },
     createCheckStatusResponse: (_request: HttpRequest | undefined, instanceId: string) => ({ status: 202, jsonBody: { id: instanceId, statusQueryGetUri: `http://host/runtime/webhooks/durabletask/instances/${instanceId}` } }) as unknown as HttpResponse,
   }

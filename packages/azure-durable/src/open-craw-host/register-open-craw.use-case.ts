@@ -4,6 +4,7 @@ import { defineActivity, defineOrchestration } from '@mnci/az-durable'
 import type { TypedOrchestration } from '@mnci/az-durable'
 import * as df from 'durable-functions'
 import type { DurableClient } from 'durable-functions'
+import { resolveCallout } from '../callout-resume'
 import { crawlOrchestrator, parseCrawlJob, runRecipeTask, startCrawl } from '../crawl-run'
 import type { CrawlJob, CrawlResult, RecipeTask, RecipeTaskResult } from '../crawl-run'
 import { resolveHostOptions } from '../host-options'
@@ -26,12 +27,14 @@ export interface OpenCrawHost {
     runItem:   (job: ItemJob) => Promise<ItemOutcome>
   }
   http: {
-    startCrawl: (request: HttpRequest, client: DurableClient) => Promise<HttpResponse | HttpResponseInit>
-    submitItem: (request: HttpRequest, client: DurableClient) => Promise<HttpResponse | HttpResponseInit>
-    job:        (request: HttpRequest) => Promise<HttpResponseInit>
+    startCrawl:     (request: HttpRequest, client: DurableClient) => Promise<HttpResponse | HttpResponseInit>
+    /** `POST /callouts/{token}/resolve`; registered only when `callouts` is set. */
+    resolveCallout: (request: HttpRequest, client: DurableClient) => Promise<HttpResponseInit>
+    submitItem:     (request: HttpRequest, client: DurableClient) => Promise<HttpResponse | HttpResponseInit>
+    job:            (request: HttpRequest) => Promise<HttpResponseInit>
     /** The authoring MCP endpoint; registered only when `mcp` is on. */
-    mcp:        (request: HttpRequest, client: DurableClient) => Promise<HttpResponseInit>
-    promote:    (request: HttpRequest) => Promise<HttpResponseInit>
+    mcp:            (request: HttpRequest, client: DurableClient) => Promise<HttpResponseInit>
+    promote:        (request: HttpRequest) => Promise<HttpResponseInit>
   }
   /** Closes every pool; also run when the Function App shuts down. */
   close: () => Promise<void>
@@ -42,7 +45,8 @@ export interface OpenCrawHost {
  * model): `POST /crawl` runs recipes once, `POST /jobs/{crawlId}/items`
  * sends one item to the caller's warm pool, `GET` and `DELETE
  * /jobs/{crawlId}` read and close it, `POST /recipes/{name}/{version}/promote`
- * makes a draft runnable, and with `mcp` on, `/mcp` serves the authoring
+ * makes a draft runnable, with `callouts` set `POST /callouts/{token}/resolve`
+ * takes the results of hooks that answered `pending`, and with `mcp` on, `/mcp` serves the authoring
  * tools. Call it once, from the app's entry module; nothing is registered by
  * importing the package.
  *
@@ -57,21 +61,24 @@ export function registerOpenCraw (options: OpenCrawHostOptions): OpenCrawHost {
 
   const runRecipe = async (task: RecipeTask): Promise<RecipeTaskResult> => await runRecipeTask(settings, task)
   const runItem = async (job: ItemJob): Promise<ItemOutcome> => await pools.run(job)
-  const crawl = defineOrchestration('OpenCrawCrawl', crawlOrchestrator(defineActivity('OpenCrawRunRecipe', runRecipe)), { parse: parseCrawlJob })
+  const crawl = defineOrchestration('OpenCrawCrawl', crawlOrchestrator(defineActivity('OpenCrawRunRecipe', runRecipe), { waitMs: settings.callouts?.waitMs }), { parse: parseCrawlJob })
   const item = defineOrchestration('OpenCrawItem', itemOrchestrator(defineActivity('OpenCrawRunItem', runItem)), { parse: parseItemJob })
 
   const http: OpenCrawHost['http'] = {
-    startCrawl: async (request, client) => await startCrawl(request, client, settings, crawl),
-    submitItem: async (request, client) => await submitItem(request, client, settings, pools, item),
-    job:        async request => await jobRequest(request, settings, pools),
-    mcp:        async (request, client) => await mcpEndpoint(request, client, settings, crawl),
-    promote:    async request => await promoteRecipes(request, settings),
+    startCrawl:     async (request, client) => await startCrawl(request, client, settings, crawl),
+    resolveCallout: async (request, client) => await resolveCallout(request, client, settings),
+    submitItem:     async (request, client) => await submitItem(request, client, settings, pools, item),
+    job:            async request => await jobRequest(request, settings, pools),
+    mcp:            async (request, client) => await mcpEndpoint(request, client, settings, crawl),
+    promote:        async request => await promoteRecipes(request, settings),
   }
   const route = (path: string): string => (settings.routePrefix === '' ? path : `${settings.routePrefix}/${path}`)
   df.app.client.http('OpenCrawStartCrawl', { route: route('crawl'), methods: ['POST'], authLevel: settings.authLevel, handler: http.startCrawl })
   df.app.client.http('OpenCrawSubmitItem', { route: route('jobs/{crawlId}/items'), methods: ['POST'], authLevel: settings.authLevel, handler: http.submitItem })
   app.http('OpenCrawJob', { route: route('jobs/{crawlId}'), methods: ['GET', 'DELETE'], authLevel: settings.authLevel, handler: http.job })
   app.http('OpenCrawPromote', { route: route('recipes/{name}/{version}/promote'), methods: ['POST'], authLevel: settings.authLevel, handler: http.promote })
+  // The token in the path is the credential: the services that post results back hold no function key.
+  if (settings.callouts !== undefined) df.app.client.http('OpenCrawResolveCallout', { route: route('callouts/{token}/resolve'), methods: ['POST'], authLevel: 'anonymous', handler: http.resolveCallout })
   if (settings.mcp !== undefined) df.app.client.http('OpenCrawMcp', { route: route('mcp'), methods: ['GET', 'POST', 'DELETE'], authLevel: settings.authLevel, handler: http.mcp })
   const close = async (): Promise<void> => { await pools.closeAll() }
   app.hook.appTerminate(close)
