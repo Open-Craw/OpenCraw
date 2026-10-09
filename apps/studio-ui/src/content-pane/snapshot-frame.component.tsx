@@ -97,8 +97,9 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
   )
 }
 
+/** The `data-oc-node` id of the stamped element at or above `target`. The target belongs to the iframe's own realm, so `target instanceof Element` is false for it: test the node type instead (issue #153). */
 function nodeIdOf (target: EventTarget | null): string | undefined {
-  const element = target instanceof Element ? target.closest(`[${CSS.escape(NODE_ID_ATTRIBUTE)}]`) : null
+  const element = (target as Node | null)?.nodeType === Node.ELEMENT_NODE ? (target as Element).closest(`[${CSS.escape(NODE_ID_ATTRIBUTE)}]`) : null
 
   return element?.getAttribute(NODE_ID_ATTRIBUTE) ?? undefined
 }

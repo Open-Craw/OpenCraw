@@ -1,4 +1,4 @@
-import { bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/core'
+import { UnknownHookError, bindRecipeSet, createCrawler, memorySink, traceLine } from '@opencraw/core'
 import type { BrowserSessionConfig, Crawler, CrawlEvent } from '@opencraw/core'
 import type { SampleBudget } from '../studio-api'
 import { loadRecipePair } from './load-recipe-pair.use-case'
@@ -66,7 +66,7 @@ export async function runSample (folder: string, recipeId: string, budget: Sampl
       }
     },
   })
-  const result = runToResult(crawler, set, records, rejectedRecords, steps)
+  const result = runToResult(crawler, set, recipeId, records, rejectedRecords, steps)
 
   return { stop: () => crawler.close(), result }
 }
@@ -95,7 +95,13 @@ function trackStep (steps: Map<string, SampleStepSummary>, event: CrawlEvent): v
   }
 }
 
-async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], records: SampleRunRecord[], rejectedRecords: SampleRunRejected[], steps: Map<string, SampleStepSummary>): Promise<SampleRunResult> {
+/**
+ * Awaits the run and shapes its result. A throw from `crawler.run` (an unknown
+ * hook, a recipe that cannot start) becomes the run's `error` instead of a
+ * rejection: nothing awaits `result` but a `.then`, and an unhandled rejection
+ * would take the whole Studio server down (issue #148).
+ */
+async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0], recipeId: string, records: SampleRunRecord[], rejectedRecords: SampleRunRejected[], steps: Map<string, SampleStepSummary>): Promise<SampleRunResult> {
   try {
     const report = await crawler.run(set)
     const recipe = report.recipes[0]
@@ -113,7 +119,28 @@ async function runToResult (crawler: Crawler, set: Parameters<Crawler['run']>[0]
       // eslint-disable-next-line unicorn/prefer-iterator-to-array -- `.toArray()` needs a `lib` newer than this repo's `es2022` (tsconfig.base.json)
       steps:      [...steps.values()],
     }
+  } catch (error) {
+    return {
+      recipeId,
+      emitted:    0,
+      rejected:   0,
+      duplicates: 0,
+      durationMs: 0,
+      error:      failureMessage(error),
+      records,
+      rejectedRecords,
+      // eslint-disable-next-line unicorn/prefer-iterator-to-array -- `.toArray()` needs a `lib` newer than this repo's `es2022` (tsconfig.base.json)
+      steps:      [...steps.values()],
+    }
   } finally {
     await crawler.close()
   }
+}
+
+/** What a run that could not start reports. A hook is the author's own code, which Studio never loads (issue #150): say so, instead of leaving "unknown hook" to read as a typo. */
+function failureMessage (error: unknown): string {
+  if (error instanceof UnknownHookError) return `${error.message}. Studio does not load hooks, so a recipe that uses one cannot be sample-run here; run it with the cli or the mcp server, or temporarily replace the hook step to preview the rest.`
+  if (error instanceof Error) return error.message
+
+  return String(error)
 }

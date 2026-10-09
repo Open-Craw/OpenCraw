@@ -9,7 +9,7 @@ import { useStudioClient } from './use-studio-client.hook'
  * `run-session.store.ts` (there is no query response they could instead
  * update — see that store's own doc comment), `recording-card`/`recording-note`/
  * `recording-stopped` update `recording.store.ts` the same way (issue #95,
- * phase 6), and `workspace-changed` invalidates the workspace query, so every
+ * phase 6), and `workspace-changed` invalidates the workspace and snapshot queries, so every
  * connected client (this one included, after its own `save-recipe`/`save-outline`)
  * re-fetches the authoritative workspace. Call once, near the app's root.
  */
@@ -40,7 +40,7 @@ export function useStudioEvents (): void {
           break
         }
         case 'run-finished': {
-          finishRun()
+          finishRun(event.error)
           break
         }
         case 'recording-card': {
@@ -61,6 +61,8 @@ export function useStudioEvents (): void {
         }
         case 'workspace-changed': {
           void queryClient.invalidateQueries({ queryKey: ['workspace'] })
+          // The server keeps its own snapshot unless the edit changed the start point (issue #159), so this refetch is cheap for a pick and fresh for a mode or start change.
+          void queryClient.invalidateQueries({ queryKey: ['snapshot'] })
           break
         }
         // No default

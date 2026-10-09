@@ -1,4 +1,4 @@
-import { RECIPE_ID_PATTERN, documentRecipeFiles, newRecipeFiles, recipeIdFromFileName, uniqueRecipeId } from './new-recipe.mapper'
+import { RECIPE_ID_PATTERN, documentRecipeFiles, newRecipeFiles, recipeIdFromFileName, startUrlError, uniqueRecipeId } from './new-recipe.mapper'
 
 describe('RECIPE_ID_PATTERN', () => {
   it('accepts lowercase letters, digits and hyphens, starting with a letter or digit', () => {
@@ -18,6 +18,18 @@ describe('newRecipeFiles', () => {
     expect(files.output).toEqual({ kind: 'output', id: 'widgets', version: 1, fields: {} })
     expect(files.input).toMatchObject({ kind: 'input', id: 'widgets', output: 'widgets', mode: 'web' })
     expect((files.input.steps as unknown[])).toHaveLength(2)
+  })
+
+  it('starts on the given URL, example.com when none (issue #151)', () => {
+    expect(newRecipeFiles('/r', 'w', 'https://shop.test/catalog').input.start).toEqual([{ url: 'https://shop.test/catalog' }])
+    expect(newRecipeFiles('/r', 'w').input.start).toEqual([{ url: 'https://example.com' }])
+  })
+
+  it('accepts a blank or http(s) start URL and says why anything else will not do', () => {
+    expect(startUrlError('')).toBeUndefined()
+    expect(startUrlError('https://a.test/x?y=1')).toBeUndefined()
+    expect(startUrlError('shop.test')).toContain('full address')
+    expect(startUrlError('ftp://a.test')).toContain('http')
   })
 
   it('tolerates a trailing slash on the folder', () => {

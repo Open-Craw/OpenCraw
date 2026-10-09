@@ -6,14 +6,16 @@ import { allSteps, stepById } from '../steps-outline'
 import type { GridViewOverride } from '../studio-client'
 import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
 import { useRecordingStore, useStudioUiStore } from '../studio-store'
+import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
-import { documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
 import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
+import { hasVisibleContent } from './visible-content.algorithm'
 import type { TreePickMode } from './tree-canvas.component'
 
 /**
@@ -83,6 +85,9 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const isPdf = format === 'pdf'
   const isGrid = format !== undefined && GRID_FORMATS.has(format)
   const isDeck = format !== undefined && DECK_FORMATS.has(format)
+  const isHtmlSnapshot = !isDocumentTree && !isPdf && !isGrid && !isDeck
+  const snapshotHtml = snapshot.data?.html
+  const snapshotHasContent = useMemo(() => snapshotHtml === undefined || hasVisibleContent(snapshotHtml), [snapshotHtml])
   const documentTree = useDocumentTreeQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isDocumentTree)
   const pdfView = usePdfViewQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH, isPdf)
   const [csvOverride, setCsvOverride] = useState<GridViewOverride | undefined>(undefined)
@@ -141,7 +146,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         return
       }
       await writeOutline((steps) => {
-        insertedAtRef.current = steps.length
+        insertedAtRef.current = appendIndex(steps)
         setStatus(`Read card: ${result.field.selector} (${result.field.matches} match${result.field.matches === 1 ? '' : 'es'})`)
 
         return spliceTopLevel(steps, undefined, [readCardNode(result.field, `steps.${steps.length}`)])
@@ -158,7 +163,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     await writeOutline((steps) => {
       const replaceAt = insertedAtRef.current
       insertedAtRef.current = undefined
-      const at = replaceAt ?? steps.length
+      const at = replaceAt ?? appendIndex(steps)
       setStatus(`List: ${result.item.selector} (${result.item.matches} items) → ${result.field.selector}`)
 
       return spliceTopLevel(steps, replaceAt, listOutlineNodes(result, `steps.${at}`))
@@ -188,6 +193,20 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         return
       }
       await writeOutline((steps) => {
+        if (mode === 'list') {
+          const withField = addJsonListField(steps, node)
+          if (withField !== undefined) {
+            setStatus(`Added to the list: ${String(node.listPath)}`)
+
+            return withField
+          }
+          const listNodes = documentListOutlineNodes(node, `steps.${appendIndex(steps)}`)
+          if (listNodes !== undefined) {
+            setStatus(`List: ${String(node.listPath)} (${String(node.listCount ?? 0)} items)`)
+
+            return spliceTopLevel(steps, undefined, listNodes)
+          }
+        }
         const card = documentReadCardNode(node, `steps.${steps.length}`, { generalize: mode === 'list', namespaces: documentTree.data?.namespaces })
         setStatus(`Read card: ${card.step.selector}${mode === 'list' ? ` (${String(node.listCount ?? 0)} items)` : ''}`)
 
@@ -208,11 +227,12 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
    */
   async function handleTableCardPick (card: OutlineCard): Promise<void> {
     await writeOutline((steps) => {
-      const at = tableInsertedAtRef.current ?? steps.length
+      const replaceAt = tableInsertedAtRef.current
+      const at = replaceAt ?? appendIndex(steps)
       tableInsertedAtRef.current = at
       setStatus(`table: ${String(card.step.selector)}`)
 
-      return spliceTopLevel(steps, tableInsertedAtRef.current, [{ ...card, path: `steps.${at}` }])
+      return spliceTopLevel(steps, replaceAt, [{ ...card, path: `steps.${at}` }])
     })
   }
 
@@ -405,6 +425,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
           </Button>
         </HStack>
       )}
+      {isHtmlSnapshot && snapshot.data !== undefined && !snapshotHasContent && <BlankSnapshotNotice />}
       <Box flex='1' minH='0'>
         {isDocumentTree && documentTree.data !== undefined && (
           <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
@@ -495,7 +516,13 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             </Splitter.Panel>
           </Splitter.Root>
         )}
-        {!snapshot.isFetching && snapshot.data === undefined && (
+        {snapshot.isError && (
+          <Box p={4} color='fg.error' role='alert'>
+            <Text fontWeight='semibold'>Could not take a snapshot of this recipe's page.</Text>
+            <Text>{snapshot.error.message}</Text>
+          </Box>
+        )}
+        {!snapshot.isFetching && !snapshot.isError && snapshot.data === undefined && (
           <Box p={4} color='fg.muted'><Text>Run a sample, or open a recipe, to see its snapshot here.</Text></Box>
         )}
       </Box>

@@ -2,6 +2,7 @@
 // form that sets a session cookie, and a JSON API behind that cookie that pages with `nextPage`. The web
 // recipe and the api recipe reach the same six products by different routes.
 import { createServer } from 'node:http'
+import { pathToFileURL } from 'node:url'
 
 /** The recipes' start URLs name this port: start URLs are not templated. */
 export const PORT = 4580
@@ -114,7 +115,7 @@ export async function startShop () {
 }
 
 // `node site.mjs` keeps the shop running, to open it in a browser or probe it.
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const { url } = await startShop()
   console.log(`Shop running at ${url}/catalog (log in at ${url}/login as demo / demo). Ctrl+C to stop.`)
 }

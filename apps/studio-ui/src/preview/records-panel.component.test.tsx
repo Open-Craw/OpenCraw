@@ -104,4 +104,22 @@ describe('RecordsPanel', () => {
     expect(dialog).toBeTruthy()
     expect(screen.getByText('Records (2)')).toBeTruthy()
   })
+
+  it('clicking a Table row opens that entry in a detail modal', async () => {
+    renderWithChakra(<RecordsPanel records={RECORDS} />)
+    fireEvent.click(screen.getByText('Gadget'))
+
+    expect(await screen.findByText('Record 2')).toBeTruthy()
+    expect(screen.getByText('a2')).toBeTruthy() // the key, as a subtitle
+    expect(screen.getByText(/"name": "Gadget"/)).toBeTruthy()
+  })
+
+  it('clicking a JSONL line opens the same entry in a detail modal', async () => {
+    renderWithChakra(<RecordsPanel records={RECORDS} />)
+    fireEvent.click(screen.getByRole('button', { name: 'JSONL' }))
+    fireEvent.click(screen.getByText('{"name":"Widget","price":9.5}'))
+
+    expect(await screen.findByText('Record 1')).toBeTruthy()
+    expect(screen.getByText(/"price": 9\.5/)).toBeTruthy()
+  })
 })

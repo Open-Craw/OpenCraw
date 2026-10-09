@@ -59,6 +59,23 @@ describe('NewRecipeDialog', () => {
     expect(bodies[1]).toMatchObject({ type: 'save-recipe', path: '/r/widgets.input.json', recipe: { kind: 'input', id: 'widgets', output: 'widgets', mode: 'web' } })
   })
 
+  it('writes the start URL it is given, and refuses one that is not an address (issue #151)', async () => {
+    Object.defineProperty(globalThis, 'CSS', { value: { escape: (text: string) => text }, configurable: true }) // jsdom has none; the dialog's focus trap reads it when its buttons change state
+    const fetchMock = mockFetch()
+    renderDialog({ onCreated: jest.fn() })
+
+    fireEvent.click(screen.getByRole('button', { name: '+ New recipe' }))
+    fireEvent.change(await screen.findByPlaceholderText('books'), { target: { value: 'widgets' } })
+    fireEvent.change(screen.getByPlaceholderText('https://example.com/books'), { target: { value: 'shop.test' } })
+    expect(screen.getByRole('button', { name: 'Create' })).toHaveProperty('disabled', true)
+    fireEvent.change(screen.getByPlaceholderText('https://example.com/books'), { target: { value: 'https://shop.test/catalog' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => { expect(fetchMock).toHaveBeenCalledTimes(2) })
+    const input = JSON.parse((fetchMock.mock.calls[1][1] as RequestInit).body as string) as { recipe: { start: unknown } }
+    expect(input.recipe.start).toEqual([{ url: 'https://shop.test/catalog' }])
+  })
+
   it('shows the write error and leaves the dialog open when a save fails', async () => {
     const fetchMock = jest.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({ error: 'disk full' }) })
     Object.defineProperty(globalThis, 'fetch', { value: fetchMock, configurable: true })

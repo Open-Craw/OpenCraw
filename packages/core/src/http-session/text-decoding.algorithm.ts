@@ -44,7 +44,27 @@ export function decodeText (bytes: Uint8Array, options: { encoding?: string, cha
 
 /** Decodes, naming the encoding by its canonical WHATWG name (`utf-8`, `windows-1252`, `utf-16le`). */
 function decodeWith (decoder: TextDecoder, bytes: Uint8Array): DecodedText {
+  if (decoder.encoding === 'windows-1252') return { text: decodeWindows1252(bytes), encoding: decoder.encoding }
+
   return { text: decoder.decode(bytes), encoding: decoder.encoding }
+}
+
+/** Windows-1252's characters for bytes 0x80-0x9F (the rest of the range is Latin-1: byte = code point). The five undefined bytes decode to themselves, as the WHATWG decoder does. */
+const WINDOWS_1252_HIGH = [
+  0x20_AC, 0x81, 0x20_1A, 0x01_92, 0x20_1E, 0x20_26, 0x20_20, 0x20_21, 0x02_C6, 0x20_30, 0x01_60, 0x20_39, 0x01_52, 0x8D, 0x01_7D, 0x8F,
+  0x90, 0x20_18, 0x20_19, 0x20_1C, 0x20_1D, 0x20_22, 0x20_13, 0x20_14, 0x02_DC, 0x21_22, 0x01_61, 0x20_3A, 0x01_53, 0x9D, 0x01_7E, 0x01_78,
+]
+
+/**
+ * Windows-1252 by table rather than by `TextDecoder`: some Node builds decode
+ * the label as plain Latin-1, turning `€` and `–` (bytes 0x80 and 0x96) into
+ * invisible C1 control characters.
+ */
+function decodeWindows1252 (bytes: Uint8Array): string {
+  let text = ''
+  for (const byte of bytes) text += String.fromCodePoint(byte >= 0x80 && byte <= 0x9F ? WINDOWS_1252_HIGH[byte - 0x80] : byte)
+
+  return text
 }
 
 /**

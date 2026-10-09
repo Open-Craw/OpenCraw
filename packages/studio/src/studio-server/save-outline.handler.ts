@@ -1,3 +1,4 @@
+import { invalidateStaleSnapshot } from '../page-snapshot'
 import { saveRecipe } from '../recipe-workspace'
 import { outlineToRecipe } from '../scope-outline'
 import type { SaveOutlineCommand } from '../studio-api'
@@ -17,7 +18,9 @@ import type { StudioState } from './workspace.store'
  * @returns `{ saved: true }` once the write has completed.
  */
 export async function handleSaveOutline (state: StudioState, command: SaveOutlineCommand): Promise<{ saved: true }> {
-  await saveRecipe(command.path, outlineToRecipe(command.outline))
+  const recipe = outlineToRecipe(command.outline)
+  await invalidateStaleSnapshot(state.snapshots, command.path, recipe)
+  await saveRecipe(command.path, recipe)
   broadcast(state, { type: 'workspace-changed' })
 
   return { saved: true }

@@ -1,6 +1,24 @@
 /** An id is lowercase letters, digits and hyphens, not starting with a hyphen — `@opencraw/core`'s own `input`/`output` recipe id pattern. */
 export const RECIPE_ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
 
+/** Where a new recipe starts until its author points it at the real site. */
+export const DEFAULT_START_URL = 'https://example.com'
+
+/**
+ * Why `text` cannot be a start URL, or `undefined` when it can: an absolute
+ * `http`/`https` address. Blank is fine (the default applies).
+ */
+export function startUrlError (text: string): string | undefined {
+  if (text.trim() === '') return undefined
+  try {
+    const { protocol } = new URL(text.trim())
+
+    return protocol === 'http:' || protocol === 'https:' ? undefined : 'use an http:// or https:// address'
+  } catch {
+    return 'use a full address, like https://example.com/books'
+  }
+}
+
 export interface NewRecipeFiles {
   outputPath: string
   output:     Record<string, unknown>
@@ -18,11 +36,12 @@ export interface NewRecipeFiles {
  *
  * @param folder - The open workspace folder; joined with the file names (a trailing slash is tolerated).
  * @param id - The recipe id: also names both files, `<id>.input.json` and `<id>.output.json`.
+ * @param startUrl - The page the recipe starts on (issue #151); `https://example.com` when not given.
  */
-export function newRecipeFiles (folder: string, id: string): NewRecipeFiles {
+export function newRecipeFiles (folder: string, id: string, startUrl = DEFAULT_START_URL): NewRecipeFiles {
   return recipeFiles(folder, id, {
     mode:  'web',
-    start: [{ url: 'https://example.com' }],
+    start: [{ url: startUrl }],
     steps: [{ type: 'goto', url: '{{start.url}}' }, { type: 'emit' }],
   })
 }

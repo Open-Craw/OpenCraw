@@ -3,8 +3,13 @@ import { join } from 'node:path'
 import { csvWorkbook } from '@opencraw/core'
 import { describeWorkbook } from './workbook-findings.mapper'
 
+// The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131).
+function windows1252Text (bytes: Buffer): string {
+  return bytes.toString('latin1').replaceAll('', '€').replaceAll('', '–')
+}
+
 const bytes = readFileSync(join(__dirname, '..', '..', '..', 'core', 'src', 'workbook-document', 'fixtures', 'listino.csv'))
-const listino = csvWorkbook(new TextDecoder('windows-1252').decode(bytes), { name: 'listino', encoding: 'windows-1252' })
+const listino = csvWorkbook(windows1252Text(bytes), { name: 'listino', encoding: 'windows-1252' })
 
 describe('describeWorkbook', () => {
   it('reports how a CSV was read, its rows, and its header with a selector', () => {

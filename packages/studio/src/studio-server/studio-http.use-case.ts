@@ -20,7 +20,7 @@ import { handleInspectPage } from './inspect-page.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
 import { handlePdfBytes } from './pdf-bytes.handler'
 import { handlePdfView } from './pdf-view.handler'
-import { handleStartRecording, handleStopRecording } from './recording.handler'
+import { handleStartRecording, handleStopRecording, settleRecording } from './recording.handler'
 import { handleResponsesSeen } from './responses-seen.handler'
 import { handleRegionPreview } from './region-preview.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
@@ -101,7 +101,7 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
 
 async function stop (server: Server, state: StudioState): Promise<void> {
   await state.activeRun?.stop()
-  await state.activeRecording?.stop()
+  await settleRecording(state)
   server.closeAllConnections()
   await new Promise<void>((resolve, reject) => { server.close(error => (error === undefined ? resolve() : reject(error))) })
 }
