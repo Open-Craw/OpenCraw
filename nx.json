@@ -67,7 +67,8 @@
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
       }
-    }
+    },
+    "@mnci/nx-python-pip/graph"
   ],
   "analytics": false,
   "defaultBase": "main",
@@ -76,6 +77,7 @@
     "projects": [
       "packages/*",
       "python-packages/*",
+      "!python-packages/opencraw",
       "tag:type:vscode-extension",
       "tag:release:go",
       "!tag:type:go-lib"
