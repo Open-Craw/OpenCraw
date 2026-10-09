@@ -77,7 +77,6 @@
     "projects": [
       "packages/*",
       "python-packages/*",
-      "!python-packages/opencraw",
       "tag:type:vscode-extension",
       "tag:release:go",
       "!tag:type:go-lib"
