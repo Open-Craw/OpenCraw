@@ -1,6 +1,6 @@
 export { createCrawler, recipeRuns, variantLabel, workFrom, createWorkInbox, sessionStateOf, defaultOutcome, errorKindOf } from './crawl-execution'
-export { AccessBroker, AccessConfigError, ACCESS_PRESETS, loadAccessConfig, accessConfigSchema, accessConfigJsonSchema, throttleConfigSchema } from './access'
-export type { AccessConfig, AccessProfile, AccessPlugin, AccessLease, LeaseRequest, PluginLeaseRequest, ProxySettings, AccessPreset } from './access'
+export { AccessBroker, AccessConfigError, ACCESS_PRESETS, loadAccessConfig, accessConfigSchema, accessConfigJsonSchema, accessCalloutJsonSchemas, commandAccessPlugin, httpAccessPlugin, accessCalloutInputSchema, accessCalloutOutputSchema, throttleConfigSchema } from './access'
+export type { AccessConfig, AccessProfile, AccessPlugin, AccessLease, LeaseRequest, PluginLeaseRequest, ProxySettings, AccessPreset, RemoteAccessPluginOptions, AccessCalloutInput, AccessCalloutOutput } from './access'
 export type { SessionStateOptions, Crawler, CrawlOptions, CrawlReport, RecipeReport, RecipeRun, WorkItem, WorkSource, WorkOptions, WorkReport, WorkList, WorkInbox, WorkItemResult, SubmitOptions, WindowsPolicy, WorkOutcome, ErrorKind } from './crawl-execution'
 export { loadRecipeSet, loadRecipes, readRecipeSource, bindRecipeSet, RecipeSet, RecipeBindingError, validateBinding, bindingsAt } from './recipe-loading'
 export type { RecipeSetSource, RecipeSource, RecipeBytes, RecipeDocument, BindingIssue, HookUse } from './recipe-loading'
