@@ -36,6 +36,13 @@ export function RecordsTable ({ records, onCellClick, highlightedField, onHoverF
     )
   }
   const fields = fieldsOf(records)
+  if (fields.length === 0) {
+    return (
+      <Box p={4} color='fg.muted'>
+        <Text>{records.length} record{records.length === 1 ? '' : 's'} emitted, but no output field is mapped yet, so there is nothing to show as columns. Add fields in the Record tab.</Text>
+      </Box>
+    )
+  }
   const hoverProps = (field: string): { onMouseEnter?: () => void, onMouseLeave?: () => void } => (
     onHoverField === undefined ? {} : { onMouseEnter: () => { onHoverField(field) }, onMouseLeave: () => { onHoverField(undefined) } }
   )
