@@ -2,8 +2,8 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import type { HookContext } from '../hooks'
-import { calloutRequestSchema } from './callout.contract'
-import { CalloutError } from './callout.error'
+import { calloutRequestSchema } from '../callout-protocol'
+import { CalloutError } from '../callout-protocol'
 import { commandHook } from './command-hook.use-case'
 
 const logs: string[] = []

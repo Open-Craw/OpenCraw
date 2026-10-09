@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
-import type { CalloutCallback, CalloutRequest, CalloutResolution } from './callout.contract'
+import type { CalloutCallback, CalloutRequest, CalloutResolution } from '../callout-protocol'
 
 /** A call whose handler answered `pending` and will post its result back instead of being asked again. */
 export interface ParkedCallout {
