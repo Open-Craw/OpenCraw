@@ -1,11 +1,11 @@
 # opencraw (Python)
 
-Build [OpenCraw](../../README.md) recipes in Python, and drive the real CLI. Standard library only; it
+Build [OpenCraw](https://github.com/Open-Craw/OpenCraw) recipes in Python, and drive the real CLI. Standard library only; it
 needs Python 3.12+ and, to validate or run, the `opencraw` CLI (`npm i -g @opencraw/cli`, or
 `OPENCRAW_CLI` set to the command that starts it; with neither, `npx @opencraw/cli` is used).
 
 A recipe stays a plain dict in the engine's own shape, so the recipe guide
-(`docs/recipes/authoring.md`) is the reference for every key. The constructors only save typing, and
+([docs/recipes/authoring.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/authoring.md)) is the reference for every key. The constructors only save typing, and
 the engine, not this package, says what is valid.
 
 ```python
@@ -76,9 +76,9 @@ again after that wait, with the same `idempotencyKey`, until it returns or the h
 script starts the work once and looks it up by that key on later runs. The request and answer shapes are in
 `packages/core/schemas/callout-*.schema.json`.
 
-Not in this package: a Python engine, generated typed models, publishing to PyPI. It is an internal
-library of the workspace: `mnci ci release` publishes what sits under `python-packages/`, and this lives
-in `libs/`.
+Not in this package: a Python engine and generated typed models. The crawl itself always runs in the
+OpenCraw CLI. It is published to PyPI as `opencraw`: `mnci ci release` versions and publishes what sits
+under `python-packages/`.
 
 ## Development
 
