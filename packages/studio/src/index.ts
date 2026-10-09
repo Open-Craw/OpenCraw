@@ -1,4 +1,6 @@
 export { main } from './main'
+export type { StudioMainOptions } from './main'
+export type { TrustedPlugins } from './trusted-plugins'
 export { startStudioServer } from './studio-server'
 export type { StudioServer, StudioServerOptions } from './studio-server'
 export { openWorkspace, saveRecipe, importDocument } from './recipe-workspace'
@@ -11,7 +13,7 @@ export {
   sampleBudgetSchema, openWorkspaceCommandSchema, importDocumentCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, saveOutlineCommandSchema, takeSnapshotCommandSchema, verifySelectorCommandSchema, inferSelectorCommandSchema, missingWhyTargetSchema, rejectedWhyTargetSchema, whyTargetSchema, explainWhyCommandSchema, studioCommandSchema,
   importDocumentViewSchema,
   stoppedBySchema, fieldTraceSchema, traceLineEventSchema, recordEventSchema, recordRejectedEventSchema, runFinishedEventSchema, workspaceChangedEventSchema, studioEventSchema,
-  recipeIssueSchema, recipeListingSchema, workspaceViewSchema,
+  loadedHooksSchema, recipeIssueSchema, recipeListingSchema, workspaceViewSchema,
   sampleRunRecordSchema, sampleRunViewSchema,
   startPageViewSchema,
   snapshotViewSchema,
@@ -41,7 +43,7 @@ export type {
   ImportDocumentView,
   RegionPreviewMatchView, RegionPreviewView,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
-  RecipeIssue, RecipeListing, WorkspaceView,
+  LoadedHooks, RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
   StartPageView,
   SnapshotView,

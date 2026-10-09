@@ -69,7 +69,23 @@ describe('runSample', () => {
     expect(result.recipeId).toBe('items')
     expect(result.emitted).toBe(0)
     expect(result.error).toContain('nope')
-    expect(result.error).toContain('Studio does not load hooks')
+    expect(result.error).toContain('Studio was started without hooks')
+    expect(result.error).toContain('opencraw studio --hooks <file>')
+  })
+
+  it('runs the hook it was started with, and names the file and its hooks when the recipe calls another (issue #150)', async () => {
+    const folder = folderOf({})
+    const dataFile = join(folder, 'data.json')
+    writeFileSync(dataFile, JSON.stringify(DATA))
+    writeFileSync(join(folder, 'item.output.json'), JSON.stringify(OUTPUT))
+    const recipe = inputRecipe(dataFile) as { mapping: Record<string, unknown> }
+    recipe.mapping.price = { from: 'item.price', transform: [{ op: 'hook', name: 'nope' }] }
+    writeFileSync(join(folder, 'items.input.json'), JSON.stringify(recipe))
+
+    const handle = await runSample(folder, 'items', undefined, { onTraceLine: () => undefined, onRecord: () => undefined }, undefined, { source: 'hooks.mjs', hooks: { other: input => input } })
+    const result = await handle.result
+
+    expect(result.error).toContain('not one of the hooks in hooks.mjs: other')
   })
 
   it('stops at the given sample budget and reports it', async () => {

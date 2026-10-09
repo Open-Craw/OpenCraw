@@ -39,6 +39,31 @@ describe('runStudio', () => {
     expect(calls).toEqual([['recipes']])
   })
 
+  it('loads the --hooks module itself and hands it to the studio with its file name (issue #150)', async () => {
+    const { terminal: term } = terminal()
+    const hooks = { double: (input: unknown) => Number(input) * 2 }
+    const received: unknown[] = []
+    await runStudio('recipes', term, () => Promise.resolve({ main: async (_argv, options) => { received.push(options?.plugins) } }), 'hooks.mjs', () => Promise.resolve({ hooks, accessPlugins: [], captchaSolvers: [] }))
+
+    expect(received).toEqual([{ source: 'hooks.mjs', hooks, accessPlugins: [], captchaSolvers: [] }])
+  })
+
+  it('fails before starting the studio when the hooks module cannot be loaded', async () => {
+    const { terminal: term } = terminal()
+    let started = false
+
+    await expect(runStudio('recipes', term, () => Promise.resolve({ main: async () => { started = true } }), 'missing.mjs', () => Promise.reject(new Error('missing.mjs: cannot load hooks')))).rejects.toThrow('cannot load hooks')
+    expect(started).toBe(false)
+  })
+
+  it('passes no plugins when --hooks is not given', async () => {
+    const { terminal: term } = terminal()
+    const received: unknown[] = []
+    await runStudio('recipes', term, () => Promise.resolve({ main: async (_argv, options) => { received.push(options?.plugins) } }))
+
+    expect(received).toEqual([undefined])
+  })
+
   it('passes no argv when no folder is given', async () => {
     const { terminal: term } = terminal()
     const calls: (readonly string[])[] = []

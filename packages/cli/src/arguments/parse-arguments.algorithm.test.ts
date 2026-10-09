@@ -41,8 +41,11 @@ describe('parseArguments', () => {
     expect(parseArguments(['run', 'r/', '--diff', 'last.jsonl', '--changes', 'c.jsonl'])).toMatchObject({ diff: 'last.jsonl', changes: 'c.jsonl' })
     expect(parseArguments(['diff', 'a.jsonl', 'b.jsonl', '--key', 'model, trim', '--ignore', 'scrapedAt'])).toEqual({ name: 'diff', previous: 'a.jsonl', current: 'b.jsonl', key: ['model', 'trim'], ignore: ['scrapedAt'], changes: undefined })
     expect(parseArguments(['run', 'r/', '--profiles', 'here'], { OPENCRAW_PROFILES: '/p' })).toMatchObject({ profiles: 'here' })
-    expect(parseArguments(['studio'])).toEqual({ name: 'studio', folder: undefined })
-    expect(parseArguments(['studio', 'recipes/'])).toEqual({ name: 'studio', folder: 'recipes/' })
+    expect(parseArguments(['studio'])).toEqual({ name: 'studio', folder: undefined, plugins: undefined })
+    expect(parseArguments(['studio', 'recipes/'])).toEqual({ name: 'studio', folder: 'recipes/', plugins: undefined })
+    expect(parseArguments(['studio', 'recipes/', '--hooks', 'hooks.mjs'])).toEqual({ name: 'studio', folder: 'recipes/', plugins: 'hooks.mjs' })
+    expect(parseArguments(['studio', '--plugins', 'p.mjs'])).toMatchObject({ plugins: 'p.mjs' })
+    expect(parseArguments(['studio'], { OPENCRAW_HOOKS: 'env.mjs' })).toMatchObject({ plugins: 'env.mjs' })
   })
 
   it('rejects what makes no sense', () => {

@@ -1,5 +1,5 @@
 import { BrowserClient, HttpClient, sessionStateOf } from '@opencraw/core'
-import type { BodyKind, BrowserSessionConfig, HttpBody, InputRecipe } from '@opencraw/core'
+import type { BodyKind, BrowserSessionConfig, HookMap, HttpBody, InputRecipe } from '@opencraw/core'
 import { ensureBrowserLaunch } from '../browser-provisioning'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
 import { rewriteDocument } from './rewrite-document.mapper'
@@ -58,25 +58,27 @@ export interface SnapshotResult {
  * @param input - The input recipe; only `mode` and the first `start` point are used.
  * @param stepPath - The step to snapshot after, e.g. `"start"` or `"steps.2"` (`scope-outline`'s path format).
  * @param browser - Browser launch settings for web mode.
+ * @param hooks - The hooks a login bootstrap may call (the ones Studio was started with, issue #150).
  * @returns The rewritten snapshot.
  * @throws Error when the recipe has no start point, or `stepPath` is not `"start"`.
  */
-export async function takeSnapshot (input: InputRecipe, stepPath: string, browser?: BrowserSessionConfig): Promise<SnapshotResult> {
+export async function takeSnapshot (input: InputRecipe, stepPath: string, browser?: BrowserSessionConfig, hooks?: HookMap): Promise<SnapshotResult> {
   if (stepPath !== 'start') throw new Error(`takeSnapshot: "${stepPath}" is not supported yet — only "start" (the first start point, before any step runs) is; see this function's doc comment`)
   const point = input.start[0]
   if (point === undefined) throw new Error(`recipe "${input.id}" has no start point`)
 
-  const storageState = await loginState(input, browser)
+  const storageState = await loginState(input, browser, hooks)
 
   return input.mode === 'web' ? snapshotWeb(point.url, storageState, browser) : snapshotApi(point.url, storageState)
 }
 
 /** What the recipe's own login leaves behind, so the snapshot shows the page as the crawl sees it (issue #185); nothing when it declares no login. */
-async function loginState (input: InputRecipe, browser?: BrowserSessionConfig): ReturnType<typeof sessionStateOf> {
+async function loginState (input: InputRecipe, browser?: BrowserSessionConfig, hooks?: HookMap): ReturnType<typeof sessionStateOf> {
   if (input.session === undefined) return undefined
   let client: BrowserClient | undefined
   try {
     return await sessionStateOf(input, {
+      hooks,
       browser: async () => {
         client = await ensureBrowserLaunch(browser, () => BrowserClient.launch(browser))
 

@@ -23,6 +23,7 @@ import {
 } from '../studio-client'
 import { useRunSessionStore, useStudioUiStore } from '../studio-store'
 import { DocumentDropZone } from './document-drop-zone.component'
+import { HooksBar } from './hooks-bar.component'
 import { useImportDocumentFlow } from './import-document.hook'
 import { Toolbar } from './toolbar.component'
 
@@ -137,6 +138,7 @@ function AppShell () {
         onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId }) }}
         onStop={() => { stopRun.mutate() }}
       />
+      <HooksBar hooks={workspace.data?.hooks} />
       {workspaceError !== undefined && (
         <Box px={4} py={1} bg='red.subtle' color='red.fg' fontSize='sm'>{workspaceError}</Box>
       )}

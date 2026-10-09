@@ -1060,6 +1060,16 @@ The MCP server reads `OPENCRAW_PLUGINS` / `OPENCRAW_HOOKS` from its own environm
 recipes that call your hooks but cannot make the server load a module of its choosing. The module runs as
 your code, with your privileges, like anything you `import`: load only files you trust.
 
+**In the Studio**, start it with the same option: `opencraw studio recipes/ --hooks hooks.mjs` (or
+`OPENCRAW_HOOKS`). The command loads the file, so the Studio runs sample runs and login snapshots with your
+hooks, access plugins and captcha solvers, and shows a bar naming the file and the hooks it provides. Started
+without it, a run that calls a hook stops with a message saying so. No request or recipe can make the Studio
+load a module; only the command line that started it can.
+
+**TypeScript:** the module may be a `.ts` file on Node 22.18 or newer (Node 24 included), which strips the
+types as it loads; only syntax that is just types works (no `enum`, no parameter properties). On older Node,
+compile it first.
+
 ### 6.1 Captcha solvers
 
 A captcha solver gets past one challenge on the live page. The engine does the rest: finding challenges,

@@ -45,7 +45,7 @@ export async function main (argv: readonly string[], terminal: Terminal): Promis
     }
     case 'diff': { return diffFiles(command, terminal)
     }
-    case 'studio': { return runStudio(command.folder, terminal)
+    case 'studio': { return runStudio(command.folder, terminal, undefined, command.plugins)
     }
   }
 }
