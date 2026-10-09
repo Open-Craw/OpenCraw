@@ -9,11 +9,11 @@
  * the step types the `+` menu offers, plus the everyday ones (`select`,
  * `press`, `scroll`, `wait`, `screenshot`, `request`) the outline can still
  * render as a sentence. A field this catalog does not cover, and anything
- * on a step this catalog has no entry for at all (`evaluate`, `hook`,
+ * on a step this catalog has no entry for at all (`evaluate`,
  * `captcha`, and any future type), is still there in `step`'s raw JSON: the
  * form's "Advanced (JSON)" box, never dropped.
  */
-export type FieldKind = 'string' | 'number' | 'boolean' | 'enum' | 'json'
+export type FieldKind = 'string' | 'number' | 'boolean' | 'enum' | 'json' | 'hook'
 
 export interface FieldSpec {
   key:      string
@@ -103,6 +103,11 @@ export const STEP_FIELDS: Record<string, FieldSpec[]> = {
   if: [
     { key: 'test', label: 'test (template)', kind: 'string' },
     id,
+  ],
+  hook: [
+    { key: 'name', label: 'hook', kind: 'hook' },
+    { key: 'args', label: 'args (JSON)', kind: 'json' },
+    id, when,
   ],
   emit: [
     { key: 'output', label: 'output recipe id', kind: 'string' },

@@ -7,6 +7,7 @@ import { JsonEditor } from '../json-editor'
 import { PreviewStrip } from '../preview'
 import { RecordEditor, fieldToStepIdOf } from '../record-editor'
 import type { MappingRuleJson } from '../record-editor'
+import { HookNamesContext } from '../hook-names'
 import { StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
@@ -122,89 +123,91 @@ function AppShell () {
   const workspaceError = importFlow.error ?? messageOf(workspace.error) ?? runError
 
   return (
-    <DocumentDropZone onFile={file => { void importFlow.importFile(file) }} h='100vh' display='flex' flexDirection='column'>
-      <Toolbar
-        folder={folder}
-        onFolderChange={setFolder}
-        onOpen={() => { commitFolder(folder) }}
-        openFolder={openFolder}
-        inputs={inputs}
-        selectedRecipeId={selectedRecipeId}
-        onSelectRecipe={selectRecipe}
-        onRecipeCreated={selectRecipe}
-        onImportFile={file => { void importFlow.importFile(file) }}
-        importing={importFlow.pending}
-        running={running}
-        onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId }) }}
-        onStop={() => { stopRun.mutate() }}
-      />
-      <HooksBar hooks={workspace.data?.hooks} />
-      {workspaceError !== undefined && (
-        <Box px={4} py={1} bg='red.subtle' color='red.fg' fontSize='sm'>{workspaceError}</Box>
-      )}
-      <Splitter.Root orientation='vertical' panels={[{ id: 'workspace', minSize: 20 }, { id: 'preview', minSize: 10 }]} defaultSize={[70, 30]} flex='1' minH='0'>
-        <Splitter.Panel id='workspace' overflow='hidden'>
-          <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} h='full'>
-            <Splitter.Panel id='content' overflow='auto'>
-              <ContentPane
-                recipe={selectedRecipe}
-                onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
-                onSaveRecipe={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
-              />
-            </Splitter.Panel>
-            <Splitter.ResizeTrigger id='content:editor' />
-            <Splitter.Panel id='editor' overflow='hidden' display='flex' flexDirection='column'>
-              <HStack gap={1} px={2} pt={2} borderBottomWidth='1px' flexShrink={0}>
-                <EditorTabButton label='Steps' active={editorTab === 'steps'} onClick={() => { setEditorTab('steps') }} />
-                <EditorTabButton label='Record' active={editorTab === 'record'} onClick={() => { setEditorTab('record') }} />
-                <EditorTabButton label='JSON' active={editorTab === 'json'} onClick={() => { setEditorTab('json') }} />
-              </HStack>
-              <Box flex='1' minH='0' overflow='auto'>
-                {editorTab === 'steps' && (
-                  <StepsOutline
-                    recipe={selectedRecipe}
-                    onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
-                  />
-                )}
-                {editorTab === 'record' && (
-                  <RecordEditor
-                    inputRecipe={selectedRecipe}
-                    outputRecipe={outputRecipe}
-                    records={records}
-                    rejected={rejected}
-                    onSaveInput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
-                    onSaveOutput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
-                    onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
-                    onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
-                  />
-                )}
-                {editorTab === 'json' && (
-                  <JsonEditor
-                    recipe={selectedRecipe}
-                    onSave={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
-                  />
-                )}
-              </Box>
-            </Splitter.Panel>
-          </Splitter.Root>
-        </Splitter.Panel>
-        <Splitter.ResizeTrigger id='workspace:preview' />
-        <Splitter.Panel id='preview' overflow='hidden' borderTopWidth='1px'>
-          <PreviewStrip
-            records={records}
-            traceLines={traceLines}
-            rejected={rejected}
-            onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
-            onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
-            whyLoading={explainWhy.isPending}
-            whyView={explainWhy.data}
-            whyError={messageOf(explainWhy.error)}
-            highlightedField={highlightedField}
-            onHoverField={field => { setHoveredStepId(field === undefined ? undefined : fieldToStepId[field]) }}
-          />
-        </Splitter.Panel>
-      </Splitter.Root>
-    </DocumentDropZone>
+    <HookNamesContext.Provider value={workspace.data?.hooks?.names}>
+      <DocumentDropZone onFile={file => { void importFlow.importFile(file) }} h='100vh' display='flex' flexDirection='column'>
+        <Toolbar
+          folder={folder}
+          onFolderChange={setFolder}
+          onOpen={() => { commitFolder(folder) }}
+          openFolder={openFolder}
+          inputs={inputs}
+          selectedRecipeId={selectedRecipeId}
+          onSelectRecipe={selectRecipe}
+          onRecipeCreated={selectRecipe}
+          onImportFile={file => { void importFlow.importFile(file) }}
+          importing={importFlow.pending}
+          running={running}
+          onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId }) }}
+          onStop={() => { stopRun.mutate() }}
+        />
+        <HooksBar hooks={workspace.data?.hooks} />
+        {workspaceError !== undefined && (
+          <Box px={4} py={1} bg='red.subtle' color='red.fg' fontSize='sm'>{workspaceError}</Box>
+        )}
+        <Splitter.Root orientation='vertical' panels={[{ id: 'workspace', minSize: 20 }, { id: 'preview', minSize: 10 }]} defaultSize={[70, 30]} flex='1' minH='0'>
+          <Splitter.Panel id='workspace' overflow='hidden'>
+            <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} h='full'>
+              <Splitter.Panel id='content' overflow='auto'>
+                <ContentPane
+                  recipe={selectedRecipe}
+                  onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
+                  onSaveRecipe={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+                />
+              </Splitter.Panel>
+              <Splitter.ResizeTrigger id='content:editor' />
+              <Splitter.Panel id='editor' overflow='hidden' display='flex' flexDirection='column'>
+                <HStack gap={1} px={2} pt={2} borderBottomWidth='1px' flexShrink={0}>
+                  <EditorTabButton label='Steps' active={editorTab === 'steps'} onClick={() => { setEditorTab('steps') }} />
+                  <EditorTabButton label='Record' active={editorTab === 'record'} onClick={() => { setEditorTab('record') }} />
+                  <EditorTabButton label='JSON' active={editorTab === 'json'} onClick={() => { setEditorTab('json') }} />
+                </HStack>
+                <Box flex='1' minH='0' overflow='auto'>
+                  {editorTab === 'steps' && (
+                    <StepsOutline
+                      recipe={selectedRecipe}
+                      onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
+                    />
+                  )}
+                  {editorTab === 'record' && (
+                    <RecordEditor
+                      inputRecipe={selectedRecipe}
+                      outputRecipe={outputRecipe}
+                      records={records}
+                      rejected={rejected}
+                      onSaveInput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+                      onSaveOutput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+                      onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
+                      onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
+                    />
+                  )}
+                  {editorTab === 'json' && (
+                    <JsonEditor
+                      recipe={selectedRecipe}
+                      onSave={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+                    />
+                  )}
+                </Box>
+              </Splitter.Panel>
+            </Splitter.Root>
+          </Splitter.Panel>
+          <Splitter.ResizeTrigger id='workspace:preview' />
+          <Splitter.Panel id='preview' overflow='hidden' borderTopWidth='1px'>
+            <PreviewStrip
+              records={records}
+              traceLines={traceLines}
+              rejected={rejected}
+              onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
+              onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
+              whyLoading={explainWhy.isPending}
+              whyView={explainWhy.data}
+              whyError={messageOf(explainWhy.error)}
+              highlightedField={highlightedField}
+              onHoverField={field => { setHoveredStepId(field === undefined ? undefined : fieldToStepId[field]) }}
+            />
+          </Splitter.Panel>
+        </Splitter.Root>
+      </DocumentDropZone>
+    </HookNamesContext.Provider>
   )
 }
 

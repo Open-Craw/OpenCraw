@@ -59,8 +59,14 @@ describe('cardSentence', () => {
     expect(texts({ type: 'emit' })).toEqual(['Emit'])
   })
 
-  it('falls back to a custom card for evaluate, hook and captcha', () => {
-    for (const type of ['evaluate', 'hook', 'captcha']) {
+  it('reads a hook step as "Run hook" and its name, and prompts for one when it has none', () => {
+    expect(texts({ type: 'hook', name: 'solveThing' })).toEqual(['Run hook', 'solveThing'])
+    expect(cardSentence({ type: 'hook', name: 'solveThing' }).custom).toBe(false)
+    expect(texts({ type: 'hook', name: '' })).toEqual(['Run hook', '(choose a hook)'])
+  })
+
+  it('falls back to a custom card for evaluate and captcha', () => {
+    for (const type of ['evaluate', 'captcha']) {
       expect(cardSentence({ type }).custom).toBe(true)
     }
   })

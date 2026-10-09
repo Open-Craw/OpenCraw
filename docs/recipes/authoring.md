@@ -1066,6 +1066,11 @@ hooks, access plugins and captcha solvers, and shows a bar naming the file and t
 without it, a run that calls a hook stops with a message saying so. No request or recipe can make the Studio
 load a module; only the command line that started it can.
 
+The editor uses the loaded names. **Add step → Hook** adds a `hook` step named after the first loaded hook, and
+its form has a list of the hooks to pick from. In a field's transform chain, **+ transform → hook (your code)**
+adds a hook transform, and clicking it opens the same list. A name the recipe already has that is not loaded
+stays selectable and is marked. With no hooks loaded the name is a text field (a new hook is called `myHook`).
+
 **TypeScript:** the module may be a `.ts` file on Node 22.18 or newer (Node 24 included), which strips the
 types as it loads; only syntax that is just types works (no `enum`, no parameter properties). On older Node,
 compile it first.

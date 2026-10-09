@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
+import { HookNamesContext } from '../hook-names'
 import { StepForm } from './step-form.component'
 
 function renderWithChakra (element: React.ReactElement) {
@@ -68,9 +69,24 @@ describe('StepForm', () => {
   })
 
   it('shows "no common fields" and only the Advanced box for a step type the catalog does not cover', () => {
-    renderWithChakra(<StepForm stepType='hook' step={{ type: 'hook', name: 'solveThing' }} onChange={() => {}} onCommit={() => {}} />)
+    renderWithChakra(<StepForm stepType='evaluate' step={{ type: 'evaluate', script: '1' }} onChange={() => {}} onCommit={() => {}} />)
     expect(screen.getByText(/no common fields/i)).toBeTruthy()
     expect(screen.getByText(/Advanced \(JSON\)/)).toBeTruthy()
+  })
+
+  it('picks a name of a hook step from the loaded hooks and commits it (issue #202)', () => {
+    const onChange = jest.fn()
+    const onCommit = jest.fn()
+    renderWithChakra(
+      <HookNamesContext.Provider value={['positive', 'slug']}>
+        <StepForm stepType='hook' step={{ type: 'hook', name: '' }} onChange={onChange} onCommit={onCommit} />
+      </HookNamesContext.Provider>,
+    )
+
+    fireEvent.change(screen.getByLabelText('hook'), { target: { value: 'slug' } })
+
+    expect(onChange).toHaveBeenCalledWith({ type: 'hook', name: 'slug' })
+    expect(onCommit).toHaveBeenCalled()
   })
 
   it('the Advanced (JSON) box edits the whole step and stays independent of the catalog fields', () => {

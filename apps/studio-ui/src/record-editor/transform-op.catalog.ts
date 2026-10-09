@@ -1,4 +1,4 @@
-/** One transform op's editable options, for the Record tab's transform-chain editor (issue #92): each entry's own extra fields beyond `op`, as plain text inputs (parsed to a number where the field is numeric). `hook` is deliberately absent — out of scope for this phase: a hook block shows its name only, never an options form. */
+/** One transform op's editable options, for the Record tab's transform-chain editor (issue #92): each entry's own extra fields beyond `op`, as plain text inputs (parsed to a number where the field is numeric). `hook` is deliberately absent: the chain adds it on its own, with a name picker (issue #202) instead of an options form. */
 export interface TransformOptionField {
   name:     string
   numeric?: boolean
