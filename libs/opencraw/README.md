@@ -34,6 +34,24 @@ Reserved words: pass a step's `as` or `from` through `**{"as": "json"}`.
 `write_recipes(folder, recipes)` writes `<id>.input.json` and `<id>.output.json` for the CLI, the Studio
 and the MCP server.
 
+## A hook written in Python
+
+A recipe's hook (`{ "op": "hook", "name": "slug" }`) can be a Python script. The hooks module registers it
+with `commandHook` (`@opencraw/core`), and the script is a few lines:
+
+```python
+# hooks/slug.py
+import re
+from opencraw import serve_hook
+
+serve_hook(lambda value, args, request: re.sub(r"[^a-z0-9]+", "-", str(value).lower()).strip("-"))
+```
+
+`serve_hook(handler)` reads the request from stdin, calls `handler(input, args, request)` (`input` is `None`
+for a `hook` step; `request` carries `context` and `idempotencyKey`) and writes the answer to stdout. What the
+handler returns is the output; an exception becomes an error answer with its message, so the step fails with
+that reason. The request and answer shapes are in `packages/core/schemas/callout-*.schema.json`.
+
 Not in this package: a Python engine, generated typed models, publishing to PyPI. It is an internal
 library of the workspace: `mnci ci release` publishes what sits under `python-packages/`, and this lives
 in `libs/`.
