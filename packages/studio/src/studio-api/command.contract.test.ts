@@ -5,6 +5,7 @@ describe('studioCommandSchema', () => {
     { type: 'open-workspace', folder: '/tmp/recipes' },
     { type: 'run-sample', recipeId: 'books', budget: { maxRecords: 5 } },
     { type: 'run-sample', recipeId: 'books' },
+    { type: 'run-sample', recipeId: 'books', stubs: { price: { amount: 9 }, slug: 'a-b' } },
     { type: 'stop-run' },
     { type: 'save-recipe', path: '/tmp/recipes/books.input.json', recipe: { kind: 'input' } },
     { type: 'fetch-start-page', recipeId: 'books' },

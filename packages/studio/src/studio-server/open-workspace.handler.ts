@@ -1,5 +1,6 @@
 import { openWorkspace } from '../recipe-workspace'
 import type { OpenWorkspaceCommand, WorkspaceView } from '../studio-api'
+import { remoteCallouts } from '../trusted-plugins'
 import { broadcast } from './workspace.store'
 import type { StudioState } from './workspace.store'
 
@@ -25,5 +26,8 @@ export async function handleOpenWorkspace (state: StudioState, command: OpenWork
   state.folder = command.folder
   if (switched) broadcast(state, { type: 'workspace-changed' })
 
-  return state.plugins === undefined ? view : { ...view, hooks: { source: state.plugins.source, names: Object.keys(state.plugins.hooks).sort((a, b) => a.localeCompare(b)) } }
+  if (state.plugins === undefined) return view
+  const remote = remoteCallouts(state.plugins)
+
+  return { ...view, hooks: { source: state.plugins.source, names: Object.keys(state.plugins.hooks).sort((a, b) => a.localeCompare(b)), ...(remote.length > 0 && { remote }) } }
 }

@@ -9,7 +9,7 @@ export type { InputRecipe, OutputRecipe, FieldSpec, Step, StepType, MappingRule,
 export type { Hook, HookMap, HookContext } from './hooks'
 export { commandHook, httpHook } from './callout'
 export { CalloutError, calloutJsonSchemas, calloutRequestSchema, calloutResponseSchema, calloutResolutionSchema } from './callout-protocol'
-export { CalloutParkedError, withCalloutWaiter } from './callout-transport'
+export { CalloutParkedError, withCalloutWaiter, calloutLabel } from './callout-transport'
 export type { CommandHookOptions, HttpHookOptions } from './callout'
 export type { CalloutRequest, CalloutResponse, CalloutResolution, CalloutPending, CalloutCallback, CalloutKind } from './callout-protocol'
 export type { CalloutPollingOptions, CalloutWaiter, ParkedCallout } from './callout-transport'

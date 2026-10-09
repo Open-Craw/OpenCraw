@@ -19,6 +19,8 @@ export const runSampleCommandSchema = z.object({
   type:     z.literal('run-sample'),
   recipeId: z.string().min(1),
   budget:   sampleBudgetSchema.optional(),
+  /** Values to answer with instead of calling a hook, by hook name, for this run only: how a sample skips a slow or paid callout. */
+  stubs:    z.record(z.string(), z.unknown()).optional(),
 })
 
 /** Closes the crawler of the run in progress, if any; a no-op otherwise. */

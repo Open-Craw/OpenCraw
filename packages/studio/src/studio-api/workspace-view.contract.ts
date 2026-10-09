@@ -20,10 +20,15 @@ export const recipeListingSchema = z.object({
   outline: outlineViewSchema.optional(),
 })
 
+/** A hook, captcha solver or access plugin that calls outside the process. */
+const remoteCalloutSchema = z.object({ kind: z.enum(['hook', 'captcha', 'access']), name: z.string(), label: z.string() })
+
 /** The hooks Studio was started with (`opencraw studio --hooks <file>`, issue #150): where they came from and what they are called, for the warning bar and the hook-name suggestions. */
 export const loadedHooksSchema = z.object({
   source: z.string(),
   names:  z.array(z.string()),
+  /** Which hooks, captcha solvers and access plugins call outside the process (slow, and they may cost): the UI says so, and lets a hook be stubbed for a sample run. */
+  remote: z.array(remoteCalloutSchema).optional(),
 })
 
 /** What `open-workspace` answers with: every recipe file directly inside the folder, and the hooks Studio runs them with, if any. */

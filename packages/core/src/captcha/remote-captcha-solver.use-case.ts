@@ -1,5 +1,5 @@
 import { calloutRequest, CalloutError } from '../callout-protocol'
-import { commandTransport, httpTransport, settleCallout } from '../callout-transport'
+import { commandTransport, httpTransport, markCallout, settleCallout } from '../callout-transport'
 import type { CalloutPollingOptions, CalloutTransport, CommandTransportOptions, HttpTransportOptions } from '../callout-transport'
 import { applyCaptchaAnswer } from './captcha-answer.use-case'
 import type { CaptchaSubmit } from './captcha-answer.use-case'
@@ -31,7 +31,7 @@ const DEFAULT_TIMEOUT_MS = 120_000
  * @returns A solver for `captchaSolvers`.
  */
 export function captchaSolverVia (name: string, transport: CalloutTransport, options: RemoteCaptchaSolverOptions = {}): CaptchaSolver {
-  return {
+  const solver: CaptchaSolver = {
     name,
     timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
     solve:     async (challenge, context) => {
@@ -56,6 +56,8 @@ export function captchaSolverVia (name: string, transport: CalloutTransport, opt
       return await applyCaptchaAnswer(answer.data, challenge, context.page, options.submit ?? 'callback-or-form')
     },
   }
+
+  return markCallout(solver, transport.label)
 }
 
 /**
