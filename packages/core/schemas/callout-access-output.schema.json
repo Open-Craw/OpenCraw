@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "proxy": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string",
+          "minLength": 1
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "bypass": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "server"
+      ],
+      "additionalProperties": false
+    },
+    "session": {
+      "type": "string"
+    },
+    "headers": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "ignoreHTTPSErrors": {
+      "type": "boolean"
+    },
+    "blockResources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "image",
+          "media",
+          "font",
+          "stylesheet",
+          "script",
+          "texttrack",
+          "xhr",
+          "fetch",
+          "eventsource",
+          "websocket",
+          "manifest",
+          "other"
+        ]
+      }
+    },
+    "cdp": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "headers": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "additionalProperties": false
+    },
+    "release": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "$id": "https://opencraw/schemas/callout-access-output.schema.json",
+  "title": "OpenCraw access callout output"
+}

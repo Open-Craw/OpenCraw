@@ -304,6 +304,40 @@ const browserbase: AccessPlugin = {
 `release()` runs when the recipe run ends, including after a rotation, so a remote session is never left
 running.
 
+**In any language, or behind an API.** A plugin does not have to be JavaScript: `commandAccessPlugin` runs
+a program and `httpAccessPlugin` calls a service, and the profile is the same `{ "kind": "plugin", "name": … }`.
+
+```js
+// plugins.mjs
+import { commandAccessPlugin, httpAccessPlugin } from '@opencraw/core'
+
+export const accessPlugins = [
+  httpAccessPlugin('leaser', 'https://proxies.example.com/lease', { tokenEnv: 'LEASER_TOKEN', allowedHosts: ['proxies.example.com'] }),
+  commandAccessPlugin('local-list', ['python3', 'plugins/lease_from_list.py']),
+]
+```
+
+The handler gets a callout request with `kind: "access"` (`schemas/callout-access-input.schema.json`):
+
+```json
+{ "kind": "access", "name": "leaser", "idempotencyKey": "…", "args": {}, "context": { "recipeId": "shop", "scope": {} },
+  "input": { "phase": "lease", "nonce": "5b1c…", "request": { "profile": "residential", "country": "it", "attempt": 1, "options": { "plan": "gold" } } } }
+```
+
+and answers with the lease (`schemas/callout-access-output.schema.json`), any of `proxy`, `cdp`, `session`,
+`headers`, `ignoreHTTPSErrors` and `blockResources`:
+
+```json
+{ "status": "ok", "output": { "proxy": { "server": "http://gate.example:9000", "username": "u", "password": "p" }, "session": "s-81", "release": true } }
+```
+
+- **`release: true`** asks to be told when the lease ends (`phase: "release"`, with the `profile` and the
+  `session`); the call is best effort, so a service should also expire what it is not told about.
+- **Every lease is a new action.** The `nonce` is new per lease, so two leases for the same recipe, profile and
+  attempt are two leases. A `pending` answer is asked again with the same request, so the same nonce.
+- **A lease is wanted now**: `pending` is polled up to `maxWaitMs` (120 s), never parked on a durable host.
+- `{ "status": "error", "error": "no capacity" }` fails the recipe's run with the reason.
+
 **From the cli and the MCP server**, plugins come from a plugins module: the same file that gives the recipes'
 hooks, with named exports.
 
