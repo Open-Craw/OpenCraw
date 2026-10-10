@@ -68,3 +68,36 @@ describeBuilt('studio desktop: launch', () => {
     expect(remembered).toEqual([folder])
   })
 })
+
+/** The window comes back where the person left it. */
+describeBuilt('studio desktop: window place', () => {
+  let folder: string
+  let userData: string
+
+  const launch = async (): Promise<ElectronApplication> =>
+    await electron.launch({ args: [APP_DIR, ...SANDBOX_FLAGS, `--user-data-dir=${userData}`, folder] })
+
+  beforeAll(() => {
+    folder = mkdtempSync(join(tmpdir(), 'opencraw-desktop-recipes-'))
+    userData = mkdtempSync(join(tmpdir(), 'opencraw-desktop-user-'))
+    cpSync(RECIPES, folder, { recursive: true })
+  })
+  afterAll(() => {
+    rmSync(folder, { recursive: true, force: true })
+    rmSync(userData, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })
+  })
+
+  it('reopens at the size and place it was closed at', async () => {
+    const first = await launch()
+    await first.firstWindow()
+    await first.evaluate(({ BrowserWindow }) => { BrowserWindow.getAllWindows()[0]?.setBounds({ x: 60, y: 70, width: 900, height: 640 }) })
+    await first.close()
+
+    const second = await launch()
+    await second.firstWindow()
+    const bounds = await second.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0]?.getBounds())
+    await second.close()
+
+    expect(bounds).toEqual({ x: 60, y: 70, width: 900, height: 640 })
+  })
+})
