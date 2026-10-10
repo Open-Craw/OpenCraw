@@ -60,3 +60,18 @@ describe('App shell', () => {
     expect(screen.getByTestId('document-drop-zone')).toBeTruthy()
   })
 })
+
+describe('App shell inside the desktop app', () => {
+  afterEach(() => { Reflect.deleteProperty(globalThis, 'opencrawDesktop') })
+
+  it('offers the native folder dialog instead of the folder box', async () => {
+    const chooseFolder = jest.fn(async () => {})
+    Object.defineProperty(globalThis, 'opencrawDesktop', { value: { chooseFolder }, configurable: true })
+    render(<App />)
+
+    expect(screen.queryByPlaceholderText('recipe folder')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Open' })).toBeNull()
+    screen.getByRole('button', { name: 'Open folder…' }).click()
+    expect(chooseFolder).toHaveBeenCalledTimes(1)
+  })
+})

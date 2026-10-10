@@ -111,6 +111,25 @@ describe('launchDesktop', () => {
     expect(store.folders).toEqual(['/a'])
   })
 
+  it('opens the folder the page asks to choose (the page has no folder box in the desktop app)', async () => {
+    const { shell, shown } = fakeShell('/picked')
+    const { recent, store } = fakeRecent([])
+    const session = await launchDesktop({ shell, startStudio: startStudio().start, recent, folderExists: async () => true })
+    await session.chooseFolder()
+
+    expect(folderOf(shown.at(-1))).toBe('/picked')
+    expect(store.folders).toEqual(['/picked'])
+  })
+
+  it('does nothing when the folder dialog is cancelled', async () => {
+    const { shell, shown } = fakeShell(undefined)
+    const session = await launchDesktop({ shell, startStudio: startStudio().start, recent: fakeRecent([]).recent, folderExists: async () => true })
+    const before = shown.length
+    await session.chooseFolder()
+
+    expect(shown).toHaveLength(before)
+  })
+
   it('stops the server when asked', async () => {
     const studio = startStudio()
     const session = await launchDesktop({ shell: fakeShell().shell, startStudio: studio.start, recent: fakeRecent([]).recent, folderExists: async () => true })

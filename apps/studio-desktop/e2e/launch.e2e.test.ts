@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { _electron as electron } from 'playwright'
@@ -39,6 +39,13 @@ describeBuilt('studio desktop: launch', () => {
     expect(url.searchParams.get('folder')).toBe(folder)
     await page.getByText('Run sample', { exact: true }).first().waitFor()
     await page.locator('option', { hasText: 'books' }).waitFor({ state: 'attached' })
+  })
+
+  it('offers the native folder dialog instead of a folder box', async () => {
+    await page.getByRole('button', { name: 'Open folder…' }).waitFor()
+
+    expect(await page.getByPlaceholder('recipe folder').count()).toBe(0)
+    expect(await page.evaluate('typeof window.opencrawDesktop.chooseFolder')).toBe('function')
   })
 
   it('runs the page with no Node access', async () => {
@@ -99,5 +106,35 @@ describeBuilt('studio desktop: window place', () => {
     await second.close()
 
     expect(bounds).toEqual({ x: 60, y: 70, width: 900, height: 640 })
+  })
+})
+
+/** `--hooks <file>` loads the file on the launch's own authority, as `opencraw studio --hooks` does. */
+describeBuilt('studio desktop: hooks file', () => {
+  let folder: string
+  let userData: string
+
+  beforeAll(() => {
+    folder = mkdtempSync(join(tmpdir(), 'opencraw-desktop-recipes-'))
+    userData = mkdtempSync(join(tmpdir(), 'opencraw-desktop-user-'))
+    cpSync(RECIPES, folder, { recursive: true })
+  })
+  afterAll(() => {
+    rmSync(folder, { recursive: true, force: true })
+    rmSync(userData, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })
+  })
+
+  it('runs Studio with the hooks of the file, and still opens the folder after it', async () => {
+    const hooks = join(folder, 'my-hooks.mjs')
+    writeFileSync(hooks, 'export const hooks = { shout: value => String(value).toUpperCase() }\n')
+    const app = await electron.launch({ args: [APP_DIR, ...SANDBOX_FLAGS, `--user-data-dir=${userData}`, '--hooks', hooks, folder] })
+    try {
+      const page = await app.firstWindow()
+      await page.getByText(/Hooks loaded from .*my-hooks.mjs.*shout/).waitFor()
+
+      expect(new URL(page.url()).searchParams.get('folder')).toBe(folder)
+    } finally {
+      await app.close()
+    }
   })
 })

@@ -1,3 +1,5 @@
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { BrowserWindow, dialog, Menu, screen, session, shell } from 'electron'
 import type { MenuItemConstructorOptions } from 'electron'
 import { visibleBounds } from '../window-bounds'
@@ -26,6 +28,9 @@ export interface ElectronShell {
   reportPlace:       () => void
   reportProblem:     (message: string) => void
 }
+
+/** The preload script the build copies next to `main.js`: it exposes the one folder-dialog call to the page. */
+const PRELOAD = join(dirname(fileURLToPath(import.meta.url)), 'preload.cjs')
 
 function toElectron (entry: MenuEntry): MenuItemConstructorOptions {
   return {
@@ -101,7 +106,7 @@ export function createElectronShell (options: ElectronShellOptions): ElectronShe
         y:               restored?.y,
         title:           'OpenCraw Studio',
         backgroundColor: '#ffffff',
-        webPreferences:  { contextIsolation: true, nodeIntegration: false, sandbox: true },
+        webPreferences:  { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: PRELOAD },
       })
       if (restored?.maximized === true) created.maximize()
       guard(created, new URL(url).origin)

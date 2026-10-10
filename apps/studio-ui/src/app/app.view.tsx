@@ -25,6 +25,7 @@ import {
 } from '../studio-client'
 import { useRunSessionStore, useStudioUiStore } from '../studio-store'
 import { DocumentDropZone } from './document-drop-zone.component'
+import { desktopBridge } from './desktop-bridge.client'
 import { HooksBar } from './hooks-bar.component'
 import { useImportDocumentFlow } from './import-document.hook'
 import { Toolbar } from './toolbar.component'
@@ -120,6 +121,9 @@ function AppShell () {
   }, [selectedRecipe])
   const highlightedField = Object.keys(fieldToStepId).find(field => fieldToStepId[field] === hoveredStepId && hoveredStepId !== undefined)
 
+  const bridge = useMemo(() => desktopBridge(), [])
+  const chooseFolder = bridge === undefined ? undefined : () => { void bridge.chooseFolder() }
+
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
   const workspaceError = importFlow.error ?? messageOf(workspace.error) ?? runError
@@ -131,6 +135,7 @@ function AppShell () {
           folder={folder}
           onFolderChange={setFolder}
           onOpen={() => { commitFolder(folder) }}
+          onChooseFolder={chooseFolder}
           openFolder={openFolder}
           inputs={inputs}
           selectedRecipeId={selectedRecipeId}
