@@ -242,6 +242,34 @@
         "script": "opencraw:qa",
         "problemMatcher": [],
         "group": "qa"
+      },
+      {
+        "label": "studio-desktop: qa",
+        "type": "npm",
+        "script": "studio-desktop:qa",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "studio-desktop: e2e",
+        "type": "npm",
+        "script": "studio-desktop:e2e",
+        "problemMatcher": [],
+        "group": "qa"
+      },
+      {
+        "label": "studio-desktop: build",
+        "type": "npm",
+        "script": "studio-desktop:build",
+        "problemMatcher": [],
+        "group": "build"
+      },
+      {
+        "label": "studio-desktop: start",
+        "type": "npm",
+        "script": "studio-desktop:start",
+        "problemMatcher": [],
+        "isBackground": true
       }
     ]
   },
@@ -499,6 +527,16 @@
         "presentation": {
           "group": "examples",
           "order": 19
+        }
+      },
+      {
+        "type": "node-terminal",
+        "request": "launch",
+        "name": "mnci: studio-desktop start",
+        "command": "npm run studio-desktop:start",
+        "cwd": "${workspaceFolder:opencraw}",
+        "presentation": {
+          "group": "mnci projects"
         }
       }
     ]

@@ -23,6 +23,8 @@ jobs:
       - run: npm run core:e2e
       # The recording flows open a headed window: a virtual display stands in for a screen.
       - run: xvfb-run -a npm run studio:e2e
+      # The desktop app: a real Electron window against the built UI.
+      - run: xvfb-run -a npm run studio-desktop:e2e
       - run: npm run office-reader:e2e
       - run: npm run captcha-tesseract:e2e
       # Every example's recipes load and bind; the examples that run offline run.

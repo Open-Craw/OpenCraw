@@ -39,7 +39,7 @@ export function acceptWebSocket (request: IncomingMessage, socket: Duplex): WsCo
 
   return {
     send:      text => { if (!socket.destroyed) socket.write(frame(text)) },
-    close:     () => { socket.end() },
+    close:     () => { socket.end(() => { socket.destroy() }) },
     onMessage: handler => { messageHandlers.push(handler) },
     onClose:   handler => { closeHandlers.push(handler) },
   }

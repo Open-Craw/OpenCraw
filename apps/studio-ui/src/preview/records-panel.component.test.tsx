@@ -66,7 +66,10 @@ describe('RecordsPanel', () => {
     const realCreateElement = document.createElement.bind(document)
     const anchor = realCreateElement('a')
     const clickSpy = jest.spyOn(anchor, 'click').mockImplementation(() => {})
-    jest.spyOn(document, 'createElement').mockImplementation((tagName: string) => (tagName === 'a' ? anchor : realCreateElement(tagName)))
+    // Electron's types (pulled in through Playwright's) add a `webview` overload to `createElement`, and `spyOn` takes the last one:
+    // spy through the one signature this test uses.
+    const documentElements: { createElement: (tagName: string) => HTMLElement } = document
+    jest.spyOn(documentElements, 'createElement').mockImplementation(tagName => (tagName === 'a' ? anchor : realCreateElement(tagName)))
 
     let downloadedBlob: Blob | undefined
     const createObjectURL = jest.fn((blob: Blob) => {

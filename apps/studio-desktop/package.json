@@ -1,0 +1,88 @@
+{
+  "name": "@opencraw/studio-desktop",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "apps/studio-desktop/dist",
+          "format": [
+            "esm"
+          ],
+          "bundle": true,
+          "main": "apps/studio-desktop/src/main.ts",
+          "tsConfig": "apps/studio-desktop/tsconfig.app.json",
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          },
+          "thirdParty": false,
+          "external": [
+            "@opencraw/*"
+          ]
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      },
+      "start": {
+        "executor": "nx:run-commands",
+        "continuous": true,
+        "dependsOn": [
+          "build",
+          "@opencraw/studio:build",
+          "@opencraw/studio-ui:build"
+        ],
+        "options": {
+          "command": "electron .",
+          "cwd": "apps/studio-desktop"
+        }
+      },
+      "e2e": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build"
+        ],
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "options": {
+          "command": "vite build -c ../studio-ui/vite.config.mts && tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts --forceExit",
+          "cwd": "apps/studio-desktop"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@opencraw/studio": "^0.0.1"
+  },
+  "type": "module",
+  "main": "dist/main.js",
+  "description": "OpenCraw Studio as a desktop app: an Electron window around the local Studio server.",
+  "devDependencies": {
+    "electron": "^44.7.0"
+  }
+}
