@@ -18,10 +18,12 @@ export interface DesktopLaunchOptions {
 /** The running desktop app. */
 export interface DesktopSession {
   /** Opens a folder in the window (a second launch with a folder, the menu, a drop). */
-  open:  (folder: string) => Promise<void>
-  focus: () => void
+  open:         (folder: string) => Promise<void>
+  /** Shows the native folder dialog and opens what is picked (the menu's Open Folder, and the page's own button). */
+  chooseFolder: () => Promise<void>
+  focus:        () => void
   /** Stops the server. The window is the caller's to close. */
-  stop:  () => Promise<void>
+  stop:         () => Promise<void>
 }
 
 /**
@@ -68,7 +70,7 @@ export async function launchDesktop (options: DesktopLaunchOptions): Promise<Des
   if (startFolder === undefined) shell.showWindow(windowUrl(studio.url, undefined))
   else await open(startFolder)
 
-  return { open, focus: () => { shell.focusWindow() }, stop: studio.close }
+  return { open, chooseFolder: chooseAndOpen, focus: () => { shell.focusWindow() }, stop: studio.close }
 }
 
 async function firstExisting (folders: readonly string[], exists: (folder: string) => Promise<boolean>): Promise<string | undefined> {

@@ -26,6 +26,13 @@
             }
           },
           "thirdParty": false,
+          "assets": [
+            {
+              "input": "apps/studio-desktop/src/desktop-bridge",
+              "glob": "preload.cjs",
+              "output": "."
+            }
+          ],
           "external": [
             "@opencraw/*"
           ]
@@ -52,6 +59,7 @@
         "continuous": true,
         "dependsOn": [
           "build",
+          "@opencraw/cli:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"
         ],
@@ -77,6 +85,7 @@
     }
   },
   "dependencies": {
+    "@opencraw/cli": "^0.0.1",
     "@opencraw/studio": "^0.0.1"
   },
   "type": "module",

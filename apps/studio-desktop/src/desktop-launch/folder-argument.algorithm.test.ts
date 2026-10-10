@@ -17,3 +17,14 @@ describe('folderArgument', () => {
     expect(folderArgument(['electron', 'apps/studio-desktop'], false)).toBeUndefined()
   })
 })
+
+describe('folderArgument with a hooks file', () => {
+  it('does not take the hooks file for the folder', () => {
+    expect(folderArgument(['Studio.exe', '--hooks', 'hooks.mjs', 'recipes'], true)).toBe('recipes')
+    expect(folderArgument(['Studio.exe', '--plugins=plugins.mjs', 'recipes'], true)).toBe('recipes')
+  })
+
+  it('is undefined when the hooks file is the only argument', () => {
+    expect(folderArgument(['Studio.exe', '--hooks', 'hooks.mjs'], true)).toBeUndefined()
+  })
+})
