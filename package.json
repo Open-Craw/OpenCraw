@@ -49,7 +49,11 @@
     "probe:qa": "nx run probe:lint && nx run probe:test",
     "probe:build": "nx run probe:build",
     "opencraw:qa": "nx run opencraw:lint && nx run opencraw:test",
-    "opencraw:build": "nx run opencraw:build"
+    "opencraw:build": "nx run opencraw:build",
+    "studio-desktop:qa": "nx run studio-desktop:lint && nx run studio-desktop:test",
+    "studio-desktop:build": "nx run studio-desktop:build",
+    "studio-desktop:start": "nx run studio-desktop:start",
+    "studio-desktop:e2e": "nx run studio-desktop:e2e"
   },
   "private": true,
   "devDependencies": {

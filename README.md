@@ -27,6 +27,7 @@ Several input recipes can feed one output; a run processes them one after anothe
 | App | What it is |
 |---|---|
 | [`apps/azure-host`](./apps/azure-host) | A complete Azure Functions app on `@opencraw/azure-durable`, ready to build, run in Docker and deploy with one script: `/crawl`, `/jobs`, `/mcp`, and two recipe sets that work the moment it is up. |
+| [`apps/studio-desktop`](./apps/studio-desktop) | Studio as a desktop app: an Electron window around the same server and UI, with Open Folder and recent folders. Not packaged yet. |
 
 ## What it reads
 

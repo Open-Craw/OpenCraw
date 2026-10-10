@@ -1,0 +1,4 @@
+export type { DesktopShell, RunningStudio } from './desktop-shell.contract'
+export { folderArgument } from './folder-argument.algorithm'
+export { launchDesktop } from './launch-desktop.use-case'
+export type { DesktopLaunchOptions, DesktopSession } from './launch-desktop.use-case'
