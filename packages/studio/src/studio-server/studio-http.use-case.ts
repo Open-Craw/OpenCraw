@@ -107,6 +107,8 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
 async function stop (server: Server, state: StudioState): Promise<void> {
   await state.activeRun?.stop()
   await settleRecording(state)
+  // An upgraded socket is no longer the HTTP server's: without this, server.close waits for the page to hang up.
+  for (const connection of state.sockets) connection.close()
   server.closeAllConnections()
   await new Promise<void>((resolve, reject) => { server.close(error => (error === undefined ? resolve() : reject(error))) })
 }

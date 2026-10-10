@@ -98,3 +98,16 @@ describe('startStudioServer', () => {
     expect(JSON.parse(body.html)).toEqual({ items: [{ name: 'a1' }, { name: 'a2' }] })
   })
 })
+
+describe('stopping the server', () => {
+  it('finishes while a page still holds the event socket open', async () => {
+    const server = await startStudioServer({ uiRoot: emptyUiRoot() })
+    const socket = new WebSocket(`ws://127.0.0.1:${new URL(server.url).port}/ws?token=${server.token}`)
+    await new Promise<void>((resolve, reject) => {
+      socket.addEventListener('open', () => { resolve() })
+      socket.addEventListener('error', () => { reject(new Error('the event socket did not open')) })
+    })
+
+    await expect(server.close()).resolves.toBeUndefined()
+  })
+})
