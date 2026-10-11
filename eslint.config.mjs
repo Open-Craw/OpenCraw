@@ -42,6 +42,7 @@ export default [
       // The desktop app's packaging output: a staged copy of dependencies and the unpacked app.
       'apps/studio-desktop/dist-app/**',
       'apps/studio-desktop/release/**',
+      'apps/vscode-extension/dist-vsix/**',
     ],
   },
 ]
