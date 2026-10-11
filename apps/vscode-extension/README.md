@@ -46,6 +46,12 @@ npm run vscode:build        # builds dist/extension.cjs and dist/studio-host.pro
 npm run vscode:qa           # lint + unit tests
 ```
 
+`npm run vscode:package` builds `apps/vscode-extension/opencraw-<version>-<platform>-<arch>.vsix`, for the
+platform it runs on (the engine's PDF reader is a native module): it stages the extension with
+its production dependencies from tarballs of the workspace packages, starts the staged Studio process once to
+prove the dependencies are complete, then runs a pinned `vsce`. Install it with
+`code --install-extension <the .vsix>`.
+
 Try it in an Extension Development Host, after `npm run studio:build` and `npm run vscode:build` so
 `@opencraw/studio`, the Studio UI and the extension exist:
 
@@ -55,8 +61,8 @@ code --extensionDevelopmentPath apps/vscode-extension <a folder of recipes>
 
 ## Not done yet
 
-- Packaging a `.vsix` and publishing to the Marketplace and Open VSX: needs a publisher account and a token
-  owned by the maintainer; nothing is published from CI.
+- Publishing to the Marketplace and Open VSX: needs a publisher account and a token owned by the maintainer;
+  nothing is published from CI, and the project carries no release tag until that is decided.
 - Hooks (`opencraw studio --hooks`) as a setting.
 - Reusing an open Studio tab instead of a new one for each "Open on OpenCraw".
 - An end-to-end test in a real editor (`@vscode/test-electron`).

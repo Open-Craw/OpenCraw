@@ -109,6 +109,19 @@
         "options": {
           "passWithNoTests": true
         }
+      },
+      "package": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build",
+          "@opencraw/studio:build",
+          "@opencraw/studio-ui:build"
+        ],
+        "cache": false,
+        "options": {
+          "command": "node packaging/package-vsix.mjs",
+          "cwd": "apps/vscode-extension"
+        }
       }
     }
   },

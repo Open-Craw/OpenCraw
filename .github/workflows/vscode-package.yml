@@ -1,0 +1,36 @@
+# Builds the VS Code extension's .vsix and keeps it as a run artifact. The staged Studio process is started once
+# inside the packaging script, which proves the extension carries everything it needs. Nothing is published:
+# the Marketplace and Open VSX need a publisher account and token owned by the maintainer (issue #228).
+name: vscode-package
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - apps/vscode-extension/**
+      - apps/studio-ui/**
+      - packages/studio/**
+      - .github/workflows/vscode-package.yml
+
+jobs:
+  package:
+    # One package per platform: the engine's native modules are installed for the runner's own platform.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Package the extension
+        run: npm run vscode:package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencraw-vscode-${{ runner.os }}
+          path: apps/vscode-extension/*.vsix
+          if-no-files-found: error
