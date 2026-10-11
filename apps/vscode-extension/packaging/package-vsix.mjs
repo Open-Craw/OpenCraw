@@ -61,7 +61,7 @@ npm(['install', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', '--
 
 // The staged Studio process starts, answers a link and ends with its channel: its dependencies are all there.
 await new Promise((resolve, reject) => {
-  const child = fork(join(stage, 'dist', 'studio-host.process.mjs'), [stage], { stdio: ['ignore', 'inherit', 'inherit', 'ipc'] })
+  const child = fork(join(stage, 'dist', 'studio-host.process.mjs'), [JSON.stringify({ workspace: stage })], { stdio: ['ignore', 'inherit', 'inherit', 'ipc'] })
   const timer = setTimeout(() => {
     child.kill()
     reject(new Error('the staged Studio process did not start within 60 s'))
