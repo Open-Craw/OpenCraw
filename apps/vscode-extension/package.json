@@ -1,0 +1,121 @@
+{
+  "name": "@opencraw/vscode",
+  "version": "0.0.1",
+  "private": true,
+  "description": "OpenCraw in the editor: starts the Studio server and opens a folder, recipe or document in the browser.",
+  "type": "module",
+  "main": "dist/extension.cjs",
+  "displayName": "OpenCraw",
+  "publisher": "opencraw",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "opencraw.openStudio",
+        "title": "Open Studio",
+        "category": "OpenCraw"
+      },
+      {
+        "command": "opencraw.openOn",
+        "title": "Open on OpenCraw",
+        "category": "OpenCraw"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "opencraw.openOn",
+          "when": "resourceScheme == file",
+          "group": "navigation@99"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "opencraw.openOn",
+          "when": "resourceScheme == file",
+          "group": "navigation@99"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "opencraw.openOn",
+          "when": "resourceScheme == file",
+          "group": "navigation@99"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "opencraw.openOn",
+          "when": "resourceScheme == file"
+        }
+      ]
+    }
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "apps/vscode-extension/dist",
+          "format": [
+            "cjs"
+          ],
+          "bundle": true,
+          "main": "apps/vscode-extension/src/extension.ts",
+          "tsConfig": "apps/vscode-extension/tsconfig.app.json",
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".cjs"
+            }
+          },
+          "thirdParty": false,
+          "assets": [
+            {
+              "input": "apps/vscode-extension/src/studio-host",
+              "glob": "studio-host.process.mjs",
+              "output": "."
+            }
+          ],
+          "external": [
+            "vscode",
+            "@opencraw/*"
+          ]
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".cjs"
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@opencraw/studio": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "1.90.0"
+  }
+}

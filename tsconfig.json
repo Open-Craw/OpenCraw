@@ -35,6 +35,9 @@
     },
     {
       "path": "./apps/studio-desktop"
+    },
+    {
+      "path": "./apps/vscode-extension"
     }
   ],
   "compilerOptions": {}

@@ -55,7 +55,9 @@
     "studio-desktop:start": "nx run studio-desktop:start",
     "studio-desktop:e2e": "nx run studio-desktop:e2e",
     "studio-desktop:package": "nx run studio-desktop:package",
-    "studio-desktop:package:dir": "nx run studio-desktop:package -- --dir"
+    "studio-desktop:package:dir": "nx run studio-desktop:package -- --dir",
+    "vscode:qa": "nx run @opencraw/vscode:lint && nx run @opencraw/vscode:test",
+    "vscode:build": "nx run @opencraw/vscode:build"
   },
   "private": true,
   "devDependencies": {
