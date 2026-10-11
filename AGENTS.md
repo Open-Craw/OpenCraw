@@ -39,6 +39,10 @@ versions from them.
 
 ## Things that bit before
 
+- Install and update dependencies with npm 12 (Node 24.15 or newer), the major CI pins. npm 11 prunes the
+  nested `@emnapi/core` and `@emnapi/runtime` entries under the `wasm32-wasi` bindings from
+  `package-lock.json`, and npm 12's `npm ci` then fails with "Missing: @emnapi/core ... from lock file".
+  Check with `npm ci --dry-run` before committing a lockfile.
 - Jest buffers output: a hanging test prints nothing. Suspect an endless `paginate` first.
 - `create-nx-workspace` writes AI-agent folders whose scripts fail lint; they were deleted on purpose.
 - `unicorn/max-nested-calls` is 3: build zod schemas from named sub-schemas.
