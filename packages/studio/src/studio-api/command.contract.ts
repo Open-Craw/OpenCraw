@@ -14,6 +14,13 @@ export const openWorkspaceCommandSchema = z.object({
   folder: z.string().min(1),
 })
 
+/** Says what a path is (folder, recipe or document) and where to open it: how a link or an IDE entry opens a path (issue #235). `workspace` is the folder a document should belong to, when the caller has one. */
+export const openPathCommandSchema = z.object({
+  type:      z.literal('open-path'),
+  path:      z.string().min(1),
+  workspace: z.string().min(1).optional(),
+})
+
 /** Opens the operating system's folder dialog on the server's machine: the answer is the folder picked, if any. */
 export const chooseFolderCommandSchema = z.object({
   type: z.literal('choose-folder'),
@@ -343,6 +350,7 @@ export const importDocumentCommandSchema = z.object({
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
   chooseFolderCommandSchema,
+  openPathCommandSchema,
   importDocumentCommandSchema,
   runSampleCommandSchema,
   stopRunCommandSchema,
@@ -370,6 +378,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
 export type OpenWorkspaceCommand = z.infer<typeof openWorkspaceCommandSchema>
 export type ChooseFolderCommand = z.infer<typeof chooseFolderCommandSchema>
+export type OpenPathCommand = z.infer<typeof openPathCommandSchema>
 export type ImportDocumentCommand = z.infer<typeof importDocumentCommandSchema>
 export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
 export type StopRunCommand = z.infer<typeof stopRunCommandSchema>

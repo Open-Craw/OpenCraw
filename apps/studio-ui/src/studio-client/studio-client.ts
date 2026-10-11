@@ -1,4 +1,4 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, OpenPathCommand, OpenPathView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -6,9 +6,13 @@ export interface StudioClient {
   token:          string
   /** The folder `opencraw-studio` was started with, if the URL carries one. */
   initialFolder?: string
+  /** The path the link asks to open (`?open=`, issue #235): a folder, a recipe file or a document. */
+  initialOpen?:   string
   openWorkspace:  (folder: string) => Promise<WorkspaceView>
   /** Opens the folder dialog of the machine the server runs on; the folder picked, or `undefined` when it was closed. Rejects when that machine has no dialog. */
   chooseFolder:   () => Promise<string | undefined>
+  /** Asks the server what a path is (folder, recipe or document) and where to open it (issue #235). `workspace` is the folder a document should belong to. */
+  openPath:       (path: string, workspace?: string) => Promise<OpenPathView>
   /** Copies a dropped/opened file into `folder` (created when missing) and answers the copy's `file:` URL for a recipe's `start.url` (issue #120); `bytes` is the file's content, base64-encoded. */
   importDocument: (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
   /** `stubs` are values a hook answers with instead of being called, by hook name, for this run only (issue #201). */
@@ -88,10 +92,13 @@ function errorMessage (body: unknown, status: number): string {
 export function createStudioClient (): StudioClient {
   const token = queryParam('token') ?? ''
   const initialFolder = queryParam('folder')
+  const initialOpen = queryParam('open')
 
   return {
     token,
     initialFolder,
+    initialOpen,
+    openPath:      (path, workspace) => send<OpenPathView>(token, { type: 'open-path', path, ...(workspace !== undefined && { workspace }) } satisfies OpenPathCommand),
     openWorkspace: folder => send<WorkspaceView>(token, { type: 'open-workspace', folder } satisfies OpenWorkspaceCommand),
     chooseFolder:  async () => {
       const view = await send<ChooseFolderView>(token, { type: 'choose-folder' } satisfies ChooseFolderCommand)
