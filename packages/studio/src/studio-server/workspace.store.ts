@@ -29,6 +29,10 @@ export interface StudioState {
   browser?:           BrowserSessionConfig
   /** Set once at server start (`StudioServerOptions.plugins`): the hooks and plugins the person started Studio with (issue #150). Never set by a request. */
   plugins?:           TrustedPlugins
+  /** Set once at server start (`StudioServerOptions.chooseFolder`): how `choose-folder` asks the person for a folder. */
+  chooseFolder?:      () => Promise<string | undefined>
+  /** The dialog currently open, so a second `choose-folder` waits for it instead of opening another. */
+  openDialog?:        Promise<string | undefined>
   /** Set once at server start (`StudioServerOptions.recorderProfileDir`), else `defaultRecorderProfileDir()`. */
   recorderProfileDir: string
 }

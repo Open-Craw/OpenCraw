@@ -14,6 +14,11 @@ export const openWorkspaceCommandSchema = z.object({
   folder: z.string().min(1),
 })
 
+/** Opens the operating system's folder dialog on the server's machine: the answer is the folder picked, if any. */
+export const chooseFolderCommandSchema = z.object({
+  type: z.literal('choose-folder'),
+})
+
 /** Runs one input recipe under a budget, streaming `trace-line` and `record` events, ending in `run-finished`. */
 export const runSampleCommandSchema = z.object({
   type:     z.literal('run-sample'),
@@ -337,6 +342,7 @@ export const importDocumentCommandSchema = z.object({
 
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
+  chooseFolderCommandSchema,
   importDocumentCommandSchema,
   runSampleCommandSchema,
   stopRunCommandSchema,
@@ -363,6 +369,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
 export type OpenWorkspaceCommand = z.infer<typeof openWorkspaceCommandSchema>
+export type ChooseFolderCommand = z.infer<typeof chooseFolderCommandSchema>
 export type ImportDocumentCommand = z.infer<typeof importDocumentCommandSchema>
 export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
 export type StopRunCommand = z.infer<typeof stopRunCommandSchema>
