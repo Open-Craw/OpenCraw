@@ -1,0 +1,80 @@
+// Runs inside the editor's extension host (started by ../run-editor-test.mjs), against the extension as the
+// editor loads it. It uses the real commands, a real Studio process and the real settings; the only thing it
+// does not look at is the browser the link is handed to.
+const assert = require('node:assert/strict')
+const { mkdtempSync, writeFileSync } = require('node:fs')
+const { tmpdir } = require('node:os')
+const { join } = require('node:path')
+const vscode = require('vscode')
+
+const LINK_TIMEOUT_MS = 90_000
+
+/** The next link the extension resolves, or a rejection saying none came. */
+function nextLink (api) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => { reject(new Error(`no link within ${LINK_TIMEOUT_MS / 1000} s`)) }, LINK_TIMEOUT_MS)
+    const subscription = api.onDidResolveLink(link => {
+      clearTimeout(timer)
+      subscription.dispose()
+      resolve(link)
+    })
+  })
+}
+
+async function command (link, body) {
+  const url = new URL(link)
+  const response = await fetch(`${url.origin}/api/command`, {
+    method:  'POST',
+    headers: { 'content-type': 'application/json', 'x-opencraw-token': url.searchParams.get('token') },
+    body:    JSON.stringify(body),
+  })
+  assert.equal(response.status, 200, `${body.type} answered ${response.status}`)
+
+  return await response.json()
+}
+
+async function run () {
+  const extension = vscode.extensions.getExtension('opencraw.opencraw')
+  assert.ok(extension, 'the extension is installed')
+  const api = await extension.activate()
+
+  const registered = await vscode.commands.getCommands(true)
+  assert.ok(registered.includes('opencraw.openStudio'), 'Open Studio is registered')
+  assert.ok(registered.includes('opencraw.openOn'), 'Open on OpenCraw is registered')
+
+  const folder = vscode.workspace.workspaceFolders[0].uri
+  const report = vscode.Uri.joinPath(folder, 'docs', 'report.csv')
+
+  // A document in the workspace: the link names it and the workspace, the page is served, the server resolves it.
+  const first = nextLink(api)
+  await vscode.commands.executeCommand('opencraw.openOn', report)
+  const link = await first
+  const url = new URL(link)
+  assert.equal(url.searchParams.get('open'), report.fsPath)
+  assert.equal(url.searchParams.get('folder'), folder.fsPath)
+  const page = await fetch(url)
+  assert.equal(page.status, 200, 'Studio serves its page')
+  const view = await command(link, { type: 'open-path', path: report.fsPath, workspace: folder.fsPath })
+  assert.equal(view.kind, 'document')
+  assert.equal(view.path, report.fsPath, 'a document inside the workspace is read in place')
+
+  // A folder resolves as a folder.
+  const second = nextLink(api)
+  await vscode.commands.executeCommand('opencraw.openOn', folder)
+  const secondLink = await second
+  const folderView = await command(secondLink, { type: 'open-path', path: folder.fsPath })
+  assert.equal(folderView.kind, 'folder')
+
+  // The hooks setting reaches the server: set it, open again, and the workspace names the hook.
+  const hooksFolder = mkdtempSync(join(tmpdir(), 'opencraw-hooks-'))
+  const hooks = join(hooksFolder, 'hooks.mjs')
+  writeFileSync(hooks, 'export const hooks = { shout: value => String(value).toUpperCase() }\n')
+  await vscode.workspace.getConfiguration('opencraw').update('hooksFile', hooks, vscode.ConfigurationTarget.Global)
+  const third = nextLink(api)
+  await vscode.commands.executeCommand('opencraw.openOn', folder)
+  const thirdLink = await third
+  const workspaceView = await command(thirdLink, { type: 'open-workspace', folder: folder.fsPath })
+  assert.deepEqual(workspaceView.hooks?.names, ['shout'])
+}
+
+module.exports = { run }

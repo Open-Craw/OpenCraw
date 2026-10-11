@@ -86,9 +86,16 @@ Before the first run:
 
 A registry whose secret is missing is skipped.
 
+## End-to-end test
+
+`npm run vscode:e2e` stages the extension as the editor loads it, starts a real VS Code (1.90.0, the oldest the
+extension supports; downloaded into `.vscode-test` on the first run) and runs `e2e/suite/index.cjs` in its
+extension host: the commands exist, "Open on OpenCraw" resolves a link to a real Studio process, the page is
+served, `open-path` answers, and the `opencraw.hooksFile` setting reaches the server. The browser the link is
+handed to is not looked at. In CI it runs on a virtual display (`vscode-e2e`).
+
 ## Not done yet
 
 - Publishing has not been run: it needs the publisher and the tokens above.
 - Reusing an open Studio tab: a page cannot be raised from outside the browser, so each "Open on OpenCraw"
   opens a new tab, as other tools do.
-- An end-to-end test in a real editor (`@vscode/test-electron`).

@@ -43,6 +43,7 @@ export default [
       'apps/studio-desktop/dist-app/**',
       'apps/studio-desktop/release/**',
       'apps/vscode-extension/dist-vsix/**',
+      'apps/vscode-extension/.vscode-test/**',
     ],
   },
 ]

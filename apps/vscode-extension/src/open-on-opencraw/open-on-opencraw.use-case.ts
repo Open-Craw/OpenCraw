@@ -7,11 +7,13 @@ import type { StudioProcess } from '../studio-host'
 /** Where the editor extension runs its own server: one process per editor window, started on first use. */
 export interface StudioRunner {
   /** Opens `uri` (a file or a folder; the active file when omitted, else Studio on the workspace folder) in the browser. */
-  open:    (uri?: vscode.Uri) => Promise<void>
+  open:             (uri?: vscode.Uri) => Promise<void>
   /** Stops the server; called when the extension is deactivated. */
-  dispose: () => void
+  dispose:          () => void
   /** Stops the server so the next "Open on OpenCraw" starts it again, with the settings as they are then. */
-  restart: () => void
+  restart:          () => void
+  /** Fires with each link the runner is about to open in the browser: how a test, or another extension, sees where an open went. */
+  onDidResolveLink: vscode.Event<string>
 }
 
 /** The folders the editor has open, as file system paths. */
@@ -44,6 +46,7 @@ function hooksFile (): string | undefined {
  */
 export function createStudioRunner (extensionPath: string): StudioRunner {
   const script = join(extensionPath, 'dist', 'studio-host.process.mjs')
+  const resolved = new vscode.EventEmitter<string>()
   let running: Promise<StudioProcess> | undefined
 
   async function start (): Promise<StudioProcess> {
@@ -76,6 +79,7 @@ export function createStudioRunner (extensionPath: string): StudioRunner {
         const target = picked === undefined ? {} : openTargetFor(picked.fsPath, workspaceFolders())
         const server = await studio()
         const link = await server.link(target)
+        resolved.fire(link)
         // In a remote window (SSH, WSL, Codespaces) the server runs on the remote machine: this forwards its port.
         await vscode.env.openExternal(await vscode.env.asExternalUri(vscode.Uri.parse(link)))
       } catch (error) {
@@ -90,5 +94,6 @@ export function createStudioRunner (extensionPath: string): StudioRunner {
       running = undefined
       void stopped?.then(process => { process.dispose() })
     },
+    onDidResolveLink: resolved.event,
   }
 }

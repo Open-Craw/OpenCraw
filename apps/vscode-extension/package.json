@@ -121,6 +121,19 @@
           "passWithNoTests": true
         }
       },
+      "e2e": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build",
+          "@opencraw/studio:build",
+          "@opencraw/studio-ui:build"
+        ],
+        "cache": false,
+        "options": {
+          "command": "node packaging/package-vsix.mjs --stage-only && node e2e/run-editor-test.mjs",
+          "cwd": "apps/vscode-extension"
+        }
+      },
       "package": {
         "executor": "nx:run-commands",
         "dependsOn": [
@@ -141,6 +154,7 @@
     "@opencraw/studio": "^0.0.1"
   },
   "devDependencies": {
-    "@types/vscode": "1.90.0"
+    "@types/vscode": "1.90.0",
+    "@vscode/test-electron": "^3.1.0"
   }
 }

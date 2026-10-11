@@ -1,0 +1,35 @@
+# Runs the VS Code extension inside a real VS Code (the oldest version it supports, from engines.vscode): the
+# commands exist, "Open on OpenCraw" resolves a link to a real Studio process, the page is served, open-path
+# answers, and the opencraw.hooksFile setting reaches the server. The browser the link goes to is not looked at.
+# Issue #228.
+name: vscode-e2e
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - apps/vscode-extension/**
+      - packages/studio/**
+      - apps/studio-ui/**
+      - .github/workflows/vscode-e2e.yml
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # The libraries an Electron editor needs on a bare runner.
+      - run: npx playwright install-deps chromium
+      - uses: actions/cache@v4
+        with:
+          path: apps/vscode-extension/.vscode-test
+          key: vscode-test-${{ runner.os }}-1.90.0
+      - name: The extension in a real editor, on a virtual display
+        run: xvfb-run -a npm run vscode:e2e
+        env:
+          CI: 'true'
