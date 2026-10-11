@@ -8,8 +8,10 @@ Commands
   run <recipe files or directories...>        Crawl. Records go to --out as JSON Lines, or to stdout.
   probe <url>                                 Fetch a page and report where its data lives.
   diff <previous.jsonl> <current.jsonl>       Compare two runs' records by key: added, removed, changed.
-  studio [folder]                             Open a recipe folder in the browser: run samples, read
+  studio [folder] [--open <path>]             Open a recipe folder in the browser: run samples, read
                                                the trace next to the page (needs @opencraw/studio).
+                                               --open prints a link that opens a folder, recipe or
+                                               document straight away.
 
 Options for run
   --out <file>        Write records to this JSON Lines file (default: stdout).
@@ -71,6 +73,7 @@ const OPTIONS = {
   'host-delay':       { type: 'string' },
   'host-concurrency': { type: 'string' },
   'hooks':            { type: 'string' },
+  'open':             { type: 'string' },
   'plugins':          { type: 'string' },
   'browser':          { type: 'boolean' },
   'browser-path':     { type: 'string' },
@@ -133,7 +136,7 @@ export function parseArguments (argv: readonly string[], env: Record<string, str
     case 'studio': {
       if (rest.length > 1) throw new Error('studio takes at most one folder')
 
-      return { name: 'studio', folder: rest[0], plugins: options.plugins }
+      return { name: 'studio', folder: rest[0], plugins: options.plugins, open: values.open }
     }
     default: { throw new Error(`unknown command "${name}"`)
     }

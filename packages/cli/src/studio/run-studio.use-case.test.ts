@@ -56,6 +56,14 @@ describe('runStudio', () => {
     expect(started).toBe(false)
   })
 
+  it('hands the --open path to the studio', async () => {
+    const { terminal: term } = terminal()
+    const received: unknown[] = []
+    await runStudio('recipes', term, () => Promise.resolve({ main: async (_argv, options) => { received.push(options?.open) } }), undefined, undefined, 'docs/report.pdf')
+
+    expect(received).toEqual(['docs/report.pdf'])
+  })
+
   it('passes no plugins when --hooks is not given', async () => {
     const { terminal: term } = terminal()
     const received: unknown[] = []
