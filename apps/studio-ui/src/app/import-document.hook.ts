@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useImportDocumentMutation, useSaveRecipeMutation, useStudioClient } from '../studio-client'
+import { useImportDocumentMutation } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
-import { documentRecipeFiles, recipeIdFromFileName, uniqueRecipeId } from './new-recipe.mapper'
+import { useStartRecipeFromDocument } from './start-recipe.hook'
 
 export interface ImportDocumentFlow {
   /** Starts a recipe from one dropped/opened file; resolves once it is saved and selected, or once `error` is set. */
@@ -25,13 +25,10 @@ export interface ImportDocumentFlow {
  * guessing a location on the person's disk.
  */
 export function useImportDocumentFlow (): ImportDocumentFlow {
-  const client = useStudioClient()
   const importDocument = useImportDocumentMutation()
-  const saveRecipe = useSaveRecipeMutation()
+  const startRecipe = useStartRecipeFromDocument()
   const folder = useStudioUiStore(state => state.folder)
   const openFolder = useStudioUiStore(state => state.openFolder)
-  const commitFolder = useStudioUiStore(state => state.commitFolder)
-  const selectRecipe = useStudioUiStore(state => state.selectRecipe)
   const [error, setError] = useState<string>()
   const [pending, setPending] = useState(false)
 
@@ -46,14 +43,7 @@ export function useImportDocumentFlow (): ImportDocumentFlow {
     setPending(true)
     try {
       const { url } = await importDocument.mutateAsync({ folder: target, name: file.name, bytes: await fileToBase64(file) })
-      const listing = await client.openWorkspace(target)
-      const taken = listing.recipes.map(recipe => recipe.id).filter((id): id is string => id !== undefined)
-      const id = uniqueRecipeId(recipeIdFromFileName(file.name), taken)
-      const files = documentRecipeFiles(target, id, url)
-      await saveRecipe.mutateAsync({ path: files.outputPath, recipe: files.output })
-      await saveRecipe.mutateAsync({ path: files.inputPath, recipe: files.input })
-      if (openFolder !== target) commitFolder(target)
-      selectRecipe(id)
+      await startRecipe(target, file.name, url)
     } catch (importError) {
       setError(importError instanceof Error ? importError.message : String(importError))
     } finally {

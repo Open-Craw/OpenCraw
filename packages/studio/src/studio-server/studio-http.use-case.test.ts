@@ -45,6 +45,31 @@ describe('startStudioServer', () => {
 
   afterEach(async () => { await server?.close() })
 
+  it('builds links that open a path in the browser, keeping the token and the workspace', async () => {
+    server = await startStudioServer({ uiRoot: emptyUiRoot(), initialFolder: '/work/recipes' })
+
+    const plain = new URL(server.link())
+    const document = new URL(server.link({ open: '/work/docs/Q3 report.pdf', workspace: '/other' }))
+
+    expect(plain.searchParams.get('token')).toBe(server.token)
+    expect(plain.searchParams.get('folder')).toBe('/work/recipes')
+    expect(plain.searchParams.has('open')).toBe(false)
+    expect(document.searchParams.get('token')).toBe(server.token)
+    expect(document.searchParams.get('folder')).toBe('/other')
+    expect(document.searchParams.get('open')).toBe('/work/docs/Q3 report.pdf')
+  })
+
+  it('answers open-path with what the path is', async () => {
+    server = await startStudioServer({ uiRoot: emptyUiRoot() })
+    const folder = workspace()
+
+    const answer = await post(server, { type: 'open-path', path: folder })
+    const missing = await post(server, { type: 'open-path', path: join(folder, 'nope.pdf') })
+
+    expect(await answer.json()).toEqual({ kind: 'folder', folder })
+    expect(missing.status).toBe(500)
+  })
+
   it('rejects a command with a missing or wrong token', async () => {
     server = await startStudioServer({ uiRoot: emptyUiRoot() })
     const wrong = await post(server, { type: 'open-workspace', folder: '.' }, 'wrong-token')

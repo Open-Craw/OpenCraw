@@ -29,6 +29,7 @@ import { desktopBridge } from './desktop-bridge.client'
 import { HooksBar } from './hooks-bar.component'
 import { useBrowseFolderFlow } from './browse-folder.hook'
 import { useImportDocumentFlow } from './import-document.hook'
+import { useOpenPathFromLink } from './open-path.hook'
 import { Toolbar } from './toolbar.component'
 
 /** The studio's shell: the toolbar, the resizable content/editor split, and the preview strip along the bottom. */
@@ -85,6 +86,7 @@ function AppShell () {
   const explainWhy = useExplainWhyMutation()
   const importFlow = useImportDocumentFlow()
   const browseFlow = useBrowseFolderFlow()
+  const linkError = useOpenPathFromLink()
 
   useEffect(() => {
     if (client.initialFolder !== undefined) commitFolder(client.initialFolder)
@@ -128,7 +130,7 @@ function AppShell () {
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
-  const workspaceError = importFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? runError
+  const workspaceError = linkError ?? importFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? runError
 
   return (
     <HookNamesContext.Provider value={workspace.data?.hooks?.names}>

@@ -20,6 +20,7 @@ import { handleGridView } from './grid-view.handler'
 import { handleImportDocument } from './import-document.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleInspectPage } from './inspect-page.handler'
+import { handleOpenPath } from './open-path.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
 import { handlePdfBytes } from './pdf-bytes.handler'
 import { handlePdfView } from './pdf-view.handler'
@@ -70,6 +71,8 @@ export interface StudioServerOptions {
 export interface StudioServer {
   url:   string
   token: string
+  /** A link that opens Studio on `open` (a folder, a recipe or a document; see `open-path`), with `workspace` as the folder a document belongs to. Without a target it is `url`. */
+  link:  (target?: { open?: string, workspace?: string }) => string
   close: () => Promise<void>
 }
 
@@ -102,9 +105,17 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
   const port = typeof address === 'object' && address !== null ? address.port : 0
   const folderParam = options.initialFolder === undefined ? '' : `&folder=${encodeURIComponent(options.initialFolder)}`
 
+  const base = `http://127.0.0.1:${port}/?token=${token}`
+
   return {
-    url:   `http://127.0.0.1:${port}/?token=${token}${folderParam}`,
+    url:  `${base}${folderParam}`,
     token,
+    link: target => {
+      const workspace = target?.workspace ?? options.initialFolder
+      const open = target?.open === undefined ? '' : `&open=${encodeURIComponent(target.open)}`
+
+      return `${base}${workspace === undefined ? '' : `&folder=${encodeURIComponent(workspace)}`}${open}`
+    },
     close: () => stop(server, state),
   }
 }
@@ -191,6 +202,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'open-workspace': { return handleOpenWorkspace(state, command)
     }
     case 'choose-folder': { return handleChooseFolder(state)
+    }
+    case 'open-path': { return handleOpenPath(command)
     }
     case 'import-document': { return handleImportDocument(command)
     }
