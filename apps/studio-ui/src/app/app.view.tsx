@@ -27,6 +27,7 @@ import { useRunSessionStore, useStudioUiStore } from '../studio-store'
 import { DocumentDropZone } from './document-drop-zone.component'
 import { desktopBridge } from './desktop-bridge.client'
 import { HooksBar } from './hooks-bar.component'
+import { useBrowseFolderFlow } from './browse-folder.hook'
 import { useImportDocumentFlow } from './import-document.hook'
 import { Toolbar } from './toolbar.component'
 
@@ -83,6 +84,7 @@ function AppShell () {
   const saveOutline = useSaveOutlineMutation()
   const explainWhy = useExplainWhyMutation()
   const importFlow = useImportDocumentFlow()
+  const browseFlow = useBrowseFolderFlow()
 
   useEffect(() => {
     if (client.initialFolder !== undefined) commitFolder(client.initialFolder)
@@ -126,7 +128,7 @@ function AppShell () {
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
-  const workspaceError = importFlow.error ?? messageOf(workspace.error) ?? runError
+  const workspaceError = importFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? runError
 
   return (
     <HookNamesContext.Provider value={workspace.data?.hooks?.names}>
@@ -136,6 +138,8 @@ function AppShell () {
           onFolderChange={setFolder}
           onOpen={() => { commitFolder(folder) }}
           onChooseFolder={chooseFolder}
+          onBrowse={() => { void browseFlow.browse() }}
+          browsing={browseFlow.pending}
           openFolder={openFolder}
           inputs={inputs}
           selectedRecipeId={selectedRecipeId}

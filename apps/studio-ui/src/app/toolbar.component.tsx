@@ -12,6 +12,10 @@ export interface ToolbarProps {
   onOpen:            () => void
   /** Set in the desktop app: the native folder dialog. The folder box and "Open" give way to "Open folder…". */
   onChooseFolder?:   () => void
+  /** In a browser: the server's folder dialog, next to the folder box (which keeps working when there is no dialog). */
+  onBrowse?:         () => void
+  /** The dialog is open, waiting for an answer. */
+  browsing?:         boolean
   /** The folder a workspace is actually open on, for "+ New recipe" — `undefined` before one is opened (nothing to write into yet). */
   openFolder?:       string
   inputs:            RecipeListing[]
@@ -34,7 +38,7 @@ function folderName (path: string): string {
 }
 
 /** The shell's toolbar: the workspace folder, a recipe picker, "+ New recipe", "Open document…", and Run sample / Stop. */
-export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, onImportFile, importing, running, onRunSample, onStop }: ToolbarProps) {
+export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBrowse, browsing, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, onImportFile, importing, running, onRunSample, onStop }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   return (
@@ -54,6 +58,9 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, openF
                 onKeyDown={event => { if (event.key === 'Enter') onOpen() }}
               />
               <Button size='sm' onClick={onOpen}>Open</Button>
+              {onBrowse !== undefined && (
+                <Button size='sm' variant='outline' onClick={onBrowse} disabled={browsing} loading={browsing} title='Pick the folder in the operating system dialog'>Browse…</Button>
+              )}
             </>
           )
         : (

@@ -8,6 +8,8 @@ import type { BrowserSessionConfig } from '@opencraw/core'
 import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
+import { chooseFolderWithDialog } from '../folder-dialog'
+import { handleChooseFolder } from './choose-folder.handler'
 import { handleDeckPreview } from './deck-preview.handler'
 import { handleDeckView } from './deck-view.handler'
 import { handleDocumentTree } from './document-tree.handler'
@@ -58,6 +60,8 @@ export interface StudioServerOptions {
   browser?:            BrowserSessionConfig
   /** Hooks, access plugins and captcha solvers to run recipes with, loaded by the caller from a file the person named at launch (`opencraw studio --hooks`, issue #150). The server never loads code itself and no request can set this. Default: none. */
   plugins?:            TrustedPlugins
+  /** How `choose-folder` asks the person for a folder; default: the operating system's own folder dialog (`folder-dialog`), opened on the machine the server runs on. A host that has a dialog of its own passes it here. */
+  chooseFolder?:       () => Promise<string | undefined>
   /** Where the studio's own recorder profile lives (issue #95); default: a fixed directory under the OS temp folder, never a crawl's own profile directory, never the person's default browser. */
   recorderProfileDir?: string
 }
@@ -86,6 +90,7 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
   if (options.initialFolder !== undefined) state.folder = options.initialFolder
   state.browser = options.browser
   state.plugins = options.plugins
+  state.chooseFolder = options.chooseFolder ?? (() => chooseFolderWithDialog())
   if (options.recorderProfileDir !== undefined) state.recorderProfileDir = options.recorderProfileDir
   const server = createServer((request, response) => { void handleRequest(request, response, token, state, uiRoot) })
   server.on('upgrade', (request, socket) => { handleUpgrade(request, socket, token, state) })
@@ -184,6 +189,8 @@ async function handleCommand (request: IncomingMessage, response: ServerResponse
 function dispatch (command: StudioCommand, state: StudioState): Promise<unknown> {
   switch (command.type) {
     case 'open-workspace': { return handleOpenWorkspace(state, command)
+    }
+    case 'choose-folder': { return handleChooseFolder(state)
     }
     case 'import-document': { return handleImportDocument(command)
     }

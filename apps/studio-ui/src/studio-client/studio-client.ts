@@ -1,4 +1,4 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -7,6 +7,8 @@ export interface StudioClient {
   /** The folder `opencraw-studio` was started with, if the URL carries one. */
   initialFolder?: string
   openWorkspace:  (folder: string) => Promise<WorkspaceView>
+  /** Opens the folder dialog of the machine the server runs on; the folder picked, or `undefined` when it was closed. Rejects when that machine has no dialog. */
+  chooseFolder:   () => Promise<string | undefined>
   /** Copies a dropped/opened file into `folder` (created when missing) and answers the copy's `file:` URL for a recipe's `start.url` (issue #120); `bytes` is the file's content, base64-encoded. */
   importDocument: (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
   /** `stubs` are values a hook answers with instead of being called, by hook name, for this run only (issue #201). */
@@ -90,7 +92,12 @@ export function createStudioClient (): StudioClient {
   return {
     token,
     initialFolder,
-    openWorkspace:  folder => send<WorkspaceView>(token, { type: 'open-workspace', folder } satisfies OpenWorkspaceCommand),
+    openWorkspace: folder => send<WorkspaceView>(token, { type: 'open-workspace', folder } satisfies OpenWorkspaceCommand),
+    chooseFolder:  async () => {
+      const view = await send<ChooseFolderView>(token, { type: 'choose-folder' } satisfies ChooseFolderCommand)
+
+      return view.folder
+    },
     importDocument: (folder, name, bytes) => send<ImportDocumentView>(token, { type: 'import-document', folder, name, bytes } satisfies ImportDocumentCommand),
     runSample:      async (recipeId, budget, stubs) => { await send(token, { type: 'run-sample', recipeId, budget, ...(stubs !== undefined && { stubs }) } satisfies RunSampleCommand) },
     stopRun:        async () => { await send(token, { type: 'stop-run' } satisfies StopRunCommand) },
