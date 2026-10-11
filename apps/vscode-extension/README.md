@@ -59,10 +59,26 @@ Try it in an Extension Development Host, after `npm run studio:build` and `npm r
 code --extensionDevelopmentPath apps/vscode-extension <a folder of recipes>
 ```
 
+## Publishing
+
+The workflow `vscode-publish` (Actions > Run workflow) packages the extension on Linux, Windows and macOS and
+publishes the three `.vsix` files to the Visual Studio Marketplace and to Open VSX. It only starts by hand;
+nothing else publishes the extension, and the project has no release tag.
+
+Before the first run:
+
+1. Create the publisher on the Marketplace (<https://marketplace.visualstudio.com/manage>) and put its id in
+   `publisher` in this `package.json` (it is `opencraw` as a placeholder).
+2. Create an Azure DevOps token with **Marketplace > Manage** and add it as the repository secret `VSCE_PAT`.
+3. For Open VSX: create the namespace with the same name (`npx ovsx create-namespace <name> -p <token>`) and
+   add the token as the secret `OVSX_PAT`.
+4. Raise `version` in this `package.json`: a registry refuses a version it already has.
+
+A registry whose secret is missing is skipped.
+
 ## Not done yet
 
-- Publishing to the Marketplace and Open VSX: needs a publisher account and a token owned by the maintainer;
-  nothing is published from CI, and the project carries no release tag until that is decided.
+- Publishing has not been run: it needs the publisher and the tokens above.
 - Hooks (`opencraw studio --hooks`) as a setting.
 - Reusing an open Studio tab instead of a new one for each "Open on OpenCraw".
 - An end-to-end test in a real editor (`@vscode/test-electron`).

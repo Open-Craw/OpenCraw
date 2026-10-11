@@ -1,0 +1,73 @@
+# Publishes the VS Code extension to the Visual Studio Marketplace and to Open VSX (VSCodium, Cursor).
+# Only ever started by hand (Actions > vscode-publish > Run workflow), never by a push or a release: the
+# version published is the one in apps/vscode-extension/package.json, so raise it first (a registry refuses
+# a version it already has). Needs two repository secrets, owned by the maintainer:
+#   VSCE_PAT  an Azure DevOps token with Marketplace > Manage, for the publisher named in that package.json
+#   OVSX_PAT  an open-vsx.org access token, for the same publisher name (a namespace there)
+# A registry whose secret is not set is skipped, and the run says so. Issue #228.
+name: vscode-publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      marketplace:
+        description: Publish to the Visual Studio Marketplace
+        type: boolean
+        default: true
+      openvsx:
+        description: Publish to Open VSX
+        type: boolean
+        default: true
+
+jobs:
+  package:
+    # One package per platform: the engine's native modules are installed for the runner's own platform.
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Package the extension
+        run: npm run vscode:package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencraw-vscode-${{ runner.os }}
+          path: apps/vscode-extension/*.vsix
+          if-no-files-found: error
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: opencraw-vscode-*
+          merge-multiple: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: List what is published
+        run: ls -l *.vsix
+      - name: Visual Studio Marketplace
+        if: ${{ inputs.marketplace }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then echo "VSCE_PAT is not set: skipping the Marketplace"; exit 0; fi
+          npx --yes @vscode/vsce@4.0.0 publish --packagePath *.vsix
+      - name: Open VSX
+        if: ${{ inputs.openvsx }}
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then echo "OVSX_PAT is not set: skipping Open VSX"; exit 0; fi
+          for package in *.vsix; do
+            npx --yes ovsx@1.2.0 publish "$package" --pat "$OVSX_PAT"
+          done
