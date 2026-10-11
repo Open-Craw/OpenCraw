@@ -43,12 +43,13 @@ function fakeChild (): FakeChild {
 describe('startStudioProcess', () => {
   it('starts the script with the workspace and resolves once the server is ready', async () => {
     const fake = fakeChild()
-    const started: (string | undefined)[] = []
+    const started: unknown[] = []
     const pending = startStudioProcess({
       script:    '/ext/studio-host.process.mjs',
       workspace: '/work',
-      spawn:     (script, workspace) => {
-        started.push(script, workspace)
+      hooks:     '/home/ana/hooks.mjs',
+      spawn:     (script, config) => {
+        started.push(script, config)
 
         return fake.child
       },
@@ -57,7 +58,7 @@ describe('startStudioProcess', () => {
 
     await pending
 
-    expect(started).toEqual(['/ext/studio-host.process.mjs', '/work'])
+    expect(started).toEqual(['/ext/studio-host.process.mjs', { workspace: '/work', hooks: '/home/ana/hooks.mjs' }])
   })
 
   it('asks the process for a link and answers with its reply', async () => {

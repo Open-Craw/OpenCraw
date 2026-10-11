@@ -59,6 +59,16 @@ Try it in an Extension Development Host, after `npm run studio:build` and `npm r
 code --extensionDevelopmentPath apps/vscode-extension <a folder of recipes>
 ```
 
+## Hooks
+
+`opencraw.hooksFile` (user settings only) names an absolute path to a hooks or plugins module, the same file
+`opencraw studio --hooks` takes. Studio then runs recipes with those hooks, and the hooks bar names them. The
+module runs as your code.
+
+The setting is machine-scoped on purpose: a workspace's `.vscode/settings.json` cannot set it, so opening a
+repository can never make Studio load code that repository chose. Changing the setting restarts the server on
+the next "Open on OpenCraw".
+
 ## Publishing
 
 The workflow `vscode-publish` (Actions > Run workflow) packages the extension on Linux, Windows and macOS and
@@ -79,6 +89,6 @@ A registry whose secret is missing is skipped.
 ## Not done yet
 
 - Publishing has not been run: it needs the publisher and the tokens above.
-- Hooks (`opencraw studio --hooks`) as a setting.
-- Reusing an open Studio tab instead of a new one for each "Open on OpenCraw".
+- Reusing an open Studio tab: a page cannot be raised from outside the browser, so each "Open on OpenCraw"
+  opens a new tab, as other tools do.
 - An end-to-end test in a real editor (`@vscode/test-electron`).

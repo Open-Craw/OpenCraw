@@ -1,5 +1,5 @@
 import { fork } from 'node:child_process'
-import type { HostReply, HostRequest, LinkTarget } from './studio-host.contract'
+import type { HostConfig, HostReply, HostRequest, LinkTarget } from './studio-host.contract'
 
 /** The part of a child process the client uses; `fork`'s result satisfies it, a test passes a fake. */
 export interface HostChild {
@@ -9,8 +9,8 @@ export interface HostChild {
   stderr?: { on: (event: 'data', listener: (chunk: Uint8Array | string) => void) => unknown } | null
 }
 
-/** Starts the Studio process: the script to run and the workspace folder it opens first. */
-export type SpawnHost = (script: string, workspace: string | undefined) => HostChild
+/** Starts the Studio process: the script to run and what it starts with. */
+export type SpawnHost = (script: string, config: HostConfig) => HostChild
 
 export interface StudioProcess {
   /** The link that opens `target` in the browser (`/?token=…&open=…`). Rejects when the process has ended. */
@@ -26,7 +26,7 @@ export interface StudioProcess {
  * editor built on Electron has no other Node to offer), with an IPC channel
  * and the error output piped back so a failed start can say why.
  */
-export const forkHost: SpawnHost = (script, workspace) => fork(script, workspace === undefined ? [] : [workspace], {
+export const forkHost: SpawnHost = (script, config) => fork(script, [JSON.stringify(config)], {
   env:   { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
   stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
 })
@@ -44,12 +44,13 @@ interface PendingLink {
  *
  * @param options.script - The `studio-host.process.mjs` to run.
  * @param options.workspace - The folder Studio opens first, typically the editor's workspace folder.
+ * @param options.hooks - A hooks or plugins module to run recipes with (the `opencraw.hooksFile` setting).
  * @param options.spawn - How the process is started; `forkHost` by default.
  * @returns The running process.
  * @throws Error when the process ends or reports a failure before it is serving; the message carries what it printed.
  */
-export async function startStudioProcess (options: { script: string, workspace?: string, spawn?: SpawnHost }): Promise<StudioProcess> {
-  const child = (options.spawn ?? forkHost)(options.script, options.workspace)
+export async function startStudioProcess (options: { script: string, workspace?: string, hooks?: string, spawn?: SpawnHost }): Promise<StudioProcess> {
+  const child = (options.spawn ?? forkHost)(options.script, { workspace: options.workspace, hooks: options.hooks })
   let printed = ''
   child.stderr?.on('data', chunk => { printed = (printed + String(chunk)).slice(-STDERR_KEPT) })
 

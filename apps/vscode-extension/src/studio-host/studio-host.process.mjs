@@ -5,8 +5,18 @@
 // process ends with nothing left to keep it alive.
 import { startStudioServer } from '@opencraw/studio'
 
+/** Reads a hooks or plugins module as the command line does with --hooks: on the person own authority. */
+async function loadHooksFile (file) {
+  const { loadPlugins } = await import('@opencraw/cli')
+
+  return { source: file, ...await loadPlugins(file) }
+}
+
 try {
-  const server = await startStudioServer({ initialFolder: process.argv[2] })
+  const { workspace, hooks } = JSON.parse(process.argv[2] ?? '{}')
+  // The hooks file runs as the person's own code, named in their user settings (never a workspace's).
+  const plugins = hooks === undefined ? undefined : await loadHooksFile(hooks)
+  const server = await startStudioServer({ initialFolder: workspace, plugins })
   process.send({ type: 'ready', url: server.url })
   process.on('message', message => {
     if (message?.type === 'link') process.send({ type: 'link', id: message.id, url: server.link(message.target) })

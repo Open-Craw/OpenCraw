@@ -15,6 +15,17 @@
   ],
   "activationEvents": [],
   "contributes": {
+    "configuration": {
+      "title": "OpenCraw",
+      "properties": {
+        "opencraw.hooksFile": {
+          "type": "string",
+          "scope": "machine",
+          "default": "",
+          "markdownDescription": "Absolute path of a hooks or plugins module (the `--hooks` of `opencraw studio`) Studio runs recipes with. It runs as your code. Only your user settings can set it, never a workspace's, so a repository cannot make Studio run its code."
+        }
+      }
+    },
     "commands": [
       {
         "command": "opencraw.openStudio",
@@ -126,6 +137,7 @@
     }
   },
   "dependencies": {
+    "@opencraw/cli": "^0.0.1",
     "@opencraw/studio": "^0.0.1"
   },
   "devDependencies": {
