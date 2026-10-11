@@ -83,11 +83,17 @@ await new Promise((resolve, reject) => {
   })
 })
 
-// The vsce release that packs the extension; fixed so a build does not change with the registry.
-const VSCE = '@vscode/vsce@4.0.0'
-// The engine reads documents through native modules (a canvas for PDF pages), installed for the platform
-// this runs on, so the package is for this platform only: the same names the editor's marketplace uses.
-const target = `${process.platform}-${process.arch}`
-const out = join(appDir, `opencraw-${source.version}-${target}.vsix`)
-npm(['exec', '--yes', `--package=${VSCE}`, '--', 'vsce', 'package', '--target', target, '--out', out, '--allow-missing-repository', '--skip-license', '--no-update-package-json'], { cwd: stage, stdio: 'inherit' })
-process.stdout.write(`packaged ${out}\n`)
+// `--stage-only`: the staged folder is the extension as the editor loads it, which is all the editor
+// end-to-end test needs; the .vsix is skipped.
+if (process.argv.includes('--stage-only')) {
+  process.stdout.write(`staged ${stage}\n`)
+} else {
+  // The vsce release that packs the extension; fixed so a build does not change with the registry.
+  const VSCE = '@vscode/vsce@4.0.0'
+  // The engine reads documents through native modules (a canvas for PDF pages), installed for the platform
+  // this runs on, so the package is for this platform only: the same names the editor's marketplace uses.
+  const target = `${process.platform}-${process.arch}`
+  const out = join(appDir, `opencraw-${source.version}-${target}.vsix`)
+  npm(['exec', '--yes', `--package=${VSCE}`, '--', 'vsce', 'package', '--target', target, '--out', out, '--allow-missing-repository', '--skip-license', '--no-update-package-json'], { cwd: stage, stdio: 'inherit' })
+  process.stdout.write(`packaged ${out}\n`)
+}
