@@ -1,4 +1,4 @@
-import { join } from 'node:path'
+import { isAbsolute, join } from 'node:path'
 import * as vscode from 'vscode'
 import { openTargetFor } from '../open-target'
 import { startStudioProcess } from '../studio-host'
@@ -10,11 +10,27 @@ export interface StudioRunner {
   open:    (uri?: vscode.Uri) => Promise<void>
   /** Stops the server; called when the extension is deactivated. */
   dispose: () => void
+  /** Stops the server so the next "Open on OpenCraw" starts it again, with the settings as they are then. */
+  restart: () => void
 }
 
 /** The folders the editor has open, as file system paths. */
 function workspaceFolders (): string[] {
   return (vscode.workspace.workspaceFolders ?? []).filter(folder => folder.uri.scheme === 'file').map(folder => folder.uri.fsPath)
+}
+
+/**
+ * The hooks module the person named in their user settings, if any.
+ *
+ * @returns The absolute path, or `undefined` when the setting is empty.
+ * @throws Error when the setting is not an absolute path: a user setting has no folder to be relative to.
+ */
+function hooksFile (): string | undefined {
+  const named = vscode.workspace.getConfiguration('opencraw').get<string>('hooksFile', '').trim()
+  if (named === '') return undefined
+  if (!isAbsolute(named)) throw new Error(`the setting opencraw.hooksFile must be an absolute path, not "${named}"`)
+
+  return named
 }
 
 /**
@@ -32,7 +48,7 @@ export function createStudioRunner (extensionPath: string): StudioRunner {
 
   async function start (): Promise<StudioProcess> {
     try {
-      const process = await startStudioProcess({ script, workspace: workspaceFolders()[0] })
+      const process = await startStudioProcess({ script, workspace: workspaceFolders()[0], hooks: hooksFile() })
       void process.ended.then(() => { running = undefined })
 
       return process
@@ -68,6 +84,11 @@ export function createStudioRunner (extensionPath: string): StudioRunner {
     },
     dispose: () => {
       void running?.then(process => { process.dispose() })
+    },
+    restart: () => {
+      const stopped = running
+      running = undefined
+      void stopped?.then(process => { process.dispose() })
     },
   }
 }

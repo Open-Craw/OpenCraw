@@ -1,3 +1,11 @@
+/** What the extension tells the Studio process at start (as JSON in its first argument). */
+export interface HostConfig {
+  /** The folder Studio opens first, typically the editor's workspace folder. */
+  workspace?: string
+  /** A hooks or plugins module to run recipes with, loaded by the process on the person's own authority. */
+  hooks?:     string
+}
+
 /** What to open in Studio: a folder, a recipe or a document, and the workspace folder a document belongs to. */
 export interface LinkTarget {
   open?:      string

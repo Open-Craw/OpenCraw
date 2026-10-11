@@ -25,6 +25,9 @@
   "references": [
     {
       "path": "../../packages/studio/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/cli/tsconfig.lib.json"
     }
   ]
 }

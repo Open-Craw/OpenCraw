@@ -7,6 +7,10 @@ export function activate (context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand('opencraw.openStudio', async () => { await runner.open() }),
     vscode.commands.registerCommand('opencraw.openOn', async (uri?: vscode.Uri) => { await runner.open(uri) }),
+    // The hooks file is read when the server starts: a changed setting takes effect from the next open.
+    vscode.workspace.onDidChangeConfiguration(change => {
+      if (change.affectsConfiguration('opencraw.hooksFile')) runner.restart()
+    }),
     { dispose: () => { runner.dispose() } },
   )
 }
