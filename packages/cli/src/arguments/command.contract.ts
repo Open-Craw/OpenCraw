@@ -69,4 +69,6 @@ export type Command =
     folder?:  string
     /** A hooks or plugins module to run recipes with (`--hooks`, `--plugins`, `OPENCRAW_HOOKS`, `OPENCRAW_PLUGINS`; issue #150). */
     plugins?: string
+    /** A folder, recipe file or document the printed link opens straight away (`--open`, issue #235). */
+    open?:    string
   }

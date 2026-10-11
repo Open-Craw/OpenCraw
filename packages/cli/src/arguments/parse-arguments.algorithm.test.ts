@@ -45,6 +45,7 @@ describe('parseArguments', () => {
     expect(parseArguments(['studio', 'recipes/'])).toEqual({ name: 'studio', folder: 'recipes/', plugins: undefined })
     expect(parseArguments(['studio', 'recipes/', '--hooks', 'hooks.mjs'])).toEqual({ name: 'studio', folder: 'recipes/', plugins: 'hooks.mjs' })
     expect(parseArguments(['studio', '--plugins', 'p.mjs'])).toMatchObject({ plugins: 'p.mjs' })
+    expect(parseArguments(['studio', 'recipes/', '--open', 'docs/report.pdf'])).toMatchObject({ folder: 'recipes/', open: 'docs/report.pdf' })
     expect(parseArguments(['studio'], { OPENCRAW_HOOKS: 'env.mjs' })).toMatchObject({ plugins: 'env.mjs' })
   })
 

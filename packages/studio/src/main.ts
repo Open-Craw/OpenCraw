@@ -6,6 +6,8 @@ import type { TrustedPlugins } from './trusted-plugins'
 export interface StudioMainOptions {
   /** Hooks and plugins loaded from a file the person named at launch (`opencraw studio --hooks <file>`, issue #150). `main` never loads code itself. */
   plugins?: TrustedPlugins
+  /** A folder, recipe file or document the printed link opens straight away (`opencraw studio --open <path>`, issue #235); resolved against the current directory. */
+  open?:    string
 }
 
 /**
@@ -21,7 +23,8 @@ export interface StudioMainOptions {
 export async function main (argv: readonly string[], options: StudioMainOptions = {}): Promise<void> {
   const folder = resolve(argv[0] ?? '.')
   const server = await startStudioServer({ initialFolder: folder, plugins: options.plugins })
-  process.stdout.write(`OpenCraw Studio: ${server.url}\n`)
+  const address = options.open === undefined ? server.url : server.link({ open: resolve(options.open), workspace: folder })
+  process.stdout.write(`OpenCraw Studio: ${address}\n`)
   process.stdout.write(`Workspace: ${folder}\n`)
   if (options.plugins !== undefined) process.stdout.write(`Hooks: ${options.plugins.source} (runs as your code)\n`)
   const shutdown = (): void => { void server.close() }
