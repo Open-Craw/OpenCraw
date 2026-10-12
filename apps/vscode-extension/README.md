@@ -72,8 +72,10 @@ the next "Open on OpenCraw".
 ## Publishing
 
 The workflow `vscode-publish` (Actions > Run workflow) packages the extension on Linux, Windows and macOS and
-publishes the three `.vsix` files to the Visual Studio Marketplace and to Open VSX. It only starts by hand;
-nothing else publishes the extension, and the project has no release tag.
+publishes the three `.vsix` files to the Visual Studio Marketplace and to Open VSX. It runs when a change to the
+extension, or to a package bundled in it, lands on `main`, and publishes only if `version` in this
+`package.json` is not on the Marketplace yet: raise it in the change that should reach users, and a merge with
+the same version does nothing. It can also be started by hand. The project has no release tag.
 
 Before the first run:
 

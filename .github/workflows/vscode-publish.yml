@@ -1,7 +1,9 @@
 # Publishes the VS Code extension to the Visual Studio Marketplace and to Open VSX (VSCodium, Cursor).
-# Only ever started by hand (Actions > vscode-publish > Run workflow), never by a push or a release: the
-# version published is the one in apps/vscode-extension/package.json, so raise it first (a registry refuses
-# a version it already has). Needs repository secrets, owned by the maintainer:
+# Runs when something the extension is built from lands on main, or by hand (Actions > vscode-publish >
+# Run workflow). It publishes only when the version in apps/vscode-extension/package.json is not on the
+# Marketplace yet: raise `version` in the change that should reach users, and a merge with the same version
+# is a no-op (a registry refuses a version it already has). No release tag is involved. Needs repository
+# secrets, owned by the maintainer:
 #   AZURE_CLIENT_ID, AZURE_TENANT_ID  a Microsoft Entra application that is a member of the Marketplace
 #     publisher named in that package.json, with a federated credential for this repository's `main`
 #     branch. No token is stored: the job exchanges GitHub's OIDC token for an Entra one, so the
@@ -11,6 +13,18 @@
 name: vscode-publish
 
 on:
+  push:
+    branches: [main]
+    # The extension and everything bundled into its package (see PACKAGES in the packaging script).
+    paths:
+      - apps/vscode-extension/**
+      - apps/studio-ui/**
+      - packages/core/**
+      - packages/office-reader/**
+      - packages/probe/**
+      - packages/studio/**
+      - packages/cli/**
+      - .github/workflows/vscode-publish.yml
   workflow_dispatch:
     inputs:
       marketplace:
@@ -22,8 +36,43 @@ on:
         type: boolean
         default: true
 
+# One publish at a time; a later merge waits for the running one instead of racing it for the version.
+concurrency:
+  group: vscode-publish
+  cancel-in-progress: false
+
 jobs:
+  version:
+    # Decides whether this run has anything to publish: the manifest's version must be new to the Marketplace.
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.compare.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Compare with the published versions
+        id: compare
+        run: |
+          manifest=apps/vscode-extension/package.json
+          version=$(node -p "require('./$manifest').version")
+          id="$(node -p "require('./$manifest').publisher").opencraw"
+          echo "manifest version $version, extension $id"
+          if published=$(npx --yes @vscode/vsce@4.0.0 show "$id" --json 2>/dev/null); then
+            if echo "$published" | node -e "const e = JSON.parse(require('fs').readFileSync(0, 'utf8')); process.exit((e.versions ?? []).some(v => v.version === process.argv[1]) ? 0 : 1)" "$version"; then
+              echo "$version is already on the Marketplace: nothing to publish"
+              echo "publish=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          else
+            echo "$id is not on the Marketplace yet"
+          fi
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+
   package:
+    needs: version
+    if: ${{ needs.version.outputs.publish == 'true' && github.ref == 'refs/heads/main' }}
     # One package per platform: the engine's native modules are installed for the runner's own platform.
     strategy:
       fail-fast: true
@@ -47,8 +96,9 @@ jobs:
 
   marketplace:
     needs: package
-    # The federated credential trusts `main` only, so any other ref skips the job instead of failing the login.
-    if: ${{ inputs.marketplace && github.ref == 'refs/heads/main' }}
+    # A push publishes to the Marketplace; a manual run can untick it. The federated credential trusts `main`
+    # only, so any other ref skips the job instead of failing the login.
+    if: ${{ (github.event_name == 'push' || inputs.marketplace) && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -72,7 +122,7 @@ jobs:
 
   openvsx:
     needs: package
-    if: ${{ inputs.openvsx }}
+    if: ${{ github.event_name == 'push' || inputs.openvsx }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
