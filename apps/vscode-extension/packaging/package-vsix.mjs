@@ -42,7 +42,7 @@ writeFileSync(join(stage, 'package.json'), JSON.stringify({
   version:          source.version,
   publisher:        source.publisher,
   icon:             source.icon,
-  license:          'UNLICENSED',
+  license:          'MIT',
   engines:          source.engines,
   categories:       source.categories,
   activationEvents: source.activationEvents,
@@ -56,6 +56,7 @@ mkdirSync(join(stage, 'dist'))
 cpSync(join(appDir, 'dist', 'extension.cjs'), join(stage, 'dist', 'extension.cjs'))
 cpSync(join(appDir, 'dist', 'studio-host.process.mjs'), join(stage, 'dist', 'studio-host.process.mjs'))
 cpSync(join(appDir, 'README.md'), join(stage, 'README.md'))
+cpSync(join(repoRoot, 'LICENSE'), join(stage, 'LICENSE'))
 cpSync(join(appDir, 'media'), join(stage, 'media'), { recursive: true })
 writeFileSync(join(stage, '.vscodeignore'), 'tarballs/**\n')
 
@@ -96,6 +97,6 @@ if (process.argv.includes('--stage-only')) {
   // this runs on, so the package is for this platform only: the same names the editor's marketplace uses.
   const target = `${process.platform}-${process.arch}`
   const out = join(appDir, `opencraw-${source.version}-${target}.vsix`)
-  npm(['exec', '--yes', `--package=${VSCE}`, '--', 'vsce', 'package', '--target', target, '--out', out, '--allow-missing-repository', '--skip-license', '--no-update-package-json'], { cwd: stage, stdio: 'inherit' })
+  npm(['exec', '--yes', `--package=${VSCE}`, '--', 'vsce', 'package', '--target', target, '--out', out, '--allow-missing-repository', '--no-update-package-json'], { cwd: stage, stdio: 'inherit' })
   process.stdout.write(`packaged ${out}\n`)
 }

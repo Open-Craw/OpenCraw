@@ -1,6 +1,6 @@
 {
   "name": "@opencraw/vscode",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "description": "OpenCraw in the editor: starts the Studio server and opens a folder, recipe or document in the browser.",
   "type": "module",
