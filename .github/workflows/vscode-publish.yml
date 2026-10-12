@@ -1,8 +1,11 @@
 # Publishes the VS Code extension to the Visual Studio Marketplace and to Open VSX (VSCodium, Cursor).
 # Only ever started by hand (Actions > vscode-publish > Run workflow), never by a push or a release: the
 # version published is the one in apps/vscode-extension/package.json, so raise it first (a registry refuses
-# a version it already has). Needs two repository secrets, owned by the maintainer:
-#   VSCE_PAT  an Azure DevOps token with Marketplace > Manage, for the publisher named in that package.json
+# a version it already has). Needs repository secrets, owned by the maintainer:
+#   AZURE_CLIENT_ID, AZURE_TENANT_ID  a Microsoft Entra application that is a member of the Marketplace
+#     publisher named in that package.json, with a federated credential for this repository's `main`
+#     branch. No token is stored: the job exchanges GitHub's OIDC token for an Entra one, so the
+#     Marketplace job runs from `main` only. Azure DevOps PATs are retired on 2026-12-01.
 #   OVSX_PAT  an open-vsx.org access token, for the same publisher name (a namespace there)
 # A registry whose secret is not set is skipped, and the run says so. Issue #228.
 name: vscode-publish
@@ -42,8 +45,34 @@ jobs:
           path: apps/vscode-extension/*.vsix
           if-no-files-found: error
 
-  publish:
+  marketplace:
     needs: package
+    # The federated credential trusts `main` only, so any other ref skips the job instead of failing the login.
+    if: ${{ inputs.marketplace && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: opencraw-vscode-*
+          merge-multiple: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Sign in to Microsoft Entra
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - name: Visual Studio Marketplace
+        run: npx --yes @vscode/vsce@4.0.0 publish --packagePath *.vsix --azure-credential
+
+  openvsx:
+    needs: package
+    if: ${{ inputs.openvsx }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -55,15 +84,7 @@ jobs:
           node-version: 24
       - name: List what is published
         run: ls -l *.vsix
-      - name: Visual Studio Marketplace
-        if: ${{ inputs.marketplace }}
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: |
-          if [ -z "$VSCE_PAT" ]; then echo "VSCE_PAT is not set: skipping the Marketplace"; exit 0; fi
-          npx --yes @vscode/vsce@4.0.0 publish --packagePath *.vsix
       - name: Open VSX
-        if: ${{ inputs.openvsx }}
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
