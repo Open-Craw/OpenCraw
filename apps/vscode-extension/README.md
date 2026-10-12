@@ -79,12 +79,16 @@ Before the first run:
 
 1. Create the publisher on the Marketplace (<https://marketplace.visualstudio.com/manage>) and put its id in
    `publisher` in this `package.json` (it is `opencraw` as a placeholder).
-2. Create an Azure DevOps token with **Marketplace > Manage** and add it as the repository secret `VSCE_PAT`.
+2. Let the workflow sign in to the Marketplace with Microsoft Entra, not a token (Azure DevOps PATs are retired
+   on 2026-12-01): register an application in Entra ID, add a **GitHub Actions** federated credential for this
+   repository with entity type **Branch** and branch `main`, add the application as a member of the publisher
+   on the Marketplace manage page, and set the repository secrets `AZURE_CLIENT_ID` and `AZURE_TENANT_ID`.
+   The Marketplace job only runs from `main`.
 3. For Open VSX: create the namespace with the same name (`npx ovsx create-namespace <name> -p <token>`) and
    add the token as the secret `OVSX_PAT`.
 4. Raise `version` in this `package.json`: a registry refuses a version it already has.
 
-A registry whose secret is missing is skipped.
+Open VSX is skipped when `OVSX_PAT` is not set.
 
 ## End-to-end test
 
@@ -96,6 +100,6 @@ handed to is not looked at. In CI it runs on a virtual display (`vscode-e2e`).
 
 ## Not done yet
 
-- Publishing has not been run: it needs the publisher and the tokens above.
+- Publishing has not been run: it needs the publisher, the Entra application and `OVSX_PAT`.
 - Reusing an open Studio tab: a page cannot be raised from outside the browser, so each "Open on OpenCraw"
   opens a new tab, as other tools do.
