@@ -41,6 +41,7 @@ writeFileSync(join(stage, 'package.json'), JSON.stringify({
   description:      source.description,
   version:          source.version,
   publisher:        source.publisher,
+  icon:             source.icon,
   license:          'UNLICENSED',
   engines:          source.engines,
   categories:       source.categories,
@@ -55,6 +56,7 @@ mkdirSync(join(stage, 'dist'))
 cpSync(join(appDir, 'dist', 'extension.cjs'), join(stage, 'dist', 'extension.cjs'))
 cpSync(join(appDir, 'dist', 'studio-host.process.mjs'), join(stage, 'dist', 'studio-host.process.mjs'))
 cpSync(join(appDir, 'README.md'), join(stage, 'README.md'))
+cpSync(join(appDir, 'media'), join(stage, 'media'), { recursive: true })
 writeFileSync(join(stage, '.vscodeignore'), 'tarballs/**\n')
 
 npm(['install', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', '--no-package-lock'], { cwd: stage, stdio: 'inherit' })

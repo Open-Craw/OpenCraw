@@ -1,12 +1,13 @@
 {
   "name": "@opencraw/vscode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "OpenCraw in the editor: starts the Studio server and opens a folder, recipe or document in the browser.",
   "type": "module",
   "main": "dist/extension.cjs",
   "displayName": "OpenCraw",
   "publisher": "opencraw",
+  "icon": "media/icon.png",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -15,6 +16,29 @@
   ],
   "activationEvents": [],
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "opencraw",
+          "title": "OpenCraw",
+          "icon": "media/opencraw-activity-bar.svg"
+        }
+      ]
+    },
+    "views": {
+      "opencraw": [
+        {
+          "id": "opencraw.start",
+          "name": "OpenCraw"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "opencraw.start",
+        "contents": "Run recipes in your browser: Studio starts a local server and opens the page.\n[Open Studio](command:opencraw.openStudio)\nTo open a folder, recipe or document, right-click it in the Explorer and choose **Open on OpenCraw**."
+      }
+    ],
     "configuration": {
       "title": "OpenCraw",
       "properties": {
