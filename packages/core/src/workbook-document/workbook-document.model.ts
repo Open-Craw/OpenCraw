@@ -8,19 +8,27 @@ export type WorkbookCell = string | number | boolean
 
 /** One sheet of a workbook. A CSV is a workbook of one sheet. */
 export interface Sheet {
-  name:        string
+  name:                string
   /** Top to bottom; a row holds as many cells as were read (rows can be ragged). */
-  rows:        WorkbookCell[][]
+  rows:                WorkbookCell[][]
   /** A sheet hidden in the workbook: `table` skips it unless `includeHidden`. */
-  hidden?:     boolean
+  hidden?:             boolean
   /** Rows hidden in the sheet (0-based): `table` skips them unless `includeHidden`. */
-  hiddenRows?: number[]
+  hiddenRows?:         number[]
   /**
    * Merged ranges as A1 references (`B10:B13`). The value of a merged range
    * sits in its top-left cell only, as the file stores it; `table` copies it
    * into every cell the range covers.
    */
-  merges?:     string[]
+  merges?:             string[]
+  /** Column widths in characters, by 0-based column, as a spreadsheet stores them (a CSV has none). */
+  columnWidths?:       Record<number, number>
+  /** Row heights in points, by 0-based row, as a spreadsheet stores them. */
+  rowHeights?:         Record<number, number>
+  /** The width of a column the file does not size, in characters. */
+  defaultColumnWidth?: number
+  /** The height of a row the file does not size, in points. */
+  defaultRowHeight?:   number
 }
 
 /** How a CSV was read, for a probe to report. */

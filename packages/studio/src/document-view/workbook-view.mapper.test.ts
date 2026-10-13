@@ -12,7 +12,18 @@ function windows1252Text (bytes: Buffer): string {
 const listinoPath = join(__dirname, '..', '..', '..', 'core', 'src', 'workbook-document', 'fixtures', 'listino.csv')
 const incentiviPath = join(__dirname, '..', '..', '..', 'office-reader', 'src', 'spreadsheet', 'fixtures', 'incentivi.xlsx')
 
+const macroSizedPath = join(__dirname, '..', '..', '..', 'office-reader', 'src', 'spreadsheet', 'fixtures', 'macro-sized.xlsm')
+
 describe('workbookDocumentView', () => {
+  it('reads a macro-enabled workbook and carries its stored column widths and row heights', async () => {
+    const document = await readXlsxWorkbook(readFileSync(macroSizedPath), macroSizedPath)
+    const [sheet] = workbookDocumentView(document).sheets
+    expect(sheet.columnWidths).toEqual({ 0: 20.5, 2: 12, 3: 12, 8: 30 })
+    expect(sheet.rowHeights).toEqual({ 0: 30 })
+    expect(sheet.defaultColumnWidth).toBe(10)
+    expect(sheet.defaultRowHeight).toBe(15)
+  })
+
   it('carries a CSV sheet\'s cells over as text, and the detected delimiter/encoding', () => {
     const bytes = readFileSync(listinoPath)
     const document = csvWorkbook(windows1252Text(bytes), { name: 'listino', encoding: 'windows-1252' })

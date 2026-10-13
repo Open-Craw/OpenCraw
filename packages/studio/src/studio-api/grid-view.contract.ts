@@ -16,12 +16,20 @@ export const gridMergeViewSchema = z.object({
 })
 
 export const gridSheetViewSchema = z.object({
-  name:        z.string(),
-  hidden:      z.boolean(),
-  hiddenRows:  z.array(z.number().int()),
-  columnCount: z.number().int(),
-  rows:        z.array(z.array(gridCellViewSchema)),
-  merges:      z.array(gridMergeViewSchema),
+  name:               z.string(),
+  hidden:             z.boolean(),
+  hiddenRows:         z.array(z.number().int()),
+  columnCount:        z.number().int(),
+  rows:               z.array(z.array(gridCellViewSchema)),
+  merges:             z.array(gridMergeViewSchema),
+  /** Column widths in characters by 0-based column, as the spreadsheet stores them (absent for a CSV, and for a column the file does not size). */
+  columnWidths:       z.record(z.string(), z.number()).optional(),
+  /** Row heights in points by 0-based row, as the spreadsheet stores them. */
+  rowHeights:         z.record(z.string(), z.number()).optional(),
+  /** The width of a column the file does not size, in characters. */
+  defaultColumnWidth: z.number().optional(),
+  /** The height of a row the file does not size, in points. */
+  defaultRowHeight:   z.number().optional(),
 })
 
 const csvFormatViewSchema = z.object({ encoding: z.string(), delimiter: z.string() })
