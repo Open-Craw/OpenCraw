@@ -630,14 +630,22 @@ repeating element (`table.credit_group tr`, not `tr`) and check the first record
 `request` with `as: "pdf"` (or a response served as `application/pdf`, or a local `file:…pdf`) reads the
 PDF's text layer with pdf.js into pages of **rows**: text that sits side by side becomes a cell, cells whose
 vertical extents overlap become a row. A scanned page has no text layer and gives no rows; a PDF where no page
-has one fails the step (no OCR). Four extract kinds read it:
+has one fails the step (no OCR). Five extract kinds read it:
 
 | `kind` | Reads | Use for |
 |---|---|---|
 | `table` | tables, found by their header row | price lists, discount sheets, spec tables |
 | `region` | the text inside a box on a page: `page=1 x=72..252 y=640..664` (points from the page's bottom-left corner; `page=*` for every page) | a title, a date, a total — anything that sits at the same place on every issue of a document; what the studio's PDF canvas writes when you click a line |
+| `anchor` | the cell(s) right of, or the line(s) below, a label found by its text: `right of ^Valid until`, `below count=2 of ^Bill to` | a value that sits next to a label, in documents of one kind whose layout shifts: **prefer it to `region`** |
 | `regex` | the text: one line per row, cells separated by a tab, pages by a blank line | a value next to a label: `Valid until\t(\S+)` |
 | `jsonpath` | the structure: `{ kind: "pdf", pages: [{ number, width, height, rows: [{ text, top, bottom, cells: [{ x, y, width, height, text }] }] }] }` | positions, a given page |
+
+An **anchor** finds the first cell whose text matches its pattern (case-insensitive, top to bottom, left to
+right) on each page and reads from there, so the same recipe reads another document of the same kind even when
+the values sit at other points. The selector is `[page=<n|*>] <right|below> [count=<n>] of <pattern>`: `right` takes
+the next `count` cells on the label's line, joined by a space; `below` takes the next `count` lines in the label's
+column, a line's cells joined by a space and lines by a newline. A page without the label, or with nothing there,
+is no match (the step fails without `many`; with `page=*` and `many: true` you get one text per page).
 
 A **region** reads every cell at least half inside its box, row by row: a row's cells joined by a space, rows by
 a newline — so a box around a wrapped paragraph gives its lines. A page with nothing in the box is no match (the

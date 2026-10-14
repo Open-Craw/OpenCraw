@@ -1,6 +1,6 @@
 import { deckRegionText, deckText, findDeckTables, isDeckDocument } from '../deck-document'
 import type { ExtractionScope, ScopeDocument } from '../extraction-scope'
-import { findTables, isPdfDocument, parseRegion, pdfText, regionText } from '../pdf-document'
+import { anchorText, findTables, isPdfDocument, parseAnchor, parseRegion, pdfText, regionText } from '../pdf-document'
 import type { TableQuery } from '../pdf-document'
 import { fillDown, findGridTables, htmlTableSheets, isWorkbookDocument, workbookText } from '../workbook-document'
 import type { ExtractStep } from '../recipe-schema'
@@ -69,6 +69,11 @@ export function extractFromDocument (step: ExtractStep, scope: ExtractionScope):
     }
     case 'region': {
       values = readRegion(document, selector)
+
+      break
+    }
+    case 'anchor': {
+      values = readAnchor(document, selector)
 
       break
     }
@@ -167,9 +172,21 @@ function readRegion (document: ScopeDocument, selector: string): string[] {
   throw new Error(`region reads a PDF or a deck (a presentation); the current document is ${document.kind}${document.kind === 'html' ? '' : ' (request it with "as": "pdf" or "pptx")'}`)
 }
 
+/**
+ * What an `anchor` extract reads: the text beside or under a label found by
+ * its own text on a PDF's pages, so the same recipe reads another document of
+ * the same kind whose values sit elsewhere (see
+ * `pdf-document/pdf-anchor.algorithm.ts`).
+ */
+function readAnchor (document: ScopeDocument, selector: string): string[] {
+  if (document.kind !== 'pdf') throw new Error(`anchor reads a PDF; the current document is ${document.kind}${document.kind === 'html' ? '' : ' (request it with "as": "pdf")'}`)
+
+  return anchorText(document, parseAnchor(selector)).map(match => match.text)
+}
+
 /** What a `css` extract should have used instead, for a document that is not markup. */
 function readHint (kind: ScopeDocument['kind']): string {
-  if (kind === 'pdf' || kind === 'deck') return ' (read it with kind "table", "region", "regex" or "jsonpath")'
+  if (kind === 'pdf' || kind === 'deck') return ' (read it with kind "table", "region", "anchor", "regex" or "jsonpath")'
   if (kind === 'workbook') return ' (read it with kind "table", "regex" or "jsonpath")'
 
   return ''
@@ -249,6 +266,7 @@ function documentFor (step: ExtractStep, scope: ExtractionScope): ScopeDocument 
   if (source === undefined) throw new Error(`"${step.from}" is not bound`)
   if (isPdfDocument(source) || isWorkbookDocument(source) || isDeckDocument(source) || isXmlDocument(source)) return source
   if (step.kind === 'region') throw new Error(`"${step.from}" is not a read PDF or deck; region reads those (request it with "as": "pdf" or "pptx")`)
+  if (step.kind === 'anchor') throw new Error(`"${step.from}" is not a read PDF; anchor reads those (request it with "as": "pdf")`)
   if (step.kind === 'xpath') {
     if (typeof source !== 'string') throw new Error(`"${step.from}" is not markup; xpath reads XML or HTML text`)
 
