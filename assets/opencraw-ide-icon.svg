@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:affinity="https://www.affinity.studio/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-miterlimit:1;">
+    <g id="opencraw-ide-icon" transform="matrix(0.328466,0,0,0.328466,60.122471,0)">
+        <rect x="-183.04" y="0" width="146.134" height="146.134" style="fill:none;"/>
+        <clipPath id="_clip1">
+            <rect x="-183.04" y="0" width="146.134" height="146.134"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <g transform="matrix(3.691772,0,0,3.691772,-192.49097,-18.042549)">
+                <path d="M15.744,14.783C23.027,14.783 28.939,20.695 28.939,27.978C28.939,35.26 23.027,41.172 15.744,41.172C8.462,41.172 2.55,35.26 2.55,27.978C2.55,20.695 8.462,14.783 15.744,14.783ZM15.744,18.082C10.283,18.082 5.849,22.516 5.849,27.978C5.849,33.439 10.283,37.874 15.744,37.874C21.206,37.874 25.64,33.439 25.64,27.978C25.64,22.516 21.206,18.082 15.744,18.082Z"/>
+            </g>
+            <g transform="matrix(2.494515,0,0,2.494515,-116.333883,-18.610042)">
+                <path d="M28.594,30.985C27.231,36.82 21.992,41.172 15.744,41.172C13.608,41.172 11.589,40.663 9.803,39.76C8.735,32.358 2.556,27.526 2.567,27.302C2.919,20.333 8.689,14.783 15.744,14.783C18.216,14.783 20.529,15.464 22.507,16.648" style="fill:none;stroke:black;stroke-width:4.88px;"/>
+            </g>
+            <g transform="matrix(3.066821,0,0,3.066821,-183.960651,-3.265045)">
+                <circle cx="44.633" cy="13.337" r="3.474"/>
+            </g>
+        </g>
+    </g>
+</svg>
