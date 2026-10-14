@@ -31,7 +31,9 @@ mkdirSync(tarballs, { recursive: true })
 const dependencies = {}
 for (const name of PACKAGES) {
   const packed = JSON.parse(npm(['pack', '--json', '--pack-destination', tarballs], { cwd: join(repoRoot, 'packages', name) }).toString())
-  dependencies[`@opencraw/${name}`] = `file:tarballs/${packed[0].filename}`
+  // npm 12 answers `pack --json` with an object keyed by package name; npm 11 with an array.
+  const [entry] = Object.values(packed)
+  dependencies[`@opencraw/${name}`] = `file:tarballs/${entry.filename}`
 }
 
 const source = JSON.parse(readFileSync(join(appDir, 'package.json'), 'utf8'))
