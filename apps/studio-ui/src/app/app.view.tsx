@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Box, ChakraProvider, HStack, Splitter, Text, defaultSystem } from '@chakra-ui/react'
 import { QueryClientProvider } from '@tanstack/react-query'
 import type { WhyTarget } from '@opencraw/studio'
@@ -10,7 +10,7 @@ import type { MappingRuleJson } from '../record-editor'
 import { HookNamesContext } from '../hook-names'
 import { activeStubs, useHookStubsStore } from '../hook-stubs'
 import { DocumentDropZone, useImportDocumentFlow, useLoadUrlFlow, useOpenPathFromLink } from '../recipe-start'
-import { StepsOutline } from '../steps-outline'
+import { CARD_DRAG_MIME, PILL_DRAG_MIME, StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
   useExplainWhyMutation,
@@ -176,7 +176,7 @@ function AppShell () {
               <Splitter.Panel id='editor' overflow='hidden' display='flex' flexDirection='column'>
                 <HStack gap={1} px={2} pt={2} borderBottomWidth='1px' flexShrink={0}>
                   <EditorTabButton label='Steps' active={editorTab === 'steps'} onClick={() => { setEditorTab('steps') }} />
-                  <EditorTabButton label='Record' active={editorTab === 'record'} onClick={() => { setEditorTab('record') }} />
+                  <EditorTabButton label='Record' active={editorTab === 'record'} onClick={() => { setEditorTab('record') }} switchOnDrag />
                   <EditorTabButton label='JSON' active={editorTab === 'json'} onClick={() => { setEditorTab('json') }} />
                 </HStack>
                 <Box flex='1' minH='0' overflow='auto'>
@@ -194,6 +194,7 @@ function AppShell () {
                       rejected={rejected}
                       onSaveInput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
                       onSaveOutput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
+                      onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
                       onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
                       onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
                     />
@@ -235,8 +236,36 @@ function messageOf (error: unknown): string | undefined {
   return error instanceof Error ? error.message : String(error)
 }
 
-/** One of the editor pane's tab buttons (Steps, Record, JSON): a plain toggle, styled active/inactive rather than a full Chakra Tabs primitive, which the pane's own layout (a fixed strip above a scrolling body) does not need. */
-function EditorTabButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) {
+/** Whether a drag in flight carries a pill or a content-pane selection. */
+function carriesValue (event: React.DragEvent): boolean {
+  const types = new Set(event.dataTransfer.types)
+
+  return types.has(PILL_DRAG_MIME) || types.has(CARD_DRAG_MIME)
+}
+
+/** How long a pill or a selection is held over a tab before it opens: long enough to pass over by accident, short enough not to feel stuck. */
+const DRAG_SWITCH_MS = 450
+
+/**
+ * One of the editor pane's tab buttons (Steps, Record, JSON): a plain toggle, styled active/inactive rather than a full Chakra Tabs primitive, which the pane's own layout (a fixed strip above a scrolling body) does not need.
+ *
+ * With `switchOnDrag`, holding a pill or a content-pane selection over it opens the tab, so a value can be dragged from the Steps tab (or the content pane) and dropped on the Record tab's output list, which the tab strip would otherwise hide.
+ */
+function EditorTabButton ({ label, active, onClick, switchOnDrag = false }: { label: string, active: boolean, onClick: () => void, switchOnDrag?: boolean }) {
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const clear = (): void => {
+    if (timer.current !== undefined) clearTimeout(timer.current)
+    timer.current = undefined
+  }
+  const dragOver = (event: React.DragEvent): void => {
+    if (!switchOnDrag || active || !carriesValue(event)) return
+    event.preventDefault()
+    timer.current ??= setTimeout(() => {
+      timer.current = undefined
+      onClick()
+    }, DRAG_SWITCH_MS)
+  }
+
   return (
     <Text
       as='button'
@@ -250,6 +279,10 @@ function EditorTabButton ({ label, active, onClick }: { label: string, active: b
       colorPalette='blue'
       cursor='pointer'
       onClick={onClick}
+      onDragEnter={dragOver}
+      onDragOver={dragOver}
+      onDragLeave={clear}
+      onDrop={clear}
     >
       {label}
     </Text>

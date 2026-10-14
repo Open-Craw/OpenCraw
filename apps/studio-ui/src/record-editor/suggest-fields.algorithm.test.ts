@@ -1,4 +1,4 @@
-import { suggestFields } from './suggest-fields.algorithm'
+import { suggestFieldFor, suggestFields } from './suggest-fields.algorithm'
 
 const books = {
   steps: [
@@ -81,5 +81,17 @@ describe('suggestFields', () => {
   it('reads an empty or half-written recipe without throwing', () => {
     expect(suggestFields(undefined, {}, {})).toEqual([])
     expect(suggestFields({ steps: [null, 4, { type: 'extract' }] }, {}, {})).toEqual([])
+  })
+})
+
+describe('suggestFieldFor', () => {
+  it('gives the proposal a value the steps read would get', () => {
+    const suggestion = suggestFieldFor('detailLink', books, {}, {})
+    expect(suggestion).toMatchObject({ source: 'detailLink', name: 'detailLink', field: { type: 'url' }, rule: { from: 'detailLink', transform: [{ op: 'absoluteUrl' }] } })
+  })
+
+  it('falls back to a text field named after the id for anything else, such as a loop alias or an id already mapped', () => {
+    expect(suggestFieldFor('book', books, {}, {})).toMatchObject({ name: 'book', field: { type: 'string' }, rule: { from: 'book' } })
+    expect(suggestFieldFor('price', books, { price: { type: 'number' } }, { price: { from: 'price' } })).toMatchObject({ name: 'price2', rule: { from: 'price' } })
   })
 })

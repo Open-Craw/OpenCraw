@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { resetRunSessionStore, resetStudioUiStore } from '../studio-store'
 import App from './app.view'
 
@@ -72,6 +72,30 @@ describe('App shell', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Recipe ▾' }))
     fireEvent.click(await screen.findByRole('menuitem', { name: 'Open folder…' }))
     expect(await screen.findByPlaceholderText('recipe folder')).toBeTruthy()
+  })
+})
+
+describe('Dragging a value to the Record tab', () => {
+  afterEach(() => { jest.useRealTimers() })
+
+  it('opens the Record tab after a pill is held over it, but not for a plain text drag or a quick pass', () => {
+    jest.useFakeTimers()
+    render(<App />)
+    const recordTab = screen.getByText('Record')
+    const pill = { types: ['application/x-opencraw-pill'] }
+
+    fireEvent.dragEnter(recordTab, { dataTransfer: { types: ['text/plain'] } })
+    act(() => { jest.advanceTimersByTime(1000) })
+    expect(screen.queryByText(/Select a recipe to see its output fields/)).toBeNull()
+
+    fireEvent.dragEnter(recordTab, { dataTransfer: pill })
+    fireEvent.dragLeave(recordTab, { dataTransfer: pill })
+    act(() => { jest.advanceTimersByTime(1000) })
+    expect(screen.queryByText(/Select a recipe to see its output fields/)).toBeNull()
+
+    fireEvent.dragEnter(recordTab, { dataTransfer: pill })
+    act(() => { jest.advanceTimersByTime(500) })
+    expect(screen.getByText(/Select a recipe to see its output fields/)).toBeTruthy()
   })
 })
 

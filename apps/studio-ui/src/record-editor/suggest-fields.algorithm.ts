@@ -72,6 +72,24 @@ export function suggestFields (input: unknown, fields: Record<string, FieldSpecJ
   return suggestions
 }
 
+/**
+ * The field to add for one value a person dropped on the output: what
+ * {@link suggestFields} proposes for that id when it is a value the steps
+ * read, otherwise a plain text field named after it that reads it (a pill of
+ * a loop alias, a built-in, or a value already mapped elsewhere).
+ *
+ * @param id - The dropped pill's step id.
+ * @param input - The input recipe's parsed JSON (possibly mid-edit).
+ * @param fields - The output recipe's fields so far.
+ * @param mapping - The input recipe's mapping so far.
+ */
+export function suggestFieldFor (id: string, input: unknown, fields: Record<string, FieldSpecJson>, mapping: Record<string, MappingRuleJson>): FieldSuggestion {
+  const proposed = suggestFields(input, fields, mapping).find(suggestion => suggestion.source === id)
+  if (proposed !== undefined) return proposed
+
+  return { source: id, name: freeName(id, new Set(Object.keys(fields))), field: { type: 'string' }, rule: { from: id }, reason: 'text, the safe default' }
+}
+
 /** The type a value's id and way of being read suggest. Never `currency` (it fails without a code); `number` reads a price with a symbol in it. */
 function inferType (id: string, step: StepJson): Typed {
   if (step.many === true) return { type: 'array', items: { type: 'string' }, reason: 'it reads every match, a list' }

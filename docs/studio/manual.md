@@ -67,8 +67,9 @@ The toolbar has three jobs, and each has one place:
 | **Load ▾** | What does it read? | **Document…**, **Web page (URL)…** |
 | **Run sample** / **Stop** | Does it work? | runs the open recipe |
 
-Next to them, **All changes saved** says edits are written as you make them (there is no Save step outside the
-JSON tab); it reads **Saving…** while a write is on its way.
+Next to them, **All changes saved** says the edits you make are written as you make them (the Steps tab, loading, creating a
+recipe); it reads **Saving…** while a write is on its way. The **Record** and **JSON** tabs keep their edits
+as a draft until you press their own **Save**, so a change there is not written before that.
 
 **A recipe is an input and its output.** The input recipe (`<id>.ocw-in.json`) names its output recipe
 (`<id>.ocw-out.json`, by the input's `output` id). Opening a recipe from **Recipe ▾** opens both: Steps edits the
@@ -179,6 +180,15 @@ afterwards like any field.
 
 Each field row opens with a one-line summary: a coloured **type** badge, the **pill** it reads from (or
 *not mapped*, *generated*) and, once a sample has run, the **value** the selected record got.
+
+**Drag to build the output.** Anything you can see can be dropped on the field list to become a field with its
+mapping, typed the way its proposal would be:
+
+- a **pill** from a **Steps** card: grab it and hold it over the **Record** tab (it opens after a moment),
+  then drop it on the list. Dropped on a field's own source box instead, it only maps that field;
+- a **selection** staged in the content pane (a cell, a text box, a region of a PDF, a node of the page): drag
+  its chip onto the **Record** tab and the list. The studio adds the step to the recipe, as dropping it on the
+  Steps tab does, and the value it reads appears as a new field. The new field is a draft until you **Save**.
 
 You can still add a field by hand with **+ field** and drag a **Steps** pill onto its row (or type the pill
 name directly). Mark `title` as the record's **key**, so a duplicate never gets emitted twice.
