@@ -5,9 +5,23 @@ import type { CellValue, ValueMode } from './workbook.model'
 
 /** A worksheet part, read. */
 export interface WorksheetContent {
-  rows:       CellValue[][]
-  hiddenRows: number[]
-  merges:     string[]
+  rows:                CellValue[][]
+  hiddenRows:          number[]
+  merges:              string[]
+  /** Stored column widths in characters, by 0-based column (only columns the file sizes, up to the widest row). */
+  columnWidths:        Record<number, number>
+  /** Stored row heights in points, by 0-based row (only rows the file sizes). */
+  rowHeights:          Record<number, number>
+  /** The sheet's default column width in characters, when it declares one. */
+  defaultColumnWidth?: number
+  /** The sheet's default row height in points, when it declares one. */
+  defaultRowHeight?:   number
+}
+
+interface ColumnSpan {
+  min:   number
+  max:   number
+  width: number
 }
 
 interface OpenCell {
@@ -33,6 +47,10 @@ export function readWorksheet (xml: string, context: CellContext & { formats: re
   const rows: CellValue[][] = []
   const hiddenRows: number[] = []
   const merges: string[] = []
+  const columnSpans: ColumnSpan[] = []
+  const rowHeights: Record<number, number> = {}
+  let defaultColumnWidth: number | undefined
+  let defaultRowHeight: number | undefined
   let row = -1
   let column = -1
   let cell: OpenCell | undefined
@@ -51,6 +69,8 @@ export function readWorksheet (xml: string, context: CellContext & { formats: re
           column = -1
           rows[row] ??= []
           if (isOn(attributes.hidden)) hiddenRows.push(row)
+          const height = positive(attributes.ht)
+          if (height !== undefined) rowHeights[row] = height
 
           break
         }
@@ -74,6 +94,20 @@ export function readWorksheet (xml: string, context: CellContext & { formats: re
         }
         case 't': {
           if (phonetic === 0 && cell?.type === 'inlineStr') capturing = 'inline'
+
+          break
+        }
+        case 'sheetFormatPr': {
+          defaultRowHeight = positive(attributes.defaultRowHeight)
+          defaultColumnWidth = positive(attributes.defaultColWidth)
+
+          break
+        }
+        case 'col': {
+          const width = positive(attributes.width)
+          const min = Number(attributes.min)
+          const max = Number(attributes.max)
+          if (width !== undefined && min >= 1 && max >= min) columnSpans.push({ min: min - 1, max: max - 1, width })
 
           break
         }
@@ -101,7 +135,35 @@ export function readWorksheet (xml: string, context: CellContext & { formats: re
   })
   const empty = mode === 'text' ? '' : null
 
-  return { rows: Array.from(rows, cells => Array.from(cells ?? [], value => value ?? empty)), hiddenRows, merges }
+  const cells = Array.from(rows, cells => Array.from(cells ?? [], value => value ?? empty))
+  const columnWidths = widthsOf(columnSpans, Math.max(0, ...cells.map(cells => cells.length)))
+
+  return {
+    rows: cells,
+    hiddenRows,
+    merges,
+    columnWidths,
+    rowHeights,
+    ...(defaultColumnWidth !== undefined && { defaultColumnWidth }),
+    ...(defaultRowHeight !== undefined && { defaultRowHeight }),
+  }
+}
+
+/** A stored size as a positive number, `undefined` when absent or not one. */
+function positive (value: string | undefined): number | undefined {
+  const parsed = Number(value)
+
+  return value !== undefined && Number.isFinite(parsed) && parsed > 0 ? parsed : undefined
+}
+
+/** `<col min max width>` ranges as widths by column, never past the widest row (a range often runs to column 16384). */
+function widthsOf (spans: readonly ColumnSpan[], columnCount: number): Record<number, number> {
+  const widths: Record<number, number> = {}
+  for (const span of spans) {
+    for (let column = span.min; column <= Math.min(span.max, columnCount - 1); column += 1) widths[column] = span.width
+  }
+
+  return widths
 }
 
 /** `AB12` as 0-based row and column. */

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { Badge, Box, HStack, Input, Table, Text } from '@chakra-ui/react'
 import type { GridSheetView, OutlineCard, WorkbookDocumentView } from '@opencraw/studio'
@@ -8,6 +8,8 @@ import { useGridPreviewQuery } from '../studio-client'
 import { cellSelector, columnHeaderText, columnKeyFrom, escapedRowPattern, fillDownKeyFor, filledGridOf, gridCellCardNode, gridTableCardNode, isSingleCell, rangeText, regionIdFrom, rowPickText, sheetPattern, unionRange } from './grid-pick.mapper'
 import type { CellRange, GridDraft } from './grid-pick.mapper'
 import { SelectionChip } from './selection-chip.component'
+import { columnName, sheetGeometry } from './sheet-geometry.algorithm'
+import type { SheetGeometry } from './sheet-geometry.algorithm'
 import { cellStepsOnSheet, stepIdsForCell } from './step-highlight.mapper'
 import type { PickedStep } from './step-highlight.mapper'
 
@@ -48,8 +50,9 @@ export interface GridCanvasProps {
 }
 
 const NO_STEPS: readonly PickedStep[] = []
-const ROW_HEIGHT = 24
-const CELL_WIDTH = 130
+/** The column-name strip above the grid and the row-number strip left of it, in pixels. */
+const HEADER_HEIGHT = 24
+const ROW_HEADER_WIDTH = 44
 const OVERSCAN = 30
 const PREVIEW_ROW_LIMIT = 5
 
@@ -113,10 +116,14 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
   const preview = useGridPreviewQuery(recipeId, stepPath, previewOptions)
   const currentMatch = useMemo(() => preview.data?.matches.find(match => match.sheet === sheet?.name), [preview.data, sheet?.name])
 
+  // Column and row sizes come from the file (ExcelJS-style widths in characters, heights in points).
+  const geometry = useMemo(() => sheetGeometry(sheet ?? {}, sheet?.columnCount ?? 0, sheet?.rows.length ?? 0), [sheet])
+  const getItemKey = useCallback((index: number) => `${String(sheetIndex)}:${String(index)}`, [sheetIndex])
   const virtualizer = useVirtualizer({
     count:            sheet?.rows.length ?? 0,
     getScrollElement: () => parentRef.current,
-    estimateSize:     () => ROW_HEIGHT,
+    estimateSize:     index => geometry.rowTops[index + 1] - geometry.rowTops[index],
+    getItemKey,
     overscan:         OVERSCAN,
   })
 
@@ -280,7 +287,9 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
       </HStack>
       <Box flex='1' minH='0' display='flex' flexDirection='column'>
         <Box ref={parentRef} flex='1' minH='0' overflow='auto' position='relative' onMouseUp={handleBackgroundMouseUp} onMouseLeave={() => { setHoverCell(undefined); reportHover(undefined) }}>
-          <Box h={`${String(virtualizer.getTotalSize())}px`} position='relative' style={{ width: `${String(sheet.columnCount * CELL_WIDTH)}px` }}>
+          <Box position='relative' style={{ height: `${String(HEADER_HEIGHT + geometry.height)}px`, width: `${String(ROW_HEADER_WIDTH + geometry.width)}px` }}>
+            <ColumnHeaders geometry={geometry} />
+            <RowHeaders geometry={geometry} rowIndexes={virtualizer.getVirtualItems().map(item => item.index)} hiddenRows={sheet.hiddenRows} />
             {virtualizer.getVirtualItems().map(item => (
               layout[item.index]?.map(cell => cell === undefined
                 ? null
@@ -288,7 +297,7 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
                     <GridCellBox
                       key={`${String(item.index)}:${String(cell.columnIndex)}`}
                       cell={cell}
-                      top={item.start}
+                      box={cellBox(geometry, item.index, cell)}
                       isHeader={headerRowIndexes?.includes(item.index) ?? false}
                       isHidden={sheet.hiddenRows.includes(item.index)}
                       isSnapped={cellMode && hoverCell?.row === item.index && hoverCell.column === cell.columnIndex}
@@ -304,8 +313,8 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
             ))}
             {stagedOnThisSheet !== undefined && (
               <SelectionChip
-                left={stagedOnThisSheet.range.left * CELL_WIDTH}
-                top={(stagedOnThisSheet.range.bottom + 1) * ROW_HEIGHT + 4}
+                left={ROW_HEADER_WIDTH + geometry.columnLefts[stagedOnThisSheet.range.left]}
+                top={HEADER_HEIGHT + geometry.rowTops[stagedOnThisSheet.range.bottom + 1] + 4}
                 text={stagedText}
                 loading={false}
                 onAdd={addStaged}
@@ -317,6 +326,85 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
         </Box>
         {currentMatch !== undefined && <GridPreviewPanel match={currentMatch} />}
       </Box>
+    </Box>
+  )
+}
+
+/** A cell's position and size in pixels, inside the headers. */
+interface CellBox {
+  top:    number
+  left:   number
+  width:  number
+  height: number
+}
+
+/** Where a cell sits: its own column and row edges, widened over the ones a merge spans. */
+function cellBox (geometry: SheetGeometry, rowIndex: number, cell: RenderCell): CellBox {
+  const lastColumn = geometry.columnLefts.length - 1
+  const lastRow = geometry.rowTops.length - 1
+  const left = geometry.columnLefts[cell.columnIndex]
+  const top = geometry.rowTops[rowIndex]
+
+  return {
+    top:    HEADER_HEIGHT + top,
+    left:   ROW_HEADER_WIDTH + left,
+    width:  geometry.columnLefts[Math.min(cell.columnIndex + cell.colSpan, lastColumn)] - left,
+    height: geometry.rowTops[Math.min(rowIndex + cell.rowSpan, lastRow)] - top,
+  }
+}
+
+const HEADER_STYLE = { fontSize: '11px', fontWeight: 600 } as const
+
+/** The column names (`A`, `B`�) in a strip that stays at the top while the grid scrolls, each as wide as its column. */
+function ColumnHeaders ({ geometry }: { geometry: SheetGeometry }): React.ReactElement {
+  const count = geometry.columnLefts.length - 1
+
+  return (
+    <Box position='sticky' top={0} zIndex={3} bg='bg.muted' borderBottomWidth='1px' style={{ height: `${String(HEADER_HEIGHT)}px`, width: `${String(ROW_HEADER_WIDTH + geometry.columnLefts[count])}px` }}>
+      <Box position='sticky' left={0} zIndex={4} bg='bg.muted' borderRightWidth='1px' style={{ width: `${String(ROW_HEADER_WIDTH)}px`, height: `${String(HEADER_HEIGHT)}px` }} />
+      {Array.from({ length: count }, (_, column) => (
+        <Box
+          key={columnName(column)}
+          data-testid='column-header'
+          position='absolute'
+          top={0}
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          borderRightWidth='1px'
+          color='fg.muted'
+          overflow='hidden'
+          style={{ ...HEADER_STYLE, left: `${String(ROW_HEADER_WIDTH + geometry.columnLefts[column])}px`, width: `${String(geometry.columnLefts[column + 1] - geometry.columnLefts[column])}px`, height: `${String(HEADER_HEIGHT)}px` }}
+        >
+          {columnName(column)}
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
+/** The row numbers (`1`, `2`�) in a strip that stays at the left while the grid scrolls, for the rows on screen, each as tall as its row. */
+function RowHeaders ({ geometry, rowIndexes, hiddenRows }: { geometry: SheetGeometry, rowIndexes: readonly number[], hiddenRows: readonly number[] }): React.ReactElement {
+  return (
+    <Box position='sticky' left={0} zIndex={2} bg='bg.muted' borderRightWidth='1px' style={{ width: `${String(ROW_HEADER_WIDTH)}px`, height: `${String(geometry.height)}px` }}>
+      {rowIndexes.map(row => (
+        <Box
+          key={row}
+          data-testid='row-header'
+          position='absolute'
+          left={0}
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          borderBottomWidth='1px'
+          color='fg.muted'
+          overflow='hidden'
+          opacity={hiddenRows.includes(row) ? 0.4 : 1}
+          style={{ ...HEADER_STYLE, top: `${String(geometry.rowTops[row])}px`, width: `${String(ROW_HEADER_WIDTH)}px`, height: `${String(geometry.rowTops[row + 1] - geometry.rowTops[row])}px` }}
+        >
+          {row + 1}
+        </Box>
+      ))}
     </Box>
   )
 }
@@ -412,7 +500,7 @@ const TYPE_COLOR: Record<RenderCell['type'], string> = {
 
 interface GridCellBoxProps {
   cell:           RenderCell
-  top:            number
+  box:            CellBox
   isHeader:       boolean
   isHidden:       boolean
   /** The cell under the mouse in Cell mode: the one a click would stage. */
@@ -445,7 +533,7 @@ function cellBackground (cell: RenderCell, isHeader: boolean, isStaged: boolean,
   return cell.isMergeLabel ? 'purple.subtle' : 'bg'
 }
 
-function GridCellBox ({ cell, top, isHeader, isHidden, isSnapped, isStaged, stepIds, hoveredStepId, onClick, onMouseEnter, onMouseDown, onMouseUp }: GridCellBoxProps): React.ReactElement {
+function GridCellBox ({ cell, box, isHeader, isHidden, isSnapped, isStaged, stepIds, hoveredStepId, onClick, onMouseEnter, onMouseDown, onMouseUp }: GridCellBoxProps): React.ReactElement {
   const inRecipe = stepIds.length > 0
   const highlighted = hoveredStepId !== undefined && stepIds.includes(hoveredStepId)
 
@@ -455,7 +543,7 @@ function GridCellBox ({ cell, top, isHeader, isHidden, isSnapped, isStaged, step
       data-step-ids={inRecipe ? stepIds.join(' ') : undefined}
       data-highlighted={highlighted}
       position='absolute'
-      style={{ top: `${String(top)}px`, left: `${String(cell.columnIndex * CELL_WIDTH)}px`, width: `${String(cell.colSpan * CELL_WIDTH)}px`, height: `${String(cell.rowSpan * ROW_HEIGHT)}px` }}
+      style={{ top: `${String(box.top)}px`, left: `${String(box.left)}px`, width: `${String(box.width)}px`, height: `${String(box.height)}px` }}
       borderWidth={inRecipe ? '2px' : '1px'}
       borderStyle={inRecipe && !highlighted ? 'dashed' : 'solid'}
       borderColor={cellBorderColor(isStaged, isSnapped, inRecipe)}

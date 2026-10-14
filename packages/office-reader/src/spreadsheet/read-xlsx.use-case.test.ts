@@ -20,6 +20,21 @@ async function sheetNames (sheets: ReadXlsxOptions['sheets']): Promise<string[]>
 }
 
 describe('readXlsx', () => {
+  it('reads a macro-enabled workbook like a plain one, ignoring the macro project', async () => {
+    const book = await readXlsx(join(__dirname, 'fixtures', 'macro-sized.xlsm'))
+    expect(book.sheets.map(sheet => sheet.name)).toEqual(['Incentivi giugno', 'Archivio', 'Maggio'])
+    expect(book.sheets[0].rows[4]).toEqual(['Fiat', 'Pandina', 15_950, 13_955.625, 0.125, new Date('2026-06-01T00:00:00Z'), true, 'Solo rottamazione'])
+  })
+
+  it('reads the stored column widths and row heights, a range cut at the widest row', async () => {
+    const book = await readXlsx(join(__dirname, 'fixtures', 'macro-sized.xlsm'))
+    const sheet = book.sheets[0]
+    expect(sheet.columnWidths).toEqual({ 0: 20.5, 2: 12, 3: 12, 8: 30 })
+    expect(sheet.rowHeights).toEqual({ 0: 30 })
+    expect(sheet.defaultColumnWidth).toBe(10)
+    expect(sheet.defaultRowHeight).toBe(15)
+  })
+
   it('reads every worksheet in order, leaving the chart sheet out, with merges and hidden rows and sheets', async () => {
     const book = await readXlsx(incentivi)
     expect(book.date1904).toBe(false)
@@ -45,7 +60,7 @@ describe('readXlsx', () => {
   })
 
   it('reads only the sheets asked for, by name, pattern or test', async () => {
-    expect(await firstSheet({ sheets: 'Maggio', values: 'text' })).toEqual({ name: 'Maggio', hidden: false, rows: [['Mese', 'Totale'], ['2026-05-01', '42']], hiddenRows: [], merges: [] })
+    expect(await firstSheet({ sheets: 'Maggio', values: 'text' })).toEqual({ name: 'Maggio', hidden: false, rows: [['Mese', 'Totale'], ['2026-05-01', '42']], hiddenRows: [], merges: [], columnWidths: {}, rowHeights: {} })
     expect(await sheetNames(/^incentivi/i)).toEqual(['Incentivi giugno'])
     expect(await sheetNames(sheet => !sheet.hidden)).toEqual(['Incentivi giugno', 'Maggio'])
   })
@@ -53,7 +68,7 @@ describe('readXlsx', () => {
   it('reads the 1904 date system, prefixed elements and backslashed entry names', async () => {
     const bytes = readFileSync(join(__dirname, 'fixtures', 'date1904.xlsx'))
     const book = await readXlsx(new Blob([bytes]))
-    expect(book).toEqual({ date1904: true, sheets: [{ name: 'd', hidden: false, rows: [[new Date('2026-06-01T00:00:00Z'), new Date('1904-01-01T12:00:00Z')]], hiddenRows: [], merges: [] }] })
+    expect(book).toEqual({ date1904: true, sheets: [{ name: 'd', hidden: false, rows: [[new Date('2026-06-01T00:00:00Z'), new Date('1904-01-01T12:00:00Z')]], hiddenRows: [], merges: [], columnWidths: {}, rowHeights: {} }] })
     // A time of day is a serial under 1, in either system: 0.5 is noon, not 1 January 1904 at noon.
     const text = await readXlsx(bytes, { values: 'text' })
     expect(text.sheets[0].rows).toEqual([['2026-06-01', '12:00:00']])

@@ -4,7 +4,7 @@ import type { RecipeListing } from '@opencraw/studio'
 import { NewRecipeDialog } from './new-recipe-dialog.component'
 
 /** What "Open document…" offers: every format the engine reads off disk (core's `formatOfFile`), as the file picker's filter. */
-const DOCUMENT_EXTENSIONS = '.pdf,.xlsx,.xls,.csv,.tsv,.pptx,.docx,.md,.markdown,.html,.htm,.json,.jsonl,.yaml,.yml,.xml'
+const DOCUMENT_EXTENSIONS = '.pdf,.xlsx,.xlsm,.xls,.csv,.tsv,.pptx,.docx,.md,.markdown,.html,.htm,.json,.jsonl,.yaml,.yml,.xml'
 
 export interface ToolbarProps {
   folder:            string

@@ -7,15 +7,23 @@ export type CellValue = string | number | boolean | Date | null | { error: strin
 
 /** One worksheet: its cells as stored, plus what a person sees differently (hidden rows, merged ranges). */
 export interface Sheet<Cell = CellValue> {
-  name:       string
+  name:                string
   /** Hidden or very hidden in the workbook. */
-  hidden:     boolean
+  hidden:              boolean
   /** Top to bottom from row 1; each row runs to its last stored cell (rows can be ragged). */
-  rows:       Cell[][]
+  rows:                Cell[][]
   /** Hidden rows, 0-based. */
-  hiddenRows: number[]
+  hiddenRows:          number[]
   /** Merged ranges as A1 references (`B10:B13`); a range's value sits in its top-left cell only, as the file stores it. */
-  merges:     string[]
+  merges:              string[]
+  /** Column widths in characters, by 0-based column, as the file stores them; columns the file does not size are absent. */
+  columnWidths?:       Record<number, number>
+  /** Row heights in points, by 0-based row, as the file stores them; rows the file does not size are absent. */
+  rowHeights?:         Record<number, number>
+  /** The width of a column the file does not size, in characters, when the sheet declares one. */
+  defaultColumnWidth?: number
+  /** The height of a row the file does not size, in points, when the sheet declares one. */
+  defaultRowHeight?:   number
 }
 
 /** A workbook read into sheets. */

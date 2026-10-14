@@ -20,14 +20,22 @@ export interface GridMergeView {
 
 /** One sheet of the grid canvas (issue #94's 5c). */
 export interface GridSheetView {
-  name:        string
-  hidden:      boolean
+  name:                string
+  hidden:              boolean
   /** 0-based row indices hidden in the sheet. */
-  hiddenRows:  number[]
+  hiddenRows:          number[]
   /** The widest row's own length, ragged rows included — for the grid to size its columns. */
-  columnCount: number
-  rows:        GridCellView[][]
-  merges:      GridMergeView[]
+  columnCount:         number
+  rows:                GridCellView[][]
+  merges:              GridMergeView[]
+  /** Column widths in characters by 0-based column, as the spreadsheet stores them; absent keys are columns the file does not size. */
+  columnWidths?:       Record<string, number>
+  /** Row heights in points by 0-based row, as the spreadsheet stores them. */
+  rowHeights?:         Record<string, number>
+  /** The width of a column the file does not size, in characters. */
+  defaultColumnWidth?: number
+  /** The height of a row the file does not size, in points. */
+  defaultRowHeight?:   number
 }
 
 /** What `grid-view` answers with (studio plan §3.4, issue #94's 5c): every sheet's cells, typed, with hidden sheets/rows marked and merged ranges resolved — the CSV/workbook grid's own view of the document, structurally the same idea as `pdf-view.mapper.ts`'s `PdfDocumentView`. */
@@ -72,6 +80,10 @@ function sheetView (sheet: Sheet): GridSheetView {
 
       return range === undefined ? [] : [{ ref: reference, ...range }]
     }),
+    ...(sheet.columnWidths !== undefined && { columnWidths: { ...sheet.columnWidths } }),
+    ...(sheet.rowHeights !== undefined && { rowHeights: { ...sheet.rowHeights } }),
+    ...(sheet.defaultColumnWidth !== undefined && { defaultColumnWidth: sheet.defaultColumnWidth }),
+    ...(sheet.defaultRowHeight !== undefined && { defaultRowHeight: sheet.defaultRowHeight }),
   }
 }
 
