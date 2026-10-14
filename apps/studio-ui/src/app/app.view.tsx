@@ -9,6 +9,7 @@ import { RecordEditor, fieldToStepIdOf } from '../record-editor'
 import type { MappingRuleJson } from '../record-editor'
 import { HookNamesContext } from '../hook-names'
 import { activeStubs, useHookStubsStore } from '../hook-stubs'
+import { DocumentDropZone, useImportDocumentFlow, useOpenPathFromLink } from '../recipe-start'
 import { StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
@@ -24,12 +25,9 @@ import {
   useWorkspaceQuery,
 } from '../studio-client'
 import { useRunSessionStore, useStudioUiStore } from '../studio-store'
-import { DocumentDropZone } from './document-drop-zone.component'
 import { desktopBridge } from './desktop-bridge.client'
 import { HooksBar } from './hooks-bar.component'
 import { useBrowseFolderFlow } from './browse-folder.hook'
-import { useImportDocumentFlow } from './import-document.hook'
-import { useOpenPathFromLink } from './open-path.hook'
 import { Toolbar } from './toolbar.component'
 
 /** The studio's shell: the toolbar, the resizable content/editor split, and the preview strip along the bottom. */
