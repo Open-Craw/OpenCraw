@@ -35,7 +35,7 @@ editor (extension host)            Studio process                       browser
 - `src/open-on-opencraw`: the command's outcome, the only place that touches the editor API.
 - `src/extension.ts`: the entry point the editor requires.
 
-The folder dialog is the server's own (`choose-folder`), so the **Browse…** button in the browser works the
+The folder dialog is the server's own (`choose-folder`), so the **Browse…** button in the browser's Open folder dialog works the
 same as everywhere else; in a remote window the dialog opens on the remote machine, which has no display, and
 the message says to type the folder instead.
 

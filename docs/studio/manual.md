@@ -59,22 +59,44 @@ so a plain crawl install stays light.
 
 ## 2. Opening a workspace
 
-The toolbar's folder box takes any folder — one that already has `<id>.input.json`/`<id>.output.json` files
-in it, or a brand new one. Type a path (or start with one already open, via `opencraw studio <folder>`) and
-click **Open**.
+The toolbar has three jobs, and each has one place:
 
-**Starting from nothing?** Click **+ New recipe**, type an id (lowercase letters, digits and hyphens — the
-same pattern every recipe id follows), and **Create**. That writes a minimal, valid pair —
-`<id>.input.json` and `<id>.output.json` — into the open folder and selects it: a `web` recipe with one
+| Button | Question it answers | What is in it |
+|---|---|---|
+| **Recipe ▾** | Which recipe am I editing? | the recipes in the open folder, **New recipe…**, **Open folder…** |
+| **Load ▾** | What does it read? | **Document…**, **Web page (URL)…** |
+| **Run sample** / **Stop** | Does it work? | runs the open recipe |
+
+Next to them, **All changes saved** says edits are written as you make them (there is no Save step outside the
+JSON tab); it reads **Saving…** while a write is on its way.
+
+**A recipe is an input and its output.** The input recipe (`<id>.ocw-in.json`) names its output recipe
+(`<id>.ocw-out.json`, by the input's `output` id). Opening a recipe from **Recipe ▾** opens both: Steps edits the
+input, Record edits the output and the mapping between them. You never open the pair separately.
+
+**Opening a folder.** **Recipe ▾ → Open folder…** takes any folder — one that already has `.ocw-in.json` /
+`.ocw-out.json` files in it, or a brand new one. In the desktop app that is the native folder dialog; in a
+browser it is a box to type the path in, with **Browse…** for the operating system's dialog. Starting Studio
+with `opencraw studio <folder>` opens that folder already.
+
+**Starting from nothing?** **Recipe ▾ → New recipe…**: type an id (lowercase letters, digits and hyphens — the
+same pattern every recipe id follows), optionally a start URL, and **Create**. That writes a minimal, valid
+pair — `<id>.ocw-in.json` and `<id>.ocw-out.json` — into the open folder and selects it: a `web` recipe with one
 `goto` step, an `emit`, and no fields mapped yet. Everything from here builds on top of that.
 
-**Starting from a file?** Drop a PDF, spreadsheet, CSV, PowerPoint, Word, Markdown, JSON, YAML or XML
-file anywhere on the window — or click **Open document…** and pick one. The studio copies it into the
-workspace folder (next to the recipes, so the folder stays self-contained), writes a pair named after the
-file (`Q3 Report.pdf` → `q3-report`; a second `q3-report` becomes `q3-report-2`) whose one step reads the
-copy, and selects it. The content pane then shows the document on its own canvas
-([§8](#8-document-canvases)) — no URL to type, no placeholder to edit. No folder open yet? Type one in
-the folder box first; it's created on the drop.
+**Loading what it reads.** A page or a document is the sample a recipe is built against, so **Load ▾** puts it
+into the recipe that is open:
+
+- **Web page (URL)…** with a web recipe open replaces its start page; the steps and the mapping stay.
+- **Document…** (or dropping a PDF, spreadsheet, CSV, PowerPoint, Word, Markdown, JSON, YAML or XML file
+  anywhere on the window) with a document recipe open replaces the file it reads. The studio copies the file
+  into the workspace folder, next to the recipes, so the folder stays self-contained.
+- If the open recipe reads the other kind of thing — a document into a web recipe, or a page into a document
+  recipe — or no recipe is open, Load starts a new recipe instead and leaves the open one untouched. A bar
+  under the toolbar says which happened. New recipes are named after the file (`Q3 Report.pdf` → `q3-report`;
+  a second one becomes `q3-report-2`) or the page's host, and a document opens on its own canvas
+  ([§8](#8-document-canvases)).
+- No folder open yet? Load needs one to write into: open one first.
 
 For this guide's example, open any folder and create a recipe with the id `books`.
 

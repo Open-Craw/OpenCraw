@@ -43,8 +43,8 @@ Linux build once (`e2e/packaged.e2e.test.ts`). It publishes nothing.
 
 - **Opens a recipe folder.** `File > Open Folder…` (Ctrl/Cmd+O), `File > Open Recent`, or a folder on the
   command line. With none given it opens the most recent folder that still exists.
-- **Picks folders with the native dialog.** In the app the toolbar has "Open folder…" instead of a folder
-  box and "Open" (the page asks the main process through the preload; a browser tab keeps the box).
+- **Picks folders with the native dialog.** In the app **Recipe ▾ → Open folder…** opens the native dialog directly
+  (the page asks the main process through the preload); a browser tab shows a folder box with Browse… instead.
 - **Runs hooks.** `--hooks <file>` (or `--plugins`, or `OPENCRAW_PLUGINS`/`OPENCRAW_HOOKS`) loads a hooks or
   plugins module on the launch's own authority, exactly like `opencraw studio --hooks`. A file that fails
   to load stops the app with the reason. A second launch's `--hooks` is ignored: the running server keeps its own.

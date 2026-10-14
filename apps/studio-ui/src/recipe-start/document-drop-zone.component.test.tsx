@@ -28,7 +28,7 @@ describe('DocumentDropZone (issue #120)', () => {
     const zone = screen.getByTestId('document-drop-zone')
 
     fireEvent.dragEnter(zone, { dataTransfer: fileTransfer(new File(['x'], 'report.pdf')) })
-    expect(screen.getByRole('status').textContent).toMatch(/drop to start a recipe/i)
+    expect(screen.getByRole('status').textContent).toMatch(/drop to load this file/i)
 
     fireEvent.dragLeave(zone, { dataTransfer: fileTransfer(new File(['x'], 'report.pdf')) })
     expect(screen.queryByRole('status')).toBeNull()

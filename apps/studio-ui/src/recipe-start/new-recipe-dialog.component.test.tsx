@@ -15,13 +15,13 @@ function mockFetch (): jest.Mock {
   return fetchMock
 }
 
-function renderDialog (props: Partial<{ folder?: string, onCreated: (id: string) => void }> = {}) {
+function renderDialog (props: Partial<{ folder?: string, onCreated: (id: string) => void, onClose: () => void }> = {}) {
   const queryClient = createStudioQueryClient()
 
   return render(
     <QueryClientProvider client={queryClient}>
       <ChakraProvider value={defaultSystem}>
-        <NewRecipeDialog folder='/r' onCreated={() => {}} {...props} />
+        <NewRecipeDialog folder='/r' open onClose={() => {}} onCreated={() => {}} {...props} />
       </ChakraProvider>
     </QueryClientProvider>,
   )
@@ -30,14 +30,14 @@ function renderDialog (props: Partial<{ folder?: string, onCreated: (id: string)
 beforeEach(() => { withUrl('?token=abc123') })
 
 describe('NewRecipeDialog', () => {
-  it('disables the trigger when no workspace folder is open', () => {
+  it('keeps Create disabled when no workspace folder is open', async () => {
     renderDialog({ folder: undefined })
-    expect(screen.getByRole('button', { name: '+ New recipe' }).hasAttribute('disabled')).toBe(true)
+    fireEvent.change(await screen.findByPlaceholderText('books'), { target: { value: 'widgets' } })
+    expect(screen.getByRole('button', { name: 'Create' }).hasAttribute('disabled')).toBe(true)
   })
 
-  it('opens the dialog and flags an invalid id, keeping Create disabled', async () => {
+  it('flags an invalid id, keeping Create disabled', async () => {
     renderDialog()
-    fireEvent.click(screen.getByRole('button', { name: '+ New recipe' }))
     fireEvent.change(await screen.findByPlaceholderText('books'), { target: { value: 'Not Valid!' } })
     expect(screen.getByText(/lowercase letters, digits and hyphens/)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Create' }).hasAttribute('disabled')).toBe(true)
@@ -48,7 +48,6 @@ describe('NewRecipeDialog', () => {
     const onCreated = jest.fn()
     renderDialog({ onCreated })
 
-    fireEvent.click(screen.getByRole('button', { name: '+ New recipe' }))
     fireEvent.change(await screen.findByPlaceholderText('books'), { target: { value: 'widgets' } })
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
 
@@ -64,7 +63,6 @@ describe('NewRecipeDialog', () => {
     const fetchMock = mockFetch()
     renderDialog({ onCreated: jest.fn() })
 
-    fireEvent.click(screen.getByRole('button', { name: '+ New recipe' }))
     fireEvent.change(await screen.findByPlaceholderText('books'), { target: { value: 'widgets' } })
     fireEvent.change(screen.getByPlaceholderText('https://example.com/books'), { target: { value: 'shop.test' } })
     expect(screen.getByRole('button', { name: 'Create' })).toHaveProperty('disabled', true)
@@ -81,7 +79,6 @@ describe('NewRecipeDialog', () => {
     Object.defineProperty(globalThis, 'fetch', { value: fetchMock, configurable: true })
     renderDialog()
 
-    fireEvent.click(screen.getByRole('button', { name: '+ New recipe' }))
     fireEvent.change(await screen.findByPlaceholderText('books'), { target: { value: 'widgets' } })
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
 

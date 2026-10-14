@@ -42,7 +42,8 @@ describeBuilt('studio desktop: launch', () => {
   })
 
   it('offers the native folder dialog instead of a folder box', async () => {
-    await page.getByRole('button', { name: 'Open folder…' }).waitFor()
+    await page.getByRole('button', { name: /^Recipe/ }).click()
+    await page.getByRole('menuitem', { name: 'Open folder…' }).waitFor()
 
     expect(await page.getByPlaceholder('recipe folder').count()).toBe(0)
     expect(await page.evaluate('typeof window.opencrawDesktop.chooseFolder')).toBe('function')

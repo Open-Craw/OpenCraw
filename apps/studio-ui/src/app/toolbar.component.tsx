@@ -1,92 +1,80 @@
-import { useRef } from 'react'
-import { Button, HStack, Input, NativeSelect, Text } from '@chakra-ui/react'
+import { useRef, useState } from 'react'
+import { Button, HStack, Text } from '@chakra-ui/react'
 import type { RecipeListing } from '@opencraw/studio'
-import { NewRecipeDialog } from '../recipe-start'
+import { LoadUrlDialog, NewRecipeDialog } from '../recipe-start'
+import { LoadMenu } from './load-menu.component'
+import { OpenFolderDialog } from './open-folder-dialog.component'
+import { RecipeMenu } from './recipe-menu.component'
+import { SaveStatus } from './save-status.component'
 
-/** What "Open document…" offers: every format the engine reads off disk (core's `formatOfFile`), as the file picker's filter. */
+/** What "Load ▾ Document…" offers: every format the engine reads off disk (core's `formatOfFile`), as the file picker's filter. */
 const DOCUMENT_EXTENSIONS = '.pdf,.xlsx,.xlsm,.xls,.csv,.tsv,.pptx,.docx,.md,.markdown,.html,.htm,.json,.jsonl,.yaml,.yml,.xml'
 
 export interface ToolbarProps {
   folder:            string
   onFolderChange:    (folder: string) => void
   onOpen:            () => void
-  /** Set in the desktop app: the native folder dialog. The folder box and "Open" give way to "Open folder…". */
+  /** Set in the desktop app: the native folder dialog, used directly by "Open folder…". */
   onChooseFolder?:   () => void
-  /** In a browser: the server's folder dialog, next to the folder box (which keeps working when there is no dialog). */
+  /** In a browser: the server's folder dialog, offered inside the Open folder dialog (whose typed box keeps working when there is none). */
   onBrowse?:         () => void
   /** The dialog is open, waiting for an answer. */
   browsing?:         boolean
-  /** The folder a workspace is actually open on, for "+ New recipe" — `undefined` before one is opened (nothing to write into yet). */
+  /** The folder a workspace is actually open on — `undefined` before one is opened (nothing to write into yet). */
   openFolder?:       string
   inputs:            RecipeListing[]
   selectedRecipeId?: string
   onSelectRecipe:    (recipeId: string) => void
-  /** A new recipe pair was created and saved: select it, the same as picking it from the list below. */
+  /** A new recipe pair was created and saved: select it, the same as picking it from the Recipe menu. */
   onRecipeCreated:   (recipeId: string) => void
-  /** "Open document…" picked a file: start a recipe from it (issue #120, the same flow as dropping it on the shell). */
+  /** "Load ▾ Document…" picked a file (the same flow as dropping it on the shell). */
   onImportFile:      (file: File) => void
-  /** A document import is in progress: the button shows it and refuses a second one meanwhile. */
+  /** "Load ▾ Web page…" confirmed an address. */
+  onLoadUrl:         (url: string) => void
+  /** A load is in progress: the Load button shows it and refuses a second one meanwhile. */
   importing:         boolean
   running:           boolean
   onRunSample:       () => void
   onStop:            () => void
 }
 
-/** The last segment of a folder path, for showing next to the button; the whole path is its tooltip. */
+/** The last segment of a folder path, for showing beside the menus; the whole path is its tooltip. */
 function folderName (path: string): string {
   return /[^/\\]+(?=[/\\]*$)/u.exec(path)?.[0] ?? ''
 }
 
-/** The shell's toolbar: the workspace folder, a recipe picker, "+ New recipe", "Open document…", and Run sample / Stop. */
-export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBrowse, browsing, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, onImportFile, importing, running, onRunSample, onStop }: ToolbarProps) {
+/**
+ * The shell's toolbar, three jobs and no more: **Recipe ▾** (which recipe is being edited: open, new, another
+ * folder), **Load ▾** (what it reads: a document or a page), and Run sample / Stop; with a status that says edits
+ * are saved as they are made.
+ */
+export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBrowse, browsing, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, onImportFile, onLoadUrl, importing, running, onRunSample, onStop }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [newRecipeOpen, setNewRecipeOpen] = useState(false)
+  const [urlOpen, setUrlOpen] = useState(false)
+  const [folderOpen, setFolderOpen] = useState(false)
 
   return (
     <HStack gap={2} p={2} borderBottomWidth='1px' wrap='wrap'>
       <Text fontWeight='semibold' flexShrink={0}>OpenCraw Studio</Text>
-      {onChooseFolder === undefined
-        ? (
-            <>
-              <Input
-                size='sm'
-                flex='1 1 8em'
-                minW='8em'
-                maxW='24em'
-                placeholder='recipe folder'
-                value={folder}
-                onChange={event => { onFolderChange(event.target.value) }}
-                onKeyDown={event => { if (event.key === 'Enter') onOpen() }}
-              />
-              <Button size='sm' onClick={onOpen}>Open</Button>
-              {onBrowse !== undefined && (
-                <Button size='sm' variant='outline' onClick={onBrowse} disabled={browsing} loading={browsing} title='Pick the folder in the operating system dialog'>Browse…</Button>
-              )}
-            </>
-          )
-        : (
-            <>
-              <Button size='sm' onClick={onChooseFolder}>Open folder…</Button>
-              <Text fontSize='sm' color='fg.muted' truncate maxW='16em' title={openFolder ?? folder}>{folderName(openFolder ?? folder)}</Text>
-            </>
-          )}
-      <NativeSelect.Root size='sm' flex='1 1 8em' minW='8em' maxW='16em' disabled={inputs.length === 0}>
-        <NativeSelect.Field
-          value={selectedRecipeId ?? ''}
-          onChange={event => { onSelectRecipe(event.target.value) }}
-        >
-          <option value='' disabled>{inputs.length === 0 ? 'no input recipes' : 'select a recipe'}</option>
-          {inputs.map(input => <option key={input.file} value={input.id ?? input.file}>{input.id ?? input.file}</option>)}
-        </NativeSelect.Field>
-      </NativeSelect.Root>
-      <NewRecipeDialog folder={openFolder} onCreated={onRecipeCreated} />
-      <Button size='sm' variant='outline' onClick={() => { fileInputRef.current?.click() }} disabled={importing} loading={importing} title='Start a recipe from a PDF, spreadsheet, deck, Word, CSV, JSON, YAML, XML or Markdown file (or drop one anywhere)'>
-        Open document…
-      </Button>
+      <RecipeMenu
+        inputs={inputs}
+        selectedRecipeId={selectedRecipeId}
+        hasFolder={openFolder !== undefined}
+        onSelectRecipe={onSelectRecipe}
+        onNewRecipe={() => { setNewRecipeOpen(true) }}
+        onOpenFolder={() => { if (onChooseFolder === undefined) setFolderOpen(true); else onChooseFolder() }}
+      />
+      <LoadMenu
+        loading={importing}
+        onLoadDocument={() => { fileInputRef.current?.click() }}
+        onLoadUrl={() => { setUrlOpen(true) }}
+      />
       <input
         ref={fileInputRef}
         type='file'
         accept={DOCUMENT_EXTENSIONS}
-        aria-label='Open document'
+        aria-label='Load document'
         hidden
         onChange={event => {
           const file = event.target.files?.[0]
@@ -94,7 +82,11 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
           if (file !== undefined) onImportFile(file)
         }}
       />
-      <HStack gap={2} flexShrink={0}>
+      {openFolder !== undefined && (
+        <Text fontSize='sm' color='fg.muted' truncate maxW='14em' title={openFolder}>{folderName(openFolder)}</Text>
+      )}
+      <SaveStatus />
+      <HStack gap={2} flexShrink={0} ml='auto'>
         <Button size='sm' colorPalette='blue' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
           Run sample
         </Button>
@@ -102,6 +94,17 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
           Stop
         </Button>
       </HStack>
+      <NewRecipeDialog folder={openFolder} open={newRecipeOpen} onClose={() => { setNewRecipeOpen(false) }} onCreated={onRecipeCreated} />
+      <LoadUrlDialog open={urlOpen} onClose={() => { setUrlOpen(false) }} onLoad={onLoadUrl} />
+      <OpenFolderDialog
+        open={folderOpen}
+        onClose={() => { setFolderOpen(false) }}
+        folder={folder}
+        onFolderChange={onFolderChange}
+        onOpen={onOpen}
+        onBrowse={onBrowse}
+        browsing={browsing}
+      />
     </HStack>
   )
 }

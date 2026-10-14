@@ -9,7 +9,7 @@ import { RecordEditor, fieldToStepIdOf } from '../record-editor'
 import type { MappingRuleJson } from '../record-editor'
 import { HookNamesContext } from '../hook-names'
 import { activeStubs, useHookStubsStore } from '../hook-stubs'
-import { DocumentDropZone, useImportDocumentFlow, useOpenPathFromLink } from '../recipe-start'
+import { DocumentDropZone, useImportDocumentFlow, useLoadUrlFlow, useOpenPathFromLink } from '../recipe-start'
 import { StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
@@ -83,6 +83,7 @@ function AppShell () {
   const saveOutline = useSaveOutlineMutation()
   const explainWhy = useExplainWhyMutation()
   const importFlow = useImportDocumentFlow()
+  const urlFlow = useLoadUrlFlow()
   const browseFlow = useBrowseFolderFlow()
   const linkError = useOpenPathFromLink()
 
@@ -128,7 +129,9 @@ function AppShell () {
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
-  const workspaceError = linkError ?? importFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? runError
+  const workspaceError = linkError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? runError
+
+  const loadNotice = importFlow.notice ?? urlFlow.notice
 
   return (
     <HookNamesContext.Provider value={workspace.data?.hooks?.names}>
@@ -146,12 +149,16 @@ function AppShell () {
           onSelectRecipe={selectRecipe}
           onRecipeCreated={selectRecipe}
           onImportFile={file => { void importFlow.importFile(file) }}
-          importing={importFlow.pending}
+          onLoadUrl={url => { void urlFlow.loadUrl(url) }}
+          importing={importFlow.pending || urlFlow.pending}
           running={running}
           onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId, stubs: activeStubs(stubEntries) }) }}
           onStop={() => { stopRun.mutate() }}
         />
         <HooksBar hooks={workspace.data?.hooks} />
+        {loadNotice !== undefined && workspaceError === undefined && (
+          <Box role='status' px={4} py={1} bg='blue.subtle' color='blue.fg' fontSize='sm'>{loadNotice}</Box>
+        )}
         {workspaceError !== undefined && (
           <Box px={4} py={1} bg='red.subtle' color='red.fg' fontSize='sm'>{workspaceError}</Box>
         )}
