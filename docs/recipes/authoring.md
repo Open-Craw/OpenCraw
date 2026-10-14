@@ -17,6 +17,19 @@ Point `$schema` at `packages/core/schemas/output-recipe.schema.json` or `input-r
 editor validates and completes as you type. Every recipe is validated on load; unknown keys are errors, so a
 typo never silently does nothing.
 
+## File names
+
+Name a recipe file for its kind: `<id>.ocw-in.json` for an input recipe and `<id>.ocw-out.json` for an
+output recipe (`shop-web.ocw-in.json`, `shop.ocw-out.json`). They stay plain JSON, so every editor
+and tool still reads them, and the VS Code extension validates each against its schema with no `$schema`
+line. The name is a hint that has a rule behind it: `kind` inside the file is what the engine goes by, and a
+file named for one kind that holds the other is an error.
+
+A folder that holds any `.ocw-in.json` or `.ocw-out.json` file is read for those, plus any other `.json` or
+`.jsonl` file whose `kind` is `input` or `output`; everything else beside them (`package.json`, data) is left
+alone. A folder with none is read as it always was: every `.json` and `.jsonl` file is a recipe. Existing
+`*.input.json` and `*.output.json` names keep working.
+
 This page says what each key means. [How OpenCraw works](../how-it-works/README.md) runs each of them on real
 sites, APIs and documents and shows what the engine did: the scope, the mapping steps, the trace and the record.
 

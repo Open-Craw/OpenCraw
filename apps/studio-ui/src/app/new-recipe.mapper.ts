@@ -35,7 +35,7 @@ export interface NewRecipeFiles {
  * files load back with zero issues.
  *
  * @param folder - The open workspace folder; joined with the file names (a trailing slash is tolerated).
- * @param id - The recipe id: also names both files, `<id>.input.json` and `<id>.output.json`.
+ * @param id - The recipe id: also names both files, `<id>.ocw-in.json` and `<id>.ocw-out.json`.
  * @param startUrl - The page the recipe starts on (issue #151); `https://example.com` when not given.
  */
 export function newRecipeFiles (folder: string, id: string, startUrl = DEFAULT_START_URL): NewRecipeFiles {
@@ -70,9 +70,9 @@ function recipeFiles (folder: string, id: string, body: Record<string, unknown>)
   const base = folder.endsWith('/') ? folder.slice(0, -1) : folder
 
   return {
-    outputPath: `${base}/${id}.output.json`,
+    outputPath: `${base}/${id}.ocw-out.json`,
     output:     { kind: 'output', id, version: 1, fields: {} },
-    inputPath:  `${base}/${id}.input.json`,
+    inputPath:  `${base}/${id}.ocw-in.json`,
     input:      { kind: 'input', id, output: id, ...body, mapping: {} },
   }
 }

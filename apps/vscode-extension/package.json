@@ -39,6 +39,20 @@
         "contents": "Run recipes in your browser: Studio starts a local server and opens the page.\n[Open Studio](command:opencraw.openStudio)\nTo open a folder, recipe or document, right-click it in the Explorer and choose **Open on OpenCraw**."
       }
     ],
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "*.ocw-in.json"
+        ],
+        "url": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/input-recipe.schema.json"
+      },
+      {
+        "fileMatch": [
+          "*.ocw-out.json"
+        ],
+        "url": "https://raw.githubusercontent.com/Open-Craw/OpenCraw/main/packages/core/schemas/output-recipe.schema.json"
+      }
+    ],
     "configuration": {
       "title": "OpenCraw",
       "properties": {

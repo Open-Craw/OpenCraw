@@ -13,8 +13,8 @@ describe('RECIPE_ID_PATTERN', () => {
 describe('newRecipeFiles', () => {
   it('builds paths under the folder and a minimal, valid web input/output pair', () => {
     const files = newRecipeFiles('/r', 'widgets')
-    expect(files.outputPath).toBe('/r/widgets.output.json')
-    expect(files.inputPath).toBe('/r/widgets.input.json')
+    expect(files.outputPath).toBe('/r/widgets.ocw-out.json')
+    expect(files.inputPath).toBe('/r/widgets.ocw-in.json')
     expect(files.output).toEqual({ kind: 'output', id: 'widgets', version: 1, fields: {} })
     expect(files.input).toMatchObject({ kind: 'input', id: 'widgets', output: 'widgets', mode: 'web' })
     expect((files.input.steps as unknown[])).toHaveLength(2)
@@ -33,14 +33,14 @@ describe('newRecipeFiles', () => {
   })
 
   it('tolerates a trailing slash on the folder', () => {
-    expect(newRecipeFiles('/r/', 'widgets').outputPath).toBe('/r/widgets.output.json')
+    expect(newRecipeFiles('/r/', 'widgets').outputPath).toBe('/r/widgets.ocw-out.json')
   })
 })
 
 describe('documentRecipeFiles (issue #120)', () => {
   it('builds an api recipe whose one request step reads the dropped document by its file: URL, with no emit yet', () => {
     const files = documentRecipeFiles('/r', 'report', 'file:///r/report.pdf')
-    expect(files.outputPath).toBe('/r/report.output.json')
+    expect(files.outputPath).toBe('/r/report.ocw-out.json')
     expect(files.output).toEqual({ kind: 'output', id: 'report', version: 1, fields: {} })
     expect(files.input).toEqual({
       kind:    'input',

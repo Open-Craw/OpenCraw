@@ -88,8 +88,8 @@ export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
                 {urlError !== undefined && <Field.ErrorText>{urlError}</Field.ErrorText>}
               </Field.Root>
               <Text fontSize='xs' color='fg.muted'>
-                Writes <Text as='span' fontFamily='mono'>{id || '<id>'}.input.json</Text> and{' '}
-                <Text as='span' fontFamily='mono'>{id || '<id>'}.output.json</Text> into the open folder: a `web` recipe with one
+                Writes <Text as='span' fontFamily='mono'>{id || '<id>'}.ocw-in.json</Text> and{' '}
+                <Text as='span' fontFamily='mono'>{id || '<id>'}.ocw-out.json</Text> into the open folder: a `web` recipe with one
                 page and no fields mapped yet, ready to build out in the Steps tab.
               </Text>
               {error !== undefined && <Text color='fg.error' fontSize='sm'>{error}</Text>}
