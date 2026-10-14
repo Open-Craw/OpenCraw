@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Badge, Box, Button, Checkbox, HStack, IconButton, Input, NativeSelect, Stack, Text } from '@chakra-ui/react'
 import type { FieldTraceView } from '@opencraw/studio'
-import { PILL_DRAG_MIME } from '../steps-outline'
+import { PILL_DRAG_MIME, Pill } from '../steps-outline'
+import { typeColor } from './field-type-color.mapper'
 import { FIELD_NAME_PATTERN, FIELD_TYPES, MISSING_POLICIES } from './field-spec.model'
 import type { FieldSpecJson, FromRuleJson } from './field-spec.model'
 import { TransformChain } from './transform-chain.component'
@@ -16,6 +17,8 @@ export interface FieldRowProps {
   scopeIds:           string[]
   /** The selected sample record's trace for this field, when it was mapped and a sample has run. */
   trace?:             FieldTraceView
+  /** The selected sample record's value for this field, shown beside its source so a mapping reads as "pill → value" without running anything else; `undefined` before a sample has run. */
+  value?:             unknown
   /** `true` when the selected record's value for this field is `null` (the missing-value policy applied) — the row's Why? affordance. */
   missing?:           boolean
   /** How many of the last sample's records this field rejected, and why (its most recent reason); `undefined` when none did. */
@@ -41,7 +44,7 @@ export interface FieldRowProps {
  * Steps tab), the transform chain with real trace values, key/required, and
  * an expanded row for `nullable`/`default`/`onMissing`/validation options.
  */
-export function FieldRow ({ name, field, rule, scopeIds, trace, missing, rejected, depth = 0, stepId, highlighted = false, onHoverStepId, onFieldChange, onRuleChange, onRename, onRemove, onExplainMissing, onExplainRejected }: FieldRowProps) {
+export function FieldRow ({ name, field, rule, scopeIds, trace, value, missing, rejected, depth = 0, stepId, highlighted = false, onHoverStepId, onFieldChange, onRuleChange, onRename, onRemove, onExplainMissing, onExplainRejected }: FieldRowProps) {
   const [expanded, setExpanded] = useState(false)
   const [nameText, setNameText] = useState(name)
   const [nameError, setNameError] = useState<string>()
@@ -72,6 +75,16 @@ export function FieldRow ({ name, field, rule, scopeIds, trace, missing, rejecte
       onMouseEnter={stepId === undefined || onHoverStepId === undefined ? undefined : () => { onHoverStepId(stepId) }}
       onMouseLeave={stepId === undefined || onHoverStepId === undefined ? undefined : () => { onHoverStepId(undefined) }}
     >
+      <HStack data-testid={`${name}-summary`} gap={2} mb={2} align='center' wrap='wrap' fontSize='xs'>
+        <Badge size='sm' colorPalette={typeColor(field.type)}>{field.type}</Badge>
+        {generated
+          ? <Badge size='sm' colorPalette='gray'>generated</Badge>
+          : (stepId === undefined
+              ? <Badge size='sm' colorPalette='orange'>{rule === undefined ? 'not mapped' : 'from a template'}</Badge>
+              : <><Text color='fg.muted'>←</Text><Pill name={stepId} draggable={false} /></>)}
+        {value !== undefined && <Text color='fg.muted' truncate maxW='260px' title={previewOf(value)}>= {previewOf(value)}</Text>}
+      </HStack>
+
       <HStack gap={2} align='center' wrap='wrap'>
         <Stack gap={0}>
           <Input size='xs' width='140px' value={nameText} onChange={event => { setNameText(event.target.value) }} onBlur={commitName} />
@@ -224,6 +237,13 @@ export function FieldRow ({ name, field, rule, scopeIds, trace, missing, rejecte
       )}
     </Box>
   )
+}
+
+/** A value as one short line: text as it is, anything else as JSON, cut at 80 characters. */
+function previewOf (value: unknown): string {
+  const text = typeof value === 'string' ? value : JSON.stringify(value)
+
+  return text.length > 80 ? `${text.slice(0, 79)}…` : text
 }
 
 /** A small read-only badge for a `key`/`required` field, used by rows that only summarise a nested field rather than editing it fully. Exported for `record-editor.component.tsx`'s each-item header. */

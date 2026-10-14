@@ -7,3 +7,9 @@ export type { TransformChainProps, TransformJson } from './transform-chain.compo
 export { scopeIdsOf } from './scope-ids.algorithm'
 export { FIELD_NAME_PATTERN, FIELD_TYPES, GENERATED_VALUES, MISSING_POLICIES, fieldToStepIdOf, isEachRule } from './field-spec.model'
 export type { EachRuleJson, FieldSpecJson, FromRuleJson, MappingRuleJson } from './field-spec.model'
+
+export { FieldSuggestions } from './field-suggestions.component'
+export type { FieldSuggestionsProps } from './field-suggestions.component'
+export { suggestFields } from './suggest-fields.algorithm'
+export type { FieldSuggestion } from './suggest-fields.algorithm'
+export { typeColor } from './field-type-color.mapper'

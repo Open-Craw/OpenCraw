@@ -5,9 +5,12 @@ import type { PreviewRecord } from '../preview'
 import type { RejectedRecord } from '../studio-store'
 import { useStudioUiStore } from '../studio-store'
 import { FieldRow } from './field-row.component'
+import { FieldSuggestions } from './field-suggestions.component'
 import type { FieldSpecJson, MappingRuleJson } from './field-spec.model'
 import { isEachRule, MISSING_POLICIES } from './field-spec.model'
 import { scopeIdsOf } from './scope-ids.algorithm'
+import { suggestFields } from './suggest-fields.algorithm'
+import type { FieldSuggestion } from './suggest-fields.algorithm'
 
 export interface RecordEditorProps {
   /** The selected input recipe (its `mapping`), or `undefined` before one is selected. */
@@ -75,6 +78,7 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
   }
 
   const scopeIds = scopeIdsOf(input)
+  const suggestions = suggestFields(input, output.fields, input.mapping)
   const record = records[recordIndex] as PreviewRecord | undefined
   const dirty = JSON.stringify(output) !== savedOutputJson || JSON.stringify(input) !== savedInputJson
 
@@ -100,6 +104,17 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
     const mapping = { ...input.mapping }
     if (rule === undefined) delete mapping[target]
     else mapping[target] = rule
+    setInput({ ...input, mapping })
+  }
+  /** Adds proposals as fields with their mapping, one state update so the two files change together. */
+  const addSuggestions = (chosen: FieldSuggestion[]): void => {
+    const fields = { ...output.fields }
+    const mapping = { ...input.mapping }
+    for (const suggestion of chosen) {
+      fields[suggestion.name] = suggestion.field
+      mapping[suggestion.name] = suggestion.rule
+    }
+    setOutput({ ...output, fields })
     setInput({ ...input, mapping })
   }
   const addField = (): void => {
@@ -154,6 +169,16 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
           <Button size='xs' onClick={() => { void save() }} disabled={!dirty || saving} loading={saving}>Save</Button>
         </HStack>
       </HStack>
+
+      <FieldSuggestions
+        suggestions={suggestions}
+        onAdd={suggestion => { addSuggestions([suggestion]) }}
+        onAddAll={() => { addSuggestions(suggestions) }}
+      />
+
+      {Object.keys(output.fields).length === 0 && suggestions.length === 0 && (
+        <Text fontSize='xs' color='fg.muted'>No output fields yet. Pick values in the content pane (Steps tab) and they show up here as proposals, or add a field by hand.</Text>
+      )}
 
       <Stack gap={2}>
         {Object.entries(output.fields).map(([name, field]) => (
@@ -326,6 +351,7 @@ function FieldTree ({ name, field, target, input, record, rejected, scopeIds, de
       rule={fromRule}
       scopeIds={scopeIds}
       trace={trace}
+      value={value}
       missing={value === null}
       // eslint-disable-next-line unicorn/prefer-at -- `.at()` needs an ES2022+ `lib`; `tsconfig.app.json` (the browser build) only has `dom` (see this file's own TS2550 history)
       rejected={rejectedForField.length === 0 ? undefined : { count: rejectedForField.length, reason: rejectedForField[rejectedForField.length - 1].reason }}

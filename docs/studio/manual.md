@@ -149,8 +149,16 @@ Switch to the **Record** tab. This is the paired **output** recipe: the fields a
 with a type, and the input recipe's **mapping** — which pill each field reads from, and what happens to the
 value on the way in.
 
-Add fields for `title` (`string`), `price` (`currency`), `available` (`boolean`); drag the **Steps** tab's
-`title`/`price`/`availability` pills onto their matching rows to bind each field's source (or type the pill
+A strip at the top of the tab lists every value the steps read that no field uses yet, one chip each:
+the pill, the field it would become and a guessed type (`price` becomes a `number`, `availability` a
+`boolean`, a link taken from `href` a `url` made absolute; hover a chip for why). Click a chip's **＋** to add
+the field **and** its mapping at once, or **Add all**. Nothing is guessed silently: change a type or a name
+afterwards like any field.
+
+Each field row opens with a one-line summary: a coloured **type** badge, the **pill** it reads from (or
+*not mapped*, *generated*) and, once a sample has run, the **value** the selected record got.
+
+You can still add a field by hand with **+ field** and drag a **Steps** pill onto its row (or type the pill
 name directly). Mark `title` as the record's **key**, so a duplicate never gets emitted twice.
 
 Each field's **transform chain** is a row of small blocks — `trim`, `currency`, `boolean`, and so on
