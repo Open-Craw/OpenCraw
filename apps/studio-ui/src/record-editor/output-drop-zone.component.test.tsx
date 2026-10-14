@@ -68,7 +68,7 @@ describe('Record tab output drop zone', () => {
 
   it('appends a dropped selection to the steps and, once they are saved and the recipe reloads, adds its values as fields', async () => {
     const onSaveOutline = jest.fn().mockResolvedValue(undefined)
-    const card: OutlineNode = { kind: 'card', path: 'steps.0', step: { type: 'extract', id: 'rating', kind: 'css', selector: '.star' } } as OutlineNode
+    const card: OutlineNode = { kind: 'card', path: 'steps.0', step: { type: 'extract', id: 'rating', kind: 'css', selector: '.star' } } as unknown as OutlineNode
     const { rerenderWith } = renderEditor({ onSaveOutline })
 
     fireEvent.drop(screen.getByTestId('output-drop-zone'), { dataTransfer: dataTransfer({ [CARD_DRAG_MIME]: JSON.stringify(card) }) })
