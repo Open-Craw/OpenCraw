@@ -50,8 +50,8 @@ describe('useImportDocumentFlow (issue #120)', () => {
     const commands = sentCommands(fetchMock)
     expect(commands.map(command => command.type)).toEqual(['import-document', 'open-workspace', 'save-recipe', 'save-recipe'])
     expect(commands[0]).toEqual({ type: 'import-document', folder: '/r', name: 'Q3 Report.pdf', bytes: btoa('%PDF-1.4') })
-    expect(commands[2]).toMatchObject({ path: '/r/q3-report.output.json', recipe: { kind: 'output', id: 'q3-report' } })
-    expect(commands[3]).toMatchObject({ path: '/r/q3-report.input.json', recipe: { kind: 'input', id: 'q3-report', mode: 'api', start: [{ url: 'file:///r/Q3 Report.pdf' }] } })
+    expect(commands[2]).toMatchObject({ path: '/r/q3-report.ocw-out.json', recipe: { kind: 'output', id: 'q3-report' } })
+    expect(commands[3]).toMatchObject({ path: '/r/q3-report.ocw-in.json', recipe: { kind: 'input', id: 'q3-report', mode: 'api', start: [{ url: 'file:///r/Q3 Report.pdf' }] } })
     expect(useStudioUiStore.getState().selectedRecipeId).toBe('q3-report')
     expect(result.current.error).toBeUndefined()
   })
@@ -74,7 +74,7 @@ describe('useImportDocumentFlow (issue #120)', () => {
 
     await act(async () => { await result.current.importFile(new File(['a,b'], 'rows.csv')) })
 
-    expect(sentCommands(fetchMock)[2]).toMatchObject({ path: '/r/rows-3.output.json' })
+    expect(sentCommands(fetchMock)[2]).toMatchObject({ path: '/r/rows-3.ocw-out.json' })
     expect(useStudioUiStore.getState().selectedRecipeId).toBe('rows-3')
   })
 

@@ -55,8 +55,8 @@ describe('NewRecipeDialog', () => {
     await waitFor(() => { expect(onCreated).toHaveBeenCalledWith('widgets') })
 
     const bodies = fetchMock.mock.calls.map(([, init]) => JSON.parse((init as RequestInit).body as string) as { type: string, path: string, recipe: Record<string, unknown> })
-    expect(bodies[0]).toMatchObject({ type: 'save-recipe', path: '/r/widgets.output.json', recipe: { kind: 'output', id: 'widgets', version: 1, fields: {} } })
-    expect(bodies[1]).toMatchObject({ type: 'save-recipe', path: '/r/widgets.input.json', recipe: { kind: 'input', id: 'widgets', output: 'widgets', mode: 'web' } })
+    expect(bodies[0]).toMatchObject({ type: 'save-recipe', path: '/r/widgets.ocw-out.json', recipe: { kind: 'output', id: 'widgets', version: 1, fields: {} } })
+    expect(bodies[1]).toMatchObject({ type: 'save-recipe', path: '/r/widgets.ocw-in.json', recipe: { kind: 'input', id: 'widgets', output: 'widgets', mode: 'web' } })
   })
 
   it('writes the start URL it is given, and refuses one that is not an address (issue #151)', async () => {

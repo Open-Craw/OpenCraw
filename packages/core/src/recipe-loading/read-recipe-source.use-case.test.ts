@@ -27,6 +27,22 @@ describe('readRecipeSource', () => {
     expect(documents[2].source).toBe(`${join(directory, 'b.jsonl')}:2`)
   })
 
+  it('reads only the .ocw-in.json and .ocw-out.json files of a directory that has them, leaving other JSON alone', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'recipes-'))
+    await writeFile(join(directory, 'shop.ocw-in.json'), '{"kind":"input","id":"i"}')
+    await writeFile(join(directory, 'shop.ocw-out.json'), '{"kind":"output","id":"o"}')
+    await writeFile(join(directory, 'package.json'), '{"name":"shop"}')
+    await writeFile(join(directory, 'prices.json'), '[1,2]')
+    expect(ids(await readRecipeSource(directory))).toEqual(['i', 'o'])
+  })
+
+  it('refuses a file whose name says one kind and whose kind is the other', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'recipes-'))
+    const path = join(directory, 'shop.ocw-in.json')
+    await writeFile(path, '{"kind":"output","id":"o"}')
+    await expect(readRecipeSource(path)).rejects.toThrow(/the file name says an input recipe, but its "kind" is "output"/)
+  })
+
   it('reads every kind of bytes', async () => {
     const sources = [Buffer.from(lines), new TextEncoder().encode(lines), new TextEncoder().encode(lines).buffer, new Blob([lines]), Readable.from([Buffer.from(lines.slice(0, 5)), Buffer.from(lines.slice(5))]), new Blob([lines]).stream()]
     for (const source of sources) expect(ids(await readRecipeSource(source))).toEqual(['a', 'b'])
