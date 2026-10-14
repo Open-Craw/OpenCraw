@@ -1705,7 +1705,8 @@
                 "jsonpath",
                 "regex",
                 "table",
-                "region"
+                "region",
+                "anchor"
               ]
             },
             "take": {
