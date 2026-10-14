@@ -34,7 +34,7 @@ describePackaged('studio desktop: packaged app', () => {
     try {
       const page = await app.firstWindow()
       await page.getByText('Run sample', { exact: true }).first().waitFor()
-      await page.locator('option', { hasText: 'books' }).waitFor({ state: 'attached' })
+      await page.getByRole('button', { name: 'Recipe: books ▾' }).waitFor()
 
       expect(new URL(page.url()).searchParams.get('folder')).toBe(folder)
     } finally {
