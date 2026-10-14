@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Button, HStack, Text } from '@chakra-ui/react'
 import type { RecipeListing } from '@opencraw/studio'
 import { LoadUrlDialog, NewRecipeDialog } from '../recipe-start'
+import type { BrowseOutcome } from './browse-folder.hook'
 import { LoadMenu } from './load-menu.component'
 import { OpenFolderDialog } from './open-folder-dialog.component'
 import { RecipeMenu } from './recipe-menu.component'
@@ -16,8 +17,8 @@ export interface ToolbarProps {
   onOpen:            () => void
   /** Set in the desktop app: the native folder dialog, used directly by "Open folder…". */
   onChooseFolder?:   () => void
-  /** In a browser: the server's folder dialog, offered inside the Open folder dialog (whose typed box keeps working when there is none). */
-  onBrowse?:         () => void
+  /** In a browser: the server's folder dialog, which "Open folder…" asks first; the typed box (also with a Browse… button) is the fallback when the server has none. */
+  onBrowse?:         () => Promise<BrowseOutcome>
   /** The dialog is open, waiting for an answer. */
   browsing?:         boolean
   /** The folder a workspace is actually open on — `undefined` before one is opened (nothing to write into yet). */
@@ -63,7 +64,11 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
         hasFolder={openFolder !== undefined}
         onSelectRecipe={onSelectRecipe}
         onNewRecipe={() => { setNewRecipeOpen(true) }}
-        onOpenFolder={() => { if (onChooseFolder === undefined) setFolderOpen(true); else onChooseFolder() }}
+        onOpenFolder={() => {
+          if (onChooseFolder !== undefined) onChooseFolder()
+          else if (onBrowse === undefined) setFolderOpen(true)
+          else void onBrowse().then(outcome => { if (outcome === 'unavailable') setFolderOpen(true) })
+        }}
       />
       <LoadMenu
         loading={importing}
@@ -102,7 +107,7 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
         folder={folder}
         onFolderChange={onFolderChange}
         onOpen={onOpen}
-        onBrowse={onBrowse}
+        onBrowse={onBrowse === undefined ? undefined : () => { void onBrowse() }}
         browsing={browsing}
       />
     </HStack>

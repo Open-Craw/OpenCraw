@@ -75,8 +75,8 @@ JSON tab); it reads **Saving…** while a write is on its way.
 input, Record edits the output and the mapping between them. You never open the pair separately.
 
 **Opening a folder.** **Recipe ▾ → Open folder…** takes any folder — one that already has `.ocw-in.json` /
-`.ocw-out.json` files in it, or a brand new one. In the desktop app that is the native folder dialog; in a
-browser it is a box to type the path in, with **Browse…** for the operating system's dialog. Starting Studio
+`.ocw-out.json` files in it, or a brand new one. It opens the operating system's folder dialog (the desktop app's native one, or the VS Code extension's own
+dialog when Studio runs from there); on a machine with no dialog, a box to type the path in appears instead. Starting Studio
 with `opencraw studio <folder>` opens that folder already.
 
 **Starting from nothing?** **Recipe ▾ → New recipe…**: type an id (lowercase letters, digits and hyphens — the

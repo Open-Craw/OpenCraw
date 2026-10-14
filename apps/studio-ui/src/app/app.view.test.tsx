@@ -64,7 +64,10 @@ describe('App shell', () => {
     expect(screen.getByTestId('document-drop-zone')).toBeTruthy()
   })
 
-  it('opens the folder dialog from Recipe ▾ → Open folder… in a browser', async () => {
+  it('asks the server for its folder dialog from Recipe ▾ → Open folder…, and falls back to the folder box when there is none', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({ error: 'there is no folder dialog on this machine: type the folder instead' }) })
+    Object.defineProperty(globalThis, 'fetch', { value: fetchMock, configurable: true })
+    history.replaceState({}, '', '/?token=abc')
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'Recipe ▾' }))
     fireEvent.click(await screen.findByRole('menuitem', { name: 'Open folder…' }))

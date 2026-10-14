@@ -16,10 +16,22 @@ try {
   const { workspace, hooks } = JSON.parse(process.argv[2] ?? '{}')
   // The hooks file runs as the person's own code, named in their user settings (never a workspace's).
   const plugins = hooks === undefined ? undefined : await loadHooksFile(hooks)
-  const server = await startStudioServer({ initialFolder: workspace, plugins })
+  // Studio's Open folder… asks the editor, which owns the operating system's dialog (and, in a remote window, the remote machine's).
+  const askingFolder = new Map()
+  let lastAsk = 0
+  const chooseFolder = async () => await new Promise(resolve => {
+    lastAsk += 1
+    askingFolder.set(lastAsk, resolve)
+    process.send({ type: 'choose-folder', id: lastAsk })
+  })
+  const server = await startStudioServer({ initialFolder: workspace, plugins, chooseFolder })
   process.send({ type: 'ready', url: server.url })
   process.on('message', message => {
     if (message?.type === 'link') process.send({ type: 'link', id: message.id, url: server.link(message.target) })
+    if (message?.type === 'folder') {
+      askingFolder.get(message.id)?.(message.folder)
+      askingFolder.delete(message.id)
+    }
   })
   process.on('disconnect', () => {
     void server.close()

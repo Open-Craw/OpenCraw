@@ -141,7 +141,7 @@ function AppShell () {
           onFolderChange={setFolder}
           onOpen={() => { commitFolder(folder) }}
           onChooseFolder={chooseFolder}
-          onBrowse={() => { void browseFlow.browse() }}
+          onBrowse={browseFlow.browse}
           browsing={browseFlow.pending}
           openFolder={openFolder}
           inputs={inputs}

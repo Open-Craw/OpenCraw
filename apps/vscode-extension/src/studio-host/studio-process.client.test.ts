@@ -74,6 +74,37 @@ describe('startStudioProcess', () => {
     expect(await link).toBe('http://127.0.0.1:1/?token=t&open=%2Fwork%2Fa.pdf')
   })
 
+  it('answers a folder request with the editor dialog choice, and with none when it fails or is closed', async () => {
+    const fake = fakeChild()
+    const answers = [Promise.resolve('/picked'), Promise.resolve(undefined), Promise.reject(new Error('no display'))]
+    const pending = startStudioProcess({ script: 's', chooseFolder: async () => await answers.shift(), spawn: () => fake.child })
+    fake.reply({ type: 'ready', url: 'u' })
+    await pending
+
+    fake.reply({ type: 'choose-folder', id: 1 })
+    fake.reply({ type: 'choose-folder', id: 2 })
+    fake.reply({ type: 'choose-folder', id: 3 })
+    await new Promise(resolve => { setTimeout(resolve, 0) })
+
+    expect(fake.sent).toEqual([
+      { type: 'folder', id: 1, folder: '/picked' },
+      { type: 'folder', id: 2, folder: undefined },
+      { type: 'folder', id: 3, folder: undefined },
+    ])
+  })
+
+  it('answers a folder request with none when the editor offered no dialog', async () => {
+    const fake = fakeChild()
+    const pending = startStudioProcess({ script: 's', spawn: () => fake.child })
+    fake.reply({ type: 'ready', url: 'u' })
+    await pending
+
+    fake.reply({ type: 'choose-folder', id: 7 })
+    await new Promise(resolve => { setTimeout(resolve, 0) })
+
+    expect(fake.sent).toEqual([{ type: 'folder', id: 7, folder: undefined }])
+  })
+
   it('answers each overlapping link request with its own reply', async () => {
     const fake = fakeChild()
     const pending = startStudioProcess({ script: 's', spawn: () => fake.child })
