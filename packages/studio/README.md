@@ -27,8 +27,8 @@ OpenCraw Studio: http://127.0.0.1:52341/?token=8f2a1c9e4b7d3f6a0e5c8b1d2a4f7e9c
 Workspace: /home/you/project/recipes
 ```
 
-`recipes/` can already have `.input.json`/`.output.json` files in it, or be empty — the studio's own
-**+ New recipe** writes a minimal, valid pair to start from.
+`recipes/` can already have `.ocw-in.json`/`.ocw-out.json` files in it, or be empty — the studio's own
+**Recipe ▾ → New recipe…** writes a minimal, valid pair to start from.
 
 ## Learn more
 

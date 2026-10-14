@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { resetRunSessionStore, resetStudioUiStore } from '../studio-store'
 import App from './app.view'
 
@@ -30,11 +30,11 @@ describe('App shell', () => {
   it('renders the toolbar, the split layout and the preview strip', () => {
     render(<App />)
     expect(screen.getByText('OpenCraw Studio')).toBeTruthy()
-    expect(screen.getByPlaceholderText('recipe folder')).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Open' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Recipe ▾' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Load ▾' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Run sample' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Stop' })).toBeTruthy()
-    expect(screen.getByText(/select a recipe/i)).toBeTruthy()
+    expect(screen.getByRole('status').textContent).toContain('All changes saved')
     expect(screen.getByText(/no records yet/i)).toBeTruthy()
   })
 
@@ -48,16 +48,54 @@ describe('App shell', () => {
     expect(screen.getByText('Record')).toBeTruthy()
   })
 
-  it('disables "+ New recipe" until a workspace folder is open (issue #110)', () => {
+  it('keeps "New recipe…" disabled until a workspace folder is open (issue #110)', () => {
     render(<App />)
-    expect(screen.getByRole('button', { name: '+ New recipe' }).hasAttribute('disabled')).toBe(true)
+    fireEvent.click(screen.getByRole('button', { name: 'Recipe ▾' }))
+    expect(screen.getByRole('menuitem', { name: 'New recipe…' }).getAttribute('aria-disabled')).toBe('true')
   })
 
-  it('offers "Open document…" and a drop zone over the whole shell, from the very first screen (issue #120)', () => {
+  it('offers Load ▾ Document… and Web page (URL)… and a drop zone over the whole shell, from the very first screen (issue #120)', async () => {
     render(<App />)
-    expect(screen.getByRole('button', { name: 'Open document…' }).hasAttribute('disabled')).toBe(false)
-    expect(screen.getByLabelText('Open document').getAttribute('accept')).toContain('.pdf')
+    expect(screen.getByRole('button', { name: 'Load ▾' }).hasAttribute('disabled')).toBe(false)
+    expect(screen.getByLabelText('Load document').getAttribute('accept')).toContain('.pdf')
+    fireEvent.click(screen.getByRole('button', { name: 'Load ▾' }))
+    expect(await screen.findByRole('menuitem', { name: 'Document…' })).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'Web page (URL)…' })).toBeTruthy()
     expect(screen.getByTestId('document-drop-zone')).toBeTruthy()
+  })
+
+  it('asks the server for its folder dialog from Recipe ▾ → Open folder…, and falls back to the folder box when there is none', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({ error: 'there is no folder dialog on this machine: type the folder instead' }) })
+    Object.defineProperty(globalThis, 'fetch', { value: fetchMock, configurable: true })
+    history.replaceState({}, '', '/?token=abc')
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Recipe ▾' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: 'Open folder…' }))
+    expect(await screen.findByPlaceholderText('recipe folder')).toBeTruthy()
+  })
+})
+
+describe('Dragging a value to the Record tab', () => {
+  afterEach(() => { jest.useRealTimers() })
+
+  it('opens the Record tab after a pill is held over it, but not for a plain text drag or a quick pass', () => {
+    jest.useFakeTimers()
+    render(<App />)
+    const recordTab = screen.getByText('Record')
+    const pill = { types: ['application/x-opencraw-pill'] }
+
+    fireEvent.dragEnter(recordTab, { dataTransfer: { types: ['text/plain'] } })
+    act(() => { jest.advanceTimersByTime(1000) })
+    expect(screen.queryByText(/Select a recipe to see its output fields/)).toBeNull()
+
+    fireEvent.dragEnter(recordTab, { dataTransfer: pill })
+    fireEvent.dragLeave(recordTab, { dataTransfer: pill })
+    act(() => { jest.advanceTimersByTime(1000) })
+    expect(screen.queryByText(/Select a recipe to see its output fields/)).toBeNull()
+
+    fireEvent.dragEnter(recordTab, { dataTransfer: pill })
+    act(() => { jest.advanceTimersByTime(500) })
+    expect(screen.getByText(/Select a recipe to see its output fields/)).toBeTruthy()
   })
 })
 
@@ -69,9 +107,9 @@ describe('App shell inside the desktop app', () => {
     Object.defineProperty(globalThis, 'opencrawDesktop', { value: { chooseFolder }, configurable: true })
     render(<App />)
 
+    fireEvent.click(screen.getByRole('button', { name: 'Recipe ▾' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: 'Open folder…' }))
     expect(screen.queryByPlaceholderText('recipe folder')).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Open' })).toBeNull()
-    screen.getByRole('button', { name: 'Open folder…' }).click()
     expect(chooseFolder).toHaveBeenCalledTimes(1)
   })
 })

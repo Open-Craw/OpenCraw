@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Box, Button, HStack, Input, NativeSelect, Stack, Text } from '@chakra-ui/react'
-import type { FieldTraceView, RecipeListing } from '@opencraw/studio'
+import type { FieldTraceView, OutlineNode, OutlineView, RecipeListing } from '@opencraw/studio'
 import type { PreviewRecord } from '../preview'
 import type { RejectedRecord } from '../studio-store'
 import { useStudioUiStore } from '../studio-store'
 import { FieldRow } from './field-row.component'
+import { FieldSuggestions } from './field-suggestions.component'
+import { OutputDropZone } from './output-drop-zone.component'
 import type { FieldSpecJson, MappingRuleJson } from './field-spec.model'
 import { isEachRule, MISSING_POLICIES } from './field-spec.model'
 import { scopeIdsOf } from './scope-ids.algorithm'
+import { suggestFieldFor, suggestFields } from './suggest-fields.algorithm'
+import type { FieldSuggestion } from './suggest-fields.algorithm'
 
 export interface RecordEditorProps {
   /** The selected input recipe (its `mapping`), or `undefined` before one is selected. */
@@ -19,6 +23,8 @@ export interface RecordEditorProps {
   rejected:           RejectedRecord[]
   onSaveInput:        (path: string, recipe: unknown) => Promise<void>
   onSaveOutput:       (path: string, recipe: unknown) => Promise<void>
+  /** Saves the input recipe's steps (the Steps tab's own save): a selection dropped from the content pane is appended to them. */
+  onSaveOutline?:     (path: string, outline: OutlineView) => Promise<void>
   onExplainMissing?:  (recordIndex: number, field: string) => void
   onExplainRejected?: (rejectedIndex: number) => void
 }
@@ -43,7 +49,7 @@ interface InputRecipeJson {
  * was needed here, see this feature's own investigation note in the phase's
  * hand-back report).
  */
-export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, onSaveInput, onSaveOutput, onExplainMissing, onExplainRejected }: RecordEditorProps) {
+export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, onSaveInput, onSaveOutput, onSaveOutline, onExplainMissing, onExplainRejected }: RecordEditorProps) {
   const [output, setOutput] = useState<OutputRecipeJson>()
   const [input, setInput] = useState<InputRecipeJson>()
   /** `JSON.stringify` of `output`/`input` right after the last load or save, for `dirty` below: `outputRecipe.text`/`inputRecipe.text` are pretty-printed, `JSON.stringify(output)` is not, so comparing against the raw text directly would read as "dirty" the instant a recipe is opened. */
@@ -54,14 +60,30 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
   const [saveError, setSaveError] = useState<string>()
   const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
   const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
+  /** Step ids of a selection just dropped from the content pane: once its steps are saved and the recipe reloads, they become output fields. */
+  const droppedIds = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     const nextOutput = outputRecipe === undefined ? undefined : (JSON.parse(outputRecipe.text) as OutputRecipeJson)
     const nextInput = inputRecipe === undefined ? undefined : (JSON.parse(inputRecipe.text) as InputRecipeJson)
-    setOutput(nextOutput)
-    setInput(nextInput)
     setSavedOutputJson(nextOutput === undefined ? undefined : JSON.stringify(nextOutput))
     setSavedInputJson(nextInput === undefined ? undefined : JSON.stringify(nextInput))
+    const dropped = droppedIds.current
+    if (nextOutput !== undefined && nextInput !== undefined && dropped.size > 0) {
+      droppedIds.current = new Set()
+      const added = suggestFields(nextInput, nextOutput.fields, nextInput.mapping).filter(suggestion => dropped.has(suggestion.source))
+      const fields = { ...nextOutput.fields }
+      const mapping = { ...nextInput.mapping }
+      for (const suggestion of added) {
+        fields[suggestion.name] = suggestion.field
+        mapping[suggestion.name] = suggestion.rule
+      }
+      setOutput({ ...nextOutput, fields })
+      setInput({ ...nextInput, mapping })
+    } else {
+      setOutput(nextOutput)
+      setInput(nextInput)
+    }
     setRecordIndex(0)
     // Only when the underlying files change identity (a different recipe selected, or a save landed) — not on every local edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,6 +97,7 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
   }
 
   const scopeIds = scopeIdsOf(input)
+  const suggestions = suggestFields(input, output.fields, input.mapping)
   const record = records[recordIndex] as PreviewRecord | undefined
   const dirty = JSON.stringify(output) !== savedOutputJson || JSON.stringify(input) !== savedInputJson
 
@@ -102,6 +125,21 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
     else mapping[target] = rule
     setInput({ ...input, mapping })
   }
+  /** Adds proposals as fields with their mapping, one state update so the two files change together. */
+  const addSuggestions = (chosen: FieldSuggestion[]): void => {
+    const fields = { ...output.fields }
+    const mapping = { ...input.mapping }
+    for (const suggestion of chosen) {
+      fields[suggestion.name] = suggestion.field
+      mapping[suggestion.name] = suggestion.rule
+    }
+    setOutput({ ...output, fields })
+    setInput({ ...input, mapping })
+  }
+  /** A pill dropped on the output: its field and mapping, as a click on its proposal would add them. */
+  const dropPill = (id: string): void => {
+    addSuggestions([suggestFieldFor(id, input, output.fields, input.mapping)])
+  }
   const addField = (): void => {
     let name = 'field'
     let n = 1
@@ -122,6 +160,26 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
       setSaveError(error instanceof Error ? error.message : String(error))
     } finally {
       setSaving(false)
+    }
+  }
+
+  /**
+   * A selection dropped from the content pane: appended to the steps exactly as
+   * dropping it on the Steps tab does, and, once the recipe has reloaded with
+   * it, the values it reads become output fields. Edits not saved yet are
+   * saved first, because the reload replaces them.
+   */
+  const dropCard = async (node: OutlineNode): Promise<void> => {
+    const outline = inputRecipe.outline
+    if (onSaveOutline === undefined || outline === undefined) return
+    setSaveError(undefined)
+    try {
+      if (dirty) await save()
+      droppedIds.current = new Set(idsOf(node))
+      await onSaveOutline(inputRecipe.file, { ...outline, steps: [...outline.steps, { ...node, path: `steps.${String(outline.steps.length)}` }] })
+    } catch (error) {
+      droppedIds.current = new Set()
+      setSaveError(error instanceof Error ? error.message : String(error))
     }
   }
 
@@ -155,39 +213,59 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
         </HStack>
       </HStack>
 
-      <Stack gap={2}>
-        {Object.entries(output.fields).map(([name, field]) => (
-          <FieldTree
-            key={name}
-            name={name}
-            field={field}
-            target={name}
-            input={input}
-            record={record}
-            rejected={rejected}
-            scopeIds={scopeIds}
-            hoveredStepId={hoveredStepId}
-            onHoverStepId={setHoveredStepId}
-            setRule={setRule}
-            onFieldChange={next => { setField(name, next) }}
-            onRename={nextName => { renameField(name, nextName) }}
-            onRemove={() => { setField(name, undefined) }}
-            onExplainMissing={onExplainMissing === undefined ? undefined : () => { onExplainMissing(recordIndex, name) }}
-            onExplainRejected={onExplainRejected === undefined
-              ? undefined
-              : () => {
-                  const index = rejected.findIndex(entry => entry.field === name)
-                  if (index !== -1) onExplainRejected(index)
-                }}
-          />
-        ))}
-      </Stack>
+      <FieldSuggestions
+        suggestions={suggestions}
+        onAdd={suggestion => { addSuggestions([suggestion]) }}
+        onAddAll={() => { addSuggestions(suggestions) }}
+      />
+
+      <OutputDropZone onPill={dropPill} onCard={node => { void dropCard(node) }}>
+        {Object.keys(output.fields).length === 0 && suggestions.length === 0 && (
+          <Text fontSize='xs' color='fg.muted' p={2}>No output fields yet. Drag a pill from a Steps card, or a selection from the content pane, onto this list; or pick values and they show up above as proposals; or add a field by hand.</Text>
+        )}
+
+        <Stack gap={2}>
+          {Object.entries(output.fields).map(([name, field]) => (
+            <FieldTree
+              key={name}
+              name={name}
+              field={field}
+              target={name}
+              input={input}
+              record={record}
+              rejected={rejected}
+              scopeIds={scopeIds}
+              hoveredStepId={hoveredStepId}
+              onHoverStepId={setHoveredStepId}
+              setRule={setRule}
+              onFieldChange={next => { setField(name, next) }}
+              onRename={nextName => { renameField(name, nextName) }}
+              onRemove={() => { setField(name, undefined) }}
+              onExplainMissing={onExplainMissing === undefined ? undefined : () => { onExplainMissing(recordIndex, name) }}
+              onExplainRejected={onExplainRejected === undefined
+                ? undefined
+                : () => {
+                    const index = rejected.findIndex(entry => entry.field === name)
+                    if (index !== -1) onExplainRejected(index)
+                  }}
+            />
+          ))}
+        </Stack>
+      </OutputDropZone>
 
       <Box>
         <Button size='xs' variant='outline' onClick={addField}>+ field</Button>
       </Box>
     </Stack>
   )
+}
+
+/** Every step id a dropped node defines, nested steps included: what its drop offers as output fields. */
+function idsOf (node: OutlineNode): string[] {
+  const own = typeof node.step.id === 'string' ? [node.step.id] : []
+  if (node.kind !== 'bracket') return own
+
+  return [...own, ...node.children.flatMap(child => idsOf(child)), ...(node.elseChildren ?? []).flatMap(child => idsOf(child))]
 }
 
 interface FieldTreeProps {
@@ -326,6 +404,7 @@ function FieldTree ({ name, field, target, input, record, rejected, scopeIds, de
       rule={fromRule}
       scopeIds={scopeIds}
       trace={trace}
+      value={value}
       missing={value === null}
       // eslint-disable-next-line unicorn/prefer-at -- `.at()` needs an ES2022+ `lib`; `tsconfig.app.json` (the browser build) only has `dom` (see this file's own TS2550 history)
       rejected={rejectedForField.length === 0 ? undefined : { count: rejectedForField.length, reason: rejectedForField[rejectedForField.length - 1].reason }}

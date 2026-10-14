@@ -26,8 +26,10 @@ describe('useBrowseFolderFlow', () => {
     const fetchMock = answerWith(200, { folder: '/home/ana/recipes' })
     const { result } = renderHook(() => useBrowseFolderFlow(), { wrapper })
 
-    await act(async () => { await result.current.browse() })
+    let outcome: string | undefined
+    await act(async () => { outcome = await result.current.browse() })
 
+    expect(outcome).toBe('picked')
     expect(JSON.parse((fetchMock.mock.calls[0]?.[1] as RequestInit).body as string)).toEqual({ type: 'choose-folder' })
     expect(useStudioUiStore.getState().openFolder).toBe('/home/ana/recipes')
     expect(useStudioUiStore.getState().folder).toBe('/home/ana/recipes')
@@ -39,8 +41,10 @@ describe('useBrowseFolderFlow', () => {
     act(() => { useStudioUiStore.getState().commitFolder('/r') })
     const { result } = renderHook(() => useBrowseFolderFlow(), { wrapper })
 
-    await act(async () => { await result.current.browse() })
+    let outcome: string | undefined
+    await act(async () => { outcome = await result.current.browse() })
 
+    expect(outcome).toBe('cancelled')
     expect(useStudioUiStore.getState().openFolder).toBe('/r')
   })
 
@@ -48,8 +52,10 @@ describe('useBrowseFolderFlow', () => {
     answerWith(500, { error: 'there is no folder dialog on this machine: type the folder instead' })
     const { result } = renderHook(() => useBrowseFolderFlow(), { wrapper })
 
-    await act(async () => { await result.current.browse() })
+    let outcome: string | undefined
+    await act(async () => { outcome = await result.current.browse() })
 
+    expect(outcome).toBe('unavailable')
     expect(result.current.error).toContain('type the folder instead')
     expect(result.current.pending).toBe(false)
   })

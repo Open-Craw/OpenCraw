@@ -38,11 +38,12 @@ describeBuilt('studio desktop: launch', () => {
     expect(url.hostname).toBe('127.0.0.1')
     expect(url.searchParams.get('folder')).toBe(folder)
     await page.getByText('Run sample', { exact: true }).first().waitFor()
-    await page.locator('option', { hasText: 'books' }).waitFor({ state: 'attached' })
+    await page.getByRole('button', { name: 'Recipe: books ▾' }).waitFor()
   })
 
   it('offers the native folder dialog instead of a folder box', async () => {
-    await page.getByRole('button', { name: 'Open folder…' }).waitFor()
+    await page.getByRole('button', { name: /^Recipe/ }).click()
+    await page.getByRole('menuitem', { name: 'Open folder…' }).waitFor()
 
     expect(await page.getByPlaceholder('recipe folder').count()).toBe(0)
     expect(await page.evaluate('typeof window.opencrawDesktop.chooseFolder')).toBe('function')

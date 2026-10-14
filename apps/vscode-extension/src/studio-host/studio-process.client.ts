@@ -12,6 +12,9 @@ export interface HostChild {
 /** Starts the Studio process: the script to run and what it starts with. */
 export type SpawnHost = (script: string, config: HostConfig) => HostChild
 
+/** Shows the editor's folder dialog and resolves to the folder picked, or `undefined` when it was closed without a choice. */
+export type ChooseFolder = () => Promise<string | undefined>
+
 export interface StudioProcess {
   /** The link that opens `target` in the browser (`/?token=…&open=…`). Rejects when the process has ended. */
   link:    (target?: LinkTarget) => Promise<string>
@@ -34,6 +37,17 @@ export const forkHost: SpawnHost = (script, config) => fork(script, [JSON.string
 /** How much of the process's error output is kept for the message of a failed start. */
 const STDERR_KEPT = 2000
 
+/** Asks the editor's dialog (when it has one) and sends the process what it chose; a dialog that fails answers like one that was closed. */
+async function answerFolder (child: HostChild, id: number, chooseFolder: ChooseFolder | undefined): Promise<void> {
+  let folder: string | undefined
+  try {
+    folder = await chooseFolder?.()
+  } catch {
+    folder = undefined
+  }
+  child.send({ type: 'folder', id, folder })
+}
+
 interface PendingLink {
   resolve: (url: string) => void
   reject:  (error: Error) => void
@@ -45,11 +59,12 @@ interface PendingLink {
  * @param options.script - The `studio-host.process.mjs` to run.
  * @param options.workspace - The folder Studio opens first, typically the editor's workspace folder.
  * @param options.hooks - A hooks or plugins module to run recipes with (the `opencraw.hooksFile` setting).
+ * @param options.chooseFolder - The editor's folder dialog, which Studio's Open folder… uses; without it the process answers that there is none.
  * @param options.spawn - How the process is started; `forkHost` by default.
  * @returns The running process.
  * @throws Error when the process ends or reports a failure before it is serving; the message carries what it printed.
  */
-export async function startStudioProcess (options: { script: string, workspace?: string, hooks?: string, spawn?: SpawnHost }): Promise<StudioProcess> {
+export async function startStudioProcess (options: { script: string, workspace?: string, hooks?: string, chooseFolder?: ChooseFolder, spawn?: SpawnHost }): Promise<StudioProcess> {
   const child = (options.spawn ?? forkHost)(options.script, { workspace: options.workspace, hooks: options.hooks })
   let printed = ''
   child.stderr?.on('data', chunk => { printed = (printed + String(chunk)).slice(-STDERR_KEPT) })
@@ -61,14 +76,25 @@ export async function startStudioProcess (options: { script: string, workspace?:
 
   const ready = new Promise<void>((resolve, reject) => {
     child.on('message', message => {
-      if (message.type === 'ready') {
-        serving = true
-        resolve()
-      } else if (message.type === 'link') {
-        waiting.get(message.id)?.resolve(message.url)
-        waiting.delete(message.id)
-      } else if (!serving) {
-        reject(new Error(message.message))
+      switch (message.type) {
+        case 'ready': {
+          serving = true
+          resolve()
+          break
+        }
+        case 'link': {
+          waiting.get(message.id)?.resolve(message.url)
+          waiting.delete(message.id)
+          break
+        }
+        case 'choose-folder': {
+          void answerFolder(child, message.id, options.chooseFolder)
+          break
+        }
+        case 'failed': {
+          if (!serving) reject(new Error(message.message))
+          break
+        }
       }
     })
     child.on('exit', code => {

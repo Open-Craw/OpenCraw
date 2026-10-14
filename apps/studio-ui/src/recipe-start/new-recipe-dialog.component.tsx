@@ -4,22 +4,24 @@ import { useSaveRecipeMutation } from '../studio-client'
 import { RECIPE_ID_PATTERN, newRecipeFiles, startUrlError } from './new-recipe.mapper'
 
 export interface NewRecipeDialogProps {
-  /** The open workspace folder the new files are written into; the button is disabled without one. */
+  /** The open workspace folder the new files are written into; "Create" is refused without one. */
   folder?:   string
+  /** Whether the dialog is showing: the toolbar's Recipe menu opens it. */
+  open:      boolean
+  onClose:   () => void
   /** The new recipe's id was saved: select it (the same as picking it from the toolbar's recipe list). */
   onCreated: (recipeId: string) => void
 }
 
 /**
- * "+ New recipe" (issue #110): composes a minimal, valid `web` input/output
+ * "Recipe ▾ → New recipe…" (issue #110): composes a minimal, valid `web` input/output
  * recipe pair from just an id, and saves both — the way to start a recipe
  * from scratch in a folder that has none yet (or add another to one that
  * already does). Reuses `saveRecipe`, the same use-case the JSON tab's Save
  * button calls; nothing server-side needed to know about "new" versus
  * "existing" (`fs.writeFile` already creates a file that is not there yet).
  */
-export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
-  const [open, setOpen] = useState(false)
+export function NewRecipeDialog ({ folder, open, onClose, onCreated }: NewRecipeDialogProps) {
   const [id, setId] = useState('')
   const [startUrl, setStartUrl] = useState('')
   const [error, setError] = useState<string>()
@@ -29,7 +31,7 @@ export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
   const urlError = startUrlError(startUrl)
 
   function reset (): void {
-    setOpen(false)
+    onClose()
     setId('')
     setStartUrl('')
     setError(undefined)
@@ -50,10 +52,7 @@ export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={(details) => { if (details.open) setOpen(true); else reset() }}>
-      <Dialog.Trigger asChild>
-        <Button size='sm' variant='outline' disabled={folder === undefined}>+ New recipe</Button>
-      </Dialog.Trigger>
+    <Dialog.Root open={open} onOpenChange={(details) => { if (!details.open) reset() }}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
@@ -98,7 +97,7 @@ export function NewRecipeDialog ({ folder, onCreated }: NewRecipeDialogProps) {
                 colorPalette='blue'
                 alignSelf='flex-end'
                 onClick={() => { void create() }}
-                disabled={id.length === 0 || idError !== undefined || urlError !== undefined || saveRecipe.isPending}
+                disabled={folder === undefined || id.length === 0 || idError !== undefined || urlError !== undefined || saveRecipe.isPending}
                 loading={saveRecipe.isPending}
               >
                 Create

@@ -12,14 +12,13 @@ export interface LinkTarget {
   workspace?: string
 }
 
-/** What the extension sends the Studio process (`studio-host.process.mjs` reads the same shape). */
-export interface HostRequest {
-  type:    'link'
-  id:      number
-  target?: LinkTarget
-}
+/** What the extension sends the Studio process (`studio-host.process.mjs` reads the same shape): a request for a link, or the answer to a folder dialog the process asked for. */
+export type HostRequest = { type: 'link', id: number, target?: LinkTarget } |
+  /** The editor's folder dialog answered; `folder` is absent when it was closed without a choice. */
+  { type: 'folder', id: number, folder?: string }
 
-/** What the Studio process answers: it is serving, here is a link, or it could not start. */
+/** What the Studio process says: it is serving, here is a link, it could not start, or it needs the editor's folder dialog (Studio's Open folder…). */
 export type HostReply = { type: 'ready', url: string } |
   { type: 'link', id: number, url: string } |
+  { type: 'choose-folder', id: number } |
   { type: 'failed', message: string }

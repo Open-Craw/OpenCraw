@@ -70,7 +70,7 @@ export function DocumentDropZone ({ onFile, children, ...boxProps }: DocumentDro
           borderColor='blue.solid'
           pointerEvents='none'
         >
-          <Text fontSize='lg' fontWeight='semibold' color='blue.fg'>Drop to start a recipe from this file</Text>
+          <Text fontSize='lg' fontWeight='semibold' color='blue.fg'>Drop to load this file</Text>
         </Box>
       )}
     </Box>

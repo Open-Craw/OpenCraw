@@ -22,6 +22,25 @@ function workspaceFolders (): string[] {
 }
 
 /**
+ * Studio's Open folder…, answered with the editor's own folder dialog: the operating system's picker, or the
+ * remote machine's in a remote window, where the server runs and the recipe folder is.
+ *
+ * @returns The folder picked, or `undefined` when the dialog was closed without a choice.
+ */
+async function pickFolder (): Promise<string | undefined> {
+  const [picked] = await vscode.window.showOpenDialog({
+    canSelectFiles:   false,
+    canSelectFolders: true,
+    canSelectMany:    false,
+    title:            'Choose the recipe folder',
+    openLabel:        'Open folder',
+    defaultUri:       vscode.workspace.workspaceFolders?.[0]?.uri,
+  }) ?? []
+
+  return picked?.fsPath
+}
+
+/**
  * The hooks module the person named in their user settings, if any.
  *
  * @returns The absolute path, or `undefined` when the setting is empty.
@@ -51,7 +70,7 @@ export function createStudioRunner (extensionPath: string): StudioRunner {
 
   async function start (): Promise<StudioProcess> {
     try {
-      const process = await startStudioProcess({ script, workspace: workspaceFolders()[0], hooks: hooksFile() })
+      const process = await startStudioProcess({ script, workspace: workspaceFolders()[0], hooks: hooksFile(), chooseFolder: pickFolder })
       void process.ended.then(() => { running = undefined })
 
       return process

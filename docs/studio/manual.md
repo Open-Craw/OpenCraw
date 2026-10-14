@@ -59,22 +59,45 @@ so a plain crawl install stays light.
 
 ## 2. Opening a workspace
 
-The toolbar's folder box takes any folder — one that already has `<id>.input.json`/`<id>.output.json` files
-in it, or a brand new one. Type a path (or start with one already open, via `opencraw studio <folder>`) and
-click **Open**.
+The toolbar has three jobs, and each has one place:
 
-**Starting from nothing?** Click **+ New recipe**, type an id (lowercase letters, digits and hyphens — the
-same pattern every recipe id follows), and **Create**. That writes a minimal, valid pair —
-`<id>.input.json` and `<id>.output.json` — into the open folder and selects it: a `web` recipe with one
+| Button | Question it answers | What is in it |
+|---|---|---|
+| **Recipe ▾** | Which recipe am I editing? | the recipes in the open folder, **New recipe…**, **Open folder…** |
+| **Load ▾** | What does it read? | **Document…**, **Web page (URL)…** |
+| **Run sample** / **Stop** | Does it work? | runs the open recipe |
+
+Next to them, **All changes saved** says the edits you make are written as you make them (the Steps tab, loading, creating a
+recipe); it reads **Saving…** while a write is on its way. The **Record** and **JSON** tabs keep their edits
+as a draft until you press their own **Save**, so a change there is not written before that.
+
+**A recipe is an input and its output.** The input recipe (`<id>.ocw-in.json`) names its output recipe
+(`<id>.ocw-out.json`, by the input's `output` id). Opening a recipe from **Recipe ▾** opens both: Steps edits the
+input, Record edits the output and the mapping between them. You never open the pair separately.
+
+**Opening a folder.** **Recipe ▾ → Open folder…** takes any folder — one that already has `.ocw-in.json` /
+`.ocw-out.json` files in it, or a brand new one. It opens the operating system's folder dialog (the desktop app's native one, or the VS Code extension's own
+dialog when Studio runs from there); on a machine with no dialog, a box to type the path in appears instead. Starting Studio
+with `opencraw studio <folder>` opens that folder already.
+
+**Starting from nothing?** **Recipe ▾ → New recipe…**: type an id (lowercase letters, digits and hyphens — the
+same pattern every recipe id follows), optionally a start URL, and **Create**. That writes a minimal, valid
+pair — `<id>.ocw-in.json` and `<id>.ocw-out.json` — into the open folder and selects it: a `web` recipe with one
 `goto` step, an `emit`, and no fields mapped yet. Everything from here builds on top of that.
 
-**Starting from a file?** Drop a PDF, spreadsheet, CSV, PowerPoint, Word, Markdown, JSON, YAML or XML
-file anywhere on the window — or click **Open document…** and pick one. The studio copies it into the
-workspace folder (next to the recipes, so the folder stays self-contained), writes a pair named after the
-file (`Q3 Report.pdf` → `q3-report`; a second `q3-report` becomes `q3-report-2`) whose one step reads the
-copy, and selects it. The content pane then shows the document on its own canvas
-([§8](#8-document-canvases)) — no URL to type, no placeholder to edit. No folder open yet? Type one in
-the folder box first; it's created on the drop.
+**Loading what it reads.** A page or a document is the sample a recipe is built against, so **Load ▾** puts it
+into the recipe that is open:
+
+- **Web page (URL)…** with a web recipe open replaces its start page; the steps and the mapping stay.
+- **Document…** (or dropping a PDF, spreadsheet, CSV, PowerPoint, Word, Markdown, JSON, YAML or XML file
+  anywhere on the window) with a document recipe open replaces the file it reads. The studio copies the file
+  into the workspace folder, next to the recipes, so the folder stays self-contained.
+- If the open recipe reads the other kind of thing — a document into a web recipe, or a page into a document
+  recipe — or no recipe is open, Load starts a new recipe instead and leaves the open one untouched. A bar
+  under the toolbar says which happened. New recipes are named after the file (`Q3 Report.pdf` → `q3-report`;
+  a second one becomes `q3-report-2`) or the page's host, and a document opens on its own canvas
+  ([§8](#8-document-canvases)).
+- No folder open yet? Load needs one to write into: open one first.
 
 For this guide's example, open any folder and create a recipe with the id `books`.
 
@@ -149,8 +172,25 @@ Switch to the **Record** tab. This is the paired **output** recipe: the fields a
 with a type, and the input recipe's **mapping** — which pill each field reads from, and what happens to the
 value on the way in.
 
-Add fields for `title` (`string`), `price` (`currency`), `available` (`boolean`); drag the **Steps** tab's
-`title`/`price`/`availability` pills onto their matching rows to bind each field's source (or type the pill
+A strip at the top of the tab lists every value the steps read that no field uses yet, one chip each:
+the pill, the field it would become and a guessed type (`price` becomes a `number`, `availability` a
+`boolean`, a link taken from `href` a `url` made absolute; hover a chip for why). Click a chip's **＋** to add
+the field **and** its mapping at once, or **Add all**. Nothing is guessed silently: change a type or a name
+afterwards like any field.
+
+Each field row opens with a one-line summary: a coloured **type** badge, the **pill** it reads from (or
+*not mapped*, *generated*) and, once a sample has run, the **value** the selected record got.
+
+**Drag to build the output.** Anything you can see can be dropped on the field list to become a field with its
+mapping, typed the way its proposal would be:
+
+- a **pill** from a **Steps** card: grab it and hold it over the **Record** tab (it opens after a moment),
+  then drop it on the list. Dropped on a field's own source box instead, it only maps that field;
+- a **selection** staged in the content pane (a cell, a text box, a region of a PDF, a node of the page): drag
+  its chip onto the **Record** tab and the list. The studio adds the step to the recipe, as dropping it on the
+  Steps tab does, and the value it reads appears as a new field. The new field is a draft until you **Save**.
+
+You can still add a field by hand with **+ field** and drag a **Steps** pill onto its row (or type the pill
 name directly). Mark `title` as the record's **key**, so a duplicate never gets emitted twice.
 
 Each field's **transform chain** is a row of small blocks — `trim`, `currency`, `boolean`, and so on
