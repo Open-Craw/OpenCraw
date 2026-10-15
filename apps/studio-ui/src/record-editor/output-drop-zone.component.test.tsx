@@ -35,6 +35,29 @@ function renderEditor (props: Partial<RecordEditorProps> & { input?: RecipeListi
   return { ...view, rerenderWith: (next: RecipeListing) => { view.rerender(ui(next)) } }
 }
 
+describe('Record tab Emit warning', () => {
+  beforeEach(() => { resetStudioUiStore() })
+
+  it('says a run returns no records without an Emit step, and adds one on request', async () => {
+    const onSaveInput = jest.fn().mockResolvedValue(undefined)
+    renderEditor({ onSaveInput })
+    expect(screen.getByTestId('missing-emit')).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add Emit step' }))
+    expect(screen.queryByTestId('missing-emit')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => { expect(onSaveInput).toHaveBeenCalledTimes(1) })
+    expect((onSaveInput.mock.calls[0] as [string, { steps: unknown[] }])[1].steps.at(-1)).toEqual({ type: 'emit' })
+  })
+
+  it('stays quiet when the recipe already emits', () => {
+    renderEditor({ input: listing('/r/books.ocw-in.json', 'input', inputWith([...STEPS, { type: 'emit' }]), OUTLINE) })
+
+    expect(screen.queryByTestId('missing-emit')).toBeNull()
+  })
+})
+
 describe('Record tab output drop zone', () => {
   beforeEach(() => { resetStudioUiStore() })
 

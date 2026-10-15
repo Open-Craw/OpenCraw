@@ -178,6 +178,9 @@ the pill, the field it would become and a guessed type (`price` becomes a `numbe
 the field **and** its mapping at once, or **Add all**. Nothing is guessed silently: change a type or a name
 afterwards like any field.
 
+A recipe with output fields but no **Emit** step reads values and returns no records, so the tab says so and
+offers **Add Emit step**.
+
 Each field row opens with a one-line summary: a coloured **type** badge, the **pill** it reads from (or
 *not mapped*, *generated*) and, once a sample has run, the **value** the selected record got.
 
@@ -244,7 +247,7 @@ pane's **canvas** changes, to fit what it's actually showing:
 |---|---|---|
 | A web page, or Word/Markdown (read as HTML) | the snapshot iframe from [§4](#4-the-steps-tab-picking-on-a-live-page) | a CSS selector |
 | JSON, YAML, XML, JSON Lines | a tree — click a value to read it, `[*]` reads every item of a list | a `jsonpath` (or `xpath` for XML); a "next" value offers the `paginate` cursor |
-| PDF | the page rendered with the engine's own detected cells and rows drawn over it | in **Text** mode (the default) the line under the mouse snaps; a click stages it, shift+click extends to another line, dragging stages the box drawn — a chip shows exactly what the engine reads there, with **Add to recipe** (a `region` extract: `page=1 x=72..252 y=640..664`) or drag the chip onto the Steps tab. In the table modes, the header row gives `selector`, the last row `until`, a column its name |
+| PDF | the page rendered with the engine's own detected cells and rows drawn over it | in **Text** mode (the default) the line under the mouse snaps; a click stages it (a wrapped paragraph is staged whole), shift+click extends to another line, dragging stages the box drawn — a chip shows exactly what the engine reads there, with **Add to recipe** (a `region` extract: `page=1 x=72..252 y=640..664`; a `Label: value` line adds a `regex` extract named after its label that reads the value only, wherever it sits on the page) or drag the chip onto the Steps tab. The page is fitted to the pane's width. In the table modes, the header row gives `selector`, the last row `until`, a column its name |
 | Excel, CSV | a grid: sheet tabs, hidden sheets/rows marked, merged cells shown as one | in **Cell** mode (the default) the cell under the mouse lights up; a click stages it, shift+click (or press on one cell and release on another) stages the rectangle between — the chip shows the values, with **Add to recipe** (a `jsonpath` into the sheet by name and the cell by position: `$.sheets[?(@.name=='Prices')].rows[0][0]`, a rectangle a list) or drag it onto the Steps tab. In the table modes a sheet tab gives `sheet`, the header row `headerRows`, a merged group `fillDown` |
 | PowerPoint | each slide redrawn from its shapes, with tables and charts listed apart | in **Text** mode (the default) the text box under the mouse snaps; a click stages it, shift+click extends, dragging stages the box drawn — the same chip as the PDF's, with **Add to recipe** (a `region` extract: `slide=3 x=60..900 y=30..90`, points from the slide's top-left corner) or drag it onto the Steps tab. In the table modes a table gives `table`/`slide`; a chart a `jsonpath` into its series |
 

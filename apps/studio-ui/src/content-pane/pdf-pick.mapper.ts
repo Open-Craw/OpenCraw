@@ -115,6 +115,11 @@ export function cellBox (cell: PdfCellView): PointsBox {
   return { x1: cell.x - CELL_BOX_PAD, y1: cell.y - CELL_BOX_PAD, x2: cell.x + Math.max(cell.width, 1) + CELL_BOX_PAD, y2: cell.y + cell.height + CELL_BOX_PAD }
 }
 
+/** `box` padded like a snapped cell's (see `CELL_BOX_PAD`): what a paragraph's own box is staged as. */
+export function paddedBox (box: PointsBox): PointsBox {
+  return { x1: box.x1 - CELL_BOX_PAD, y1: box.y1 - CELL_BOX_PAD, x2: box.x2 + CELL_BOX_PAD, y2: box.y2 + CELL_BOX_PAD }
+}
+
 /** The smallest box holding both: a shift+click extending a selection to a second line. */
 export function unionBox (a: PointsBox, b: PointsBox): PointsBox {
   return { x1: Math.min(a.x1, b.x1), y1: Math.min(a.y1, b.y1), x2: Math.max(a.x2, b.x2), y2: Math.max(a.y2, b.y2) }
@@ -156,6 +161,26 @@ export function regionCardNode (selector: string, path: string, id: string): Out
     sentence: [],
     custom:   false,
     step:     { type: 'extract', id, kind: 'region', selector },
+  }
+}
+
+/**
+ * Builds the `regex` extract card for a `Label: value` line: it reads the
+ * text after the label wherever the line sits on the page, so the value is
+ * not bound to the layout and does not carry its label.
+ *
+ * @param label - The text before the colon.
+ * @param path - This node's outline path.
+ * @param id - The step's own id.
+ */
+export function labelCardNode (label: string, path: string, id: string): OutlineCard {
+  return {
+    kind:     'card',
+    path,
+    stepType: 'extract',
+    sentence: [],
+    custom:   false,
+    step:     { type: 'extract', id, kind: 'regex', selector: `${escapeRegexLiteral(label)}${String.raw`:[\t ]*([^\t\n]+)`}` },
   }
 }
 
