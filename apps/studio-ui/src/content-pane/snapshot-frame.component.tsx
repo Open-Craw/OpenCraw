@@ -46,6 +46,9 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
     const handleMouseOver = (event: MouseEvent): void => { propsRef.current.onHoverNode(nodeIdOf(event.target)) }
     const handleMouseOut = (): void => { propsRef.current.onHoverNode(undefined) }
     const handleClick = (event: MouseEvent): void => {
+      // The snapshot is a picture of the page, not the page: a link must never navigate this frame to the live
+      // site (which usually refuses to be framed), whether or not a pick is under way.
+      if (linkOf(event.target) !== undefined) event.preventDefault()
       if (!propsRef.current.pickMode) return
       const nodeId = nodeIdOf(event.target)
       if (nodeId === undefined) return
@@ -95,6 +98,13 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
       style={{ width: '100%', height: '100%', border: 'none', background: 'white' }}
     />
   )
+}
+
+/** The link at or above `target`, if any (same cross-realm caveat as `nodeIdOf`). */
+function linkOf (target: EventTarget | null): Element | undefined {
+  const element = (target as Node | null)?.nodeType === Node.ELEMENT_NODE ? (target as Element).closest('a[href], area[href]') : null
+
+  return element ?? undefined
 }
 
 /** The `data-oc-node` id of the stamped element at or above `target`. The target belongs to the iframe's own realm, so `target instanceof Element` is false for it: test the node type instead (issue #153). */

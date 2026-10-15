@@ -35,4 +35,13 @@ describe('SnapshotFrame', () => {
 
     expect(onPickNode).not.toHaveBeenCalled()
   })
+
+  it.each([true, false])('never lets a clicked link navigate the frame to the live site (pick mode %s)', (pickMode) => {
+    const { container } = render(<SnapshotFrame html={BODY} pickMode={pickMode} showHidden={false} onHoverNode={() => undefined} onPickNode={() => undefined} />)
+    const link = loadedLink(container)
+
+    const notCancelled = fireEvent.click(link)
+
+    expect(notCancelled).toBe(false)
+  })
 })
