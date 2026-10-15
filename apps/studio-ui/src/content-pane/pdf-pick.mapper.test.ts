@@ -1,4 +1,4 @@
-import { cellBox, columnKeyFrom, escapedRowPattern, regionCardNode, regionIdFrom, regionSelector, tableCardNode, unionBox } from './pdf-pick.mapper'
+import { cellBox, columnKeyFrom, escapedRowPattern, labelCardNode, regionCardNode, regionIdFrom, regionSelector, tableCardNode, unionBox } from './pdf-pick.mapper'
 
 describe('escapedRowPattern', () => {
   it('anchors the text at the start and escapes regex metacharacters', () => {
@@ -96,5 +96,15 @@ describe('regionCardNode', () => {
   it('builds a region extract card with the selector and id as given', () => {
     const card = regionCardNode('page=1 x=71..273 y=799..813', 'steps.1', 'title')
     expect(card).toEqual({ kind: 'card', path: 'steps.1', stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id: 'title', kind: 'region', selector: 'page=1 x=71..273 y=799..813' } })
+  })
+})
+
+describe('labelCardNode', () => {
+  it('reads the text after the label with a pattern that works in a regex step', () => {
+    const card = labelCardNode('Valid until (UK)', 'steps.1', 'validUntilUk')
+    const selector = (card.step as { selector: string }).selector
+
+    expect(selector).toBe(String.raw`Valid until \(UK\):[\t ]*([^\t\n]+)`)
+    expect(new RegExp(selector, 'gs').exec('Valid until (UK):\t31 Dec 2026\tnext')?.[1]).toBe('31 Dec 2026')
   })
 })

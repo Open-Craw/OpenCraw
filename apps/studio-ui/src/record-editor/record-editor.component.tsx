@@ -4,6 +4,7 @@ import type { FieldTraceView, OutlineNode, OutlineView, RecipeListing } from '@o
 import type { PreviewRecord } from '../preview'
 import type { RejectedRecord } from '../studio-store'
 import { useStudioUiStore } from '../studio-store'
+import { hasEmitStep, withEmitStep } from './emit-step.algorithm'
 import { FieldRow } from './field-row.component'
 import { FieldSuggestions } from './field-suggestions.component'
 import { OutputDropZone } from './output-drop-zone.component'
@@ -36,6 +37,7 @@ interface OutputRecipeJson {
 }
 
 interface InputRecipeJson {
+  steps?:        unknown
   mapping:       Record<string, MappingRuleJson>
   [key: string]: unknown
 }
@@ -212,6 +214,13 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
           <Button size='xs' onClick={() => { void save() }} disabled={!dirty || saving} loading={saving}>Save</Button>
         </HStack>
       </HStack>
+
+      {!hasEmitStep(input.steps) && (Object.keys(output.fields).length > 0 || suggestions.length > 0) && (
+        <HStack role='alert' data-testid='missing-emit' gap={2} p={2} borderWidth='1px' borderColor='orange.300' rounded='md' fontSize='xs' justify='space-between'>
+          <Text>This recipe has no Emit step, so a run reads these values but returns no records.</Text>
+          <Button size='xs' variant='outline' onClick={() => { setInput({ ...input, steps: withEmitStep(input.steps) }) }}>Add Emit step</Button>
+        </HStack>
+      )}
 
       <FieldSuggestions
         suggestions={suggestions}
