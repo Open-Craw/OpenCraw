@@ -414,7 +414,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             </Text>
           </>
         )}
-        {isDocumentTree && snapshot.data?.html.startsWith('<pre') === true && <TreeViewSwitch value={treeView} onChange={setTreeView} />}
+        {isDocumentTree && (format === 'json' || format === 'yaml') && <TreeViewSwitch value={treeView} onChange={setTreeView} />}
         {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to collect it. Click [*] beside a field to collect it for every item of a list.</Text>}
         {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching) || (isGrid && gridView.isFetching) || (isDeck && deckView.isFetching)) && <Spinner size='xs' />}
         {status !== undefined && (
