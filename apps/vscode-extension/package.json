@@ -1,6 +1,6 @@
 {
   "name": "@opencraw/vscode",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "OpenCraw in the editor: open folders, recipes and documents in Studio, run your recipes from a view and save the result in the format you choose, and learn how it all works.",
   "type": "module",
@@ -34,6 +34,12 @@
           "contextualTitle": "OpenCraw recipes"
         },
         {
+          "id": "opencraw.agent",
+          "name": "AI agent",
+          "icon": "media/opencraw-activity-bar.svg",
+          "contextualTitle": "OpenCraw AI agent"
+        },
+        {
           "id": "opencraw.learn",
           "name": "Learn",
           "icon": "media/opencraw-activity-bar.svg",
@@ -45,6 +51,10 @@
       {
         "view": "opencraw.recipes",
         "contents": "No recipes in this folder yet.\nStudio builds them for you: load a web page or a document, click what you want, and it writes the recipe.\n[Open Studio](command:opencraw.openStudio)\nRecipes are the files ending in `.ocw-in.json` (what to read) and `.ocw-out.json` (the shape of the result). They are grouped here by the output they fill."
+      },
+      {
+        "view": "opencraw.agent",
+        "contents": "Connect an AI agent to OpenCraw.\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)"
       }
     ],
     "jsonValidation": [
@@ -111,6 +121,12 @@
         "command": "opencraw.openLink",
         "title": "Open a link",
         "category": "OpenCraw"
+      },
+      {
+        "command": "opencraw.copyMcpConfig",
+        "title": "Copy the MCP configuration for another agent",
+        "category": "OpenCraw",
+        "icon": "$(copy)"
       }
     ],
     "menus": {
@@ -244,8 +260,25 @@
             "completionEvents": [
               "onCommand:opencraw.runRecipe"
             ]
+          },
+          {
+            "id": "agent",
+            "title": "Let an AI agent use OpenCraw",
+            "description": "In VS Code's agent mode the OpenCraw tools are already there. For Claude Code, Cursor and others, copy the configuration.\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)",
+            "media": {
+              "markdown": "media/walkthrough/agent.md"
+            },
+            "completionEvents": [
+              "onCommand:opencraw.copyMcpConfig"
+            ]
           }
         ]
+      }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "opencraw.mcp",
+        "label": "OpenCraw"
       }
     ]
   },

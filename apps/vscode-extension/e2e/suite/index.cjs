@@ -2,6 +2,7 @@
 // editor loads it. It uses the real commands, a real Studio process and the real settings; the only thing it
 // does not look at is the browser the link is handed to.
 const assert = require('node:assert/strict')
+const { spawn } = require('node:child_process')
 const { mkdtempSync, writeFileSync } = require('node:fs')
 const { tmpdir } = require('node:os')
 const { join } = require('node:path')
@@ -33,6 +34,36 @@ async function command (link, body) {
   return await response.json()
 }
 
+/** Starts the MCP server the way the editor does (its own executable as plain Node), asks it for its tools over stdio and stops it. */
+async function mcpToolNames (script) {
+  const child = spawn(process.execPath, [script], { env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }, stdio: ['pipe', 'pipe', 'ignore'] })
+  try {
+    return await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { reject(new Error('the MCP server did not answer within 60 s')) }, 60_000)
+      let buffer = ''
+      child.on('error', reject)
+      child.stdout.on('data', (chunk) => {
+        buffer += String(chunk)
+        for (const line of buffer.split('\n').slice(0, -1)) {
+          const message = JSON.parse(line)
+          if (message.id === 1) {
+            child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' })}\n`)
+            child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/list' })}\n`)
+          }
+          if (message.id === 2) {
+            clearTimeout(timer)
+            resolve(message.result.tools.map(tool => tool.name))
+          }
+        }
+        buffer = buffer.slice(buffer.lastIndexOf('\n') + 1)
+      })
+      child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'opencraw-e2e', version: '1' } } })}\n`)
+    })
+  } finally {
+    child.kill()
+  }
+}
+
 async function run () {
   const extension = vscode.extensions.getExtension('opencraw.opencraw')
   assert.ok(extension, 'the extension is installed')
@@ -42,6 +73,10 @@ async function run () {
   assert.ok(registered.includes('opencraw.openStudio'), 'Open Studio is registered')
   assert.ok(registered.includes('opencraw.openOn'), 'Open on OpenCraw is registered')
   for (const name of ['runRecipe', 'openRecipeInStudio', 'refreshRecipes', 'showWalkthrough', 'openLink']) assert.ok(registered.includes(`opencraw.${name}`), `${name} is registered`)
+
+  // The MCP server the extension registers with the editor's agent mode starts, and offers OpenCraw's tools.
+  const tools = await mcpToolNames(api.mcpServerScript())
+  for (const name of ['probe', 'validate', 'run', 'list_recipes']) assert.ok(tools.includes(name), `the MCP server offers ${name} (offers: ${tools.join(', ')})`)
 
   // The recipes view lists the workspace's recipes by the output they fill: an input whose output is missing is kept, under its name.
   const groups = await api.recipeGroups()
