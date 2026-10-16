@@ -305,8 +305,10 @@ happen instead of reading a report:
 
 - **`studio_status`** tells it whether Studio is running, which folder it has open and what it is sampling.
 - **`studio_open_recipe`** opens a recipe, a folder or a document in your Studio, as if you had followed a link to it.
+- **`studio_pick`** picks a value on a web page for you to see: by CSS selector or by the text it shows. It is staged the way your own click is, with the
+  ways to find it to choose from, and the agent can add it to the recipe.
 - **`studio_run_sample`** runs an input recipe as a sample: the records arrive in your Records tab, and the agent gets the counts and the first
   records back.
 
 Nothing needs setting up: a running Studio announces itself in `~/.opencraw/studio` (its address and its access token, readable only by you), and the
-agent finds it there. Studio still listens on this machine only. Clicking a value on a page or document stays your click: the agent tells you where.
+agent finds it there. Studio still listens on this machine only. On a PDF, a spreadsheet or a deck the picking is still your click: the agent tells you where.

@@ -6,7 +6,7 @@ import { createSnapshotCache } from '../page-snapshot'
 import type { SnapshotCache } from '../page-snapshot'
 import { createLastRunCache } from '../sample-run'
 import type { LastRunCache, SampleRunHandle } from '../sample-run'
-import type { StudioEvent } from '../studio-api'
+import type { StudioEvent, UiOutcomeView } from '../studio-api'
 import type { TrustedPlugins } from '../trusted-plugins'
 import type { WsConnection } from './websocket.client'
 
@@ -25,6 +25,8 @@ export interface StudioState {
   /** A `start-recording` still opening its window: `stop-recording` and the server's own close wait for it, so a window is never left open behind them (issue #174). */
   openingRecording?:  Promise<unknown>
   sockets:            Set<WsConnection>
+  /** How the pages said a controller's requests went (`ui-report`), by request id; the oldest are dropped past a few dozen. */
+  uiOutcomes:         Map<string, UiOutcomeView>
   snapshots:          SnapshotCache
   lastRuns:           LastRunCache
   /** Set once at server start (`StudioServerOptions.browser`); every web-mode command reads it from here rather than each accepting its own. */
@@ -41,7 +43,7 @@ export interface StudioState {
 
 /** @returns Fresh state for a new server instance: no workspace open, no run, no recording, no sockets, an empty snapshot cache, no last runs, Playwright's own default browser, the default recorder profile directory. */
 export function createStudioState (): StudioState {
-  return { sockets: new Set(), snapshots: createSnapshotCache(), lastRuns: createLastRunCache(), recorderProfileDir: defaultRecorderProfileDir() }
+  return { sockets: new Set(), uiOutcomes: new Map(), snapshots: createSnapshotCache(), lastRuns: createLastRunCache(), recorderProfileDir: defaultRecorderProfileDir() }
 }
 
 /**

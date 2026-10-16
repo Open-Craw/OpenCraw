@@ -62,6 +62,6 @@ export type {
   GridTablePreviewMatchView, GridTablePreviewView,
   DeckShapeView, DeckChartSeriesView, DeckChartView, DeckSlideView, DeckDocumentView,
   DeckTablePreviewMatchView, DeckTablePreviewView,
-  StartRecordingCommand, StopRecordingCommand,
+  StartRecordingCommand, StopRecordingCommand, UiReportCommand,
   RecordingCardEvent, RecordingNoteEvent, RecordingStoppedEvent,
 } from './studio-api'

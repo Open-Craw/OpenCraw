@@ -1,1 +1,1 @@
-export { studioOpenRecipeInputShape, studioOpenRecipeTool, studioRunSampleInputShape, studioRunSampleTool, studioStatusInputShape, studioStatusTool } from './studio-tools.handler'
+export { studioOpenRecipeInputShape, studioOpenRecipeTool, studioPickInputShape, studioPickTool, studioRunSampleInputShape, studioRunSampleTool, studioStatusInputShape, studioStatusTool } from './studio-tools.handler'

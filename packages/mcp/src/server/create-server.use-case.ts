@@ -4,7 +4,7 @@ import { docsInputShape, docsRoot, docsTool } from '../docs-tool'
 import { listRecipesInputShape, listRecipesTool } from '../list-tool'
 import { probeInputShape, probeTool } from '../probe-tool'
 import { runInputShape, runTool } from '../run-tool'
-import { studioOpenRecipeInputShape, studioOpenRecipeTool, studioRunSampleInputShape, studioRunSampleTool, studioStatusInputShape, studioStatusTool } from '../studio-tool'
+import { studioOpenRecipeInputShape, studioOpenRecipeTool, studioPickInputShape, studioPickTool, studioRunSampleInputShape, studioRunSampleTool, studioStatusInputShape, studioStatusTool } from '../studio-tool'
 import { validateInputShape, validateTool } from '../validate-tool'
 
 const SERVER_INFO = { name: 'opencraw', version: '0.0.1' }
@@ -62,6 +62,11 @@ export function createServer (): McpServer {
     'studio_open_recipe',
     { description: 'Open a recipe, a folder of recipes or a document in the Studio the person has open, so they watch the recipe being built. Does nothing to the files.', inputSchema: studioOpenRecipeInputShape },
     args => studioOpenRecipeTool(args),
+  )
+  server.registerTool(
+    'studio_pick',
+    { description: 'Pick a value on the web page of an input recipe in Studio, as a click would: give a CSS selector or the text the element shows. The person sees it selected and the ways to reach it; with add it is added to the recipe. Returns the selector chosen and the alternatives, with how many elements each matches. Open the recipe first with studio_open_recipe.', inputSchema: studioPickInputShape },
+    args => studioPickTool(args),
   )
   server.registerTool(
     'studio_run_sample',

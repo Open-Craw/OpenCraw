@@ -13,6 +13,14 @@ export const studioOpenRecipeInputShape = {
   workspace: z.string().optional().describe('The folder a document belongs to, when `path` is a document.'),
 }
 
+/** Input schema for `studio_pick`. */
+export const studioPickInputShape = {
+  recipeId: z.string().min(1).describe('The id of an input recipe whose start point is a web page, in the folder Studio has open.'),
+  selector: z.string().optional().describe('A CSS selector of the element to pick on the page of the recipe. Give this or `text`.'),
+  text:     z.string().optional().describe('The text the element shows, when you do not know a selector: the smallest element showing it is picked.'),
+  add:      z.boolean().optional().describe('Add the pick to the recipe straight away (default: leave it staged, for the person to choose a selector and press Add to recipe).'),
+}
+
 /** Input schema for `studio_run_sample`. */
 export const studioRunSampleInputShape = {
   recipeId:    z.string().min(1).describe('The id of an input recipe in the folder Studio has open.'),
@@ -22,6 +30,8 @@ export const studioRunSampleInputShape = {
 
 const NO_STUDIO = 'No Studio is running. Start one with `opencraw studio <folder>`, or open a recipe from the OpenCraw view in VS Code ("Open in Studio"), then ask again.'
 const POLL_MS = 500
+/** How long a page gets to say how a request went. */
+const REPORT_WAIT_MS = 30_000
 
 function text (value: unknown, isError = false): CallToolResult {
   return { content: [{ type: 'text', text: typeof value === 'string' ? value : JSON.stringify(value) }], ...(isError && { isError }), ...(typeof value === 'object' && value !== null && { structuredContent: value as Record<string, unknown> }) }
@@ -55,6 +65,33 @@ export async function studioStatusTool (directory?: string): Promise<CallToolRes
   }
 }
 
+interface PageAnswer {
+  pages:    number
+  /** What the page reported; `undefined` when none did in time. */
+  outcome?: { ok: boolean, message: string, detail?: Record<string, unknown> }
+}
+
+function sleep (ms: number): Promise<void> {
+  return new Promise<void>((resolve) => { setTimeout(resolve, ms) })
+}
+
+/** Asks the open page to do something and waits for what it reports. */
+async function askPage (studio: StudioInstance, request: Record<string, unknown>, waitMs = REPORT_WAIT_MS): Promise<PageAnswer> {
+  const { pages, requestId } = await sendStudioCommand<{ pages: number, requestId: string }>(studio, { type: 'ask-ui', request })
+  if (pages === 0) return { pages }
+  const deadline = Date.now() + waitMs
+  while (Date.now() < deadline) {
+    const outcome = await sendStudioCommand<{ state: string, ok?: boolean, message?: string, detail?: Record<string, unknown> }>(studio, { type: 'ui-outcome', requestId })
+    if (outcome.state === 'done') return { pages, outcome: { ok: outcome.ok === true, message: outcome.message ?? '', detail: outcome.detail } }
+    await sleep(POLL_MS / 5)
+  }
+
+  return { pages }
+}
+
+const NO_PAGE = 'Studio is running but no page is open on it. Ask the person to open Studio in their browser.'
+const NO_REPORT = 'The page did not answer in time. Is the recipe in the folder Studio has open?'
+
 /**
  * `studio_open_recipe`: opens a recipe, a folder or a document in the Studio the person is looking at, so they watch the work happen.
  *
@@ -66,11 +103,34 @@ export async function studioOpenRecipeTool (args: { path: string, workspace?: st
   const studio = await studioOf(directory)
   if (studio === undefined) return text(NO_STUDIO, true)
   try {
-    const { pages } = await sendStudioCommand<{ pages: number }>(studio, { type: 'ask-ui', request: { kind: 'open', path: args.path, workspace: args.workspace } })
+    const answer = await askPage(studio, { kind: 'open', path: args.path, workspace: args.workspace })
+    if (answer.pages === 0) return text({ opened: false, hint: NO_PAGE, url: studio.url })
+    if (answer.outcome === undefined) return text({ opened: false, hint: NO_REPORT })
 
-    if (pages === 0) return text({ opened: false, hint: 'Studio is running but no page is open on it. Ask the person to open Studio in their browser.', url: studio.url })
+    return text({ opened: answer.outcome.ok, message: answer.outcome.message }, !answer.outcome.ok)
+  } catch (error) {
+    return text(`Studio refused: ${messageOf(error)}`, true)
+  }
+}
 
-    return text({ opened: true, pages })
+/**
+ * `studio_pick`: picks a value on a recipe's web page in the Studio the person is looking at, as a click would: they see it selected and the
+ * ways to reach it. With `add` it is added to the recipe. Answers with the selector Studio chose and the others it offers.
+ *
+ * @param args - The recipe and what to pick (a selector or the text shown), and whether to add it.
+ * @param directory - Where Studios announce themselves.
+ * @returns The MCP tool result.
+ */
+export async function studioPickTool (args: { recipeId: string, selector?: string, text?: string, add?: boolean }, directory?: string): Promise<CallToolResult> {
+  if (args.selector === undefined && args.text === undefined) return text('Give a CSS selector or the text the element shows.', true)
+  const studio = await studioOf(directory)
+  if (studio === undefined) return text(NO_STUDIO, true)
+  try {
+    const answer = await askPage(studio, { kind: 'pick', recipeId: args.recipeId, selector: args.selector, text: args.text, add: args.add })
+    if (answer.pages === 0) return text({ picked: false, hint: NO_PAGE, url: studio.url }, true)
+    if (answer.outcome === undefined) return text({ picked: false, hint: NO_REPORT }, true)
+
+    return text({ picked: answer.outcome.ok, message: answer.outcome.message, ...answer.outcome.detail }, !answer.outcome.ok)
   } catch (error) {
     return text(`Studio refused: ${messageOf(error)}`, true)
   }
@@ -96,7 +156,7 @@ export async function studioRunSampleTool (args: { recipeId: string, maxRecords?
       const status = await sendStudioCommand<{ state: string }>(studio, { type: 'run-status', recipeId: args.recipeId })
       if (status.state !== 'running') return text(status)
       if (Date.now() >= deadline) return text({ ...status, hint: 'Still running; ask again with studio_run_sample or look in Studio.' })
-      await new Promise<void>((resolve) => { setTimeout(resolve, POLL_MS) })
+      await sleep(POLL_MS)
     }
   } catch (error) {
     return text(`Studio could not run it: ${messageOf(error)}`, true)

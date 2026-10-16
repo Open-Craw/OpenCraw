@@ -37,6 +37,6 @@ describe('OPENCRAW_AGENT', () => {
   })
 
   it('names the Studio tools a connected chatbot will offer', () => {
-    expect(OPENCRAW_AGENT.studioTools.map(tool => tool.name)).toEqual(['studio_status', 'studio_open_recipe', 'studio_run_sample'])
+    expect(OPENCRAW_AGENT.studioTools.map(tool => tool.name)).toEqual(['studio_status', 'studio_open_recipe', 'studio_pick', 'studio_run_sample'])
   })
 })

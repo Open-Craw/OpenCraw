@@ -5,7 +5,7 @@ import { InspectorPanel, matchingNodeIds } from '../inspector'
 import { allSteps, stepById } from '../steps-outline'
 import type { GridViewOverride } from '../studio-client'
 import { plainError, useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
-import { useRecordingStore, useStudioUiStore } from '../studio-store'
+import { useRecordingStore, useStudioUiStore, useUiRequestStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { SnapshotNotice } from './snapshot-notice.component'
 import { TreeViewSwitch } from './tree-view-switch.component'
@@ -19,6 +19,7 @@ import { SelectorOptions } from './selector-options.component'
 import { SnapshotFrame } from './snapshot-frame.component'
 import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
+import { findPickNode } from './ui-pick-target.algorithm'
 import { chosenPick, collectsMany, groupsOf, headingFor, hintFor, manyChoice, stagePick } from './web-pick-staging.mapper'
 import type { StagedWebPick } from './web-pick-staging.mapper'
 import { hasVisibleContent } from './visible-content.algorithm'
@@ -147,6 +148,9 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const tableInsertedAtRef = useRef<number | undefined>(undefined)
 
   const pickMode = pickTarget !== undefined && pickTarget.recipeId === recipeId
+  const uiPick = useUiRequestStore(state => state.pick)
+  const finishUiPick = useUiRequestStore(state => state.finishPick)
+  const handledUiPickRef = useRef<string | undefined>(undefined)
 
   // A different recipe means a different (or no) table card to upgrade in place, and a stale CSV override to drop.
   useEffect(() => {
@@ -156,8 +160,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   }, [recipeId])
 
   /** A click on the web page: nothing is written to the recipe yet; the ways to reach the clicked element are shown to choose from, and "Add to recipe" writes it. */
-  async function handlePick (nodeId: string): Promise<void> {
-    if (recipeId === undefined) return
+  async function handlePick (nodeId: string): Promise<StagedWebPick | undefined> {
+    if (recipeId === undefined) return undefined
     // A click on the page before "Read" was pressed starts the pick itself.
     if (!pickMode) {
       insertedAtRef.current = undefined
@@ -170,19 +174,22 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       if (result.kind !== 'field' && result.kind !== 'item-field') {
         warn(result.kind === 'unsupported' ? result.reason : undefined)
 
-        return
+        return undefined
       }
-      setStagedPick(stagePick(result, clickedText(nodeId)))
+      const staged = stagePick(result, clickedText(nodeId))
+      setStagedPick(staged)
 
-      return
+      return staged
     }
     const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [outcome.firstNodeId, nodeId] })
     if (result.kind !== 'list') {
       warn(result.kind === 'unsupported' ? result.reason : undefined)
 
-      return
+      return undefined
     }
     setStagedPick(previous => stagePick(result, previous?.text))
+
+    return undefined
   }
 
   /** The text of a node of the web snapshot, for the options panel to show what was picked. */
@@ -196,10 +203,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   }
 
   /** "Add to recipe" for the staged web pick: writes the card(s) with the selectors the person chose. */
-  async function addStagedPick (): Promise<void> {
-    if (recipeId === undefined || stagedPick === undefined) return
-    const result = chosenPick(stagedPick)
-    const many = collectsMany(stagedPick)
+  async function addStagedPick (staged: StagedWebPick | undefined = stagedPick): Promise<void> {
+    if (recipeId === undefined || staged === undefined) return
+    const result = chosenPick(staged)
+    const many = collectsMany(staged)
     setStagedPick(undefined)
     stopPicking()
     if (result.kind === 'item-field') {
@@ -234,6 +241,53 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     setStagedPick(undefined)
     stopPicking()
   }
+
+  // A controller (an agent, through the MCP server) asked to pick a value on this recipe's page: do it as a click would, once the snapshot is
+  // here, and tell the server how it went. Runs on every render but acts once per request.
+  useEffect(() => {
+    const request = uiPick
+    const html = snapshot.data?.html
+    if (!isHtmlSnapshot || html === undefined || request === undefined || request.recipeId !== recipeId) return
+    if (handledUiPickRef.current === request.requestId) return
+    if (pickMode || stagedPick !== undefined) {
+      // A pick of the person's own is under way: clear it, and the next render does the controller's.
+      cancelStagedPick()
+
+      return
+    }
+    handledUiPickRef.current = request.requestId
+    const tell = async (ok: boolean, message: string, detail?: Record<string, unknown>): Promise<void> => {
+      finishUiPick(request.requestId)
+      try {
+        await client.reportUiOutcome(request.requestId, ok, message, detail)
+      } catch {
+        // A controller that never hears back just times out.
+      }
+    }
+    void (async () => {
+      const found = findPickNode(html, request)
+      if ('reason' in found) {
+        await tell(false, `Could not pick: ${found.reason}.`)
+
+        return
+      }
+      const staged = await handlePick(found.nodeId)
+      if (staged === undefined) {
+        await tell(false, 'Studio could not turn that element into a selector.', { text: found.text })
+
+        return
+      }
+      const { field } = chosenPick(staged)
+      const detail = { text: found.text, selector: field.selector, matches: field.matches, alternatives: (field.alternatives ?? []).map(option => ({ selector: option.selector, matches: option.matches })) }
+      if (request.add === true) {
+        await addStagedPick(staged)
+        await tell(true, `Added to the recipe: ${field.selector}`, detail)
+
+        return
+      }
+      await tell(true, 'Staged: the person can choose a selector and press Add to recipe.', detail)
+    })()
+  })
 
   /**
    * Handles a tree canvas pick (studio plan §3.4, issue #94's 5a): `value`

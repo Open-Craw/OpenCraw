@@ -3,5 +3,7 @@ export type { StudioUiState, StudioUiActions, StudioUiStore, EditorTab } from '.
 export { clearSourceState } from './clear-source-state.use-case'
 export { useRunSessionStore, resetRunSessionStore, initialRunSessionState } from './run-session.store'
 export type { RejectedRecord, RunSessionState, RunSessionActions, RunSessionStore } from './run-session.store'
+export { useUiRequestStore, resetUiRequestStore } from './ui-request.store'
+export type { UiPickRequest, UiRequestState, UiRequestActions, UiRequestStore } from './ui-request.store'
 export { useRecordingStore, resetRecordingStore, initialRecordingState } from './recording.store'
 export type { RecordingCard, RecordingNote, RecordingState, RecordingActions, RecordingStore } from './recording.store'

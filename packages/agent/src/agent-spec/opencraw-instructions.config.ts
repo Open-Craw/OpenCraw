@@ -91,8 +91,8 @@ const STUDIO = [
   '- In VS Code the OpenCraw view lists the recipes grouped by output, with Run (one input, or every input of an output) and a save dialog that asks',
   '  where and in which format when the crawl is over.',
   '',
-  'When Studio tools are available to you (`studio_status`, `studio_open_recipe`, `studio_run_sample`), you may drive Studio for the person:',
-  'call `studio_status` first, then say what you are about to do, do it, and say what happened. Picking a value on the page is still the person’s click: tell them where. When they are not, describe the exact clicks instead, in order, so the person can follow.',
+  'When Studio tools are available to you (`studio_status`, `studio_open_recipe`, `studio_pick`, `studio_run_sample`), you may drive Studio for the person:',
+  'call `studio_status` first, then say what you are about to do, do it, and say what happened. `studio_pick` selects a value on a web page by selector or by the text it shows, so the person sees what you chose; for a PDF, a spreadsheet or a deck, tell them where to click. When they are not, describe the exact clicks instead, in order, so the person can follow.',
 ]
 
 const RULES = [

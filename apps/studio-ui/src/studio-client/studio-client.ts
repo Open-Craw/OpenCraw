@@ -1,66 +1,68 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridRowsView, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, DetectUrlView, OpenPathCommand, OpenPathView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridRowsView, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, DetectUrlView, OpenPathCommand, OpenPathView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, UiReportCommand, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
   /** The token every request needs; read once from the page's own URL. */
-  token:          string
+  token:           string
   /** The folder `opencraw-studio` was started with, if the URL carries one. */
-  initialFolder?: string
+  initialFolder?:  string
   /** The path the link asks to open (`?open=`, issue #235): a folder, a recipe file or a document. */
-  initialOpen?:   string
-  openWorkspace:  (folder: string) => Promise<WorkspaceView>
+  initialOpen?:    string
+  openWorkspace:   (folder: string) => Promise<WorkspaceView>
   /** Opens the folder dialog of the machine the server runs on; the folder picked, or `undefined` when it was closed. Rejects when that machine has no dialog. */
-  chooseFolder:   () => Promise<string | undefined>
+  chooseFolder:    () => Promise<string | undefined>
   /** Asks the server what a path is (folder, recipe or document) and where to open it (issue #235). `workspace` is the folder a document should belong to. */
-  openPath:       (path: string, workspace?: string) => Promise<OpenPathView>
+  openPath:        (path: string, workspace?: string) => Promise<OpenPathView>
+  /** Tells the server how a controller's request went (an agent asked this page to do something, `ui-request`), so the controller can find out. */
+  reportUiOutcome: (requestId: string, ok: boolean, message: string, detail?: Record<string, unknown>) => Promise<void>
   /** Copies a dropped/opened file into `folder` (created when missing) and answers the copy's `file:` URL for a recipe's `start.url` (issue #120); `bytes` is the file's content, base64-encoded. */
-  importDocument: (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
+  importDocument:  (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
   /** What an address returns (a page, or a JSON API, PDF, CSV, spreadsheet, Markdown...): a document is started as a recipe that reads it, not one that opens it as a page. */
-  detectUrl:      (url: string) => Promise<DetectUrlView>
+  detectUrl:       (url: string) => Promise<DetectUrlView>
   /** `stubs` are values a hook answers with instead of being called, by hook name, for this run only (issue #201). */
-  runSample:      (recipeId: string, budget?: SampleBudget, stubs?: Record<string, unknown>) => Promise<void>
-  stopRun:        () => Promise<void>
-  saveRecipe:     (path: string, recipe: unknown) => Promise<void>
-  saveOutline:    (path: string, outline: OutlineView) => Promise<void>
-  fetchStartPage: (recipeId: string) => Promise<string>
+  runSample:       (recipeId: string, budget?: SampleBudget, stubs?: Record<string, unknown>) => Promise<void>
+  stopRun:         () => Promise<void>
+  saveRecipe:      (path: string, recipe: unknown) => Promise<void>
+  saveOutline:     (path: string, outline: OutlineView) => Promise<void>
+  fetchStartPage:  (recipeId: string) => Promise<string>
   /** The content pane's snapshot for one recipe and step path (studio plan §3.1, issue #91), cached server-side. */
-  takeSnapshot:   (recipeId: string, path: string) => Promise<SnapshotView>
+  takeSnapshot:    (recipeId: string, path: string) => Promise<SnapshotView>
   /** Runs a candidate selector through the engine's own matching against the snapshot and, best-effort, the live page. */
-  verifySelector: (recipeId: string, path: string, selector: string) => Promise<VerifySelectorView>
+  verifySelector:  (recipeId: string, path: string, selector: string) => Promise<VerifySelectorView>
   /** Turns one or two picked nodes' `data-oc-node` ids into a verified selector (a `Read` card's field, or the safe item+field list shape). */
-  inferSelector:  (recipeId: string, path: string, nodeIds: [string] | [string, string], within?: string) => Promise<InferSelectorView>
+  inferSelector:   (recipeId: string, path: string, nodeIds: [string] | [string, string], within?: string) => Promise<InferSelectorView>
   /** Explains a missing or rejected value from the recipe's last sample run (issue #92's Why? tab). */
-  explainWhy:     (target: WhyTarget) => Promise<WhyView>
+  explainWhy:      (target: WhyTarget) => Promise<WhyView>
   /** The Inspect panel's DOM tree and data-in-the-page findings, off the same cached snapshot (issue #93). */
-  inspectPage:    (recipeId: string, path: string) => Promise<InspectView>
+  inspectPage:     (recipeId: string, path: string) => Promise<InspectView>
   /** The JSON responses seen while the recipe's start page rendered (issue #93's "responses seen"); slower than `inspectPage` (opens its own browser session). */
-  responsesSeen:  (recipeId: string, path: string) => Promise<ResponsesSeenView>
+  responsesSeen:   (recipeId: string, path: string) => Promise<ResponsesSeenView>
   /** The content pane's tree canvas for a JSON/YAML/XML snapshot (`document-view`, studio plan §3.4, issue #94's 5a), off the same cached snapshot. */
-  documentTree:   (recipeId: string, path: string) => Promise<DocumentTreeView>
+  documentTree:    (recipeId: string, path: string) => Promise<DocumentTreeView>
   /** The PDF canvas's cells and rows for a PDF snapshot (`document-view`'s `pdf-view.mapper.ts`, studio plan §3.4, issue #94's 5b), off the same cached snapshot. */
-  pdfView:        (recipeId: string, path: string) => Promise<PdfDocumentView>
+  pdfView:         (recipeId: string, path: string) => Promise<PdfDocumentView>
   /** The PDF canvas's live preview of a `table` extract's options (`document-view`'s `table-preview.use-case.ts`, issue #94's 5b): a pure computation over the cached snapshot, instant on every option change. */
-  tablePreview:   (recipeId: string, path: string, options: TablePreviewOptions) => Promise<TablePreviewView>
+  tablePreview:    (recipeId: string, path: string, options: TablePreviewOptions) => Promise<TablePreviewView>
   /** The PDF canvas's live preview of a `region` extract's selector (`document-view`'s `region-preview.use-case.ts`, issue #121): the text the step would bind and the cells to highlight — a pure computation over the cached snapshot, instant on every change of the box. */
-  regionPreview:  (recipeId: string, path: string, selector: string) => Promise<RegionPreviewView>
+  regionPreview:   (recipeId: string, path: string, selector: string) => Promise<RegionPreviewView>
   /** The URL the PDF canvas's `pdf.js` fetches directly for the raw bytes of a cached PDF snapshot (`GET /api/pdf-bytes`, issue #94's 5b; `version`, the document's own URL, tells the browser and pdf.js a different PDF is behind the same recipe and path) — not a `send`-through command, since it answers bytes, not JSON. */
-  pdfBytesUrl:    (recipeId: string, path: string, version?: string) => string
+  pdfBytesUrl:     (recipeId: string, path: string, version?: string) => string
   /** The grid canvas's sheets and cells for a CSV/spreadsheet snapshot (`document-view`'s `workbook-view.mapper.ts`, studio plan §3.4, issue #94's 5c), off the same cached snapshot; `delimiter`/`encoding` override a CSV's auto-detected reading. */
-  gridView:       (recipeId: string, path: string, override?: { delimiter?: string, encoding?: string }) => Promise<WorkbookDocumentView>
+  gridView:        (recipeId: string, path: string, override?: { delimiter?: string, encoding?: string }) => Promise<WorkbookDocumentView>
   /** A run of one sheet's rows of a big CSV/spreadsheet (`grid-rows`): the grid asks for the windows around where it is scrolled to instead of being sent the whole file. */
-  gridRows:       (recipeId: string, path: string, sheet: number, from: number, count: number) => Promise<GridRowsView>
+  gridRows:        (recipeId: string, path: string, sheet: number, from: number, count: number) => Promise<GridRowsView>
   /** The grid canvas's live preview of a `table` extract's options (`document-view`'s `previewGridTable`, issue #94's 5c): a pure computation over the cached snapshot, instant on every option change. */
-  gridPreview:    (recipeId: string, path: string, options: GridPreviewOptions) => Promise<GridTablePreviewView>
+  gridPreview:     (recipeId: string, path: string, options: GridPreviewOptions) => Promise<GridTablePreviewView>
   /** The deck canvas's slides, shapes, tables, charts and notes for a `.pptx` snapshot (`document-view`'s `deck-view.mapper.ts`, studio plan §3.4, issue #94's 5d), off the same cached snapshot. */
-  deckView:       (recipeId: string, path: string) => Promise<DeckDocumentView>
+  deckView:        (recipeId: string, path: string) => Promise<DeckDocumentView>
   /** The deck canvas's live preview of a `table` extract's options (`document-view`'s `previewDeckTable`, issue #94's 5d): a pure computation over the cached snapshot, instant on every option change. */
-  deckPreview:    (recipeId: string, path: string, options: DeckPreviewOptions) => Promise<DeckTablePreviewView>
+  deckPreview:     (recipeId: string, path: string, options: DeckPreviewOptions) => Promise<DeckTablePreviewView>
   /** Opens the studio's own headed browser window on `recipeId`'s start point and starts recording (issue #95, phase 6); `recording-card`/`recording-note` events stream over the same WebSocket `subscribe` already opens. */
-  startRecording: (recipeId: string) => Promise<{ started: true }>
+  startRecording:  (recipeId: string) => Promise<{ started: true }>
   /** Closes the recording window, if one is open, and answers with every step recorded, in order (issue #95). */
-  stopRecording:  () => Promise<{ steps: Record<string, unknown>[] }>
+  stopRecording:   () => Promise<{ steps: Record<string, unknown>[] }>
   /** Streams every server event to `onEvent` until the returned function closes the socket. */
-  subscribe:      (onEvent: (event: StudioEvent) => void) => () => void
+  subscribe:       (onEvent: (event: StudioEvent) => void) => () => void
 }
 
 function queryParam (name: string): string | undefined {
@@ -102,9 +104,10 @@ export function createStudioClient (): StudioClient {
     token,
     initialFolder,
     initialOpen,
-    openPath:      (path, workspace) => send<OpenPathView>(token, { type: 'open-path', path, ...(workspace !== undefined && { workspace }) } satisfies OpenPathCommand),
-    openWorkspace: folder => send<WorkspaceView>(token, { type: 'open-workspace', folder } satisfies OpenWorkspaceCommand),
-    chooseFolder:  async () => {
+    openPath:        (path, workspace) => send<OpenPathView>(token, { type: 'open-path', path, ...(workspace !== undefined && { workspace }) } satisfies OpenPathCommand),
+    reportUiOutcome: async (requestId, ok, message, detail) => { await send<{ kept: boolean }>(token, { type: 'ui-report', requestId, ok, message, ...(detail !== undefined && { detail }) } satisfies UiReportCommand) },
+    openWorkspace:   folder => send<WorkspaceView>(token, { type: 'open-workspace', folder } satisfies OpenWorkspaceCommand),
+    chooseFolder:    async () => {
       const view = await send<ChooseFolderView>(token, { type: 'choose-folder' } satisfies ChooseFolderCommand)
 
       return view.folder

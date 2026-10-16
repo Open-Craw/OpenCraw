@@ -152,10 +152,11 @@ Drive the OpenCraw Studio the person has open, so they watch the recipe being bu
 | Tool | Input | Returns |
 |---|---|---|
 | `studio_status` | none | `{ running, url, folder?, pages, running? }`: whether Studio is up, the folder it has open, how many connections are listening (an open page holds a couple), the recipe being sampled. Without a Studio: `{ running: false, hint }`. |
-| `studio_open_recipe` | `path` (a recipe file, a folder or a document), `workspace?` | `{ opened: true, pages }`, or `{ opened: false, hint }` when Studio runs but no page is open. The open page does it the way a Studio link does. |
+| `studio_open_recipe` | `path` (a recipe file, a folder or a document), `workspace?` | `{ opened, message }` once the page has done it the way a Studio link does (or says why it could not); `{ opened: false, hint }` when Studio runs but no page is open. |
+| `studio_pick` | `recipeId`, `selector?` or `text?`, `add?` | Picks a value on the recipe's web page as a click would: by CSS selector, or by the text the element shows. Answers `{ picked, message, text, selector, matches, alternatives }` (the selector chosen and the others offered, each with how many elements it matches). Left staged for the person to choose and press *Add to recipe*, or added to the recipe with `add`. Open the recipe first. |
 | `studio_run_sample` | `recipeId`, `maxRecords?` (10), `waitSeconds?` (60) | `{ recipeId, state, result? }`: the counts, the first 20 records and rejections once finished. Studio must have the recipe's folder open (`studio_open_recipe` first). |
 
-Picking a value on a page (`studio_pick`) is not here yet: it is still the person's click.
+`studio_pick` is for web pages. For a PDF, a spreadsheet or a deck the person still clicks, and the agent tells them where.
 
 ## Building
 
