@@ -28,7 +28,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: apps/vscode-extension/.vscode-test
-          key: vscode-test-${{ runner.os }}-1.90.0
+          key: vscode-test-${{ runner.os }}-1.127.0
       - name: The extension in a real editor, on a virtual display
         run: xvfb-run -a npm run vscode:e2e
         env:

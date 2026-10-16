@@ -9,12 +9,17 @@ import { runTests } from '@vscode/test-electron'
 
 const appDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 /** The oldest editor the extension claims to support (`engines.vscode`). */
-const VERSION = '1.90.0'
+const VERSION = '1.127.0'
 
 const workspace = mkdtempSync(join(tmpdir(), 'opencraw-editor-workspace-'))
 const profile = mkdtempSync(join(tmpdir(), 'opencraw-editor-profile-'))
 mkdirSync(join(workspace, 'docs'))
 writeFileSync(join(workspace, 'docs', 'report.csv'), 'name,price\nbook,10\n')
+// Recipes for the recipes view: two inputs that fill one output, and an input whose output is not in the workspace.
+writeFileSync(join(workspace, 'cars.ocw-out.json'), JSON.stringify({ kind: 'output', id: 'cars', version: 1, fields: { model: { type: 'string' } } }))
+writeFileSync(join(workspace, 'kia.ocw-in.json'), JSON.stringify({ kind: 'input', id: 'kia', output: 'cars', mode: 'api', start: [], steps: [] }))
+writeFileSync(join(workspace, 'byd.ocw-in.json'), JSON.stringify({ kind: 'input', id: 'byd', output: 'cars', mode: 'api', start: [], steps: [] }))
+writeFileSync(join(workspace, 'lost.ocw-in.json'), JSON.stringify({ kind: 'input', id: 'lost', output: 'elsewhere', mode: 'api', start: [], steps: [] }))
 
 try {
   await runTests({

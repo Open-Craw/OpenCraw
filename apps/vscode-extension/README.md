@@ -15,6 +15,21 @@ Issue #228. The server side it relies on is `choose-folder` (#234, the Browse bu
     recipe from it, the same as dropping the file on Studio. A file inside the workspace folder is read in
     place; one from outside is copied into the workspace folder.
 
+## The OpenCraw sidebar
+
+- **Recipes** lists the recipes in your workspace (`*.ocw-in.json`, `*.ocw-out.json`, and the `*.input.json` / `*.output.json` the examples use)
+  **grouped by output id**: each output recipe is a row, the input recipes that fill it are under it.
+  - **Run** on an input recipe runs that one; on an output recipe it runs every input that feeds it. The crawl runs in a process of its own with
+    a notification you can cancel, and its messages go to the **OpenCraw** output.
+  - When the crawl is over you are asked where to save the result with your operating system's own save dialog. **The file's extension is the
+    format**: `.xlsx` (Excel), `.csv`, `.html` (a page that looks like Studio), `.pdf`, `.json`, `.jsonl` or `.yml`/`.yaml`. A name that is none
+    of these is explained and the dialog opens again.
+  - **Open in Studio** opens the recipe to change it.
+- **Learn** links the Studio manual, the tutorial, the recipe guides and where to ask.
+- **OpenCraw: Get started** opens a walkthrough (it also opens once, the first time the extension runs).
+
+Needs VS Code 1.127 (June 2026) or newer.
+
 The server starts on first use, in a process of its own, and stops with the window. In a remote window
 (SSH, WSL, Codespaces, dev containers) it runs where the workspace is and its port is forwarded to the
 browser on your machine.
@@ -33,6 +48,11 @@ editor (extension host)            Studio process                       browser
 - `src/studio-host`: forks the Studio process and asks it for links over IPC. The process is the editor's own
   executable run as plain Node (`ELECTRON_RUN_AS_NODE`), so the extension ships no Node.
 - `src/open-on-opencraw`: the command's outcome, the only place that touches the editor API.
+- `src/recipe-explorer`: finds the recipe files, reads each one's `kind`/`id`/`output` (the extension does not carry the engine), groups them by
+  output id, and is the recipes view.
+- `src/recipe-run`: the Run action: the plan (which files, `--only`), the process that runs the bundled `opencraw` command line, the save dialog
+  and the format from the extension, and `opencraw export` to write the records in it.
+- `src/learn-studio`: the Learn view and the Get started walkthrough (`media/walkthrough`).
 - `src/extension.ts`: the entry point the editor requires.
 
 **Recipe ▾ → Open folder…** in Studio shows the editor's own folder dialog (`vscode.window.showOpenDialog`): the
@@ -95,7 +115,7 @@ Open VSX is skipped when `OVSX_PAT` is not set.
 
 ## End-to-end test
 
-`npm run vscode:e2e` stages the extension as the editor loads it, starts a real VS Code (1.90.0, the oldest the
+`npm run vscode:e2e` stages the extension as the editor loads it, starts a real VS Code (1.127.0, the oldest the
 extension supports; downloaded into `.vscode-test` on the first run) and runs `e2e/suite/index.cjs` in its
 extension host: the commands exist, "Open on OpenCraw" resolves a link to a real Studio process, the page is
 served, `open-path` answers, and the `opencraw.hooksFile` setting reaches the server. The browser the link is
