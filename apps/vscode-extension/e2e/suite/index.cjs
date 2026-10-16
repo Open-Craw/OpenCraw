@@ -69,11 +69,24 @@ async function run () {
   const registered = await vscode.commands.getCommands(true)
   assert.ok(registered.includes('opencraw.openStudio'), 'Open Studio is registered')
   assert.ok(registered.includes('opencraw.openOn'), 'Open on OpenCraw is registered')
-  for (const name of ['runRecipe', 'openRecipeInStudio', 'refreshRecipes', 'showWalkthrough', 'openLink']) assert.ok(registered.includes(`opencraw.${name}`), `${name} is registered`)
+  for (const name of ['runRecipe', 'openRecipeInStudio', 'refreshRecipes', 'showWalkthrough', 'openLink', 'copyMcpConfig', 'addAgent']) assert.ok(registered.includes(`opencraw.${name}`), `${name} is registered`)
 
   // The MCP server the extension registers with the editor's agent mode starts, and offers OpenCraw's tools.
   const tools = await mcpToolNames(api.mcpServerScript())
   for (const name of ['probe', 'validate', 'run', 'list_recipes', 'docs']) assert.ok(tools.includes(name), `the MCP server offers ${name} (offers: ${tools.join(', ')})`)
+
+  // The OpenCraw agent is written for every host: a Copilot agent, a Claude Code subagent and a section of AGENTS.md that keeps what was there.
+  const folderUri = vscode.workspace.workspaceFolders[0].uri
+  await vscode.workspace.fs.writeFile(vscode.Uri.joinPath(folderUri, 'AGENTS.md'), new TextEncoder().encode('# My project\n\nRun the tests.\n'))
+  const written = await api.addAgentTo(['copilot', 'claude-code', 'agents-md'])
+  assert.deepEqual(written.sort((a, b) => a.localeCompare(b)), ['.claude/agents/opencraw.md', '.github/agents/opencraw.agent.md', 'AGENTS.md'])
+  const read = async path => new TextDecoder().decode(await vscode.workspace.fs.readFile(vscode.Uri.joinPath(folderUri, path)))
+  assert.match(await read('.github/agents/opencraw.agent.md'), /^---\nname: "OpenCraw"\ndescription: /)
+  assert.match(await read('.claude/agents/opencraw.md'), /^---\nname: opencraw\n/)
+  const agentsMd = await read('AGENTS.md')
+  assert.ok(agentsMd.startsWith('# My project\n\nRun the tests.'), 'AGENTS.md keeps what the person wrote')
+  assert.ok(agentsMd.includes('<!-- opencraw-agent:begin -->'), 'AGENTS.md has the agent section')
+  assert.deepEqual(await api.addAgentTo(['agents-md']), [], 'a second run changes nothing')
 
   // The recipes view lists the workspace's recipes by the output they fill: an input whose output is missing is kept, under its name.
   const groups = await api.recipeGroups()

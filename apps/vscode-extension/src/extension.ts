@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import { addAgent, addAgentCommand } from './agent-setup'
 import { LearnTree } from './learn-studio'
 import { AgentTree, copyMcpConfiguration, mcpScript, registerOpenCrawMcp } from './mcp-setup'
 import { createStudioRunner } from './open-on-opencraw'
@@ -14,6 +15,8 @@ export interface OpenCrawApi {
   recipeGroups:     () => Promise<RecipeGroup[]>
   /** The MCP server program this installation carries, for the editor end-to-end test to start. */
   mcpServerScript:  () => string
+  /** Writes the OpenCraw agent for the hosts into the first workspace folder, as the command does once the person has chosen; for the editor end-to-end test. */
+  addAgentTo:       (hosts: Parameters<typeof addAgent>[0]) => Promise<string[]>
 }
 
 /** The extension's id in the editor, for the walkthrough's address. */
@@ -54,6 +57,7 @@ export function activate (context: vscode.ExtensionContext): OpenCrawApi {
       const file = node === undefined ? undefined : fileOf(node)
       if (file !== undefined) await runner.open(vscode.Uri.file(file))
     }),
+    vscode.commands.registerCommand('opencraw.addAgent', addAgentCommand),
     vscode.commands.registerCommand('opencraw.copyMcpConfig', async () => { await copyMcpConfiguration(context.extensionPath, hooksSetting) }),
     vscode.commands.registerCommand('opencraw.refreshRecipes', () => { recipes.refresh() }),
     vscode.commands.registerCommand('opencraw.showWalkthrough', async () => { await vscode.commands.executeCommand('workbench.action.openWalkthrough', WALKTHROUGH, false) }),
@@ -71,7 +75,7 @@ export function activate (context: vscode.ExtensionContext): OpenCrawApi {
   )
   void showWalkthroughOnFirstRun(context)
 
-  return { onDidResolveLink: runner.onDidResolveLink, recipeGroups: async () => groupByOutput(await index.headers()), mcpServerScript: () => mcpScript(context.extensionPath) }
+  return { onDidResolveLink: runner.onDidResolveLink, recipeGroups: async () => groupByOutput(await index.headers()), mcpServerScript: () => mcpScript(context.extensionPath), addAgentTo: async hosts => await addAgent(hosts) }
 }
 
 /** The first time the extension runs on a machine, the Get Started page opens once: a person who has never seen it learns what it does. */
