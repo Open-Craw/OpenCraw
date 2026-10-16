@@ -178,7 +178,7 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
     writeFileSync(file, JSON.stringify(recipe))
     const page = await browser.newPage()
     await page.goto(server.url)
-    await page.getByText('Click a value to read it').waitFor()
+    await page.getByText('Click a value to collect it').waitFor()
 
     const nameRow = page.locator('div', { has: page.getByText('Widget', { exact: true }) }).last()
     await nameRow.getByText('[*]').first().click()
