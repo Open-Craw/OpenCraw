@@ -10,7 +10,7 @@ import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
 import { chooseFolderWithDialog } from '../folder-dialog'
 import { announceInstance, defaultInstancesDirectory, withdrawInstance } from '../studio-instance'
-import { handleAskUi } from './ask-ui.handler'
+import { handleAskUi, handleUiOutcome, handleUiReport } from './ask-ui.handler'
 import { handleChooseFolder } from './choose-folder.handler'
 import { handleDeckPreview } from './deck-preview.handler'
 import { handleDeckView } from './deck-view.handler'
@@ -267,6 +267,10 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'stop-recording': { return handleStopRecording(state, command)
     }
     case 'ask-ui': { return Promise.resolve(handleAskUi(state, command))
+    }
+    case 'ui-report': { return Promise.resolve(handleUiReport(state, command))
+    }
+    case 'ui-outcome': { return Promise.resolve(handleUiOutcome(state, command))
     }
     case 'studio-status': { return Promise.resolve(handleStudioStatus(state))
     }

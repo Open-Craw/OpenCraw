@@ -87,8 +87,10 @@ export const recordingStoppedEventSchema = z.object({
 
 /** A controller (an agent, through the MCP server) asked the open page to do something; every page does it. */
 export const uiRequestEventSchema = z.object({
-  type:    z.literal('ui-request'),
-  request: uiRequestSchema,
+  type:      z.literal('ui-request'),
+  /** Names the request, so the page can report how it went (`ui-report`) and the controller can ask (`ui-outcome`). */
+  requestId: z.string().min(1),
+  request:   uiRequestSchema,
 })
 
 export const studioEventSchema = z.discriminatedUnion('type', [

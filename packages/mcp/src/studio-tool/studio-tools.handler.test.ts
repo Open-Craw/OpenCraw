@@ -3,7 +3,7 @@ import type { Server } from 'node:http'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { studioOpenRecipeTool, studioRunSampleTool, studioStatusTool } from './studio-tools.handler'
+import { studioOpenRecipeTool, studioPickTool, studioRunSampleTool, studioStatusTool } from './studio-tools.handler'
 
 interface Sent { type: string, [key: string]: unknown }
 
@@ -70,14 +70,59 @@ describe('the studio_ tools', () => {
 
   it('asks the open page to open the recipe, and says so when no page is open', async () => {
     let pages = 1
-    const stand = await standInStudio({ 'ask-ui': () => ({ pages }) })
+    const stand = await standInStudio({ 'ask-ui': () => ({ pages, requestId: 'r1' }), 'ui-outcome': () => ({ state: 'done', ok: true, message: 'Opened /work/a.input.json.' }) })
     studio = stand.server
     await announce(stand.port)
 
-    expect(textOf(await studioOpenRecipeTool({ path: '/work/a.input.json' }, directory))).toEqual({ opened: true, pages: 1 })
+    expect(textOf(await studioOpenRecipeTool({ path: '/work/a.input.json' }, directory))).toEqual({ opened: true, message: 'Opened /work/a.input.json.' })
     expect(stand.sent[0]).toEqual({ type: 'ask-ui', request: { kind: 'open', path: '/work/a.input.json' } })
+    expect(stand.sent[1]).toEqual({ type: 'ui-outcome', requestId: 'r1' })
     pages = 0
     expect(textOf(await studioOpenRecipeTool({ path: '/work/a.input.json' }, directory))).toMatchObject({ opened: false })
+  })
+
+  it('says why the page could not open it', async () => {
+    const stand = await standInStudio({ 'ask-ui': () => ({ pages: 1, requestId: 'r1' }), 'ui-outcome': () => ({ state: 'done', ok: false, message: 'no such file' }) })
+    studio = stand.server
+    await announce(stand.port)
+
+    const result = await studioOpenRecipeTool({ path: '/nope' }, directory)
+
+    expect(result.isError).toBe(true)
+    expect(textOf(result)).toEqual({ opened: false, message: 'no such file' })
+  })
+
+  it('picks a value on the recipe page, waits for the page, and returns the selector it chose and the others', async () => {
+    let outcomes = 0
+    const detail = { text: '€ 19 900', selector: '.price b', matches: 1, alternatives: [{ selector: 'b', matches: 4 }] }
+    const stand = await standInStudio({
+      'ask-ui':     () => ({ pages: 1, requestId: 'p1' }),
+      'ui-outcome': () => {
+        outcomes += 1
+
+        return outcomes < 2 ? { state: 'pending' } : { state: 'done', ok: true, message: 'Staged.', detail }
+      },
+    })
+    studio = stand.server
+    await announce(stand.port)
+
+    const result = await studioPickTool({ recipeId: 'cars', text: '€ 19 900', add: false }, directory)
+
+    expect(textOf(result)).toEqual({ picked: true, message: 'Staged.', ...detail })
+    expect(stand.sent[0]).toEqual({ type: 'ask-ui', request: { kind: 'pick', recipeId: 'cars', text: '€ 19 900', add: false } })
+  })
+
+  it('needs a selector or text to pick, and says so when the page cannot', async () => {
+    const nothing = await studioPickTool({ recipeId: 'cars' }, directory)
+    expect(nothing.isError).toBe(true)
+    const stand = await standInStudio({ 'ask-ui': () => ({ pages: 1, requestId: 'p1' }), 'ui-outcome': () => ({ state: 'done', ok: false, message: 'Could not pick: nothing on the page matches .nope.' }) })
+    studio = stand.server
+    await announce(stand.port)
+
+    const result = await studioPickTool({ recipeId: 'cars', selector: '.nope' }, directory)
+
+    expect(result.isError).toBe(true)
+    expect(textOf(result)).toMatchObject({ picked: false, message: expect.stringContaining('.nope') })
   })
 
   it('refuses to run a sample before Studio has a folder open', async () => {

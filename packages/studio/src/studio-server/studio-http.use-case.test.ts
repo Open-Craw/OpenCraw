@@ -160,7 +160,7 @@ describe('controlling a running studio', () => {
   it('tells every open page what a controller asked, and says how many were listening', async () => {
     server = await startStudioServer({ uiRoot: emptyUiRoot(), instancesDir: instancesDirectory() })
     const ask = { type: 'ask-ui', request: { kind: 'open', path: '/work/a.input.json' } }
-    expect(await answer(server, ask)).toEqual({ pages: 0 })
+    expect(await answer(server, ask)).toMatchObject({ pages: 0 })
 
     const socket = new WebSocket(`ws://127.0.0.1:${portOf(server)}/ws?token=${server.token}`)
     const heard = new Promise<unknown>((resolve) => {
@@ -173,9 +173,21 @@ describe('controlling a running studio', () => {
       socket.addEventListener('error', reject)
     })
 
-    expect(await answer(server, ask)).toEqual({ pages: 1 })
-    expect(await heard).toEqual({ type: 'ui-request', request: ask.request })
+    const asked = await answer<{ pages: number, requestId: string }>(server, ask)
+    expect(asked.pages).toBe(1)
+    expect(await heard).toEqual({ type: 'ui-request', requestId: asked.requestId, request: ask.request })
     socket.close()
+  })
+
+  it('keeps what a page reports about a request, for the controller to ask for', async () => {
+    server = await startStudioServer({ uiRoot: emptyUiRoot(), instancesDir: instancesDirectory() })
+    const { requestId } = await answer<{ requestId: string }>(server, { type: 'ask-ui', request: { kind: 'pick', recipeId: 'items', text: 'Clio' } })
+    expect(await answer(server, { type: 'ui-outcome', requestId })).toEqual({ state: 'pending' })
+
+    expect(await answer(server, { type: 'ui-report', requestId, ok: true, message: 'staged', detail: { selector: 'h1' } })).toEqual({ kept: true })
+    expect(await answer(server, { type: 'ui-report', requestId, ok: false, message: 'a second page', detail: {} })).toEqual({ kept: false })
+
+    expect(await answer(server, { type: 'ui-outcome', requestId })).toEqual({ state: 'done', ok: true, message: 'staged', detail: { selector: 'h1' } })
   })
 
   it('reports a sample run as never run, then finished with its first records', async () => {

@@ -76,7 +76,7 @@ async function run () {
 
   // The MCP server the extension registers with the editor's agent mode starts, and offers OpenCraw's tools.
   const tools = await mcpToolNames(api.mcpServerScript())
-  for (const name of ['probe', 'validate', 'run', 'list_recipes', 'docs', 'studio_status', 'studio_open_recipe', 'studio_run_sample']) assert.ok(tools.includes(name), `the MCP server offers ${name} (offers: ${tools.join(', ')})`)
+  for (const name of ['probe', 'validate', 'run', 'list_recipes', 'docs', 'studio_status', 'studio_open_recipe', 'studio_pick', 'studio_run_sample']) assert.ok(tools.includes(name), `the MCP server offers ${name} (offers: ${tools.join(', ')})`)
 
   // The OpenCraw agent is written for every host: a Copilot agent, a Claude Code subagent and a section of AGENTS.md that keeps what was there.
   const folderUri = vscode.workspace.workspaceFolders[0].uri

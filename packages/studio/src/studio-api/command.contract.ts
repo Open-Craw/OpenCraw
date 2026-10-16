@@ -375,6 +375,22 @@ export const askUiCommandSchema = z.object({
   request: uiRequestSchema,
 })
 
+/** The page tells the server how a controller's request went, so the controller can find out (`ui-outcome`). */
+export const uiReportCommandSchema = z.object({
+  type:      z.literal('ui-report'),
+  requestId: z.string().min(1),
+  ok:        z.boolean(),
+  message:   z.string(),
+  /** What the page found or did, for the controller to read. */
+  detail:    z.record(z.string(), z.unknown()).optional(),
+})
+
+/** Asks how a controller's request went: still waiting for the page, or done. */
+export const uiOutcomeCommandSchema = z.object({
+  type:      z.literal('ui-outcome'),
+  requestId: z.string().min(1),
+})
+
 /** Asks what Studio is doing: its workspace, how many pages are open and the run in progress. */
 export const studioStatusCommandSchema = z.object({
   type: z.literal('studio-status'),
@@ -415,6 +431,8 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   startRecordingCommandSchema,
   stopRecordingCommandSchema,
   askUiCommandSchema,
+  uiReportCommandSchema,
+  uiOutcomeCommandSchema,
   studioStatusCommandSchema,
   runStatusCommandSchema,
 ])
@@ -425,6 +443,8 @@ export type ChooseFolderCommand = z.infer<typeof chooseFolderCommandSchema>
 export type OpenPathCommand = z.infer<typeof openPathCommandSchema>
 export type ImportDocumentCommand = z.infer<typeof importDocumentCommandSchema>
 export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
+export type UiReportCommand = z.infer<typeof uiReportCommandSchema>
+export type UiOutcomeCommand = z.infer<typeof uiOutcomeCommandSchema>
 export type AskUiCommand = z.infer<typeof askUiCommandSchema>
 export type StudioStatusCommand = z.infer<typeof studioStatusCommandSchema>
 export type RunStatusCommand = z.infer<typeof runStatusCommandSchema>
