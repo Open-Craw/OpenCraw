@@ -12,8 +12,14 @@ const LINES = [
 function terminal (): { out: string[], err: string[], api: { out: (line: string) => void, err: (line: string) => void } } {
   const out: string[] = []
   const err: string[] = []
+  const toOut = (line: string): void => {
+    out.push(line)
+  }
+  const toErr = (line: string): void => {
+    err.push(line)
+  }
 
-  return { out, err, api: { out: (line) => { out.push(line) }, err: (line) => { err.push(line) } } }
+  return { out, err, api: { out: toOut, err: toErr } }
 }
 
 async function files (): Promise<{ directory: string, records: string, output: string }> {
