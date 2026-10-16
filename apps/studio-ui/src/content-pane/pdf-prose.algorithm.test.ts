@@ -98,6 +98,13 @@ describe('anchorOf', () => {
     expect(anchorOf([page], page, name[0])).toMatchObject({ kind: 'after', previous: 'OFFICIAL SPECIFICATION SHEET:' })
   })
 
+  it('takes a title centred over two touching lines as one text', () => {
+    const title = pageOf([cell(40, 780, 'Contact', 12, 60)], [cell(120, 740, 'ORDER CONFIRMATION FORM for', 20, 300)], [cell(160, 718, 'SUBSCRIPTION SERVICES', 20, 220)], [cell(40, 660, 'Body line', 10, 100)], [cell(40, 640, 'Body line two', 10, 100)], [cell(40, 620, 'Body line three', 10, 100)])
+    const second = title.rows[2]?.cells[0]
+
+    expect(anchorOf([title], title, second)).toMatchObject({ kind: 'after', previous: 'Contact', lines: 2, box: { x1: 120, y1: 718, x2: 420, y2: 760 } })
+  })
+
   it('does not take a lone title for a heading: lines under it are not one section', () => {
     const lone = pageOf([cell(78, 700, 'Annual Report', 24, 200)], [cell(78, 660, 'Author: Marta', 10, 100)], [cell(78, 640, 'Second line', 10, 100)])
     const author = lone.rows[1]?.cells[0]

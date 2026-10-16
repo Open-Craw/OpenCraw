@@ -223,14 +223,14 @@ export function sectionCardNode (heading: string, until: string | undefined, ign
  * @param path - This node's outline path.
  * @param id - The step's own id.
  */
-export function afterLineCardNode (previous: string, path: string, id: string): OutlineCard {
+export function afterLineCardNode (previous: string, path: string, id: string, lines = 1): OutlineCard {
   return {
     kind:     'card',
     path,
     stepType: 'extract',
     sentence: [],
     custom:   false,
-    step:     { type: 'extract', id, kind: 'regex', selector: `${escapeRegexLiteral(previous)}${String.raw`\n([^\n]+)`}` },
+    step:     { type: 'extract', id, kind: 'regex', selector: `${escapeRegexLiteral(previous)}${String.raw`\n([^\n]+`}${lines > 1 ? String.raw`(?:\n[^\n]+){${String(lines - 1)}}` : ''})` },
   }
 }
 

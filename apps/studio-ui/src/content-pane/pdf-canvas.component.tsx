@@ -230,7 +230,7 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
       return
     }
     const anchor = event.shiftKey ? undefined : anchorOf(view.pages, page, cell)
-    stage(paddedBox(anchor?.kind === 'section' ? anchor.box : paragraphBox(page, cell)), event.shiftKey, anchor)
+    stage(paddedBox(anchor?.kind === 'section' || (anchor?.kind === 'after' && anchor.lines > 1) ? anchor.box : paragraphBox(page, cell)), event.shiftKey, anchor)
   }
 
   /** The `region` card the staged selection would add — `undefined` until the preview has read something in the box. */
@@ -240,7 +240,7 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
     if (anchor?.kind === 'section') return sectionCardNode(anchor.heading, anchor.until, anchor.ignoreHeadersFooters, stepPath, idFromLabel(anchor.heading))
     const labelled = stagedText.includes('\n') ? undefined : labelledValueOf(stagedText)
     if (labelled !== undefined) return labelCardNode(labelled.label, stepPath, idFromLabel(labelled.label))
-    if (anchor?.kind === 'after') return afterLineCardNode(anchor.previous, stepPath, idFromLabel(anchor.previous))
+    if (anchor?.kind === 'after') return afterLineCardNode(anchor.previous, stepPath, idFromLabel(anchor.previous), anchor.lines)
 
     return regionCardNode(stagedSelector, stepPath, regionIdFrom(stagedText))
   }
@@ -379,7 +379,7 @@ function anchorNote (anchor: Anchor | undefined, text: string | undefined): stri
   const labelled = text !== undefined && !text.includes('\n') && labelledValueOf(text) !== undefined
   if (anchor?.kind === 'section') return anchor.until === undefined ? `Reads everything below “${anchor.heading}”` : `Reads what is between “${anchor.heading}” and “${anchor.until}”`
   if (labelled) return 'Reads the value after its label'
-  if (anchor?.kind === 'after') return `Reads the line after “${anchor.previous}”`
+  if (anchor?.kind === 'after') return anchor.lines > 1 ? `Reads the ${String(anchor.lines)} lines after “${anchor.previous}”` : `Reads the line after “${anchor.previous}”`
 
   return 'Reads a fixed position on the page: it breaks when the layout moves'
 }
