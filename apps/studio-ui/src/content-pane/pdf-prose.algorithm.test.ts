@@ -1,5 +1,5 @@
 import type { PdfCellView, PdfPageView } from '@opencraw/studio'
-import { idFromLabel, labelledValueOf, paragraphBox } from './pdf-prose.algorithm'
+import { anchorOf, idFromLabel, labelledValueOf, paragraphBox } from './pdf-prose.algorithm'
 
 function cell (x: number, y: number, text: string, height = 14, width = 200): PdfCellView {
   return { x, y, width, height, text }
@@ -68,5 +68,81 @@ describe('idFromLabel', () => {
     ['---', 'value'],
   ])('names %s %s', (label, id) => {
     expect(idFromLabel(label)).toBe(id)
+  })
+})
+
+describe('anchorOf', () => {
+  const title = [cell(78, 690, 'OFFICIAL SPECIFICATION SHEET:', 24, 397)]
+  const name = [cell(78, 668, 'CityCompact Eco', 24, 199)]
+  const details = [cell(78, 609, 'Details', 16, 52)]
+  const price = [cell(78, 512, 'Price', 16, 39)]
+  const first = cell(78, 591, 'This entry-level hatchback features a compact urban profile.', 10, 400)
+  const second = cell(78, 567, 'Equipped with standard 15-inch alloy wheels.', 10, 450)
+  const msrp = cell(78, 494, 'Base MSRP: £18,500. Destination charge: £995.', 10, 216)
+  const page = pageOf(title, name, details, [first], [second], price, [msrp])
+
+  it('anchors a body line to the section under its heading, up to the next heading', () => {
+    const anchor = anchorOf([page], page, second)
+
+    expect(anchor).toMatchObject({ kind: 'section', heading: 'Details', until: 'Price', ignoreHeadersFooters: false })
+  })
+
+  it('anchors the last section to the end of the document, a label line included', () => {
+    const anchor = anchorOf([page], page, msrp)
+
+    expect(anchor).toMatchObject({ kind: 'section', heading: 'Price' })
+    expect(anchor && 'until' in anchor).toBe(false)
+  })
+
+  it('anchors a headline line to the line above it, even when two are stacked tight', () => {
+    expect(anchorOf([page], page, name[0])).toMatchObject({ kind: 'after', previous: 'OFFICIAL SPECIFICATION SHEET:' })
+  })
+
+  it('does not take a lone title for a heading: lines under it are not one section', () => {
+    const lone = pageOf([cell(78, 700, 'Annual Report', 24, 200)], [cell(78, 660, 'Author: Marta', 10, 100)], [cell(78, 640, 'Second line', 10, 100)])
+    const author = lone.rows[1]?.cells[0]
+
+    expect(anchorOf([lone], lone, author)?.kind).not.toBe('section')
+  })
+
+  it('leaves the running header and footer out, and says the document has them', () => {
+    const withMargins = pageOf([cell(78, 770, 'ACME Annual report', 9, 150)], details, [first], price, [msrp])
+    const header = withMargins.rows[0]
+    if (header === undefined) throw new Error('no header row')
+    header.running = true
+
+    expect(anchorOf([withMargins], withMargins, first)).toMatchObject({ kind: 'section', heading: 'Details', ignoreHeadersFooters: true })
+  })
+})
+
+/** A one-cell heading row, as the anchor tests lay them out. */
+function heading (y: number, text: string): PdfCellView[] {
+  return [cell(51, y, text, 13, 60)]
+}
+
+describe('anchorOf across pages and columns', () => {
+  it('finds the heading on an earlier page for a line that continues its section', () => {
+    const first = pageOf(heading(700, 'DETAILS'), [cell(51, 680, 'Body of details.', 10, 100)], heading(500, 'TERMS'), [cell(51, 480, 'Item one.', 10, 100)])
+    const second = pageOf([cell(51, 700, 'Item two continues here.', 10, 120)])
+    second.number = 2
+    const clicked = second.rows[0]?.cells[0]
+
+    expect(anchorOf([first, second], second, clicked)).toMatchObject({ kind: 'section', heading: 'TERMS' })
+  })
+
+  it('anchors a line in a column of two to the section, not as a field', () => {
+    const left = cell(51, 680, 'Left column text', 10, 230)
+    const right = cell(306, 680, 'Right column text', 10, 230)
+    const page = pageOf(heading(700, 'Details'), [left, right], heading(600, 'Price'), [cell(51, 580, '$1', 10, 30)])
+
+    expect(anchorOf([page], page, right)).toMatchObject({ kind: 'section', heading: 'Details', until: 'Price' })
+  })
+
+  it('leaves a row of labelled fields to the label rule', () => {
+    const one = cell(61, 724, 'Reference ID: REF-1', 9, 118)
+    const two = cell(197, 724, 'Effective Date: Oct 1', 9, 125)
+    const page = pageOf(heading(750, 'Overview'), [one, two], heading(600, 'Price'), [cell(51, 580, '$1', 10, 30)])
+
+    expect(anchorOf([page], page, one)).toBeUndefined()
   })
 })

@@ -1,4 +1,4 @@
-import { cellBox, columnKeyFrom, escapedRowPattern, labelCardNode, regionCardNode, regionIdFrom, regionSelector, tableCardNode, unionBox } from './pdf-pick.mapper'
+import { afterLineCardNode, cellBox, columnKeyFrom, escapedRowPattern, labelCardNode, regionCardNode, sectionCardNode, regionIdFrom, regionSelector, tableCardNode, unionBox } from './pdf-pick.mapper'
 
 describe('escapedRowPattern', () => {
   it('anchors the text at the start and escapes regex metacharacters', () => {
@@ -106,5 +106,21 @@ describe('labelCardNode', () => {
 
     expect(selector).toBe(String.raw`Valid until \(UK\):[\t ]*([^\t\n]+)`)
     expect(new RegExp(selector, 'gs').exec('Valid until (UK):\t31 Dec 2026\tnext')?.[1]).toBe('31 Dec 2026')
+  })
+})
+
+describe('sectionCardNode and afterLineCardNode', () => {
+  it('writes the headings as whole-row patterns, and the end only when there is one', () => {
+    const card = sectionCardNode('Details (EV)', 'Price', true, 'steps.1', 'details')
+
+    expect(card.step).toEqual({ type: 'extract', id: 'details', kind: 'section', selector: String.raw`^Details \(EV\)$`, until: '^Price$', ignoreHeadersFooters: true })
+    expect(sectionCardNode('Price', undefined, false, 'steps.2', 'price').step).toEqual({ type: 'extract', id: 'price', kind: 'section', selector: '^Price$' })
+  })
+
+  it('reads the line after the text above it', () => {
+    const selector = (afterLineCardNode('OFFICIAL SHEET:', 'steps.1', 'name').step as { selector: string }).selector
+
+    expect(selector).toBe(String.raw`OFFICIAL SHEET:\n([^\n]+)`)
+    expect(new RegExp(selector, 'gs').exec('OFFICIAL SHEET:\nCityCompact Eco\nDetails')?.[1]).toBe('CityCompact Eco')
   })
 })

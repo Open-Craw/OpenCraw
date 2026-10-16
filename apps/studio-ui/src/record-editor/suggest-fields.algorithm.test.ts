@@ -95,3 +95,21 @@ describe('suggestFieldFor', () => {
     expect(suggestFieldFor('price', books, { price: { type: 'number' } }, { price: { from: 'price' } })).toMatchObject({ name: 'price2', rule: { from: 'price' } })
   })
 })
+
+describe('suggestFields for a section', () => {
+  it('stays text whatever its name says: a block called price can hold several amounts', () => {
+    const input = { steps: [{ type: 'request', id: 'doc', url: 'x' }, { type: 'extract', id: 'price', kind: 'section', selector: '^Price$' }], mapping: {} }
+
+    expect(suggestFields(input, {}, {})[0]?.field).toEqual({ type: 'string' })
+  })
+})
+
+describe('suggestFields for a table', () => {
+  it('proposes the rows of the one table of a sheet as a list, and leaves every table of a document to a loop', () => {
+    const one = { steps: [{ type: 'request', id: 'doc', url: 'x' }, { type: 'extract', id: 'pricing', kind: 'table', selector: '^Tier' }], mapping: {} }
+    const every = { steps: [{ type: 'request', id: 'doc', url: 'x' }, { type: 'extract', id: 'tables', kind: 'table', selector: '^Tier', many: true }], mapping: {} }
+
+    expect(suggestFields(one, {}, {})[0]).toMatchObject({ source: 'pricing', field: { type: 'json' }, rule: { from: 'pricing.rows' } })
+    expect(suggestFields(every, {}, {})).toEqual([])
+  })
+})

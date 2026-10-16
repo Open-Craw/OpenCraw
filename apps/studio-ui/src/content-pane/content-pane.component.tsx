@@ -432,7 +432,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             recipeId={recipeId}
             stepPath={STEP_PATH}
             view={pdfView.data}
-            bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH)}
+            bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH, snapshot.data?.baseUrl)}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onRegionPick={(card) => { void handleStagedPick(card) }}
             steps={steps}

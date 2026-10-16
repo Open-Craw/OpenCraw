@@ -630,14 +630,41 @@ repeating element (`table.credit_group tr`, not `tr`) and check the first record
 `request` with `as: "pdf"` (or a response served as `application/pdf`, or a local `file:…pdf`) reads the
 PDF's text layer with pdf.js into pages of **rows**: text that sits side by side becomes a cell, cells whose
 vertical extents overlap become a row. A scanned page has no text layer and gives no rows; a PDF where no page
-has one fails the step (no OCR). Four extract kinds read it:
+has one fails the step (no OCR). Five extract kinds read it:
 
 | `kind` | Reads | Use for |
 |---|---|---|
 | `table` | tables, found by their header row | price lists, discount sheets, spec tables |
 | `region` | the text inside a box on a page: `page=1 x=72..252 y=640..664` (points from the page's bottom-left corner; `page=*` for every page) | a title, a date, a total — anything that sits at the same place on every issue of a document; what the studio's PDF canvas writes when you click a line |
+| `section` | the text between a heading and the next one, wherever they sit (below) | a description, a list of terms, a price block: content under a title |
 | `regex` | the text: one line per row, cells separated by a tab, pages by a blank line | a value next to a label: `Valid until\t(\S+)` |
 | `jsonpath` | the structure: `{ kind: "pdf", pages: [{ number, width, height, rows: [{ text, top, bottom, cells: [{ x, y, width, height, text }] }] }] }` | positions, a given page |
+
+**Prefer structure to position.** A `region` is a place on the page: it breaks when a description is longer, a
+table has one more row or a column is added. Two sheets of the same layout and different content are read with
+`section` (the text between two headings) and `regex` (the value after a label), which find their text wherever it
+sits. The studio writes those whenever the line you click has a heading above it or a label before it, and a
+`region` only for a box you draw.
+
+A **section** reads the text under a heading: the selector matches the heading row (case-insensitive, the cells
+of the row joined by a space), the text runs to the row `until` matches or, without `until`, to the next row set
+in text as large as the heading (the next heading of its level), or to the end of the document, over page breaks.
+`many: true` gives one text per matching heading.
+
+```json
+{ "type": "extract", "id": "description", "kind": "section", "selector": "^Details$", "until": "^Price$" },
+{ "type": "extract", "id": "price", "kind": "section", "selector": "^Price$" },
+{ "type": "extract", "id": "terms", "kind": "section", "selector": "^Terms$", "ignoreHeadersFooters": true }
+```
+
+The text is read the way a person reads it: the lines of a paragraph are joined with a space (a word broken at
+a hyphen with none), paragraphs are separated by a newline, a numbered or bulleted item starts a paragraph, and
+a page laid out in columns is read one column after the other, left to right.
+
+`ignoreHeadersFooters: true` (kinds `section` and `table`) leaves out the running headers and footers: rows in
+the top or bottom 15% of a page whose text, digits aside (`Page 1 of 2`), shows at the same height on more than
+one page. Without it they are content like any other row, which is what a `regex` or a `region` over them wants.
+A section that runs over a page break needs it, or the footer lands in the middle of the sentence.
 
 A **region** reads every cell at least half inside its box, row by row: a row's cells joined by a space, rows by
 a newline — so a box around a wrapped paragraph gives its lines. A page with nothing in the box is no match (the

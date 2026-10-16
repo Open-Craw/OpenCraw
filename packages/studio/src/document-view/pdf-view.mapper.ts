@@ -1,3 +1,4 @@
+import { marginRows } from '@opencraw/core'
 import type { PdfDocument } from '@opencraw/core'
 
 /** One text cell, in PDF points (y growing upwards from the bottom edge) — mirrors `@opencraw/core`'s `PdfCell`. */
@@ -11,9 +12,11 @@ export interface PdfCellView {
 
 /** One row of cells, top to bottom. */
 export interface PdfRowView {
-  top:    number
-  bottom: number
-  cells:  PdfCellView[]
+  top:      number
+  bottom:   number
+  cells:    PdfCellView[]
+  /** A running header or footer (see `@opencraw/core`'s `marginRows`); absent for body text. */
+  running?: boolean
 }
 
 /** One page's geometry and diagnostics for the PDF canvas (studio plan §3.4, issue #94's 5b). */
@@ -49,6 +52,8 @@ export interface PdfDocumentView {
  * @returns The view.
  */
 export function pdfDocumentView (document: PdfDocument): PdfDocumentView {
+  const margins = marginRows(document)
+
   return {
     pages: document.pages.map(page => ({
       number: page.number,
@@ -58,6 +63,7 @@ export function pdfDocumentView (document: PdfDocument): PdfDocumentView {
         top:    row.top,
         bottom: row.bottom,
         cells:  row.cells.map(cell => ({ x: cell.x, y: cell.y, width: cell.width, height: cell.height, text: cell.text })),
+        ...(margins.has(row) && { running: true }),
       })),
       rowCount:     page.rows.length,
       cellCount:    page.rows.reduce((total, row) => total + row.cells.length, 0),

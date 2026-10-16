@@ -1,4 +1,4 @@
-import { Button, CloseButton, HStack, Text } from '@chakra-ui/react'
+import { Box, Button, CloseButton, HStack, Text } from '@chakra-ui/react'
 
 /** The staged selection's outline colour, shared by the PDF and deck canvases' boxes and chips (issues #121, #122). */
 export const REGION_COLOR = '#9b5de5'
@@ -9,6 +9,8 @@ export interface SelectionChipProps {
   /** What the engine reads in the box; `undefined` while the preview loads, or when nothing sits in the box. */
   text?:       string
   loading:     boolean
+  /** One line saying what the step is tied to (a heading, a label, a position), under the text. */
+  note?:       string
   onAdd:       () => void
   onClear:     () => void
   onDragStart: (event: React.DragEvent<HTMLDivElement>) => void
@@ -22,17 +24,16 @@ export interface SelectionChipProps {
  * canvas clears a selection on a release over its background, and the
  * chip sits inside that background.
  */
-export function SelectionChip ({ left, top, text, loading, onAdd, onClear, onDragStart }: SelectionChipProps): React.ReactElement {
+export function SelectionChip ({ left, top, text, loading, note, onAdd, onClear, onDragStart }: SelectionChipProps): React.ReactElement {
   const empty = text === undefined && !loading
   const [firstLine = ''] = (text ?? '').split('\n', 1)
 
   return (
-    <HStack
+    <Box
       data-testid='region-chip'
       position='absolute'
       style={{ left: `${String(left)}px`, top: `${String(top)}px` }}
       zIndex='docked'
-      gap={2}
       px={2}
       py={1}
       bg='bg.panel'
@@ -48,11 +49,14 @@ export function SelectionChip ({ left, top, text, loading, onAdd, onClear, onDra
       cursor={text === undefined ? 'default' : 'grab'}
       title={text === undefined ? undefined : 'Drag onto the Steps tab to add it there'}
     >
-      <Text fontSize='xs' fontFamily='mono' truncate flex='1' color={empty ? 'fg.muted' : 'fg'}>
-        {loading && text === undefined ? 'reading…' : (empty ? 'nothing to read here' : firstLine)}
-      </Text>
-      <Button size='2xs' colorPalette='blue' onClick={onAdd} disabled={text === undefined}>Add to recipe</Button>
-      <CloseButton size='2xs' aria-label='Clear selection' onClick={onClear} />
-    </HStack>
+      <HStack gap={2}>
+        <Text fontSize='xs' fontFamily='mono' truncate flex='1' color={empty ? 'fg.muted' : 'fg'}>
+          {loading && text === undefined ? 'reading…' : (empty ? 'nothing to read here' : firstLine)}
+        </Text>
+        <Button size='2xs' colorPalette='blue' onClick={onAdd} disabled={text === undefined}>Add to recipe</Button>
+        <CloseButton size='2xs' aria-label='Clear selection' onClick={onClear} />
+      </HStack>
+      {note !== undefined && <Text data-testid='region-chip-note' fontSize='2xs' color='fg.muted'>{note}</Text>}
+    </Box>
   )
 }

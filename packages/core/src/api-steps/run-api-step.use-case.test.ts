@@ -51,6 +51,13 @@ function fakeSender (): HttpSender & { sent: HttpRequest[] } {
   }
 }
 
+/** A read PDF from the pdf-document fixtures. */
+async function fixturePdf (name: string): Promise<Awaited<ReturnType<typeof readPdf>>> {
+  const bytes = readFileSync(join(__dirname, '..', 'pdf-document', 'fixtures', name))
+
+  return readPdf(new Uint8Array(bytes))
+}
+
 async function crawl (input: InputRecipe, sender: HttpSender): Promise<Record<string, unknown>[]> {
   const emitted: Record<string, unknown>[] = []
   const scope = new ExtractionScope()
@@ -303,6 +310,29 @@ describe('ApiStepRunner', () => {
     expect(emitted[0].everyPage).toHaveLength(2) // one text per page: the whole-page box with many
     expect((emitted[0].everyPage as string[])[0].startsWith(titleCell.text)).toBe(true)
     expect(emitted.at(-1)).toMatchObject({ table: { page: 2 }, row: { model: 'G3 BEV', discount: '5,0%' } })
+  })
+
+  it('reads two sheets of one layout and different lengths with one recipe: the text between the headings, and everything below the last', async () => {
+    const sheets = {
+      'http://cars/a.pdf': await fixturePdf('vehicle-spec-a.pdf'),
+      'http://cars/b.pdf': await fixturePdf('vehicle-spec-b.pdf'),
+    }
+    const sender: HttpSender = { send: async request => ({ status: 200, url: request.url, headers: {}, body: sheets[request.url as keyof typeof sheets] }) }
+    const reading: InputRecipe = {
+      ...recipe,
+      start: [{ url: 'http://cars/a.pdf' }],
+      steps: [
+        { type: 'request', id: 'doc', url: '{{start.url}}', as: 'pdf' },
+        { type: 'extract', id: 'description', selector: '^Details$', until: '^Price$', kind: 'section' },
+        { type: 'extract', id: 'price', selector: '^Price$', kind: 'section' },
+        { type: 'emit' },
+      ],
+    }
+    const emitted = [...await crawl(reading, sender), ...await crawl({ ...reading, start: [{ url: 'http://cars/b.pdf' }] }, sender)]
+    expect(emitted).toHaveLength(2)
+    expect(emitted[0]).toMatchObject({ description: 'This entry-level hatchback features a compact urban profile designed for city maneuvering.\nEquipped with standard 15-inch alloy wheels, cloth upholstery, and an integrated infotainment system.', price: 'Base MSRP: £18,500. Destination charge: £995.' })
+    expect(emitted[1].description).toMatch(/^This premium all-electric SUV platform represents the pinnacle of long-range performance configurations\.\nStandard chassis layout/)
+    expect(emitted[1].price).toBe('Base MSRP: £54,200. Premium Trim Package Supplement: £4,500. Total Estimated OTR: £58,700.')
   })
 
   it('reads a CSV as a workbook: tables with filled groups, regex over its rows, jsonpath over its cells', async () => {
