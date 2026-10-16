@@ -25,6 +25,9 @@ Issue #228. The server side it relies on is `choose-folder` (#234, the Browse bu
     format**: `.xlsx` (Excel), `.csv`, `.html` (a page that looks like Studio), `.pdf`, `.json`, `.jsonl` or `.yml`/`.yaml`. A name that is none
     of these is explained and the dialog opens again.
   - **Open in Studio** opens the recipe to change it.
+- **AI agent** sets OpenCraw's tools up for an agent. In VS Code's own agent mode there is nothing to do: the extension registers the MCP
+  server it carries, so OpenCraw is among the agent's tools. For Claude Code, Cursor and other hosts, **Copy the MCP configuration** puts a
+  `claude mcp add` command, or the common `mcpServers` JSON, on the clipboard with this installation's server path filled in.
 - **Learn** links the Studio manual, the tutorial, the recipe guides and where to ask.
 - **OpenCraw: Get started** opens a walkthrough (it also opens once, the first time the extension runs).
 
@@ -52,6 +55,7 @@ editor (extension host)            Studio process                       browser
   output id, and is the recipes view.
 - `src/recipe-run`: the Run action: the plan (which files, `--only`), the process that runs the bundled `opencraw` command line, the save dialog
   and the format from the extension, and `opencraw export` to write the records in it.
+- `src/mcp-setup`: registers the bundled `@opencraw/mcp` server with the editor's agent mode, the copy-configuration command and the AI agent view.
 - `src/learn-studio`: the Learn view and the Get started walkthrough (`media/walkthrough`).
 - `src/extension.ts`: the entry point the editor requires.
 
