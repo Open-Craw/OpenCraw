@@ -11,7 +11,7 @@ import { RecordEditor, fieldToStepIdOf } from '../record-editor'
 import type { MappingRuleJson, RecordEditorProps } from '../record-editor'
 import { HookNamesContext } from '../hook-names'
 import { activeStubs, useHookStubsStore } from '../hook-stubs'
-import { DocumentDropZone, useImportDocumentFlow, useLoadUrlFlow, useOpenPathFromLink } from '../recipe-start'
+import { DocumentDropZone, useImportDocumentFlow, useLoadUrlFlow, useOpenPathFromLink, useUiRequests } from '../recipe-start'
 import { CARD_DRAG_MIME, PILL_DRAG_MIME, StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
@@ -94,6 +94,7 @@ function AppShell () {
   const urlFlow = useLoadUrlFlow()
   const browseFlow = useBrowseFolderFlow()
   const linkError = useOpenPathFromLink()
+  const requestError = useUiRequests()
 
   useEffect(() => {
     if (client.initialFolder !== undefined) commitFolder(client.initialFolder)
@@ -137,7 +138,7 @@ function AppShell () {
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
-  const workspaceError = linkError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? (runError === undefined ? undefined : plainError(runError))
+  const workspaceError = linkError ?? requestError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? (runError === undefined ? undefined : plainError(runError))
 
   const latestNotice = importFlow.notice ?? urlFlow.notice
   // A note about what a load did ("Loaded x into y") is for the moment after the load: it fades, so it is not still there when the person is elsewhere.

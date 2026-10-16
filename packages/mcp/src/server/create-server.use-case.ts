@@ -4,13 +4,14 @@ import { docsInputShape, docsRoot, docsTool } from '../docs-tool'
 import { listRecipesInputShape, listRecipesTool } from '../list-tool'
 import { probeInputShape, probeTool } from '../probe-tool'
 import { runInputShape, runTool } from '../run-tool'
+import { studioOpenRecipeInputShape, studioOpenRecipeTool, studioRunSampleInputShape, studioRunSampleTool, studioStatusInputShape, studioStatusTool } from '../studio-tool'
 import { validateInputShape, validateTool } from '../validate-tool'
 
 const SERVER_INFO = { name: 'opencraw', version: '0.0.1' }
 
 /**
  * Builds the MCP server: one tool per crawl primitive (`probe`, `validate`,
- * `run`, `list_recipes`, `diff`) and `docs`, each a thin wrapper over `@opencraw/core` and
+ * `run`, `list_recipes`, `diff`), `docs` and the `studio_` tools that drive a running Studio, each a thin wrapper over `@opencraw/core` and
  * `@opencraw/cli`'s structured helpers. No transport is attached; `main`
  * connects it over stdio.
  *
@@ -50,6 +51,22 @@ export function createServer (): McpServer {
     'docs',
     { description: 'OpenCraw\'s own documentation: the authoring guide (every step, selector, transform and policy), how it works, the examples and the Studio manual. Without a topic it lists the documents; with one it gives the document, or just a section of it. Read the guide before writing a recipe you are not sure of, instead of guessing.', inputSchema: docsInputShape },
     args => docsTool(args, docsRoot()),
+  )
+
+  server.registerTool(
+    'studio_status',
+    { description: 'Whether OpenCraw Studio is running on this machine, which folder it has open, how many pages are watching and which recipe it is sampling. Call it before the other studio_ tools.', inputSchema: studioStatusInputShape },
+    () => studioStatusTool(),
+  )
+  server.registerTool(
+    'studio_open_recipe',
+    { description: 'Open a recipe, a folder of recipes or a document in the Studio the person has open, so they watch the recipe being built. Does nothing to the files.', inputSchema: studioOpenRecipeInputShape },
+    args => studioOpenRecipeTool(args),
+  )
+  server.registerTool(
+    'studio_run_sample',
+    { description: 'Run an input recipe as a sample in Studio (the person sees the records arrive) and get back the counts, the first records and what was rejected. Studio must have the folder of that recipe open: call studio_open_recipe first.', inputSchema: studioRunSampleInputShape },
+    args => studioRunSampleTool(args),
   )
 
   return server

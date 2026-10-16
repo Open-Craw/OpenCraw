@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { outlineViewSchema } from './outline-view.contract'
+import { uiRequestSchema } from './ui-request.contract'
 
 /** A budget for a sample run; never authored into a recipe, only asked for by the caller. */
 export const sampleBudgetSchema = z.object({
@@ -368,6 +369,23 @@ export const importDocumentCommandSchema = z.object({
   bytes:  z.string(),
 })
 
+/** Asks every open Studio page to do something (`ui-request`); the answer says how many pages were listening. How an agent opens a recipe for the person who is watching. */
+export const askUiCommandSchema = z.object({
+  type:    z.literal('ask-ui'),
+  request: uiRequestSchema,
+})
+
+/** Asks what Studio is doing: its workspace, how many pages are open and the run in progress. */
+export const studioStatusCommandSchema = z.object({
+  type: z.literal('studio-status'),
+})
+
+/** Asks how a recipe's sample run is going: still running, finished (with its first records) or never run. */
+export const runStatusCommandSchema = z.object({
+  type:     z.literal('run-status'),
+  recipeId: z.string().min(1),
+})
+
 export const studioCommandSchema = z.discriminatedUnion('type', [
   openWorkspaceCommandSchema,
   chooseFolderCommandSchema,
@@ -396,6 +414,9 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   deckPreviewCommandSchema,
   startRecordingCommandSchema,
   stopRecordingCommandSchema,
+  askUiCommandSchema,
+  studioStatusCommandSchema,
+  runStatusCommandSchema,
 ])
 
 export type SampleBudget = z.infer<typeof sampleBudgetSchema>
@@ -404,6 +425,9 @@ export type ChooseFolderCommand = z.infer<typeof chooseFolderCommandSchema>
 export type OpenPathCommand = z.infer<typeof openPathCommandSchema>
 export type ImportDocumentCommand = z.infer<typeof importDocumentCommandSchema>
 export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
+export type AskUiCommand = z.infer<typeof askUiCommandSchema>
+export type StudioStatusCommand = z.infer<typeof studioStatusCommandSchema>
+export type RunStatusCommand = z.infer<typeof runStatusCommandSchema>
 export type StopRunCommand = z.infer<typeof stopRunCommandSchema>
 export type SaveRecipeCommand = z.infer<typeof saveRecipeCommandSchema>
 export type FetchStartPageCommand = z.infer<typeof fetchStartPageCommandSchema>

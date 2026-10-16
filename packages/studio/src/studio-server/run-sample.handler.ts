@@ -23,6 +23,7 @@ export async function handleRunSample (state: StudioState, command: RunSampleCom
     onRejected:  rejected => { broadcast(state, { type: 'record-rejected', recipeId: command.recipeId, field: rejected.field, reason: rejected.reason, scope: rejected.scope }) },
   }, state.browser, state.plugins, command.stubs)
   state.activeRun = handle
+  state.activeRunId = command.recipeId
   void handle.result.then((result) => {
     if (state.activeRun === handle) state.activeRun = undefined
     recordLastRun(state.lastRuns, command.recipeId, result)

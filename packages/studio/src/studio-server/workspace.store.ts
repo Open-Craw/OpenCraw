@@ -19,6 +19,8 @@ function defaultRecorderProfileDir (): string {
 export interface StudioState {
   folder?:            string
   activeRun?:         SampleRunHandle
+  /** The recipe `activeRun` is sampling. */
+  activeRunId?:       string
   activeRecording?:   RecorderSessionHandle
   /** A `start-recording` still opening its window: `stop-recording` and the server's own close wait for it, so a window is never left open behind them (issue #174). */
   openingRecording?:  Promise<unknown>
