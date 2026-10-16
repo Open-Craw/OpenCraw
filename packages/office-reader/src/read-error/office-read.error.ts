@@ -14,6 +14,8 @@ export type OfficeReadErrorCode =
   'unsupported-format' |
   /** A zip package that is not an OpenDocument spreadsheet. */
   'not-ods' |
+  /** A zip package that is not an OpenDocument text document. */
+  'not-odt' |
   /** A zip package that is not a spreadsheet. */
   'not-xlsx' |
   /** A zip package that is not a presentation. */

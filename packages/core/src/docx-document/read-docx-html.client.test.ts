@@ -1,11 +1,35 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { load } from 'cheerio'
+import { strToU8, zipSync } from 'fflate'
 import { readDocxHtml } from './read-docx-html.client'
 
 const bytes = readFileSync(join(__dirname, '..', '..', '..', 'office-reader', 'src', 'document', 'fixtures', 'incentivi.docx'))
 
+const odt = readFileSync(join(__dirname, '..', '..', '..', 'office-reader', 'src', 'opendocument-text', 'fixtures', 'incentivi.odt'))
+
+/** The HTML without the style names, which each application names its own way. */
+function withoutStyles (html: string): string {
+  return html.replaceAll(/ data-style="[^"]*"/g, '')
+}
+
 describe('readDocxHtml', () => {
+  it('reads an OpenDocument text document into the HTML a .docx of the same content gives', async () => {
+    const fromOdt = await readDocxHtml(odt, 'incentivi.odt')
+    const fromDocx = await readDocxHtml(bytes, 'incentivi.docx')
+
+    expect(withoutStyles(fromOdt)).toBe(withoutStyles(fromDocx))
+    const $ = load(fromOdt)
+    expect($('title').text()).toBe('Circolare giugno')
+    expect($('ol > li > ol > li').text()).toBe('Entro il 15')
+  })
+
+  it('says what to do with another kind of OpenDocument file, naming the source', async () => {
+    const spreadsheet = zipSync({ 'mimetype': [strToU8('application/vnd.oasis.opendocument.spreadsheet'), { level: 0 }], 'content.xml': strToU8('<x/>') })
+
+    await expect(readDocxHtml(spreadsheet, 'prices.ods')).rejects.toThrow(/prices.ods: .*OpenDocument/)
+  })
+
   it('turns headings into sections, lists into nested lists, links into anchors', async () => {
     const $ = load(await readDocxHtml(bytes, 'incentivi.docx'))
     expect($('title').text()).toBe('Circolare giugno')

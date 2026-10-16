@@ -1,5 +1,6 @@
 import type { DocumentBlock, DocumentTable, Paragraph, WordDocument } from '@opencraw/office-reader/docx'
 import { sectioned } from '../markdown-document'
+import { openDocumentFormat, openDocumentMimetype } from '../opendocument-sniff'
 
 /**
  * Reads a `.docx` Word document into HTML, through `@opencraw/office-reader`,
@@ -21,23 +22,37 @@ import { sectioned } from '../markdown-document'
  * @param source - Where it came from, for messages.
  * @returns The HTML document.
  * @throws Error naming the source, and saying what to do, for a file that is
- * not a readable Word document (a legacy `.doc`, a password-protected file, an `.odt`…).
+ * not a readable Word document (a legacy `.doc`, a password-protected file…). An OpenDocument text document (`.odt`) reads the same way.
  */
 export async function readDocxHtml (bytes: Uint8Array, source: string): Promise<string> {
-  const { readDocx, OfficeReadError } = await import('@opencraw/office-reader/docx')
-  let document: WordDocument
-  try {
-    document = await readDocx(bytes)
-  } catch (error) {
-    if (error instanceof OfficeReadError) throw new Error(`${source}: ${error.message}`, { cause: error })
-    throw error
-  }
+  const document = await loadDocument(bytes, source)
   const head = document.title === undefined ? '' : `<title>${escapeText(document.title)}</title>`
   const headers = document.headers.map(blocks => `<header data-part="header">${blocksHtml(blocks)}</header>`).join('')
   const footers = document.footers.map(blocks => `<footer data-part="footer">${blocksHtml(blocks)}</footer>`).join('')
   const notes = document.notes.length === 0 ? '' : `<aside data-part="notes"><ol>${document.notes.map(note => `<li id="${note.kind}-${escapeAttribute(note.id)}" data-kind="${note.kind}">${textHtml(note.text)}</li>`).join('')}</ol></aside>`
 
   return `<!doctype html><html><head>${head}</head><body>${headers}${sectioned(blocksHtml(document.body))}${footers}${notes}</body></html>`
+}
+
+/** The Word document model of a `.docx`, or of an OpenDocument text document (`.odt`, told by the `mimetype` the file declares). */
+async function loadDocument (bytes: Uint8Array, source: string): Promise<WordDocument> {
+  const mimetype = openDocumentMimetype(bytes)
+  if (mimetype !== undefined && openDocumentFormat(mimetype) === 'docx') {
+    const { readOdt, OfficeReadError } = await import('@opencraw/office-reader/odt')
+    try {
+      return await readOdt(bytes)
+    } catch (error) {
+      if (error instanceof OfficeReadError) throw new Error(`${source}: ${error.message}`, { cause: error })
+      throw error
+    }
+  }
+  const { readDocx, OfficeReadError } = await import('@opencraw/office-reader/docx')
+  try {
+    return await readDocx(bytes)
+  } catch (error) {
+    if (error instanceof OfficeReadError) throw new Error(`${source}: ${error.message}`, { cause: error })
+    throw error
+  }
 }
 
 /** Blocks as HTML: headings, paragraphs, nested lists, tables. */

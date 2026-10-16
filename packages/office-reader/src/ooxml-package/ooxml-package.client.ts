@@ -46,6 +46,7 @@ export class OoxmlPackage {
     const opened = new OoxmlPackage(bytes, entries, { entryBytes: limits.entryBytes ?? DEFAULT_ENTRY_BYTES, totalBytes: limits.totalBytes ?? DEFAULT_TOTAL_BYTES })
     const mimetype = opened.has('mimetype') ? opened.text('mimetype').trim() : ''
     if (mimetype.startsWith('application/vnd.oasis.opendocument.spreadsheet')) throw new OfficeReadError('unsupported-format', 'an OpenDocument spreadsheet (.ods): read it with readOds, or save it as .xlsx')
+    if (mimetype.startsWith('application/vnd.oasis.opendocument.text')) throw new OfficeReadError('unsupported-format', 'an OpenDocument text document (.odt): read it with readOdt, or save it as .docx')
     if (mimetype.startsWith('application/vnd.oasis.opendocument')) throw new OfficeReadError('unsupported-format', `an OpenDocument file (${mimetype}): save it as .xlsx, .pptx or .docx`)
 
     return opened

@@ -9,7 +9,7 @@ Reads Office files into plain objects:
 - **workbooks** (`.xlsx`, `.xlsm`) as sheets of cells, with their merged ranges and hidden rows;
 - **presentations** (`.pptx`, `.pptm`, `.ppsx`) as slides of positioned text boxes, tables, chart data and
   speaker notes;
-- **documents** (`.docx`, `.docm`, `.dotx`) as paragraphs with their heading and list levels and links, tables
+- **documents** (`.docx`, `.docm`, `.dotx`, and OpenDocument `.odt` through `readOdt`) as paragraphs with their heading and list levels and links, tables
   with their merged cells, headers, footers and notes.
 
 - **What the file holds, faithfully.** Formulas give their cached value, and nothing is evaluated. Dates are
@@ -127,8 +127,8 @@ says what to do:
 |---|---|
 | `legacy-format` | a legacy binary `.xls`, `.ppt` or `.doc`: save it as `.xlsx` / `.pptx` / `.docx`, or export it as PDF |
 | `encrypted` | password-protected |
-| `unsupported-format` | an OpenDocument file this reader does not read yet (`.odp` / `.odt`), or a different kind of OpenDocument file than the one asked for |
-| `not-ods` | a zip package that is not an OpenDocument spreadsheet |
+| `unsupported-format` | an OpenDocument file this reader does not read yet (`.odp`), or a different kind of OpenDocument file than the one asked for |
+| `not-ods` / `not-odt` | a zip package that is not an OpenDocument spreadsheet / text document |
 | `not-xlsx` / `not-pptx` / `not-docx` | a zip package of another kind (a `.pptx` given to `readXlsx`, say) |
 | `not-zip` | not a zip at all |
 | `too-large` | past the `limits` |
@@ -202,6 +202,10 @@ import { readDocx } from '@opencraw/office-reader/docx'
 const document = await readDocx('./circolare.docx')
 ```
 
+An OpenDocument text document (`.odt`, from LibreOffice, Google Docs or Word) is read by `readOdt` into the same `WordDocument`
+(`import { readOdt } from '@opencraw/office-reader/odt'`, same options): headings, list levels, links, tables with merged cells, headers, footers,
+notes and the title. Tracked deletions and comments are not text.
+
 ```ts
 // { title: 'Circolare giugno',
 //   body: [
@@ -264,7 +268,7 @@ Tested against the 367 workbooks of Apache POI's test corpus, real files and fuz
 
 - **Writing files.**
 - **Evaluating formulas, and applying display formats.** A percentage stays `0.125` and a price stays `15950`.
-- **Legacy `.xls`, `.ppt`, `.doc`, OpenDocument `.odp` / `.odt`, and binary `.xlsb`.** These are refused with a code. (OpenDocument spreadsheets, `.ods`, are read.)
+- **Legacy `.xls`, `.ppt`, `.doc`, OpenDocument `.odp`, and binary `.xlsb`.** These are refused with a code. (OpenDocument spreadsheets and text documents, `.ods` and `.odt`, are read.)
 - **In workbooks:** charts, pivot tables, images, comments and data validation.
 - **In presentations:** SmartArt text, text inside images (no OCR), animations and themes.
 - **In documents:** comments, formatting (bold, colours, fonts), images, equations, and the text of charts.

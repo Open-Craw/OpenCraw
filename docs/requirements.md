@@ -255,8 +255,8 @@ merged ranges, nested tables on their own — through the grid table reader.
 without namespaces); on XML `namespaces` maps prefixes to URIs (the root's declared prefixes are known) and
 `ignoreNamespaces` drops them. XML (`as: 'xml'`, `*/xml`, `*+xml`, `.xml`, `.rss`, `.atom`, gzipped `.xml.gz`)
 is parsed strictly; DOCTYPE entities are never expanded and nothing external is fetched. On JSON use `jsonpath`.
-Word (`as: 'docx'`, a WordprocessingML type, `.docx`/`.docm`/`.dotx`) is read by `@opencraw/office-reader`'s
-`readDocx` and becomes an HTML document: headings sectioned like Markdown (`section[data-heading]`), nested
+Word (`as: 'docx'`, a WordprocessingML type, `.docx`/`.docm`/`.dotx`, and an OpenDocument text document, `.odt`) is read by
+`@opencraw/office-reader`'s `readDocx` (`readOdt` for `.odt`) and becomes an HTML document: headings sectioned like Markdown (`section[data-heading]`), nested
 lists, tables with `colspan`/`rowspan` from merged cells, links as anchors, `data-style` per paragraph, headers,
 footers and notes after the body. A `jsonpath` extract whose `from` is text parses it as JSON; a list of
 texts becomes the array of its parsable entries (the JSON-LD blocks of a page), and the path runs over that array.
