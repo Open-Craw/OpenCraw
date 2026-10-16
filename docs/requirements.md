@@ -220,8 +220,8 @@ through `readOds`. `.xls` and encrypted files fail with what to do. `@opencraw/o
 a path, bytes, a Blob or a stream, in Node or a browser; zip entries capped by declared size, XML entities never
 expanded.
 
-A presentation (`as: 'pptx'`, a presentation content type, `.pptx`) is read by `@opencraw/office-reader`'s
-`readPptx` into a deck: slides in presentation order, each with its text boxes (points, reading order,
+A presentation (`as: 'pptx'`, a presentation content type, `.pptx`, and an OpenDocument presentation, `.odp`) is read by
+`@opencraw/office-reader`'s `readPptx` (`readOdp` for `.odp`) into a deck: slides in presentation order, each with its text boxes (points, reading order,
 placeholders positioned through layout and master, group transforms applied; slide numbers, dates, footers
 left out), native tables as sheets with merges, charts from their caches, notes, hidden flag. `table` reads
 native tables through the workbook algorithm, or text boxes (`shapes: true`) through the PDF algorithm, one

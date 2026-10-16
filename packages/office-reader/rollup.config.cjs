@@ -26,6 +26,7 @@ module.exports = withNx(
       docx:  `${__dirname}/src/document/index.ts`,
       ods:   `${__dirname}/src/opendocument-spreadsheet/index.ts`,
       odt:   `${__dirname}/src/opendocument-text/index.ts`,
+      odp:   `${__dirname}/src/opendocument-presentation/index.ts`,
     },
     // Added by MoNecromanCI. rollup hands sourcemapPathTransform an OS-NATIVE
     // path with one parent segment too many, so `sources` resolve to nothing

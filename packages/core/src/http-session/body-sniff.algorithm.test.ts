@@ -30,6 +30,8 @@ describe('sniffFormat', () => {
 
   it('knows an OpenDocument file by the media type its first entry declares', () => {
     expect(sniffFormat(officeFixture('opendocument-spreadsheet', 'incentivi.ods'), '/file')).toBe('xlsx')
+    expect(sniffFormat(officeFixture('opendocument-text', 'incentivi.odt'), '/file')).toBe('docx')
+    expect(sniffFormat(officeFixture('opendocument-presentation', 'incentivi.odp'), '/file')).toBe('pptx')
   })
 
   it('leaves a zip that is not an Office package, plain text and nothing to the extension', () => {

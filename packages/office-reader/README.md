@@ -7,7 +7,7 @@
 Reads Office files into plain objects:
 
 - **workbooks** (`.xlsx`, `.xlsm`) as sheets of cells, with their merged ranges and hidden rows;
-- **presentations** (`.pptx`, `.pptm`, `.ppsx`) as slides of positioned text boxes, tables, chart data and
+- **presentations** (`.pptx`, `.pptm`, `.ppsx`, and OpenDocument `.odp`) as slides of positioned text boxes, tables, chart data and
   speaker notes;
 - **documents** (`.docx`, `.docm`, `.dotx`, and OpenDocument `.odt` through `readOdt`) as paragraphs with their heading and list levels and links, tables
   with their merged cells, headers, footers and notes.
@@ -127,7 +127,7 @@ says what to do:
 |---|---|
 | `legacy-format` | a legacy binary `.xls`, `.ppt` or `.doc`: save it as `.xlsx` / `.pptx` / `.docx`, or export it as PDF |
 | `encrypted` | password-protected |
-| `unsupported-format` | an OpenDocument file this reader does not read yet (`.odp`), or a different kind of OpenDocument file than the one asked for |
+| `unsupported-format` | an OpenDocument file of a kind this reader does not read (a drawing, a formula…), or a different kind of OpenDocument file than the one asked for |
 | `not-ods` / `not-odt` | a zip package that is not an OpenDocument spreadsheet / text document |
 | `not-xlsx` / `not-pptx` / `not-docx` | a zip package of another kind (a `.pptx` given to `readXlsx`, say) |
 | `not-zip` | not a zip at all |
@@ -142,6 +142,10 @@ import { readPptx } from '@opencraw/office-reader/pptx'
 
 const deck = await readPptx('./incentivi.pptx')
 ```
+
+An OpenDocument presentation (`.odp`, from LibreOffice, Google Slides or PowerPoint) is read by `readOdp` into the same `Deck`
+(`import { readOdp } from '@opencraw/office-reader/odp'`, same options): text boxes and shapes with their positions in points, the title, tables with
+merged cells, charts from the data table they keep, speaker notes and the hidden flag. Footers, dates and slide numbers are left out.
 
 ```ts
 // { width: 960, height: 540, slides: [
@@ -268,7 +272,7 @@ Tested against the 367 workbooks of Apache POI's test corpus, real files and fuz
 
 - **Writing files.**
 - **Evaluating formulas, and applying display formats.** A percentage stays `0.125` and a price stays `15950`.
-- **Legacy `.xls`, `.ppt`, `.doc`, OpenDocument `.odp`, and binary `.xlsb`.** These are refused with a code. (OpenDocument spreadsheets and text documents, `.ods` and `.odt`, are read.)
+- **Legacy `.xls`, `.ppt`, `.doc`, and binary `.xlsb`.** These are refused with a code. (OpenDocument spreadsheets, text documents and presentations, `.ods`, `.odt` and `.odp`, are read.)
 - **In workbooks:** charts, pivot tables, images, comments and data validation.
 - **In presentations:** SmartArt text, text inside images (no OCR), animations and themes.
 - **In documents:** comments, formatting (bold, colours, fonts), images, equations, and the text of charts.
