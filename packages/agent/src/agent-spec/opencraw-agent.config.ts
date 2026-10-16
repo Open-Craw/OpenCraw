@@ -19,9 +19,9 @@ export const OPENCRAW_AGENT: AgentSpec = {
     { name: 'diff', use: 'compare two runs: what was added, removed and changed' },
   ],
   studioTools: [
+    { name: 'studio_status', use: 'see whether Studio is running, what it has open and what it is sampling' },
     { name: 'studio_open_recipe', use: 'open a recipe in Studio for the person' },
-    { name: 'studio_pick', use: 'click a value on the loaded page or document' },
-    { name: 'studio_run_sample', use: 'run a sample and look at the records' },
+    { name: 'studio_run_sample', use: 'run a sample in Studio and look at the records' },
   ],
   instructions: OPENCRAW_INSTRUCTIONS,
 }

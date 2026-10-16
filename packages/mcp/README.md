@@ -144,6 +144,19 @@ Returns `{ added, removed, changed, unchanged, shrunk?, summary, changes }`: `su
 reads, `changes` the first 200 changes (`removed`, `changed` with `fields: [{ field, before, after }]`, `added`),
 and `shrunk` is set when the current run holds under half the records the previous one did.
 
+### `studio_status`, `studio_open_recipe`, `studio_run_sample`
+
+Drive the OpenCraw Studio the person has open, so they watch the recipe being built. A running Studio announces itself in `~/.opencraw/studio/<pid>-<port>.json`
+(its address and its access token, readable by its owner only); these tools find it there, so nothing needs configuring. If several run, the newest is used.
+
+| Tool | Input | Returns |
+|---|---|---|
+| `studio_status` | none | `{ running, url, folder?, pages, running? }`: whether Studio is up, the folder it has open, how many connections are listening (an open page holds a couple), the recipe being sampled. Without a Studio: `{ running: false, hint }`. |
+| `studio_open_recipe` | `path` (a recipe file, a folder or a document), `workspace?` | `{ opened: true, pages }`, or `{ opened: false, hint }` when Studio runs but no page is open. The open page does it the way a Studio link does. |
+| `studio_run_sample` | `recipeId`, `maxRecords?` (10), `waitSeconds?` (60) | `{ recipeId, state, result? }`: the counts, the first 20 records and rejections once finished. Studio must have the recipe's folder open (`studio_open_recipe` first). |
+
+Picking a value on a page (`studio_pick`) is not here yet: it is still the person's click.
+
 ## Building
 
 `nx build @opencraw/mcp`, `nx test @opencraw/mcp` (unit tests per tool), `nx run @opencraw/mcp:e2e`

@@ -28,6 +28,7 @@ describe('OPENCRAW_AGENT', () => {
   it('knows Studio and says what to do when it can and cannot drive it', () => {
     expect(text).toContain('## Studio')
     expect(text).toContain('studio_open_recipe')
+    expect(text).toContain('studio_status')
     expect(text).toContain('describe the exact clicks')
   })
 
@@ -36,6 +37,6 @@ describe('OPENCRAW_AGENT', () => {
   })
 
   it('names the Studio tools a connected chatbot will offer', () => {
-    expect(OPENCRAW_AGENT.studioTools.map(tool => tool.name)).toEqual(['studio_open_recipe', 'studio_pick', 'studio_run_sample'])
+    expect(OPENCRAW_AGENT.studioTools.map(tool => tool.name)).toEqual(['studio_status', 'studio_open_recipe', 'studio_run_sample'])
   })
 })

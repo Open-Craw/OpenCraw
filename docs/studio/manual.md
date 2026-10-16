@@ -297,3 +297,16 @@ so the two never drift out of sync.
 - **The recipe files are the truth.** Nothing the studio does is hidden state: close it, and every pick,
   every mapping, every transform is sitting in the JSON files exactly as saved. `opencraw validate` and
   `opencraw run` work on them the same as any hand-written recipe.
+
+## 12. Letting an agent drive Studio
+
+An AI agent connected to OpenCraw's MCP server (see the VS Code extension's *AI agent* view) can work in the Studio you have open, so you watch it
+happen instead of reading a report:
+
+- **`studio_status`** tells it whether Studio is running, which folder it has open and what it is sampling.
+- **`studio_open_recipe`** opens a recipe, a folder or a document in your Studio, as if you had followed a link to it.
+- **`studio_run_sample`** runs an input recipe as a sample: the records arrive in your Records tab, and the agent gets the counts and the first
+  records back.
+
+Nothing needs setting up: a running Studio announces itself in `~/.opencraw/studio` (its address and its access token, readable only by you), and the
+agent finds it there. Studio still listens on this machine only. Clicking a value on a page or document stays your click: the agent tells you where.
