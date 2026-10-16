@@ -138,7 +138,7 @@ function TreeCanvasNode ({ node, depth, collapsed, onToggle, onPick, steps, hove
             size='xs'
             colorPalette='brand'
             onClick={(event) => { event.stopPropagation(); onPick(node, 'list') }}
-            title={`Read every one of the ${String(node.listCount ?? 0)} items in this list`}
+            title={`Collect this for every one of the ${String(node.listCount ?? 0)} items of the list`}
           >
             {`[*] ×${String(node.listCount ?? 0)}`}
           </Badge>
@@ -150,7 +150,7 @@ function TreeCanvasNode ({ node, depth, collapsed, onToggle, onPick, steps, hove
             color='fg.muted'
             _hover={{ color: 'fg', textDecoration: 'underline' }}
             onClick={(event) => { event.stopPropagation(); onPick(node, 'next') }}
-            title='Use as the pagination "next" cursor/URL'
+            title='Use this value to reach the next page of results (for data that comes in pages)'
           >
             next →
           </Text>

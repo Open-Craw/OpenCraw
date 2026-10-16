@@ -560,7 +560,13 @@ function GridCellBox ({ cell, box, isHeader, isHidden, isSnapped, isStaged, step
       onMouseEnter={onMouseEnter === undefined ? undefined : () => { onMouseEnter(stepIds) }}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
-      title={inRecipe ? `In the recipe: ${stepIds.join(', ')}` : (isHidden ? 'Hidden row' : undefined)}
+      title={inRecipe
+        ? `In the recipe: ${stepIds.join(', ')}
+${String(cell.value)}`
+        : (isHidden
+            ? `Hidden row
+${String(cell.value)}`
+            : String(cell.value))}
       truncate
     >
       {String(cell.value)}

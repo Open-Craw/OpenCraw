@@ -295,6 +295,7 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
     <Box h='full' display='flex' flexDirection='column'>
       <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} flexWrap='wrap'>
         {view.pages.length > 1 && <PageSelect pages={view.pages.length} value={pageIndex} onChange={setPageIndex} />}
+        {view.pages.length > 1 && <Text fontSize='sm' color='fg.muted'>{`of ${String(view.pages.length)}`}</Text>}
         <ModeButton label='Text' active={textMode} onClick={() => { setMode('text') }} />
         <ModeButton label='Header row' tip='The row that names the columns of a table: click it to say where the table starts.' active={mode === 'header'} onClick={() => { setMode('header') }} />
         <ModeButton label='Last row (until)' tip='The line that comes right after the table: click it to say where the table stops.' active={mode === 'until'} onClick={() => { setMode('until') }} />

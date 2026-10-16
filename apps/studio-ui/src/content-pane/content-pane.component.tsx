@@ -8,6 +8,8 @@ import { plainError, useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, u
 import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { SnapshotNotice } from './snapshot-notice.component'
+import { TreeViewSwitch } from './tree-view-switch.component'
+import type { TreeView } from './tree-view-switch.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
 import { addHtmlListField, addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listItemsSelector, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
@@ -82,6 +84,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const snapshot = useSnapshotQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH)
   const inferSelector = useInferSelectorMutation()
   const [inspecting, setInspecting] = useState(false)
+  const [treeView, setTreeView] = useState<TreeView>('tree')
   const client = useStudioClient()
   const format = snapshot.data?.format
   const isDocumentTree = format !== undefined && TREE_FORMATS.has(format)
@@ -411,6 +414,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             </Text>
           </>
         )}
+        {isDocumentTree && snapshot.data?.html.startsWith('<pre') === true && <TreeViewSwitch value={treeView} onChange={setTreeView} />}
         {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to collect it. Click [*] beside a field to collect it for every item of a list.</Text>}
         {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching) || (isGrid && gridView.isFetching) || (isDeck && deckView.isFetching)) && <Spinner size='xs' />}
         {status !== undefined && (
@@ -449,7 +453,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       {snapshot.data?.notice !== undefined && <SnapshotNotice text={snapshot.data.notice} />}
       {isHtmlSnapshot && snapshot.data !== undefined && snapshot.data.notice === undefined && !snapshotHasContent && <BlankSnapshotNotice />}
       <Box ref={canvasAreaRef} flex='1' minH='0' overflow='auto' style={isPdf ? undefined : { zoom: zoomState.zoom }} onContextMenu={(event) => { event.preventDefault() }}>
-        {isDocumentTree && documentTree.data !== undefined && (
+        {isDocumentTree && treeView === 'text' && snapshot.data !== undefined && (
+          <SnapshotFrame html={snapshot.data.html} pickMode={false} showHidden={false} onHoverNode={() => {}} onPickNode={() => {}} />
+        )}
+        {isDocumentTree && treeView === 'tree' && documentTree.data !== undefined && (
           <TreeCanvas tree={documentTree.data} onPick={onTreePick} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
         )}
         {isDocumentTree && documentTree.isError && (

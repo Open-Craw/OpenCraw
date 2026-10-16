@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { pickerStyleCss } from './picker-style.mapper'
 
 export interface SnapshotFrameProps {
@@ -16,6 +16,8 @@ export interface SnapshotFrameProps {
   onPickNode:       (nodeId: string) => void
 }
 
+/** A web page is laid out at least this wide (a normal desktop window) and shrunk to fit a narrower pane, rather than cut off at the pane's edge. */
+const MIN_PAGE_WIDTH = 1000
 const NODE_ID_ATTRIBUTE = 'data-oc-node'
 const STYLE_ELEMENT_ID = 'opencraw-picker-style'
 
@@ -34,6 +36,8 @@ const STYLE_ELEMENT_ID = 'opencraw-picker-style'
  */
 export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, onHoverNode, onPickNode }: SnapshotFrameProps): React.ReactElement {
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  const boxRef = useRef<HTMLDivElement>(null)
+  const [pane, setPane] = useState({ width: 0, height: 0 })
   const propsRef = useRef({ pickMode, onHoverNode, onPickNode })
   propsRef.current = { pickMode, onHoverNode, onPickNode }
 
@@ -82,6 +86,15 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
   }, [html])
 
   useEffect(() => {
+    const box = boxRef.current
+    if (box === null || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(() => { setPane({ width: box.clientWidth, height: box.clientHeight }) })
+    observer.observe(box)
+
+    return () => { observer.disconnect() }
+  }, [])
+
+  useEffect(() => {
     const doc = iframeRef.current?.contentDocument
     if (doc === null || doc === undefined) return
     let style = doc.getElementById(STYLE_ELEMENT_ID) as HTMLStyleElement | null
@@ -93,14 +106,24 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
     style.textContent = pickerStyleCss(pickMode, showHidden, hoveredSelector)
   })
 
+  // Laid out as a desktop page and shrunk to the pane's width: nothing is cut off at the right edge.
+  const measured = pane.width > 0
+  const pageWidth = measured ? Math.max(pane.width, MIN_PAGE_WIDTH) : 0
+  const scale = measured ? pane.width / pageWidth : 1
+  const frameStyle = measured && scale < 1
+    ? { width: `${String(pageWidth)}px`, height: `${String(pane.height / scale)}px`, transform: `scale(${String(scale)})`, transformOrigin: 'top left' }
+    : { width: '100%', height: '100%' }
+
   return (
-    <iframe
-      ref={iframeRef}
-      title='Snapshot'
-      sandbox='allow-same-origin'
-      srcDoc={html}
-      style={{ width: '100%', height: '100%', border: 'none', background: 'white' }}
-    />
+    <div ref={boxRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+      <iframe
+        ref={iframeRef}
+        title='Snapshot'
+        sandbox='allow-same-origin'
+        srcDoc={html}
+        style={{ ...frameStyle, border: 'none', background: 'white' }}
+      />
+    </div>
   )
 }
 
