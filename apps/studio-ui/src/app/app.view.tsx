@@ -6,8 +6,9 @@ import { DensityToggle, studioSystem, useApplyColorMode } from '../appearance'
 import { ContentPane } from '../content-pane'
 import { JsonEditor } from '../json-editor'
 import { PreviewStrip } from '../preview'
+import type { PreviewStripProps } from '../preview'
 import { RecordEditor, fieldToStepIdOf } from '../record-editor'
-import type { MappingRuleJson } from '../record-editor'
+import type { MappingRuleJson, RecordEditorProps } from '../record-editor'
 import { HookNamesContext } from '../hook-names'
 import { activeStubs, useHookStubsStore } from '../hook-stubs'
 import { DocumentDropZone, useImportDocumentFlow, useLoadUrlFlow, useOpenPathFromLink } from '../recipe-start'
@@ -78,9 +79,6 @@ function AppShell () {
   const selectedRecipe = useSelectedRecipe()
 
   const running = useRunSessionStore(state => state.running)
-  const records = useRunSessionStore(state => state.records)
-  const rejected = useRunSessionStore(state => state.rejected)
-  const traceLines = useRunSessionStore(state => state.traceLines)
   const runError = useRunSessionStore(state => state.error)
 
   const runSample = useRunSampleMutation()
@@ -196,11 +194,9 @@ function AppShell () {
                     />
                   )}
                   {editorTab === 'record' && (
-                    <RecordEditor
+                    <ConnectedRecordEditor
                       inputRecipe={selectedRecipe}
                       outputRecipe={outputRecipe}
-                      records={records}
-                      rejected={rejected}
                       onSaveInput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
                       onSaveOutput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
                       onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
@@ -220,10 +216,7 @@ function AppShell () {
           </Splitter.Panel>
           <Splitter.ResizeTrigger id='workspace:preview' />
           <Splitter.Panel id='preview' overflow='hidden' borderTopWidth='1px'>
-            <PreviewStrip
-              records={records}
-              traceLines={traceLines}
-              rejected={rejected}
+            <ConnectedPreviewStrip
               onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
               onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
               whyLoading={explainWhy.isPending}
@@ -237,6 +230,26 @@ function AppShell () {
       </DocumentDropZone>
     </HookNamesContext.Provider>
   )
+}
+
+/**
+ * The Record tab, given the run's records and rejections by the store itself and not by the shell: a run streams results many times a second, and
+ * every one of them redrew the whole window (the steps, the editors, the page) when the shell held them. Only this panel redraws now.
+ */
+function ConnectedRecordEditor (props: Omit<RecordEditorProps, 'records' | 'rejected'>) {
+  const records = useRunSessionStore(state => state.records)
+  const rejected = useRunSessionStore(state => state.rejected)
+
+  return <RecordEditor {...props} records={records} rejected={rejected} />
+}
+
+/** The records / trace strip, given the run's output by the store itself, for the same reason as {@link ConnectedRecordEditor}. */
+function ConnectedPreviewStrip (props: Omit<PreviewStripProps, 'records' | 'traceLines' | 'rejected'>) {
+  const records = useRunSessionStore(state => state.records)
+  const rejected = useRunSessionStore(state => state.rejected)
+  const traceLines = useRunSessionStore(state => state.traceLines)
+
+  return <PreviewStrip {...props} records={records} traceLines={traceLines} rejected={rejected} />
 }
 
 function messageOf (error: unknown): string | undefined {
