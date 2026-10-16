@@ -1,0 +1,85 @@
+{
+  "kind": "input",
+  "id": "agreement",
+  "output": "agreement",
+  "mode": "api",
+  "start": [
+    {
+      "url": "file:agreement.pdf"
+    },
+    {
+      "url": "file:agreement-two-columns.pdf"
+    }
+  ],
+  "steps": [
+    {
+      "type": "request",
+      "id": "doc",
+      "url": "{{start.url}}"
+    },
+    {
+      "type": "extract",
+      "id": "referenceId",
+      "kind": "regex",
+      "selector": "Reference ID:[\\t ]*([^\\t\\n]+)"
+    },
+    {
+      "type": "extract",
+      "id": "effectiveDate",
+      "kind": "regex",
+      "selector": "Effective Date:[\\t ]*([^\\t\\n]+)"
+    },
+    {
+      "type": "extract",
+      "id": "status",
+      "kind": "regex",
+      "selector": "Status:[\\t ]*([^\\t\\n]+)"
+    },
+    {
+      "type": "extract",
+      "id": "details",
+      "kind": "section",
+      "selector": "^DETAILS$",
+      "until": "^PRICE$",
+      "ignoreHeadersFooters": true
+    },
+    {
+      "type": "extract",
+      "id": "terms",
+      "kind": "section",
+      "selector": "^TERMS$",
+      "ignoreHeadersFooters": true
+    },
+    {
+      "type": "extract",
+      "id": "table",
+      "kind": "table",
+      "selector": "^Service Tier",
+      "until": "^TERMS",
+      "ignoreHeadersFooters": true
+    },
+    {
+      "type": "emit"
+    }
+  ],
+  "mapping": {
+    "referenceId": {
+      "from": "referenceId"
+    },
+    "effectiveDate": {
+      "from": "effectiveDate"
+    },
+    "status": {
+      "from": "status"
+    },
+    "details": {
+      "from": "details"
+    },
+    "terms": {
+      "from": "terms"
+    },
+    "tiers": {
+      "from": "table.rows"
+    }
+  }
+}

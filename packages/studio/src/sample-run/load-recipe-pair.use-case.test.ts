@@ -1,6 +1,7 @@
 import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { loadRecipePair } from './load-recipe-pair.use-case'
 
 function folderOf (files: Record<string, unknown>): string {
@@ -29,5 +30,13 @@ describe('loadRecipePair', () => {
   it('rejects an input whose output is missing from the workspace', async () => {
     const folder = folderOf({ 'books.input.json': INPUT })
     await expect(loadRecipePair(folder, 'books')).rejects.toThrow('no output recipe "book"')
+  })
+
+  it('reads a relative file: start URL from the recipe folder, so a recipe that names its document by file name opens', async () => {
+    const folder = folderOf({ 'book.output.json': OUTPUT, 'books.input.json': { ...INPUT, start: [{ url: 'file:data/a%20b.pdf' }] } })
+
+    const pair = await loadRecipePair(folder, 'books')
+
+    expect(pair.input.start[0]?.url).toBe(`${pathToFileURL(join(folder, 'data')).href}/a%20b.pdf`)
   })
 })

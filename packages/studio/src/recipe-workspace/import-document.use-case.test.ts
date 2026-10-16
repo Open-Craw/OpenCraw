@@ -1,7 +1,6 @@
 import { existsSync, mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import { importDocument } from './import-document.use-case'
 
 const PDF_BYTES = new TextEncoder().encode('%PDF-1.4 not really')
@@ -17,7 +16,7 @@ describe('importDocument', () => {
     const imported = await importDocument(folder, 'report.pdf', PDF_BYTES)
 
     expect(imported.path).toBe(join(folder, 'report.pdf'))
-    expect(imported.url).toBe(pathToFileURL(join(folder, 'report.pdf')).href)
+    expect(imported.url).toBe('file:report.pdf')
     expect(new Uint8Array(readFileSync(imported.path))).toEqual(PDF_BYTES)
   })
 

@@ -1,0 +1,25 @@
+{
+  "kind": "output",
+  "id": "agreement",
+  "version": 1,
+  "fields": {
+    "referenceId": {
+      "type": "string"
+    },
+    "effectiveDate": {
+      "type": "date"
+    },
+    "status": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "terms": {
+      "type": "string"
+    },
+    "tiers": {
+      "type": "json"
+    }
+  }
+}
