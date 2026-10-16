@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useImportDocumentMutation } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
 import { useLoadSource } from './load-source.hook'
+import { unsupportedFormatMessage } from './unsupported-format.policy'
 import { useStartRecipeFromDocument } from './start-recipe.hook'
 
 export interface ImportDocumentFlow {
@@ -41,6 +42,12 @@ export function useImportDocumentFlow (): ImportDocumentFlow {
     const target = (openFolder ?? folder).trim()
     if (target === '') {
       setError('Type a workspace folder in the toolbar first, then drop the file again: that is where the copy and the recipe go.')
+
+      return
+    }
+    const unsupported = unsupportedFormatMessage(file.name)
+    if (unsupported !== undefined) {
+      setError(unsupported)
 
       return
     }

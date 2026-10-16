@@ -1,8 +1,16 @@
 import { BrowserClient, HttpClient, sessionStateOf } from '@opencraw/core'
 import type { BodyKind, BrowserSessionConfig, HookMap, HttpBody, HttpRequest, InputRecipe } from '@opencraw/core'
 import { ensureBrowserLaunch } from '../browser-provisioning'
+import { blockedPageNotice } from './blocked-page.algorithm'
+import { DISMISS_CONSENT_SCRIPT } from './consent-banner.algorithm'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
 import { rewriteDocument } from './rewrite-document.mapper'
+
+/** How long a cookie banner is given to go away once its button is pressed. */
+const CONSENT_SETTLE_MS = 1200
+/** A banner appears a moment after the page loads: it is looked for this many times, this far apart, and a page with none costs this much time. */
+const CONSENT_ATTEMPTS = 4
+const CONSENT_RETRY_MS = 700
 
 export interface SnapshotResult {
   /** The rewritten document, ready for the content pane's sandboxed iframe. */
@@ -20,6 +28,8 @@ export interface SnapshotResult {
    * snapshot no longer has by the time it is cached.
    */
   rawHtml:   string
+  /** Something to tell the person about the page: it is a bot check or an access-denied page, not the content. */
+  notice?:   string
   /**
    * The format `http.client.ts` read the body as (api mode only; `undefined`
    * in web mode, whose document is always HTML) — what the content pane
@@ -95,13 +105,17 @@ async function snapshotWeb (url: string, storageState: Awaited<ReturnType<typeof
   try {
     const session = await client.newSession({ storageState })
     try {
-      await session.page.goto(url)
+      const response = await session.page.goto(url)
+      // A cookie banner left in place covers the page in this view, and the clicks that pick a value would land on it.
+      await dismissConsent(session.page)
+      const seen = String(await session.page.evaluate(String.raw`document.title + "\n" + (document.body ? document.body.innerText : "").slice(0, 3000)`))
       await session.page.evaluate(hiddenMarksScript(HIDDEN_ATTRIBUTE))
       const html = await session.page.content()
       const baseUrl = session.page.url()
       const rewritten = rewriteDocument(html, baseUrl)
+      const notice = blockedPageNotice(seen, response?.status())
 
-      return { ...rewritten, baseUrl, rawHtml: html }
+      return { ...rewritten, baseUrl, rawHtml: html, ...(notice !== undefined && { notice }) }
     } finally {
       await session.close()
     }
@@ -115,6 +129,19 @@ function requestedAs (input: InputRecipe): HttpRequest['as'] {
   const request = input.steps.find(step => step.type === 'request')
 
   return request?.type === 'request' ? request.as : undefined
+}
+
+/** Presses the cookie banner's reject (or accept) button, if the page shows one; the page is looked at a few times since banners come late. */
+async function dismissConsent (page: { evaluate: (script: string) => Promise<unknown>, waitForTimeout: (ms: number) => Promise<void> }): Promise<void> {
+  for (let attempt = 0; attempt < CONSENT_ATTEMPTS; attempt += 1) {
+    const pressed = String(await page.evaluate(DISMISS_CONSENT_SCRIPT))
+    if (pressed !== '') {
+      await page.waitForTimeout(CONSENT_SETTLE_MS)
+
+      return
+    }
+    await page.waitForTimeout(CONSENT_RETRY_MS)
+  }
 }
 
 async function snapshotApi (url: string, storageState: Awaited<ReturnType<typeof sessionStateOf>>, as?: HttpRequest['as']): Promise<SnapshotResult> {

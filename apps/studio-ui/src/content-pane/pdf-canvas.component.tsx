@@ -296,9 +296,9 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
       <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} flexWrap='wrap'>
         {view.pages.length > 1 && <PageSelect pages={view.pages.length} value={pageIndex} onChange={setPageIndex} />}
         <ModeButton label='Text' active={textMode} onClick={() => { setMode('text') }} />
-        <ModeButton label='Header row' active={mode === 'header'} onClick={() => { setMode('header') }} />
-        <ModeButton label='Last row (until)' active={mode === 'until'} onClick={() => { setMode('until') }} />
-        <ModeButton label='Column' active={mode === 'column'} onClick={() => { setMode('column') }} />
+        <ModeButton label='Header row' tip='The row that names the columns of a table: click it to say where the table starts.' active={mode === 'header'} onClick={() => { setMode('header') }} />
+        <ModeButton label='Last row (until)' tip='The line that comes right after the table: click it to say where the table stops.' active={mode === 'until'} onClick={() => { setMode('until') }} />
+        <ModeButton label='Column' tip='Click a column to collect everything under it.' active={mode === 'column'} onClick={() => { setMode('column') }} />
         <Text fontSize='xs' color='fg.muted'>{`${String(page.rowCount)} rows, ${String(page.cellCount)} cells${page.hasTextLayer ? '' : ' — no text layer (a scan?)'}`}</Text>
         {textMode && <Text fontSize='xs' color='fg.muted' visibility={staged === undefined ? 'visible' : 'hidden'}>Click a line (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
         {draft.header !== undefined && <Badge size='sm' colorPalette='green'>{`table: ${draft.header}${draft.until === undefined ? '' : ` until ${draft.until}`}`}</Badge>}
@@ -486,10 +486,11 @@ function nearestCell (page: PdfPageView, point: { x: number, y: number }): PdfCe
   return best?.cell
 }
 
-function ModeButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }): React.ReactElement {
+function ModeButton ({ label, tip, active, onClick }: { label: string, tip?: string, active: boolean, onClick: () => void }): React.ReactElement {
   return (
     <Text
       as='button'
+      title={tip}
       fontSize='sm'
       fontWeight={active ? 'semibold' : 'normal'}
       color={active ? 'colorPalette.fg' : 'fg'}

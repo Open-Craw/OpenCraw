@@ -53,7 +53,7 @@ export function DropdownMenu ({ label, title, disabled, loading, items }: Dropdo
   return (
     <Box ref={rootRef} position='relative' flexShrink={0}>
       <Button size='sm' variant='outline' maxW='16em' title={title} disabled={disabled} loading={loading} aria-haspopup='menu' aria-expanded={open} onClick={() => { setOpen(value => !value) }}>
-        {label}
+        <Box as='span' display='block' truncate maxW='15em' title={label}>{label}</Box>
       </Button>
       {open && (
         <Box role='menu' position='absolute' top='100%' left={0} mt={1} zIndex='dropdown' minW='14em' py={1} bg='bg' borderWidth='1px' borderRadius='md' boxShadow='md'>

@@ -7,6 +7,7 @@ import type { GridViewOverride } from '../studio-client'
 import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
 import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
+import { SnapshotNotice } from './snapshot-notice.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
 import { addHtmlListField, addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listItemsSelector, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
@@ -374,11 +375,12 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               color={pickMode ? 'colorPalette.fg' : 'fg'}
               colorPalette='brand'
               cursor='pointer'
+              title='Pick data from the page: click here, then click the text you want to collect (click two similar things to collect a whole list)'
               onClick={togglePicking}
             >
               {pickMode ? 'Cancel pick' : 'Read'}
             </Text>
-            <Switch.Root checked={showHidden} onCheckedChange={(details) => { setShowHidden(details.checked) }} size='sm'>
+            <Switch.Root checked={showHidden} onCheckedChange={(details) => { setShowHidden(details.checked) }} size='sm' title='Also show the parts of the page that are normally out of sight (menus, pop-ups, tabs that are not open)'>
               <Switch.HiddenInput />
               <Switch.Control />
               <Switch.Label fontSize='sm'>Show hidden</Switch.Label>
@@ -390,6 +392,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               color={inspecting ? 'colorPalette.fg' : 'fg'}
               colorPalette='purple'
               cursor='pointer'
+              title='See how the page is built, and the data it loads: for things that are hard to click'
               onClick={() => { setInspecting(value => !value) }}
             >
               {inspecting ? 'Hide inspector' : 'Inspect'}
@@ -401,13 +404,14 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               color={isRecordingThis ? 'red.fg' : 'fg'}
               colorPalette='red'
               cursor='pointer'
+              title='Open a real browser window and record what you click and type (to log in, open a menu or fill a form), as steps'
               onClick={() => { if (isRecordingThis) stopRecording.mutate(); else handleStartRecording() }}
             >
               {isRecordingThis ? 'Stop recording' : 'Record'}
             </Text>
           </>
         )}
-        {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to read it; [*] reads every item of a list.</Text>}
+        {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to collect it. Click [*] beside a field to collect it for every item of a list.</Text>}
         {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching) || (isGrid && gridView.isFetching) || (isDeck && deckView.isFetching)) && <Spinner size='xs' />}
         {status !== undefined && (
           <Badge size='sm' colorPalette={status.ok ? 'green' : 'orange'}>
@@ -442,7 +446,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
           </Button>
         </HStack>
       )}
-      {isHtmlSnapshot && snapshot.data !== undefined && !snapshotHasContent && <BlankSnapshotNotice />}
+      {snapshot.data?.notice !== undefined && <SnapshotNotice text={snapshot.data.notice} />}
+      {isHtmlSnapshot && snapshot.data !== undefined && snapshot.data.notice === undefined && !snapshotHasContent && <BlankSnapshotNotice />}
       <Box ref={canvasAreaRef} flex='1' minH='0' overflow='auto' style={isPdf ? undefined : { zoom: zoomState.zoom }} onContextMenu={(event) => { event.preventDefault() }}>
         {isDocumentTree && documentTree.data !== undefined && (
           <TreeCanvas tree={documentTree.data} onPick={onTreePick} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />

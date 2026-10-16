@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSaveRecipeMutation, useStudioClient } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
 import { useLoadSource } from './load-source.hook'
+import { unsupportedFormatMessage } from './unsupported-format.policy'
 import { documentUrlRecipeFiles, newRecipeFiles, recipeIdFromAddress, uniqueRecipeId } from './new-recipe.mapper'
 
 export interface LoadUrlFlow {
@@ -50,6 +51,12 @@ export function useLoadUrlFlow (): LoadUrlFlow {
     const target = (openFolder ?? folder).trim()
     if (target === '') {
       setError('Open a workspace folder first (Recipe ▾ → Open folder…): that is where the recipe is written.')
+
+      return
+    }
+    const unsupported = unsupportedFormatMessage(url.trim())
+    if (unsupported !== undefined) {
+      setError(unsupported)
 
       return
     }

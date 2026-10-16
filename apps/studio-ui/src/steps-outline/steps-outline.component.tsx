@@ -7,8 +7,9 @@ import { carriesCard, droppedCard } from './card-drop.model'
 import { useHookNames } from '../hook-names'
 import { newStepNode } from './new-step.factory'
 import type { OutlineActions } from './outline-actions'
+import { NextStepHint } from './next-step-hint.component'
 import { OutlineList, OutlineNodeView } from './outline-node.component'
-import { listAt, listPathPrefix, withList, withNode } from './outline-tree'
+import { allSteps, listAt, listPathPrefix, withList, withNode } from './outline-tree'
 
 export interface StepsOutlineProps {
   recipe?:       RecipeListing
@@ -175,6 +176,7 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
       onDragLeave={() => { setCardOver(false) }}
       onDrop={dropCard}
     >
+      {allSteps(outline).every(node => node.stepType !== 'extract') && <NextStepHint />}
       {/*
         Keyed on the recipe's own file: forces a fresh subtree (and so a
         fresh `StepForm`/TanStack Form instance per card) whenever the
