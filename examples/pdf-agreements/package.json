@@ -1,0 +1,19 @@
+{
+  "name": "opencraw-example-pdf-agreements",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenCraw example: one recipe for two PDFs of one structure and different looks, built in the Studio.",
+  "type": "module",
+  "scripts": {
+    "start": "opencraw run agreement.ocw-out.json agreement.ocw-in.json --out out/agreements.jsonl",
+    "trace": "opencraw run agreement.ocw-out.json agreement.ocw-in.json --out out/agreements.jsonl --trace",
+    "validate": "opencraw validate agreement.ocw-out.json agreement.ocw-in.json",
+    "studio": "opencraw studio ."
+  },
+  "dependencies": {
+    "@opencraw/cli": "^0.1.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,6 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
-import { pathToFileURL } from 'node:url'
 
 /** How many `name-2.ext`, `name-3.ext`… are tried before giving up on a folder full of same-named copies. */
 const MAX_NUMBERED_COPIES = 100
@@ -8,7 +7,7 @@ const MAX_NUMBERED_COPIES = 100
 export interface ImportedDocument {
   /** The copy's path on disk, inside `folder`. */
   path: string
-  /** The copy as a `file:` URL: what the recipe's `start.url` becomes. */
+  /** The copy as a `file:` URL relative to the folder (`file:report.pdf`): what the recipe's `start.url` becomes, so the folder can be moved or shared. */
   url:  string
 }
 
@@ -34,7 +33,7 @@ export async function importDocument (folder: string, name: string, bytes: Uint8
     try {
       await writeFile(path, bytes, { flag: 'wx' })
 
-      return { path, url: pathToFileURL(path).href }
+      return { path, url: `file:${encodeURIComponent(candidate)}` }
     } catch (error) {
       if (!isAlreadyThere(error)) throw error
     }

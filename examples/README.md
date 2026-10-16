@@ -44,6 +44,7 @@ its URL instead.
 | [dfe-college-accounts](./dfe-college-accounts) | PowerPoint: DfE's management accounts model deck (shipped copy, or the original) | api | A table on a slide picked by its title, long headers matched by their distinctive part, `1,120`-style numbers parsed, an `enum` field. Has tests. |
 | [fcc-regulatory-fees](./fcc-regulatory-fees) | Word: the FCC's FY 2026 radio fee fact sheet (shipped copy, or the original) | api | A Word document read as a page, a merged title row skipped, two values split out of one cell, dotted targets building objects. Has tests. |
 | [stellantis-it-discounts](./stellantis-it-discounts) | monthly PDFs | api (cli) | Tables read from PDFs: cells wrapped over several lines, columns that move, a header that differs, footnotes, a month that breaks the template. The recipes run with the `opencraw` cli, no code. |
+| [pdf-agreements](./pdf-agreements) | two PDFs of one structure and different looks (shipped copies) | api (cli) | One recipe, built in the Studio, for two documents that do not look alike: a `section` between headings, values by label, a table until the next heading, columns read in order, running headers and footers left out. [Tutorial with video](../docs/studio/pdf-agreements.md). |
 
 ## A deployable service
 

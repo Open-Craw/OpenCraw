@@ -52,7 +52,7 @@ describe('starting a recipe from a dropped document (#120)', () => {
     const bytes = readFileSync(DISCOUNTS_FIXTURE)
     const imported = await post<ImportDocumentView>(server, { type: 'import-document', folder, name: 'discounts.pdf', bytes: bytes.toString('base64') })
     expect(imported.path).toBe(join(folder, 'discounts.pdf'))
-    expect(imported.url).toMatch(/^file:\/\/\/.*\/discounts\.pdf$/)
+    expect(imported.url).toBe('file:discounts.pdf')
     expect(readFileSync(imported.path)).toEqual(bytes)
 
     // 2. The pair the UI saves next, pointing at the copy — the folder lists both with no issues at all.
