@@ -19,6 +19,7 @@
   "files": [
     "dist",
     "bin",
+    "docs",
     "!**/*.tsbuildinfo",
     "!**/*.d.ts.map",
     "!**/*.js.map"
@@ -78,7 +79,8 @@
               "@opencraw/cli"
             ],
             "target": "e2e"
-          }
+          },
+          "copy-docs"
         ],
         "inputs": [
           "default",
@@ -89,6 +91,29 @@
           "command": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
           "cwd": "packages/mcp"
         }
+      },
+      "copy-docs": {
+        "executor": "nx:run-commands",
+        "cache": true,
+        "inputs": [
+          "{workspaceRoot}/docs/recipes/*.md",
+          "{workspaceRoot}/docs/how-it-works/*.md",
+          "{workspaceRoot}/docs/studio/*.md",
+          "{projectRoot}/scripts/copy-docs.mjs"
+        ],
+        "outputs": [
+          "{projectRoot}/docs"
+        ],
+        "options": {
+          "command": "node scripts/copy-docs.mjs",
+          "cwd": "packages/mcp"
+        }
+      },
+      "build": {
+        "dependsOn": [
+          "^build",
+          "copy-docs"
+        ]
       }
     }
   }

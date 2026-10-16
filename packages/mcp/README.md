@@ -11,7 +11,7 @@ directly: probe a page, validate recipes, run a crawl, list what's already autho
 For a shared, remote endpoint that authors recipes where they will run (and publishes them to a crawl host), see
 [`@opencraw/azure-durable`](https://github.com/Open-Craw/OpenCraw/blob/main/packages/azure-durable/README.md#write-recipes-over-mcp)'s `/mcp`.
 
-This does **not** auto-author recipes from a sentence. The five tools are, `list_recipes` aside, the same
+This does **not** auto-author recipes from a sentence. The crawl tools are, `list_recipes` and `docs` aside, the same
 primitives the `opencraw` cli gives a terminal; the calling agent still writes the JSON recipes, using `probe` and
 `validate` to iterate, the same way this project's own example recipes were built by hand. An agent that
 can write files passes their `paths`; one that can't (a chat-only host) passes the `recipes` inline.
@@ -115,6 +115,19 @@ call, for checking what already exists before writing a new recipe.
 | `dir` | A directory of recipe files. |
 
 Returns `{ outputs: [{ path, id }], inputs: [{ path, id, output, mode }], others: string[] }`.
+
+### `docs`
+
+OpenCraw's own documentation, for an agent that has to write recipes right: the authoring guide (every step, selector, transform and policy), the
+how-it-works chapters, the examples and the Studio manual. They ship inside the package.
+
+| Input | Meaning |
+|---|---|
+| `topic?` | A document id (`recipes/authoring`, `how-it-works/06-documents`, `studio/manual`…). Leave out to list every document, with its title and size. |
+| `section?` | A heading (or part of one) of that document: only that section comes back, subsections included. A long document answers with its outline until a section is asked for. |
+
+Returns `{ topics, hint }` without a topic, `{ topic, text }` (or `{ topic, outline, note }` for a long document) with one, and `{ topic, section, text }`
+with a section.
 
 ### `diff`
 
