@@ -5,7 +5,7 @@ export const USAGE = `opencraw <command> [options]
 
 Commands
   validate <recipe files or directories...>   Parse and bind the recipes; list every problem with its path.
-  run <recipe files or directories...>        Crawl. Records go to --out as JSON Lines, or to stdout.
+  run <recipe files or directories...>        Crawl. Records go to --out (its extension picks the format), or to stdout as JSON Lines.
   probe <url>                                 Fetch a page and report where its data lives.
   diff <previous.jsonl> <current.jsonl>       Compare two runs' records by key: added, removed, changed.
   studio [folder] [--open <path>]             Open a recipe folder in the browser: run samples, read
@@ -14,8 +14,10 @@ Commands
                                                document straight away.
 
 Options for run
-  --out <file>        Write records to this JSON Lines file (default: stdout).
-  --append            Keep what --out holds and add to it (each line carries _key).
+  --out <file>        Write records to this file; the extension is the format: .jsonl, .json, .csv, .xlsx, .yml/.yaml,
+                      .html (a page that looks like Studio) or .pdf (that page, printed; needs Chromium). Any other
+                      extension is an error. Default: stdout as JSON Lines.
+  --append            Keep what --out holds and add to it (each line carries _key); .jsonl only.
   --resume            Skip records --out already has (needs --append).
   --only <id>         Run only this input recipe (repeatable).
   --dry-run           One record per input, printed with the scope it was mapped from.

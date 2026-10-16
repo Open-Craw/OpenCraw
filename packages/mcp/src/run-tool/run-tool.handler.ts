@@ -1,5 +1,5 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
-import { RecipeBindingError, RecipeSet, RecipeValidationError, createCrawler, jsonLinesSink, memorySink } from '@opencraw/core'
+import { RecipeBindingError, RecipeSet, RecipeValidationError, createCrawler, fileSink, memorySink } from '@opencraw/core'
 import type { CrawlReport } from '@opencraw/core'
 import { loadForRun, loadPlugins, resolveAccess } from '@opencraw/cli'
 import { z } from 'zod'
@@ -11,7 +11,7 @@ const RECORD_CAP = 50
 /** Input schema for the `run` tool. */
 export const runInputShape = {
   ...recipeSourceShape,
-  out:         z.string().optional().describe('Write records to this JSON Lines file instead of returning them inline. Use for a crawl expected to produce more than a handful of records.'),
+  out:         z.string().optional().describe('Write records to this file instead of returning them inline; its extension is the format: .jsonl, .json, .csv, .xlsx, .yml/.yaml, .html or .pdf (any other extension is an error). Use for a crawl expected to produce more than a handful of records.'),
   append:      z.boolean().optional().describe('Keep what "out" holds and add to it; each line carries _key. Needs "out".'),
   resume:      z.boolean().optional().describe('Skip records "out" already has. Needs "append".'),
   only:        z.array(z.string()).optional().describe('Run only these input recipe ids.'),
@@ -66,7 +66,12 @@ export async function runTool (args: RunArgs): Promise<CallToolResult> {
   }
 
   let crawler: ReturnType<typeof createCrawler>
-  const sink = args.dryRun === true || args.out === undefined ? memorySink() : jsonLinesSink(args.out, { append: args.append })
+  let sink: ReturnType<typeof memorySink> | ReturnType<typeof fileSink>
+  try {
+    sink = args.dryRun === true || args.out === undefined ? memorySink() : fileSink(args.out, { append: args.append, browser: { executablePath: args.browserPath ?? process.env.OPENCRAW_CHROMIUM } })
+  } catch (error) {
+    return { content: [{ type: 'text', text: error instanceof Error ? error.message : String(error) }], isError: true }
+  }
   try {
     const pluginsFile = serverFile('OPENCRAW_PLUGINS') ?? serverFile('OPENCRAW_HOOKS')
     const plugins = pluginsFile === undefined ? undefined : await loadPlugins(pluginsFile)

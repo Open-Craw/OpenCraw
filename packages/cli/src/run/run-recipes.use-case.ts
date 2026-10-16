@@ -1,4 +1,4 @@
-import { RecipeBindingError, RecipeSet, RecipeValidationError, createCrawler, diffOptionsFor, diffRecords, jsonLinesSink, memorySink, readRecordsFile, traceLine, variantLabel } from '@opencraw/core'
+import { RecipeBindingError, RecipeSet, RecipeValidationError, createCrawler, diffOptionsFor, diffRecords, fileSink, memorySink, readRecordsFile, traceLine, variantLabel } from '@opencraw/core'
 import type { CrawlEvent, StoredRecord, ThrottleConfig } from '@opencraw/core'
 import { diffReport, writeChanges } from '../diff'
 import { resolveAccess } from '../access'
@@ -33,6 +33,15 @@ export async function runRecipes (command: Extract<Command, { name: 'run' }>, te
     return 1
   }
 
+  // The extension of --out names the format: one that names none is refused here, before the crawl, not after it.
+  let sink
+  try {
+    sink = command.dryRun || (command.out === undefined) ? memorySink() : fileSink(command.out, { append: command.append, browser: { executablePath: command.options.browserPath } })
+  } catch (error) {
+    terminal.err(error instanceof Error ? error.message : String(error))
+
+    return 1
+  }
   let access
   let plugins
   let previous: StoredRecord[] | undefined
@@ -47,7 +56,6 @@ export async function runRecipes (command: Extract<Command, { name: 'run' }>, te
 
     return 1
   }
-  const sink = command.dryRun || (command.out === undefined) ? memorySink() : jsonLinesSink(command.out, { append: command.append })
   const crawler = createCrawler({
     sink,
     access,

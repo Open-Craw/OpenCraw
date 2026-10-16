@@ -41,8 +41,8 @@ input recipes) and reports what happened.
 
 | Flag | Meaning |
 |---|---|
-| `--out <file>` | Write records to this JSON Lines file. Without it, records print to stdout as JSON Lines. |
-| `--append` | Keep what `--out` holds and add to it; each line carries `_key`. |
+| `--out <file>` | Write records to this file; **its extension is the format** (see below). Without it, records print to stdout as JSON Lines. |
+| `--append` | Keep what `--out` holds and add to it; each line carries `_key`. `.jsonl` only. |
 | `--resume` | Skip records `--out` already has (needs `--append`). |
 | `--only <id>` | Run only this input recipe; repeat for more than one. |
 | `--dry-run` | One record per input recipe, printed with the scope it was mapped from — for checking a recipe under construction without a full run. |
@@ -53,6 +53,23 @@ input recipes) and reports what happened.
 | `--profiles <dir>` | Where the persistent browser profiles of `session.browserProfile` live (or `OPENCRAW_PROFILES`; default `.opencraw/profiles`). See [access.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/access.md#persistent-browser-profiles). |
 | `--host-delay <ms>`, `--host-concurrency <n>` | Per-site politeness across every recipe: at least `ms` between two requests to one site, at most `n` in flight. They override the access config's `throttle` defaults. See [access.md](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/access.md#throttling-per-site). |
 | `--plugins <file>` (or `--hooks`) | A plugins module: named exports `hooks` (the recipes' hook steps and transforms), `accessPlugins` (for `{ kind: "plugin" }` access profiles) and `captchaSolvers`. A module whose default export is `{ name: function }` is read as hooks alone. `OPENCRAW_PLUGINS` / `OPENCRAW_HOOKS` when not given; `probe` reads it too. It runs as your code; load only files you trust. See [§6 of the authoring guide](https://github.com/Open-Craw/OpenCraw/blob/main/docs/recipes/authoring.md#6-hooks). |
+
+### Output formats
+
+The extension of `--out` chooses the format. Any other extension is an error, raised before the crawl starts.
+
+| Extension | What is written |
+|---|---|
+| `.jsonl` | One JSON object per line (the record's fields and a `_source`), written as records arrive. The only format `--append`, `--resume` and `--diff` work with. |
+| `.json` | A JSON array of the same objects. |
+| `.csv` | A header row of the output recipe's fields, then one row per record (RFC 4180, UTF-8). |
+| `.xlsx` | An Excel workbook: one sheet named after the output, a violet header row with the filter on and frozen, numbers and booleans kept as numbers and booleans. |
+| `.yml` / `.yaml` | A YAML list of the same objects. |
+| `.html` | One self-contained page that looks like Studio: the OpenCraw logo, the output's name and description, the record count, and the records in a table. Light or dark by the reader's setting; no script. |
+| `.pdf` | That page, printed (A4, landscape, header repeated on each page). Needs a Chromium, as a `web` recipe does: Playwright's, or `OPENCRAW_CHROMIUM` / `--browser-path`. |
+
+The tabular formats (`.csv`, `.xlsx`, `.html`, `.pdf`) carry the output recipe's fields as columns, in the order the recipe declares them; a list or an
+object becomes its JSON in one cell. Everything but `.jsonl` is written when the run closes.
 
 ```sh
 opencraw run recipes/ --out out/products.jsonl --trace
