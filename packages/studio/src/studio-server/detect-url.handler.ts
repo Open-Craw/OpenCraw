@@ -1,13 +1,13 @@
-import { detectJsonUrl } from '../page-snapshot'
+import { detectUrlKind } from '../page-snapshot'
 import type { DetectUrlCommand, DetectUrlView } from '../studio-api'
 
 /**
- * Handles `detect-url`: whether the address returns JSON, for "Load ▾ Web page" to start an API recipe (a request read as JSON, with the
- * JSON tree to pick from) instead of a browser recipe over the text of the response.
+ * Handles `detect-url`: what the address returns, for "Load ▾ Web page" to start a recipe that reads a document (a JSON API, a PDF,
+ * a spreadsheet, Markdown...) instead of a browser recipe over a response that is not a page.
  *
  * @param command - The address.
- * @returns Whether it is JSON.
+ * @returns What it returns.
  */
 export async function handleDetectUrl (command: DetectUrlCommand): Promise<DetectUrlView> {
-  return { json: await detectJsonUrl(command.url) }
+  return { kind: await detectUrlKind(command.url) }
 }

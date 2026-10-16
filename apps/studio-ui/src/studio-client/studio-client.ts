@@ -15,7 +15,7 @@ export interface StudioClient {
   openPath:       (path: string, workspace?: string) => Promise<OpenPathView>
   /** Copies a dropped/opened file into `folder` (created when missing) and answers the copy's `file:` URL for a recipe's `start.url` (issue #120); `bytes` is the file's content, base64-encoded. */
   importDocument: (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
-  /** Whether an address returns JSON (whatever it is served as): a JSON API is started as a recipe that reads it, not one that opens it as a page. */
+  /** What an address returns (a page, or a JSON API, PDF, CSV, spreadsheet, Markdown...): a document is started as a recipe that reads it, not one that opens it as a page. */
   detectUrl:      (url: string) => Promise<DetectUrlView>
   /** `stubs` are values a hook answers with instead of being called, by hook name, for this run only (issue #201). */
   runSample:      (recipeId: string, budget?: SampleBudget, stubs?: Record<string, unknown>) => Promise<void>

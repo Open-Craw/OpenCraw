@@ -75,3 +75,6 @@ apps/studio-desktop/release
 apps/vscode-extension/dist-vsix
 apps/vscode-extension/.vscode-test
 apps/vscode-extension/*.vsix
+
+# Field-test inputs and results (third-party documents, kept on this machine only)
+/studio-field-tests/

@@ -1,4 +1,5 @@
-export { detectJsonUrl } from './detect-url.use-case'
+export { detectUrlKind } from './detect-url.use-case'
+export type { UrlKind } from './detect-url.use-case'
 export { fetchStartPage } from './fetch-start-page.use-case'
 export { takeSnapshot } from './take-snapshot.use-case'
 export type { SnapshotResult } from './take-snapshot.use-case'

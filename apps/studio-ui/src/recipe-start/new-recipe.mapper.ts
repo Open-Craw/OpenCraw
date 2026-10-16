@@ -47,18 +47,20 @@ export function newRecipeFiles (folder: string, id: string, startUrl = DEFAULT_S
 }
 
 /**
- * The pair for a recipe that starts from a JSON API address ("Load ▾ Web page" on an address that returns JSON): an `api` recipe whose
- * one `request` step reads the response as JSON, whatever content type it is served as. The content pane then shows the JSON tree to pick from.
+ * The pair for a recipe that starts from the address of a document ("Load ▾ Web page" on an address that returns JSON, a PDF, a CSV, a
+ * spreadsheet, Markdown...): an `api` recipe whose one `request` step reads the response as that kind, whatever content type it is
+ * served as. The content pane then shows the document's own view to pick from.
  *
  * @param folder - The open workspace folder (a trailing slash is tolerated).
  * @param id - The recipe id.
- * @param url - The API address.
+ * @param url - The address.
+ * @param kind - What it returns (`json`, `pdf`, `csv`, `xlsx`, `markdown`...).
  */
-export function jsonUrlRecipeFiles (folder: string, id: string, url: string): NewRecipeFiles {
+export function documentUrlRecipeFiles (folder: string, id: string, url: string, kind: string): NewRecipeFiles {
   return recipeFiles(folder, id, {
     mode:  'api',
     start: [{ url }],
-    steps: [{ type: 'request', id: 'doc', url: '{{start.url}}', as: 'json' }],
+    steps: [{ type: 'request', id: 'doc', url: '{{start.url}}', as: kind }],
   })
 }
 
@@ -106,6 +108,36 @@ export function recipeIdFromFileName (fileName: string): string {
   const id = stem.toLowerCase().split(/[^a-z0-9]+/).filter(word => word !== '').join('-')
 
   return id === '' ? 'document' : id
+}
+
+/** Labels of an address's host that say nothing about the site: `www`, a language, and the endings every site has. */
+const HOST_NOISE = new Set(['www', 'en', 'uk', 'com', 'co', 'org', 'net', 'gov', 'edu', 'io', 'eu', 'us', 'de', 'fr', 'es', 'it', 'nl', 'info', 'app', 'dev'])
+
+/**
+ * A recipe id read off a page address: the site, then what is at the end of the path (`https://www.legislation.gov.uk/ukpga/2019/4/section/1`
+ * is `legislation-section-1`, `https://quotes.toscrape.com/` is `quotes-toscrape`, a PDF's address is named after the file). Two pages of one
+ * site get different names, and the name says something about the page.
+ *
+ * @param address - The page or document address.
+ * @returns The id; `document` when the address has nothing to name it by.
+ */
+export function recipeIdFromAddress (address: string): string {
+  let parsed: URL
+  try {
+    parsed = new URL(address)
+  } catch {
+    return 'document'
+  }
+  const site = parsed.hostname.split('.').filter(label => !HOST_NOISE.has(label)).slice(0, 2)
+  const segments = parsed.pathname.split('/').filter(segment => segment !== '').map(segment => segment.replace(/\.[^.]+$/, ''))
+  // eslint-disable-next-line unicorn/prefer-at -- apps/studio-ui's tsconfig lib is ["dom"] only (no ES2022 Array#at)
+  const last = segments.length === 0 ? undefined : segments[segments.length - 1]
+  // eslint-disable-next-line unicorn/prefer-at -- apps/studio-ui's tsconfig lib is ["dom"] only (no ES2022 Array#at)
+  const before = segments.length < 2 ? undefined : segments[segments.length - 2]
+  const tail = last === undefined ? [] : (before !== undefined && /^\d+$/.test(last) ? [before, last] : [last])
+  const id = recipeIdFromFileName([...site, ...tail].join(' ')).slice(0, 48).replace(/-$/, '')
+
+  return id
 }
 
 /**

@@ -239,7 +239,7 @@ function looksLikeJsonLines (text: string): boolean {
  * else the URL path's extension, else it is text. An error page is not what
  * its URL names, so a 4xx or 5xx body skips the extension.
  */
-function formatOfResponse (contentType: string, url: string, bytes: Uint8Array, success: boolean): BodyKind {
+export function formatOfResponse (contentType: string, url: string, bytes: Uint8Array, success: boolean): BodyKind {
   const type = contentType.toLowerCase().split(';', 1)[0].trim()
   if (!GENERIC_TYPES.has(type)) return formatFromContentType(type, url)
   const path = pathOf(url)
