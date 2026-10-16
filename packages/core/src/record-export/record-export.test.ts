@@ -9,6 +9,7 @@ import { csvText } from './csv.algorithm'
 import { fileSink } from './file-sink.repository'
 import { htmlReport } from './html-report.algorithm'
 import { outputFormatOf } from './output-format.policy'
+import { outputRecordOf } from './stored-record.mapper'
 import { cellOf, tableOf } from './table.mapper'
 import { UnsupportedOutputFormatError } from './unsupported-output-format.error'
 import { xlsxBytes } from './xlsx.algorithm'
@@ -197,4 +198,18 @@ describe('fileSink', () => {
     expect(String.fromCodePoint(...bytes.slice(0, 5))).toBe('%PDF-')
     expect(bytes.length).toBeGreaterThan(2000)
   }, 60_000)
+})
+
+describe('outputRecordOf', () => {
+  it('turns a JSON Lines line back into a record, with its source and key', () => {
+    expect(outputRecordOf({ model: 'Clio', price: 1, _source: { recipeId: 'shop', url: 'https://x.test', emittedAt: '2026-10-16T10:00:00.000Z' }, _key: '["Clio"]' })).toEqual({
+      data:   { model: 'Clio', price: 1 },
+      key:    '["Clio"]',
+      source: { recipeId: 'shop', url: 'https://x.test', emittedAt: '2026-10-16T10:00:00.000Z' },
+    })
+  })
+
+  it('gives a line with no source an empty one, and no key', () => {
+    expect(outputRecordOf({ model: 'Clio' })).toEqual({ data: { model: 'Clio' }, key: null, source: { recipeId: '', url: '', emittedAt: '' } })
+  })
 })
