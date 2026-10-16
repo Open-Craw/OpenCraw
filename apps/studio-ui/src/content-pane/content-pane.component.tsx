@@ -429,6 +429,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         )}
         {isPdf && pdfView.data !== undefined && (
           <PdfCanvas
+            key={client.pdfBytesUrl(recipeId, STEP_PATH, snapshot.data?.baseUrl)}
             recipeId={recipeId}
             stepPath={STEP_PATH}
             view={pdfView.data}

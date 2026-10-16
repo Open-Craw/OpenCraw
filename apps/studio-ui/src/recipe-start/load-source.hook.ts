@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import type { RecipeListing, WorkspaceView } from '@opencraw/studio'
 import { useSaveRecipeMutation, workspaceQueryKey } from '../studio-client'
-import { useStudioUiStore } from '../studio-store'
+import { clearSourceState, useStudioUiStore } from '../studio-store'
 import { planLoad } from './load-source.algorithm'
 import type { LoadSource } from './load-source.algorithm'
 
@@ -38,6 +38,7 @@ export function useLoadSource (): (source: LoadSource, label: string, startNew: 
       ? undefined
       : queryClient.getQueryData<WorkspaceView>(workspaceQueryKey(openFolder))?.recipes.find(recipe => recipe.id === selectedRecipeId)
     const plan = planLoad(parsed(selected?.text), source)
+    clearSourceState()
     if (selected !== undefined && plan.kind === 'replace') {
       await saveRecipe.mutateAsync({ path: selected.file, recipe: plan.recipe })
 

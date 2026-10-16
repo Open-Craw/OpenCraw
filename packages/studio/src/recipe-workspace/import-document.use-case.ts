@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
 
 /** How many `name-2.ext`, `name-3.ext`… are tried before giving up on a folder full of same-named copies. */
@@ -16,8 +16,10 @@ export interface ImportedDocument {
  * `file:` URL the same way a run would read any downloaded file (core's
  * `HttpClient` handles `file:` itself). The folder is created when missing,
  * so dropping a file is also a way to start a workspace. A name already in
- * the folder is never overwritten: the copy gets the next free numbered
- * name (`report-2.pdf`), and the returned `path`/`url` say which.
+ * the folder is never overwritten: a file there with the very same bytes is
+ * reused (loading one document twice leaves one copy), a different one gets
+ * the next free numbered name (`report-2.pdf`); the returned `path`/`url`
+ * say which.
  *
  * @param folder - The workspace folder; created (recursively) when it does not exist.
  * @param name - The file's own name, no directories: the copy keeps it, extension included.
@@ -36,6 +38,7 @@ export async function importDocument (folder: string, name: string, bytes: Uint8
       return { path, url: `file:${encodeURIComponent(candidate)}` }
     } catch (error) {
       if (!isAlreadyThere(error)) throw error
+      if (await hasBytes(path, bytes)) return { path, url: `file:${encodeURIComponent(candidate)}` }
     }
   }
   throw new Error(`"${name}" and ${MAX_NUMBERED_COPIES} numbered copies of it are already in ${folder}`)
@@ -52,6 +55,13 @@ function * candidateNames (name: string): Generator<string> {
   const extension = extname(name)
   const stem = name.slice(0, name.length - extension.length)
   for (let copy = 2; copy <= MAX_NUMBERED_COPIES + 1; copy += 1) yield `${stem}-${copy}${extension}`
+}
+
+/** Whether the file at `path` is, byte for byte, `bytes`. */
+async function hasBytes (path: string, bytes: Uint8Array): Promise<boolean> {
+  const existing = await readFile(path)
+
+  return existing.length === bytes.length && existing.equals(bytes)
 }
 
 function isAlreadyThere (error: unknown): boolean {

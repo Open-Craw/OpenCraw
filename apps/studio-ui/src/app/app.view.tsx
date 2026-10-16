@@ -25,7 +25,7 @@ import {
   useStudioEvents,
   useWorkspaceQuery,
 } from '../studio-client'
-import { useRunSessionStore, useStudioUiStore } from '../studio-store'
+import { clearSourceState, useRunSessionStore, useStudioUiStore } from '../studio-store'
 import { desktopBridge } from './desktop-bridge.client'
 import { HooksBar } from './hooks-bar.component'
 import { useBrowseFolderFlow } from './browse-folder.hook'
@@ -160,6 +160,7 @@ function AppShell () {
           running={running}
           onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId, stubs: activeStubs(stubEntries) }) }}
           onStop={() => { stopRun.mutate() }}
+          onClear={() => { clearSourceState(); explainWhy.reset() }}
         />
         <HooksBar hooks={workspace.data?.hooks} />
         {loadNotice !== undefined && workspaceError === undefined && (
