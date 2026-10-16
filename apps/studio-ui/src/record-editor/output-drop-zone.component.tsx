@@ -59,6 +59,7 @@ export function OutputDropZone ({ onPill, onCard, children }: OutputDropZoneProp
       bg={over ? 'brand.subtle' : undefined}
       borderRadius='md'
       minH='4em'
+      flexShrink={0}
       onDragOver={dragOver}
       onDragLeave={() => { setOver(false) }}
       onDrop={drop}

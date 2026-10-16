@@ -16,7 +16,7 @@ import { handleDocumentTree } from './document-tree.handler'
 import { handleExplainWhy } from './explain-why.handler'
 import { handleFetchStartPage } from './fetch-start-page.handler'
 import { handleGridPreview } from './grid-preview.handler'
-import { handleGridView } from './grid-view.handler'
+import { handleGridRows, handleGridView } from './grid-view.handler'
 import { handleImportDocument } from './import-document.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleInspectPage } from './inspect-page.handler'
@@ -241,6 +241,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'region-preview': { return Promise.resolve(handleRegionPreview(state, command))
     }
     case 'grid-view': { return handleGridView(state, command)
+    }
+    case 'grid-rows': { return Promise.resolve(handleGridRows(state, command))
     }
     case 'grid-preview': { return Promise.resolve(handleGridPreview(state, command))
     }

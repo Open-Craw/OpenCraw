@@ -200,3 +200,12 @@ describe('addHtmlListField', () => {
     expect(addHtmlListField([goto], { selector: 'b', tier: 'class', take: 'text', matches: 1 })).toBeUndefined()
   })
 })
+
+describe('readCardNode collecting every match', () => {
+  const field = { selector: '.card > p', tier: 'structure' as const, take: 'text', matches: 5 }
+
+  it('reads the first match by default and every match, as an array, when asked', () => {
+    expect(readCardNode(field, 'steps.0').step.many).toBeUndefined()
+    expect(readCardNode(field, 'steps.0', 'prices', true).step).toMatchObject({ selector: '.card > p', many: true })
+  })
+})

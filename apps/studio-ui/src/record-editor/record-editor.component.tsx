@@ -262,7 +262,7 @@ export function RecordEditor ({ inputRecipe, outputRecipe, records, rejected, on
         </Stack>
       </OutputDropZone>
 
-      <Box>
+      <Box flexShrink={0}>
         <Button size='xs' variant='outline' onClick={addField}>+ field</Button>
       </Box>
     </Stack>

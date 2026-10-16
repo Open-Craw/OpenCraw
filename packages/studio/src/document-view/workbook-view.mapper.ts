@@ -26,7 +26,10 @@ export interface GridSheetView {
   hiddenRows:          number[]
   /** The widest row's own length, ragged rows included — for the grid to size its columns. */
   columnCount:         number
+  /** The sheet's rows; only the first window of them when `rowCount` is set (the rest are fetched with `grid-rows`). */
   rows:                GridCellView[][]
+  /** How many rows the sheet has, set only when `rows` holds just the first window of them. */
+  rowCount?:           number
   merges:              GridMergeView[]
   /** Column widths in characters by 0-based column, as the spreadsheet stores them; absent keys are columns the file does not size. */
   columnWidths?:       Record<string, number>
@@ -61,20 +64,24 @@ const ISO_DATE_OR_TIME = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?$|^\d{2}:\d{2
  * @param document - The read workbook (a spreadsheet or a CSV).
  * @returns The view.
  */
-export function workbookDocumentView (document: WorkbookDocument): WorkbookDocumentView {
+export function workbookDocumentView (document: WorkbookDocument, options: { windowRows?: number } = {}): WorkbookDocumentView {
   return {
-    sheets: document.sheets.map(sheet => sheetView(sheet)),
+    sheets: document.sheets.map(sheet => sheetView(sheet, options.windowRows)),
     ...(document.csv !== undefined && { csv: document.csv }),
   }
 }
 
-function sheetView (sheet: Sheet): GridSheetView {
+function sheetView (sheet: Sheet, windowRows?: number): GridSheetView {
+  const windowed = windowRows !== undefined && sheet.rows.length > windowRows
+
   return {
     name:        sheet.name,
     hidden:      sheet.hidden === true,
     hiddenRows:  sheet.hiddenRows === undefined ? [] : [...sheet.hiddenRows],
-    columnCount: Math.max(0, ...sheet.rows.map(row => row.length)),
-    rows:        sheet.rows.map(row => row.map(cell => cellView(cell))),
+    // Not `Math.max(...lengths)`: a spread of a few hundred thousand rows overflows the call stack.
+    columnCount: sheet.rows.reduce((widest, row) => Math.max(widest, row.length), 0),
+    rows:        (windowed ? sheet.rows.slice(0, windowRows) : sheet.rows).map(row => row.map(cell => cellView(cell))),
+    ...(windowed && { rowCount: sheet.rows.length }),
     merges:      (sheet.merges ?? []).flatMap(reference => {
       const range = rangeOf(reference)
 
@@ -85,6 +92,23 @@ function sheetView (sheet: Sheet): GridSheetView {
     ...(sheet.defaultColumnWidth !== undefined && { defaultColumnWidth: sheet.defaultColumnWidth }),
     ...(sheet.defaultRowHeight !== undefined && { defaultRowHeight: sheet.defaultRowHeight }),
   }
+}
+
+/**
+ * A run of one sheet's rows, typed, for a grid that only holds the screens around where it is scrolled to (the rest of a big file is never
+ * sent to the browser until it is needed).
+ *
+ * @param document - The read workbook.
+ * @param sheetIndex - Which sheet, 0-based.
+ * @param from - The first row, 0-based.
+ * @param count - How many rows at most.
+ * @returns The rows (fewer at the end of the sheet, none past it).
+ */
+export function workbookSheetRows (document: WorkbookDocument, sheetIndex: number, from: number, count: number): GridCellView[][] {
+  const sheet = document.sheets[sheetIndex]
+  if (sheet === undefined) return []
+
+  return sheet.rows.slice(from, from + count).map(row => row.map(cell => cellView(cell)))
 }
 
 function cellView (cell: WorkbookCell): GridCellView {

@@ -6,6 +6,14 @@ import { createStudioQueryClient } from '../studio-client'
 import { resetRecordingStore, resetStudioUiStore, useRecordingStore } from '../studio-store'
 import { ContentPane } from './content-pane.component'
 
+// jsdom reports a zero-size scroll container, so the real virtualizer mounts no row; every row is "visible" here instead.
+jest.mock('@tanstack/react-virtual', () => ({
+  useVirtualizer: ({ count }: { count: number }) => ({
+    getTotalSize:    () => count * 20,
+    getVirtualItems: () => Array.from({ length: count }, (_unused, index) => ({ index, key: index, start: index * 20, size: 20 })),
+  }),
+}))
+
 function withUrl (search: string): void {
   history.replaceState({}, '', `/${search}`)
 }

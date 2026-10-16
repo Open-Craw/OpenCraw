@@ -36,6 +36,34 @@ describe('handleInferSelector', () => {
     expect(result).toMatchObject({ kind: 'field', field: { selector: 'p.price_color', take: 'text', matches: 3 } })
   })
 
+  it('one pick: offers the other selectors that reach the node too, each checked, the best one first and each once', () => {
+    const state = stateWithSnapshot()
+    const priceId = nodeId(snapshotHtml, '.price_color', 0)
+
+    const result = handleInferSelector(state, { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: [priceId] })
+
+    if (result.kind !== 'field') throw new Error('expected a field')
+    const alternatives = result.field.alternatives ?? []
+    expect(alternatives[0]).toMatchObject({ selector: result.field.selector, matches: result.field.matches })
+    expect(alternatives.length).toBeGreaterThan(1)
+    expect(new Set(alternatives.map(option => option.selector)).size).toBe(alternatives.length)
+    expect(alternatives.some(option => option.tier === 'structure' && option.selector.includes(' > '))).toBe(true)
+    expect(alternatives.every(option => option.matches > 0)).toBe(true)
+  })
+
+  it('names an id that looks generated instead of using it', () => {
+    const html = rewriteDocument('<main><div class="card"><span id="ember4312" class="price">9</span></div></main>', 'https://shop.example/').html
+    const state = createStudioState()
+    state.folder = '/tmp/does-not-matter'
+    putSnapshot(state.snapshots, 'shop', 'start', { html, nodeCount: 0, baseUrl: 'https://shop.example/', rawHtml: html })
+
+    const result = handleInferSelector(state, { type: 'infer-selector', recipeId: 'shop', path: 'start', nodeIds: [nodeId(html, '.price')] })
+
+    if (result.kind !== 'field') throw new Error('expected a field')
+    expect(result.field.generatedId).toBe('ember4312')
+    expect(result.field.alternatives?.some(option => option.selector.includes('ember4312'))).toBe(false)
+  })
+
   it('one pick inside an item of a list the recipe loops over: a field read from the item, for the loop', () => {
     const state = stateWithSnapshot()
     const priceId = nodeId(snapshotHtml, '.price_color', 1)

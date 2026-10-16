@@ -223,6 +223,19 @@ export const gridViewCommandSchema = z.object({
   encoding:  z.string().min(1).optional(),
 })
 
+/**
+ * `grid-rows`: a run of one sheet's rows of a big CSV/spreadsheet, for the grid canvas that holds only the screens around where it is
+ * scrolled to. The first window comes with `grid-view`; the rest are asked for as the person scrolls.
+ */
+export const gridRowsCommandSchema = z.object({
+  type:     z.literal('grid-rows'),
+  recipeId: z.string().min(1),
+  path:     z.string().min(1),
+  sheet:    z.int().min(0),
+  from:     z.int().min(0),
+  count:    z.int().min(1).max(1000),
+})
+
 /** A `table` extract's options for a workbook, as the studio's grid canvas picks build them — mirrors `document-view/table-preview.use-case.ts`'s `GridTablePreviewOptions`. */
 export const gridPreviewOptionsSchema = z.object({
   sheet:         z.string().min(1).optional(),
@@ -377,6 +390,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   tablePreviewCommandSchema,
   regionPreviewCommandSchema,
   gridViewCommandSchema,
+  gridRowsCommandSchema,
   gridPreviewCommandSchema,
   deckViewCommandSchema,
   deckPreviewCommandSchema,
@@ -406,6 +420,7 @@ export type TablePreviewOptions = z.infer<typeof tablePreviewOptionsSchema>
 export type TablePreviewCommand = z.infer<typeof tablePreviewCommandSchema>
 export type RegionPreviewCommand = z.infer<typeof regionPreviewCommandSchema>
 export type GridViewCommand = z.infer<typeof gridViewCommandSchema>
+export type GridRowsCommand = z.infer<typeof gridRowsCommandSchema>
 export type GridPreviewOptions = z.infer<typeof gridPreviewOptionsSchema>
 export type GridPreviewCommand = z.infer<typeof gridPreviewCommandSchema>
 export type DeckViewCommand = z.infer<typeof deckViewCommandSchema>

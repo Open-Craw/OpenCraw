@@ -8,6 +8,7 @@ import { useGridPreviewQuery } from '../studio-client'
 import { cellSelector, columnHeaderText, columnKeyFrom, escapedRowPattern, fillDownKeyFor, filledGridOf, gridCellCardNode, gridTableCardNode, isSingleCell, rangeText, regionIdFrom, rowPickText, sheetPattern, unionRange } from './grid-pick.mapper'
 import type { CellRange, GridDraft } from './grid-pick.mapper'
 import { SelectionChip } from './selection-chip.component'
+import { useWindowedSheet } from './windowed-sheet.hook'
 import { columnName, sheetGeometry } from './sheet-geometry.algorithm'
 import type { SheetGeometry } from './sheet-geometry.algorithm'
 import { cellStepsOnSheet, stepIdsForCell } from './step-highlight.mapper'
@@ -104,7 +105,7 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
   const parentRef = useRef<HTMLDivElement>(null)
   const reportedHoverRef = useRef<string | undefined>(undefined)
 
-  const sheet = view.sheets[sheetIndex]
+  const { sheet, showRows } = useWindowedSheet(recipeId, stepPath, sheetIndex, view.sheets[sheetIndex])
   const recipeCells = useMemo(() => cellStepsOnSheet(steps, sheet?.name ?? ''), [steps, sheet?.name])
   const filledGrid = useMemo(() => (sheet === undefined ? [] : filledGridOf(sheet)), [sheet])
   const layout = useMemo(() => (sheet === undefined ? [] : sheetGridLayout(sheet)), [sheet])
@@ -126,6 +127,13 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
     getItemKey,
     overscan:         OVERSCAN,
   })
+
+  // Only the screens around the visible rows are held (a big file's other rows are fetched as they scroll into reach).
+  const visible = virtualizer.getVirtualItems()
+  const firstVisible = visible[0]?.index ?? 0
+  // eslint-disable-next-line unicorn/prefer-at -- this app's `lib` has no `Array.prototype.at`
+  const lastVisible = visible[visible.length - 1]?.index ?? 0
+  useEffect(() => { showRows(firstVisible, lastVisible) }, [showRows, firstVisible, lastVisible])
 
   useEffect(() => {
     if (draft.header === undefined) return

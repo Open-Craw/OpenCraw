@@ -14,16 +14,17 @@ const DEFAULT_ITEM_ALIAS = 'item'
  * @param field - The verified field pick (`infer-selector`'s `"field"` result).
  * @param path - This node's outline path (informational; `outline-to-recipe.mapper.ts` does not read it, only the Steps outline's own scope/highlight logic does).
  * @param id - The step's own id; defaults to `"value"` since v1 picking does not ask for a field name.
+ * @param many - Collect every element the selector matches, as an array, instead of the first one.
  * @returns The outline card, ready to insert with `save-outline`.
  */
-export function readCardNode (field: FieldPick, path: string, id: string = DEFAULT_FIELD_ID): OutlineCard {
+export function readCardNode (field: FieldPick, path: string, id: string = DEFAULT_FIELD_ID, many = false): OutlineCard {
   return {
     kind:     'card',
     path,
     stepType: 'extract',
     sentence: [],
     custom:   false,
-    step:     { type: 'extract', id, selector: field.selector, kind: 'css', ...((field.take !== 'text') && { take: field.take }) },
+    step:     { type: 'extract', id, selector: field.selector, kind: 'css', ...((field.take !== 'text') && { take: field.take }), ...(many && { many: true }) },
   }
 }
 
@@ -227,12 +228,12 @@ export function listItemsSelector (steps: readonly OutlineNode[]): string | unde
  * @param field - The field's selector, relative to the item, and what to take from it.
  * @returns The new top-level list, or `undefined` when no loop is over a list of elements.
  */
-export function addHtmlListField (steps: readonly OutlineNode[], field: FieldPick): OutlineNode[] | undefined {
+export function addHtmlListField (steps: readonly OutlineNode[], field: FieldPick, many = false): OutlineNode[] | undefined {
   const items = listItemsSelector(steps)
   const loopIndex = steps.findIndex(step => step.kind === 'bracket' && step.stepType === 'forEach' && steps.some(other => other.kind === 'card' && other.step.id === step.step.over && other.step.selector === items))
   const loop = steps[loopIndex]
   if (items === undefined || loop?.kind !== 'bracket') return undefined
-  const card = readCardNode(field, `${loop.path}.steps.${loop.children.length}`, fieldIdOf(field))
+  const card = readCardNode(field, `${loop.path}.steps.${loop.children.length}`, fieldIdOf(field), many)
   const [named] = withUniqueStepIds(steps, [{ ...card, step: { ...card.step, from: String(loop.step.as) } }])
   const next = steps.map((step, index) => index === loopIndex ? { ...loop, children: [...loop.children, named] } : step)
 

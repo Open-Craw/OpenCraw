@@ -5,6 +5,7 @@ import { blockedPageNotice } from './blocked-page.algorithm'
 import { DISMISS_CONSENT_SCRIPT, MARK_OVERLAYS_SCRIPT } from './consent-banner.algorithm'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
 import { inlineAssets } from './inline-assets.mapper'
+import { inlineLocalImages } from './inline-local-images.use-case'
 import type { CapturedAsset } from './inline-assets.mapper'
 import { rewriteDocument } from './rewrite-document.mapper'
 
@@ -201,9 +202,12 @@ async function snapshotApi (url: string, storageState: Awaited<ReturnType<typeof
   try {
     const response = await client.send({ url, ...(as !== undefined && { as }) })
     const text = textOf(response.body)
-    const rewritten = rewriteDocument(text, url)
+    // A document read from a file names its pictures by paths beside it, which the browser cannot open: the ones next to the file are embedded.
+    const pictures = await inlineLocalImages(text, url)
+    const rewritten = rewriteDocument(pictures.html, url)
+    const notice = pictures.missing === 0 ? undefined : `${String(pictures.missing)} picture${pictures.missing === 1 ? '' : 's'} in this document ${pictures.missing === 1 ? 'is' : 'are'} not shown: only pictures kept in the same folder as the file can be.`
 
-    return { ...rewritten, baseUrl: url, rawHtml: text, format: response.format, body: response.body }
+    return { ...rewritten, baseUrl: url, rawHtml: text, format: response.format, body: response.body, ...(notice !== undefined && { notice }) }
   } finally {
     await client.dispose()
   }
