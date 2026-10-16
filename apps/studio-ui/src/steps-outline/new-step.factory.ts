@@ -10,6 +10,7 @@ export interface NewStepOption {
 
 export const NEW_STEP_OPTIONS: readonly NewStepOption[] = [
   { label: 'Go to', stepType: 'goto', bracket: false },
+  { label: 'Request', stepType: 'request', bracket: false },
   { label: 'Read', stepType: 'extract', bracket: false },
   { label: 'Loop', stepType: 'forEach', bracket: true },
   { label: 'Next page', stepType: 'paginate', bracket: true },
@@ -34,6 +35,8 @@ export const NEW_STEP_OPTIONS: readonly NewStepOption[] = [
 export function newStep (stepType: string, hookName = DEFAULT_HOOK_NAME): Record<string, unknown> {
   switch (stepType) {
     case 'goto': { return { type: 'goto', url: '' }
+    }
+    case 'request': { return { type: 'request', id: 'response', url: '', as: 'json' }
     }
     case 'extract': { return { type: 'extract', id: 'value', selector: '', kind: 'css' }
     }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSaveRecipeMutation, useStudioClient } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
 import { useLoadSource } from './load-source.hook'
-import { newRecipeFiles, recipeIdFromFileName, uniqueRecipeId } from './new-recipe.mapper'
+import { jsonUrlRecipeFiles, newRecipeFiles, recipeIdFromFileName, uniqueRecipeId } from './new-recipe.mapper'
 
 export interface LoadUrlFlow {
   /** Loads a page address; resolves once the recipe is saved and selected, or once `error` is set. */
@@ -18,7 +18,8 @@ export interface LoadUrlFlow {
  * against, so with a web recipe open the address replaces its start URL and
  * the steps and mapping stay. With no recipe open (or a document recipe) a new
  * `web` recipe pair named after the host is written and selected. The folder
- * is the open one, else the toolbar's folder box, as for a dropped file.
+ * is the open one, else the toolbar's folder box, as for a dropped file. An address that returns JSON starts an `api` recipe that reads it
+ * as JSON (with the JSON tree to pick from), named after the last part of its path, not a browser recipe over the text of the response.
  */
 export function useLoadUrlFlow (): LoadUrlFlow {
   const client = useStudioClient()
@@ -35,8 +36,13 @@ export function useLoadUrlFlow (): LoadUrlFlow {
   async function startNew (target: string, url: string): Promise<void> {
     const listing = await client.openWorkspace(target)
     const taken = listing.recipes.map(recipe => recipe.id).filter((id): id is string => id !== undefined)
-    const id = uniqueRecipeId(recipeIdFromFileName(new URL(url).hostname), taken)
-    const files = newRecipeFiles(target, id, url)
+    const { json } = await client.detectUrl(url)
+    const address = new URL(url)
+    const segments = address.pathname.split('/').filter(segment => segment !== '')
+    // eslint-disable-next-line unicorn/prefer-at -- apps/studio-ui's tsconfig lib is ["dom"] only (no ES2022 Array#at)
+    const lastSegment = segments[segments.length - 1] as string | undefined
+    const id = uniqueRecipeId(recipeIdFromFileName(json && lastSegment !== undefined ? lastSegment : address.hostname), taken)
+    const files = json ? jsonUrlRecipeFiles(target, id, url) : newRecipeFiles(target, id, url)
     await saveRecipe.mutateAsync({ path: files.outputPath, recipe: files.output })
     await saveRecipe.mutateAsync({ path: files.inputPath, recipe: files.input })
     if (useStudioUiStore.getState().openFolder !== target) commitFolder(target)

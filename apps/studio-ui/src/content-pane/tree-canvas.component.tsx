@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Badge, Box, HStack, Text } from '@chakra-ui/react'
 import type { DocumentTreeNodeView, DocumentTreeView } from '@opencraw/studio'
 import { stepIdsForTreeNode } from './step-highlight.mapper'
@@ -44,8 +44,14 @@ const TYPE_COLOR: Record<DocumentTreeNodeView['valueType'], string> = {
  * reads (its exact path, or the list path it belongs to) carries that
  * step's id as a pill; hovering the step's card in the outline lights
  * those nodes up, and hovering such a node lights the card up.
+ *
+ * Memoised: a big document is thousands of rows, and the shell re-renders on
+ * every line a sample run traces, which must not draw the tree again each time
+ * (the caller hands it callbacks that stay the same between renders).
  */
-export function TreeCanvas ({ tree, onPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: TreeCanvasProps): React.ReactElement {
+export const TreeCanvas = memo(TreeCanvasView)
+
+function TreeCanvasView ({ tree, onPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: TreeCanvasProps): React.ReactElement {
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set())
 
   function toggle (id: string): void {

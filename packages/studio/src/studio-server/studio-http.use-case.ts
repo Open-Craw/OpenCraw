@@ -20,6 +20,7 @@ import { handleGridView } from './grid-view.handler'
 import { handleImportDocument } from './import-document.handler'
 import { handleInferSelector } from './infer-selector.handler'
 import { handleInspectPage } from './inspect-page.handler'
+import { handleDetectUrl } from './detect-url.handler'
 import { handleOpenPath } from './open-path.handler'
 import { handleOpenWorkspace } from './open-workspace.handler'
 import { handlePdfBytes } from './pdf-bytes.handler'
@@ -214,6 +215,8 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'save-recipe': { return handleSaveRecipe(state, command)
     }
     case 'fetch-start-page': { return handleFetchStartPage(state, command)
+    }
+    case 'detect-url': { return handleDetectUrl(command)
     }
     case 'save-outline': { return handleSaveOutline(state, command)
     }

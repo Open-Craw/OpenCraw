@@ -10,12 +10,12 @@ export type { RecipePair, SampleRunCallbacks, SampleRunHandle, SampleRunRecord, 
 export { fetchStartPage } from './page-snapshot'
 export type { WhyFacts, WhyStepFact } from './explain-why'
 export {
-  sampleBudgetSchema, openWorkspaceCommandSchema, chooseFolderCommandSchema, openPathCommandSchema, importDocumentCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, saveOutlineCommandSchema, takeSnapshotCommandSchema, verifySelectorCommandSchema, inferSelectorCommandSchema, missingWhyTargetSchema, rejectedWhyTargetSchema, whyTargetSchema, explainWhyCommandSchema, studioCommandSchema,
+  sampleBudgetSchema, openWorkspaceCommandSchema, chooseFolderCommandSchema, openPathCommandSchema, importDocumentCommandSchema, runSampleCommandSchema, stopRunCommandSchema, saveRecipeCommandSchema, fetchStartPageCommandSchema, detectUrlCommandSchema, saveOutlineCommandSchema, takeSnapshotCommandSchema, verifySelectorCommandSchema, inferSelectorCommandSchema, missingWhyTargetSchema, rejectedWhyTargetSchema, whyTargetSchema, explainWhyCommandSchema, studioCommandSchema,
   chooseFolderViewSchema, openPathViewSchema, importDocumentViewSchema,
   stoppedBySchema, fieldTraceSchema, traceLineEventSchema, recordEventSchema, recordRejectedEventSchema, runFinishedEventSchema, workspaceChangedEventSchema, studioEventSchema,
   loadedHooksSchema, recipeIssueSchema, recipeListingSchema, workspaceViewSchema,
   sampleRunRecordSchema, sampleRunViewSchema,
-  startPageViewSchema,
+  startPageViewSchema, detectUrlViewSchema,
   snapshotViewSchema,
   verifySelectorViewSchema,
   fieldPickSchema, inferSelectorViewSchema,
@@ -39,13 +39,13 @@ export {
   recordingCardEventSchema, recordingNoteEventSchema, recordingStoppedEventSchema,
 } from './studio-api'
 export type {
-  SampleBudget, OpenWorkspaceCommand, ChooseFolderCommand, OpenPathCommand, ImportDocumentCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, RegionPreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
+  SampleBudget, OpenWorkspaceCommand, ChooseFolderCommand, OpenPathCommand, ImportDocumentCommand, RunSampleCommand, StopRunCommand, SaveRecipeCommand, FetchStartPageCommand, DetectUrlCommand, SaveOutlineCommand, TakeSnapshotCommand, VerifySelectorCommand, InferSelectorCommand, MissingWhyTarget, RejectedWhyTarget, WhyTarget, ExplainWhyCommand, InspectPageCommand, ResponsesSeenCommand, DocumentTreeCommand, PdfViewCommand, TablePreviewOptions, TablePreviewCommand, RegionPreviewCommand, GridViewCommand, GridPreviewOptions, GridPreviewCommand, DeckViewCommand, DeckPreviewOptions, DeckPreviewCommand, StudioCommand,
   ChooseFolderView, OpenPathView, ImportDocumentView,
   RegionPreviewMatchView, RegionPreviewView,
   StoppedBy, FieldTraceView, TraceLineEvent, RecordEvent, RecordRejectedEvent, RunFinishedEvent, WorkspaceChangedEvent, StudioEvent,
   LoadedHooks, RecipeIssue, RecipeListing, WorkspaceView,
   SampleRunView,
-  StartPageView,
+  StartPageView, DetectUrlView,
   SnapshotView,
   VerifySelectorView,
   FieldPick, InferSelectorView,

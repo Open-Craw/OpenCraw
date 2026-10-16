@@ -7,6 +7,8 @@ export interface InferSelectorInput {
   recipeId: string
   path:     string
   nodeIds:  [string] | [string, string]
+  /** The selector of the items of a list the recipe already loops over: a pick inside one of them comes back as a field of the item. */
+  within?:  string
 }
 
 /**
@@ -23,6 +25,6 @@ export function useInferSelectorMutation (): UseMutationResult<InferSelectorView
   const client = useStudioClient()
 
   return useMutation({
-    mutationFn: ({ recipeId, path, nodeIds }: InferSelectorInput) => client.inferSelector(recipeId, path, nodeIds),
+    mutationFn: ({ recipeId, path, nodeIds, within }: InferSelectorInput) => client.inferSelector(recipeId, path, nodeIds, within),
   })
 }

@@ -1,5 +1,5 @@
 import { BrowserClient, HttpClient, sessionStateOf } from '@opencraw/core'
-import type { BodyKind, BrowserSessionConfig, HookMap, HttpBody, InputRecipe } from '@opencraw/core'
+import type { BodyKind, BrowserSessionConfig, HookMap, HttpBody, HttpRequest, InputRecipe } from '@opencraw/core'
 import { ensureBrowserLaunch } from '../browser-provisioning'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
 import { rewriteDocument } from './rewrite-document.mapper'
@@ -69,7 +69,7 @@ export async function takeSnapshot (input: InputRecipe, stepPath: string, browse
 
   const storageState = await loginState(input, browser, hooks)
 
-  return input.mode === 'web' ? snapshotWeb(point.url, storageState, browser) : snapshotApi(point.url, storageState)
+  return input.mode === 'web' ? snapshotWeb(point.url, storageState, browser) : snapshotApi(point.url, storageState, requestedAs(input))
 }
 
 /** What the recipe's own login leaves behind, so the snapshot shows the page as the crawl sees it (issue #185); nothing when it declares no login. */
@@ -110,10 +110,17 @@ async function snapshotWeb (url: string, storageState: Awaited<ReturnType<typeof
   }
 }
 
-async function snapshotApi (url: string, storageState: Awaited<ReturnType<typeof sessionStateOf>>): Promise<SnapshotResult> {
+/** How the recipe's own first request reads the document (`as`), so a JSON API served as `text/plain` is shown as JSON here too. */
+function requestedAs (input: InputRecipe): HttpRequest['as'] {
+  const request = input.steps.find(step => step.type === 'request')
+
+  return request?.type === 'request' ? request.as : undefined
+}
+
+async function snapshotApi (url: string, storageState: Awaited<ReturnType<typeof sessionStateOf>>, as?: HttpRequest['as']): Promise<SnapshotResult> {
   const client = await HttpClient.open({ storageState })
   try {
-    const response = await client.send({ url })
+    const response = await client.send({ url, ...(as !== undefined && { as }) })
     const text = textOf(response.body)
     const rewritten = rewriteDocument(text, url)
 

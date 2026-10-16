@@ -1,4 +1,4 @@
-import { RECIPE_ID_PATTERN, documentRecipeFiles, newRecipeFiles, recipeIdFromFileName, startUrlError, uniqueRecipeId } from './new-recipe.mapper'
+import { RECIPE_ID_PATTERN, documentRecipeFiles, newRecipeFiles, recipeIdFromFileName, startUrlError, uniqueRecipeId, jsonUrlRecipeFiles } from './new-recipe.mapper'
 
 describe('RECIPE_ID_PATTERN', () => {
   it('accepts lowercase letters, digits and hyphens, starting with a letter or digit', () => {
@@ -73,5 +73,14 @@ describe('uniqueRecipeId', () => {
     expect(uniqueRecipeId('report', [])).toBe('report')
     expect(uniqueRecipeId('report', ['report'])).toBe('report-2')
     expect(uniqueRecipeId('report', ['report', 'report-2', 'other'])).toBe('report-3')
+  })
+})
+
+describe('jsonUrlRecipeFiles', () => {
+  it('starts an api recipe whose request reads the response as JSON, whatever it is served as', () => {
+    const files = jsonUrlRecipeFiles('/work', 'car-list', 'https://shop.example/api/car.list')
+
+    expect(files.inputPath).toBe('/work/car-list.ocw-in.json')
+    expect(files.input).toMatchObject({ mode: 'api', start: [{ url: 'https://shop.example/api/car.list' }], steps: [{ type: 'request', id: 'doc', url: '{{start.url}}', as: 'json' }] })
   })
 })

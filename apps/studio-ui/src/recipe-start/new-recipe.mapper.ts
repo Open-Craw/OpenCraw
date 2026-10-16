@@ -47,6 +47,22 @@ export function newRecipeFiles (folder: string, id: string, startUrl = DEFAULT_S
 }
 
 /**
+ * The pair for a recipe that starts from a JSON API address ("Load ▾ Web page" on an address that returns JSON): an `api` recipe whose
+ * one `request` step reads the response as JSON, whatever content type it is served as. The content pane then shows the JSON tree to pick from.
+ *
+ * @param folder - The open workspace folder (a trailing slash is tolerated).
+ * @param id - The recipe id.
+ * @param url - The API address.
+ */
+export function jsonUrlRecipeFiles (folder: string, id: string, url: string): NewRecipeFiles {
+  return recipeFiles(folder, id, {
+    mode:  'api',
+    start: [{ url }],
+    steps: [{ type: 'request', id: 'doc', url: '{{start.url}}', as: 'json' }],
+  })
+}
+
+/**
  * The pair for a recipe that starts from a document the person dropped on
  * the studio (issue #120): an `api` recipe whose one `request` step reads
  * the copied file by its `file:` URL — the engine's own local-file reading,

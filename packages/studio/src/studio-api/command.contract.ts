@@ -14,6 +14,12 @@ export const openWorkspaceCommandSchema = z.object({
   folder: z.string().min(1),
 })
 
+/** Says what a page address returns, so a recipe is started the right way: a JSON API is read with a request, a page with a browser. */
+export const detectUrlCommandSchema = z.object({
+  type: z.literal('detect-url'),
+  url:  z.string().min(1),
+})
+
 /** Says what a path is (folder, recipe or document) and where to open it: how a link or an IDE entry opens a path (issue #235). `workspace` is the folder a document should belong to, when the caller has one. */
 export const openPathCommandSchema = z.object({
   type:      z.literal('open-path'),
@@ -107,6 +113,8 @@ export const inferSelectorCommandSchema = z.object({
   recipeId: z.string().min(1),
   path:     z.string().min(1),
   nodeIds:  z.union([onePickedNodeSchema, twoPickedNodesSchema]),
+  /** The selector of the items of a list the recipe already loops over: a single pick inside one of them answers as a field of the item, to add to the loop. */
+  within:   z.string().min(1).optional(),
 })
 
 /**
@@ -356,6 +364,7 @@ export const studioCommandSchema = z.discriminatedUnion('type', [
   stopRunCommandSchema,
   saveRecipeCommandSchema,
   fetchStartPageCommandSchema,
+  detectUrlCommandSchema,
   saveOutlineCommandSchema,
   takeSnapshotCommandSchema,
   verifySelectorCommandSchema,
@@ -384,6 +393,7 @@ export type RunSampleCommand = z.infer<typeof runSampleCommandSchema>
 export type StopRunCommand = z.infer<typeof stopRunCommandSchema>
 export type SaveRecipeCommand = z.infer<typeof saveRecipeCommandSchema>
 export type FetchStartPageCommand = z.infer<typeof fetchStartPageCommandSchema>
+export type DetectUrlCommand = z.infer<typeof detectUrlCommandSchema>
 export type SaveOutlineCommand = z.infer<typeof saveOutlineCommandSchema>
 export type TakeSnapshotCommand = z.infer<typeof takeSnapshotCommandSchema>
 export type VerifySelectorCommand = z.infer<typeof verifySelectorCommandSchema>

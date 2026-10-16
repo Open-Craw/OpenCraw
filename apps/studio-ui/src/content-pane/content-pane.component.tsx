@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Badge, Box, Button, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
 import type { DocumentTreeNodeView, OutlineCard, OutlineView, RecipeListing } from '@opencraw/studio'
 import { InspectorPanel, matchingNodeIds } from '../inspector'
@@ -9,7 +9,7 @@ import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
-import { addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { addHtmlListField, addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listItemsSelector, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
@@ -107,6 +107,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
   const hoveredSelector = useMemo(() => selectorForStepId(recipe?.outline, hoveredStepId), [recipe?.outline, hoveredStepId])
   const steps = useMemo(() => pickedSteps(recipe?.outline), [recipe?.outline])
+  // The tree canvas is memoised (a big document is thousands of rows): it is given a callback that stays the same between renders, which calls the latest handler.
+  const treePickRef = useRef<(node: DocumentTreeNodeView, mode: TreePickMode) => Promise<void>>(handleTreePick)
+  treePickRef.current = handleTreePick
+  const onTreePick = useCallback((node: DocumentTreeNodeView, mode: TreePickMode) => { void treePickRef.current(node, mode) }, [])
   const handleHoverNode = (nodeId: string | undefined): void => {
     setHoveredNodeId(nodeId)
     setHoveredStepId(nodeId === undefined ? undefined : stepIdForNode(recipe?.outline, snapshot.data?.html, nodeId))
@@ -145,7 +149,21 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     if (recipeId === undefined) return
     const outcome = registerPick(nodeId)
     if (outcome.kind === 'first') {
-      const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [nodeId] })
+      const within = recipe?.outline === undefined ? undefined : listItemsSelector(recipe.outline.steps)
+      const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [nodeId], ...(within !== undefined && { within }) })
+      if (result.kind === 'item-field') {
+        // A pick inside an item of the list the recipe loops over is one more field of that loop, not a Read of the first item.
+        startPicking(recipeId, STEP_PATH)
+        await writeOutline((steps) => {
+          const withField = addHtmlListField(steps, result.field)
+          if (withField === undefined) return steps
+          note(`Added to the list: ${result.field.selector}`)
+
+          return withField
+        })
+
+        return
+      }
       if (result.kind !== 'field') {
         warn(result.kind === 'unsupported' ? result.reason : undefined)
 
@@ -427,7 +445,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
       {isHtmlSnapshot && snapshot.data !== undefined && !snapshotHasContent && <BlankSnapshotNotice />}
       <Box ref={canvasAreaRef} flex='1' minH='0' overflow='auto' style={isPdf ? undefined : { zoom: zoomState.zoom }} onContextMenu={(event) => { event.preventDefault() }}>
         {isDocumentTree && documentTree.data !== undefined && (
-          <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
+          <TreeCanvas tree={documentTree.data} onPick={onTreePick} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
         )}
         {isDocumentTree && documentTree.isError && (
           <Box p={4} color='fg.error'><Text>{documentTree.error.message}</Text></Box>

@@ -36,6 +36,23 @@ describe('handleInferSelector', () => {
     expect(result).toMatchObject({ kind: 'field', field: { selector: 'p.price_color', take: 'text', matches: 3 } })
   })
 
+  it('one pick inside an item of a list the recipe loops over: a field read from the item, for the loop', () => {
+    const state = stateWithSnapshot()
+    const priceId = nodeId(snapshotHtml, '.price_color', 1)
+
+    const result = handleInferSelector(state, { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: [priceId], within: 'article.product_pod' })
+
+    expect(result).toMatchObject({ kind: 'item-field', field: { selector: 'p.price_color', take: 'text' } })
+  })
+
+  it('one pick outside the items of that list is a plain field, and a list selector that is not valid is ignored', () => {
+    const state = stateWithSnapshot()
+    const priceId = nodeId(snapshotHtml, '.price_color', 0)
+
+    expect(handleInferSelector(state, { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: [priceId], within: 'section.nothing-here' }).kind).toBe('field')
+    expect(handleInferSelector(state, { type: 'infer-selector', recipeId: 'books', path: 'start', nodeIds: [priceId], within: '[[' }).kind).toBe('field')
+  })
+
   it('one pick on a link: take is attr:href', () => {
     const state = stateWithSnapshot()
     const linkId = nodeId(snapshotHtml, 'h3 a', 0)

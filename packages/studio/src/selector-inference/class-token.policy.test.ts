@@ -26,6 +26,11 @@ describe('isStableClassToken', () => {
     expect(isStableClassToken('a3f9c21')).toBe(false)
   })
 
+  it('rejects a framework\'s runtime state classes (AngularJS ng-scope, Ember, Svelte)', () => {
+    for (const token of ['ng-scope', 'ng-binding', 'ng-star-inserted', 'ember-view', 'ember123', 'svelte-1a2b3c']) expect(isStableClassToken(token)).toBe(false)
+    expect(isStableClassToken('ngrok')).toBe(true)
+  })
+
   it('rejects an empty token', () => {
     expect(isStableClassToken('')).toBe(false)
   })

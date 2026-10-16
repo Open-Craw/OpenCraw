@@ -22,6 +22,12 @@ const GENERATED_TOKEN_PATTERNS: RegExp[] = [
   /^[0-9a-f]{6,}$/i,
   /** Tailwind/atomic-CSS-in-JS runtime classes some bundlers emit: `_1a2b3c` */
   /^_[0-9a-z]{5,}$/i,
+  /** A framework's runtime state, added and removed as the page runs, not written by anyone: AngularJS/Angular `ng-scope`, `ng-binding`, `ng-star-inserted`, `ng-valid`… */
+  /^ng-/,
+  /** Ember's: `ember-view`, `ember123` */
+  /^ember(?:-view|\d+)$/,
+  /** Svelte's scoping hash: `svelte-1a2b3c` */
+  /^svelte-[a-z0-9]+$/i,
 ]
 
 /**
