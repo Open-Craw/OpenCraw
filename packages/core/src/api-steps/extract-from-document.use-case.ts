@@ -1,6 +1,6 @@
 import { deckRegionText, deckText, findDeckTables, isDeckDocument } from '../deck-document'
 import type { ExtractionScope, ScopeDocument } from '../extraction-scope'
-import { findTables, isPdfDocument, parseRegion, pdfText, regionText } from '../pdf-document'
+import { findSections, findTables, isPdfDocument, parseRegion, pdfText, regionText, withoutMargins } from '../pdf-document'
 import type { TableQuery } from '../pdf-document'
 import { fillDown, findGridTables, htmlTableSheets, isWorkbookDocument, workbookText } from '../workbook-document'
 import type { ExtractStep } from '../recipe-schema'
@@ -17,7 +17,8 @@ import { NoMatchError } from '../step-flow'
  * reads the tables of a PDF, a workbook (a spreadsheet, a CSV), a deck (a
  * presentation) or HTML (its `<table>`s), `regex` reads any document as text,
  * `region` reads the text inside a box on a PDF page (`page=1 x=72..252 y=640..664`)
- * or a deck slide (`slide=3 x=60..900 y=30..90`).
+ * or a deck slide (`slide=3 x=60..900 y=30..90`), `section` reads the text of
+ * a PDF between a heading and the next one (or `until`), wherever they sit.
  *
  * A `jsonpath` extract whose `from` is text parses that text as JSON, and a
  * list of texts (every `<script type="application/ld+json">` of a page) becomes
@@ -69,6 +70,11 @@ export function extractFromDocument (step: ExtractStep, scope: ExtractionScope):
     }
     case 'region': {
       values = readRegion(document, selector)
+
+      break
+    }
+    case 'section': {
+      values = readSections(document, step, selector)
 
       break
     }
@@ -130,7 +136,7 @@ function readTables (document: ScopeDocument, step: ExtractStep, selector: strin
   }
   if (document.kind !== 'pdf') throw new Error(`table reads a PDF, a workbook (a spreadsheet, a CSV), a deck (a presentation) or HTML tables; the current document is ${document.kind} (request it with "as": "pdf", "csv", "xlsx", "pptx" or "html")`)
   refuseOptions(step, ['sheet', 'headerRows', 'includeHidden', 'slide', 'shapes'], 'workbooks and decks', 'a PDF')
-  const tables = findTables(document, query)
+  const tables = findTables(step.ignoreHeadersFooters === true ? withoutMargins(document) : document, query)
 
   return step.fillDown === undefined ? tables : tables.map(table => ({ ...table, rows: fillDown(table.rows, step.fillDown ?? []) }))
 }
@@ -167,9 +173,20 @@ function readRegion (document: ScopeDocument, selector: string): string[] {
   throw new Error(`region reads a PDF or a deck (a presentation); the current document is ${document.kind}${document.kind === 'html' ? '' : ' (request it with "as": "pdf" or "pptx")'}`)
 }
 
+/**
+ * What a `section` extract reads: the text of a PDF under the heading its
+ * selector matches, up to the row `until` matches or the next heading of the
+ * same size; one text per matching heading.
+ */
+function readSections (document: ScopeDocument, step: ExtractStep, selector: string): string[] {
+  if (document.kind !== 'pdf') throw new Error(`section reads a PDF (the text between two headings); the current document is ${document.kind}${document.kind === 'html' ? '' : ' (request it with "as": "pdf")'}`)
+
+  return findSections(document, { heading: patternOf(selector, 'selector'), until: optionalPattern(step.until, 'until'), ignoreHeadersFooters: step.ignoreHeadersFooters }).map(match => match.text)
+}
+
 /** What a `css` extract should have used instead, for a document that is not markup. */
 function readHint (kind: ScopeDocument['kind']): string {
-  if (kind === 'pdf' || kind === 'deck') return ' (read it with kind "table", "region", "regex" or "jsonpath")'
+  if (kind === 'pdf' || kind === 'deck') return ' (read it with kind "table", "region", "section", "regex" or "jsonpath")'
   if (kind === 'workbook') return ' (read it with kind "table", "regex" or "jsonpath")'
 
   return ''
@@ -249,6 +266,7 @@ function documentFor (step: ExtractStep, scope: ExtractionScope): ScopeDocument 
   if (source === undefined) throw new Error(`"${step.from}" is not bound`)
   if (isPdfDocument(source) || isWorkbookDocument(source) || isDeckDocument(source) || isXmlDocument(source)) return source
   if (step.kind === 'region') throw new Error(`"${step.from}" is not a read PDF or deck; region reads those (request it with "as": "pdf" or "pptx")`)
+  if (step.kind === 'section') throw new Error(`"${step.from}" is not a read PDF; section reads one (request it with "as": "pdf")`)
   if (step.kind === 'xpath') {
     if (typeof source !== 'string') throw new Error(`"${step.from}" is not markup; xpath reads XML or HTML text`)
 

@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import type { UseMutationResult } from '@tanstack/react-query'
+import { startChanged } from './start-changed.algorithm'
 import { useStudioClient } from './use-studio-client.hook'
 
 export interface SaveRecipeInput {
@@ -25,6 +27,25 @@ export function useSaveRecipeMutation (): UseMutationResult<void, Error, SaveRec
 
   return useMutation({
     mutationFn: ({ path, recipe }: SaveRecipeInput) => client.saveRecipe(path, recipe),
-    onSuccess:  () => { void queryClient.invalidateQueries({ queryKey: ['workspace'] }) },
+    onMutate:   ({ path }) => ({ previousText: listedText(queryClient, path) }),
+    onSuccess:  async (_result, { recipe }, context) => {
+      void queryClient.invalidateQueries({ queryKey: ['workspace'] })
+      if (!startChanged(context.previousText, recipe)) return
+      // The recipe now reads another document or page: what was drawn from the old one is stale. The snapshot is taken
+      // again first: the views of it (PDF cells, grid, previews) are answered from the server's copy of it.
+      await queryClient.invalidateQueries({ queryKey: ['snapshot'] })
+      void queryClient.invalidateQueries({ predicate: query => query.queryKey[0] !== 'workspace' && query.queryKey[0] !== 'snapshot' })
+    },
   })
+}
+
+/** The recipe file's text as the workspace listing last held it. */
+function listedText (queryClient: QueryClient, path: string): string | undefined {
+  const cached = queryClient.getQueriesData<{ recipes?: { file: string, text: string }[] }>({ queryKey: ['workspace'] })
+  for (const [, data] of cached) {
+    const found = data?.recipes?.find(listing => listing.file === path)
+    if (found !== undefined) return found.text
+  }
+
+  return undefined
 }

@@ -41,8 +41,8 @@ export interface StudioClient {
   tablePreview:   (recipeId: string, path: string, options: TablePreviewOptions) => Promise<TablePreviewView>
   /** The PDF canvas's live preview of a `region` extract's selector (`document-view`'s `region-preview.use-case.ts`, issue #121): the text the step would bind and the cells to highlight — a pure computation over the cached snapshot, instant on every change of the box. */
   regionPreview:  (recipeId: string, path: string, selector: string) => Promise<RegionPreviewView>
-  /** The URL the PDF canvas's `pdf.js` fetches directly for the raw bytes of a cached PDF snapshot (`GET /api/pdf-bytes`, issue #94's 5b) — not a `send`-through command, since it answers bytes, not JSON. */
-  pdfBytesUrl:    (recipeId: string, path: string) => string
+  /** The URL the PDF canvas's `pdf.js` fetches directly for the raw bytes of a cached PDF snapshot (`GET /api/pdf-bytes`, issue #94's 5b; `version`, the document's own URL, tells the browser and pdf.js a different PDF is behind the same recipe and path) — not a `send`-through command, since it answers bytes, not JSON. */
+  pdfBytesUrl:    (recipeId: string, path: string, version?: string) => string
   /** The grid canvas's sheets and cells for a CSV/spreadsheet snapshot (`document-view`'s `workbook-view.mapper.ts`, studio plan §3.4, issue #94's 5c), off the same cached snapshot; `delimiter`/`encoding` override a CSV's auto-detected reading. */
   gridView:       (recipeId: string, path: string, override?: { delimiter?: string, encoding?: string }) => Promise<WorkbookDocumentView>
   /** The grid canvas's live preview of a `table` extract's options (`document-view`'s `previewGridTable`, issue #94's 5c): a pure computation over the cached snapshot, instant on every option change. */
@@ -125,7 +125,7 @@ export function createStudioClient (): StudioClient {
     pdfView:        (recipeId, path) => send<PdfDocumentView>(token, { type: 'pdf-view', recipeId, path }),
     tablePreview:   (recipeId, path, options) => send<TablePreviewView>(token, { type: 'table-preview', recipeId, path, options }),
     regionPreview:  (recipeId, path, selector) => send<RegionPreviewView>(token, { type: 'region-preview', recipeId, path, selector }),
-    pdfBytesUrl:    (recipeId, path) => `/api/pdf-bytes?token=${encodeURIComponent(token)}&recipeId=${encodeURIComponent(recipeId)}&path=${encodeURIComponent(path)}`,
+    pdfBytesUrl:    (recipeId, path, version) => `/api/pdf-bytes?token=${encodeURIComponent(token)}&recipeId=${encodeURIComponent(recipeId)}&path=${encodeURIComponent(path)}${version === undefined ? '' : `&v=${encodeURIComponent(version)}`}`,
     gridView:       (recipeId, path, override) => send<WorkbookDocumentView>(token, { type: 'grid-view', recipeId, path, delimiter: override?.delimiter, encoding: override?.encoding }),
     gridPreview:    (recipeId, path, options) => send<GridTablePreviewView>(token, { type: 'grid-preview', recipeId, path, options }),
     deckView:       (recipeId, path) => send<DeckDocumentView>(token, { type: 'deck-view', recipeId, path }),

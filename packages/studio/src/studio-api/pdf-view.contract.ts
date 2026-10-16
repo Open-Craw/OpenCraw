@@ -10,9 +10,11 @@ export const pdfCellViewSchema = z.object({
 })
 
 export const pdfRowViewSchema = z.object({
-  top:    z.number(),
-  bottom: z.number(),
-  cells:  z.array(pdfCellViewSchema),
+  top:     z.number(),
+  bottom:  z.number(),
+  cells:   z.array(pdfCellViewSchema),
+  /** A running header or footer: the same text at the same height on several pages (page numbers aside). */
+  running: z.boolean().optional(),
 })
 
 export const pdfPageViewSchema = z.object({

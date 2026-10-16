@@ -67,10 +67,11 @@ export function columnKeyFrom (headerText: string): string {
  * @param draft - The picks so far; `header` must be set.
  * @param path - This node's outline path.
  * @param id - The step's own id; defaults to `"table"`.
+ * @param ignoreHeadersFooters - Leave out the headers and footers the document repeats on its pages.
  * @returns The outline card.
  * @throws Error when no header row has been picked yet.
  */
-export function tableCardNode (draft: TableDraft, path: string, id: string = DEFAULT_TABLE_ID): OutlineCard {
+export function tableCardNode (draft: TableDraft, path: string, id: string = DEFAULT_TABLE_ID, ignoreHeadersFooters = false): OutlineCard {
   if (draft.header === undefined) throw new Error('tableCardNode: pick the header row first')
   const columns = draft.columns
   const hasColumns = columns !== undefined && Object.keys(columns).length > 0
@@ -88,6 +89,7 @@ export function tableCardNode (draft: TableDraft, path: string, id: string = DEF
       selector: draft.header,
       ...(draft.until !== undefined && { until: draft.until }),
       ...(hasColumns && { columns }),
+      ...(ignoreHeadersFooters && { ignoreHeadersFooters: true }),
     },
   }
 }
@@ -181,6 +183,54 @@ export function labelCardNode (label: string, path: string, id: string): Outline
     sentence: [],
     custom:   false,
     step:     { type: 'extract', id, kind: 'regex', selector: `${escapeRegexLiteral(label)}${String.raw`:[\t ]*([^\t\n]+)`}` },
+  }
+}
+
+/**
+ * Builds the `section` extract card for a line that sits under a heading: it
+ * reads the text from that heading to the next one (or to the end), wherever
+ * they fall on the page, and over page breaks.
+ *
+ * @param heading - The heading's text: matched as the whole row.
+ * @param until - The next heading's text; absent when the section runs to the end.
+ * @param ignoreHeadersFooters - Leave out the headers and footers the document repeats on its pages.
+ * @param path - This node's outline path.
+ * @param id - The step's own id.
+ */
+export function sectionCardNode (heading: string, until: string | undefined, ignoreHeadersFooters: boolean, path: string, id: string): OutlineCard {
+  return {
+    kind:     'card',
+    path,
+    stepType: 'extract',
+    sentence: [],
+    custom:   false,
+    step:     {
+      type:     'extract',
+      id,
+      kind:     'section',
+      selector: `^${escapeRegexLiteral(heading)}$`,
+      ...(until !== undefined && { until: `^${escapeRegexLiteral(until)}$` }),
+      ...(ignoreHeadersFooters && { ignoreHeadersFooters: true }),
+    },
+  }
+}
+
+/**
+ * Builds the `regex` extract card for a line that has the row above it as
+ * its anchor: it reads the line that follows that text, wherever it sits.
+ *
+ * @param previous - The text of the row above (cells joined by a tab, as the engine's text has them).
+ * @param path - This node's outline path.
+ * @param id - The step's own id.
+ */
+export function afterLineCardNode (previous: string, path: string, id: string): OutlineCard {
+  return {
+    kind:     'card',
+    path,
+    stepType: 'extract',
+    sentence: [],
+    custom:   false,
+    step:     { type: 'extract', id, kind: 'regex', selector: `${escapeRegexLiteral(previous)}${String.raw`\n([^\n]+)`}` },
   }
 }
 

@@ -1,4 +1,4 @@
-import type { PdfCellView, PdfPageView } from '@opencraw/studio'
+import type { PdfCellView, PdfPageView, PdfRowView } from '@opencraw/studio'
 import type { PointsBox } from './pdf-pick.mapper'
 
 /** Left edges closer than this (points) belong to one block of text. */
@@ -9,6 +9,32 @@ const SAME_HEIGHT_RATIO = 0.15
 const SAME_PARAGRAPH_GAP = 0.6
 /** The longest label taken as one (`Published`, `Head of Sustainability`): a longer run before a colon is a sentence. */
 const MAX_LABEL_LENGTH = 40
+
+/** A heading is text this much larger than the body it heads. */
+const HEADING_LARGER = 1.15
+/** A row at least this share of a heading's size is a heading of the same level: it ends the section. */
+const SAME_LEVEL = 0.95
+
+/** What a click on a line is anchored to, so that the recipe reads the same structure in another document. */
+export type Anchor =
+  | {
+    kind:                 'section'
+    /** The heading's text. */
+    heading:              string
+    /** The next heading's text; absent when the section runs to the end. */
+    until?:               string
+    /** The body, for the preview. */
+    box:                  PointsBox
+    /** The document repeats a header or footer on its pages, so the section leaves them out. */
+    ignoreHeadersFooters: boolean
+  } |
+  {
+    kind:     'after'
+    /** The text of the row above the line. */
+    previous: string
+    box:      PointsBox
+    page:     number
+  }
 
 /** A line shaped `Label: value`. */
 export interface LabelledValue {
@@ -103,4 +129,102 @@ function boxOf (cell: PdfCellView): PointsBox {
 
 function union (a: PointsBox, b: PointsBox): PointsBox {
   return { x1: Math.min(a.x1, b.x1), y1: Math.min(a.y1, b.y1), x2: Math.max(a.x2, b.x2), y2: Math.max(a.y2, b.y2) }
+}
+
+/** A row of the document with the page it is on. */
+interface PlacedRow {
+  page: number
+  row:  PdfRowView
+}
+
+/**
+ * What the line is anchored to in the document's own structure: the section
+ * it belongs to (the text between its heading and the next heading of the
+ * same level, over page breaks), else the line that comes right before it.
+ * Headers and footers the document repeats on its pages are not part of either.
+ *
+ * A heading is a row of larger text above the line that has a sibling: another
+ * row of the same size in the document (`Details` and `Price`). A document's
+ * title has none, so does not make everything under it one section.
+ *
+ * A line in a row of several cells is a column of text when the cells are not
+ * all `Label: value` pairs (a row of those is a set of fields, each its own).
+ *
+ * @param pages - Every page of the document, in order.
+ * @param page - The page the cell is on.
+ * @param cell - The line clicked.
+ * @returns The anchor, or `undefined` when the line is alone in the document's structure (then a position is all there is).
+ */
+export function anchorOf (pages: readonly PdfPageView[], page: PdfPageView, cell: PdfCellView): Anchor | undefined {
+  const rows = pages.flatMap(each => each.rows.filter(row => row.running !== true).map(row => ({ page: each.number, row })))
+  const at = rows.findIndex(entry => entry.row.cells.includes(cell))
+  const own = rows[at]?.row
+  if (own === undefined || isFieldRow(own)) return undefined
+  const heading = headingAbove(rows, at, cell.height)
+  if (heading !== -1) return sectionAnchor(rows, heading, page.number, pages.some(each => each.rows.some(row => row.running === true)))
+
+  return afterAnchor(page, rows, at)
+}
+
+/** A row of two or more `Label: value` cells: a set of fields. */
+function isFieldRow (row: PdfRowView): boolean {
+  return row.cells.length > 1 && row.cells.every(cell => labelledValueOf(cell.text) !== undefined)
+}
+
+/** The index of the nearest heading above row `at`, or -1. */
+function headingAbove (rows: readonly PlacedRow[], at: number, size: number): number {
+  for (let index = at - 1; index >= 0; index -= 1) {
+    const cells = rows[index]?.row.cells ?? []
+    const first = cells[0]
+    const larger = first !== undefined && first.height > size * HEADING_LARGER
+    if (larger && cells.length === 1 && hasSibling(rows, index)) return index
+  }
+
+  return -1
+}
+
+function hasSibling (rows: readonly PlacedRow[], index: number): boolean {
+  const height = rows[index]?.row.cells[0]?.height ?? 0
+
+  return rows.some((entry, other) => other !== index && entry.row.cells.length === 1 && Math.abs((entry.row.cells[0]?.height ?? 0) - height) <= height * (1 - SAME_LEVEL))
+}
+
+function sectionAnchor (rows: readonly PlacedRow[], heading: number, clickedPage: number, ignoreHeadersFooters: boolean): Anchor | undefined {
+  const headingRow = rows[heading]?.row
+  const size = headingRow?.cells[0]?.height ?? 0
+  const headingText = headingRow?.cells[0]?.text
+  if (headingText === undefined) return undefined
+  const rest = rows.slice(heading + 1)
+  const end = rest.findIndex(entry => Math.max(...entry.row.cells.map(cell => cell.height)) >= size * SAME_LEVEL)
+  const body = end === -1 ? rest : rest.slice(0, end)
+  const cells = body.filter(entry => entry.page === clickedPage).flatMap(entry => entry.row.cells)
+  const boxes = cells.map(cell => boxOf(cell))
+  const [first, ...others] = boxes
+  if (first === undefined) return undefined
+  const until = end === -1 ? undefined : rest[end]?.row.cells.map(cell => cell.text).join(' ')
+
+  return { kind: 'section', heading: headingText, ...(until !== undefined && { until }), box: others.reduce((all, box) => union(all, box), first), ignoreHeadersFooters }
+}
+
+/** The single line `cell` is, taken with the row above it as its anchor; a wrapped paragraph of several lines has none. */
+function afterAnchor (page: PdfPageView, placed: readonly PlacedRow[], at: number): Anchor | undefined {
+  const rows = placed.filter(entry => entry.page === page.number).map(entry => entry.row)
+  const index = rows.indexOf(placed[at]?.row)
+  const own = rows[index]?.cells[0]
+  const above = rows[index - 1]
+  const aboveCell = above?.cells[0]
+  if (own === undefined || above === undefined || aboveCell === undefined || rows[index]?.cells.length !== 1) return undefined
+  const belowCell = rows[index + 1]?.cells[0]
+  const body = bodyHeight(rows)
+  const wrapped = (upper: PdfCellView | undefined, lower: PdfCellView | undefined): boolean => upper !== undefined && lower !== undefined && lower.height <= body * HEADING_LARGER && continues(upper, lower)
+  if (wrapped(own, belowCell) || wrapped(aboveCell, own)) return undefined
+
+  return { kind: 'after', previous: above.cells.map(row => row.text).join('\t'), box: boxOf(own), page: page.number }
+}
+
+/** The usual text height on the page: the median of its rows', so that headline lines stacked tight are not taken for a wrapped paragraph. */
+function bodyHeight (rows: readonly PdfRowView[]): number {
+  const heights = rows.map(row => Math.max(...row.cells.map(cell => cell.height))).sort((a, b) => a - b)
+
+  return heights[Math.floor(heights.length / 2)] ?? 0
 }

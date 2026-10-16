@@ -18,6 +18,8 @@ interface Typed {
   reason:     string
   items?:     FieldSpecJson
   transform?: { op: string }[]
+  /** The path the field reads, when it is not the step's own id (a table's `rows`). */
+  from?:      string
 }
 
 type StepJson = Record<string, unknown>
@@ -64,7 +66,7 @@ export function suggestFields (input: unknown, fields: Record<string, FieldSpecJ
       source: id,
       name,
       field:  { type: typed.type, ...(typed.items !== undefined && { items: typed.items }) },
-      rule:   { from: id, ...(typed.transform !== undefined && { transform: typed.transform }) },
+      rule:   { from: typed.from ?? id, ...(typed.transform !== undefined && { transform: typed.transform }) },
       reason: typed.reason,
     })
   }
@@ -92,9 +94,12 @@ export function suggestFieldFor (id: string, input: unknown, fields: Record<stri
 
 /** The type a value's id and way of being read suggest. Never `currency` (it fails without a code); `number` reads a price with a symbol in it. */
 function inferType (id: string, step: StepJson): Typed {
+  if (step.kind === 'table') return { type: 'json', from: `${id}.rows`, reason: 'the rows of the table, as a list' }
   if (step.many === true) return { type: 'array', items: { type: 'string' }, reason: 'it reads every match, a list' }
   const take = typeof step.take === 'string' ? step.take : undefined
   if (take !== undefined && LINK_TAKES.has(take)) return { type: 'url', transform: [{ op: 'absoluteUrl' }], reason: `it takes ${take}, a link (made absolute)` }
+  // A section is a block of text (a description, a price list): a word in its name says nothing about what the block holds.
+  if (step.kind === 'section') return { type: 'string', reason: 'it reads a block of text' }
   const words = wordsOf(id)
   for (const [keys, typed] of WORD_TYPES) {
     if (words.some(word => keys.includes(word))) return typed
@@ -106,8 +111,8 @@ function inferType (id: string, step: StepJson): Typed {
 function isReadStep (step: StepJson): boolean {
   if (step.type === 'set') return true
 
-  // A table or a whole document is a collection the person loops over, not a value.
-  return step.type === 'extract' && step.kind !== 'table'
+  // Every table of a document (`many`) is a collection the person loops over; the one table of a sheet is a value: its rows.
+  return step.type === 'extract' && (step.kind !== 'table' || step.many !== true)
 }
 
 /** Every step id a mapping rule reads: a plain id, a list of ids, an `each` list's id and its members' ids. */
