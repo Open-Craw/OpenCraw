@@ -346,6 +346,9 @@
         "executor": "nx:run-commands",
         "dependsOn": [
           "build",
+          "@opencraw/cli:build",
+          "@opencraw/mcp:build",
+          "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"
         ],
@@ -359,6 +362,9 @@
         "executor": "nx:run-commands",
         "dependsOn": [
           "build",
+          "@opencraw/cli:build",
+          "@opencraw/mcp:build",
+          "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"
         ],
