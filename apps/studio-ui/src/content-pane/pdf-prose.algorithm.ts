@@ -29,6 +29,14 @@ export type Anchor =
     box:                  PointsBox
     /** The document repeats a header or footer on its pages, so the section leaves them out. */
     ignoreHeadersFooters: boolean
+    /** Which printed line of the body the click was on (1 is the first), when the body is plain lines of text; what "only this line" reads. */
+    clickedLine?:         number
+    /** Read only this printed line of the body (1 first, -1 last). */
+    line?:                number
+    /** Read only the part of the body (or of its `line`) this pattern matches. */
+    match?:               string
+    /** What the `match` finds, in a word (`date`), for the note and the step's id. */
+    matchName?:           string
   } |
   {
     kind:     'after'
@@ -168,7 +176,7 @@ export function anchorOf (pages: readonly PdfPageView[], page: PdfPageView, cell
   const own = rows[at]?.row
   if (own === undefined || isFieldRow(own)) return undefined
   const heading = headingAbove(rows, at, cell.height)
-  if (heading !== -1) return sectionAnchor(rows, heading, page.number, pages.some(each => each.rows.some(row => row.running === true)))
+  if (heading !== -1) return sectionAnchor(rows, heading, page.number, pages.some(each => each.rows.some(row => row.running === true)), cell)
 
   return afterAnchor(page, rows, at)
 }
@@ -196,7 +204,7 @@ function hasSibling (rows: readonly PlacedRow[], index: number): boolean {
   return rows.some((entry, other) => other !== index && entry.row.cells.length === 1 && Math.abs((entry.row.cells[0]?.height ?? 0) - height) <= height * (1 - SAME_LEVEL))
 }
 
-function sectionAnchor (rows: readonly PlacedRow[], heading: number, clickedPage: number, ignoreHeadersFooters: boolean): Anchor | undefined {
+function sectionAnchor (rows: readonly PlacedRow[], heading: number, clickedPage: number, ignoreHeadersFooters: boolean, clicked: PdfCellView): Anchor | undefined {
   const headingRow = rows[heading]?.row
   const size = headingRow?.cells[0]?.height ?? 0
   const headingText = headingRow?.cells[0]?.text
@@ -210,7 +218,10 @@ function sectionAnchor (rows: readonly PlacedRow[], heading: number, clickedPage
   if (first === undefined) return undefined
   const until = end === -1 ? undefined : rest[end]?.row.cells.map(cell => cell.text).join(' ')
 
-  return { kind: 'section', heading: headingText, ...(until !== undefined && { until }), box: others.reduce((all, box) => union(all, box), first), ignoreHeadersFooters }
+  const lineRows = body.map(entry => entry.row)
+  const clickedLine = lineRows.every(row => row.cells.length === 1) ? lineRows.findIndex(row => row.cells[0] === clicked) + 1 : 0
+
+  return { kind: 'section', heading: headingText, ...(until !== undefined && { until }), box: others.reduce((all, box) => union(all, box), first), ignoreHeadersFooters, ...(clickedLine > 0 && { clickedLine }) }
 }
 
 /** The single line `cell` is, taken with the row above it as its anchor; a wrapped paragraph of several lines has none. */

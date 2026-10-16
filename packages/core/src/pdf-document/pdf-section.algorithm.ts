@@ -31,6 +31,8 @@ export interface PdfSectionMatch {
   heading: string
   /** The body: a paragraph's lines joined by a space, paragraphs by a newline. */
   text:    string
+  /** The body's printed lines in reading order (a wrapped paragraph's lines apart): what a step's `line` picks from. */
+  lines:   string[]
   /** The cells the body was read from, in reading order. */
   cells:   PdfCell[]
 }
@@ -59,7 +61,9 @@ export function findSections (document: PdfDocument, query: PdfSectionQuery): Pd
   for (const [index, placed] of rows.entries()) {
     if (!query.heading.test(textOf(placed.row))) continue
     const body = bodyAfter(rows, index, query)
-    if (body.length > 0) matches.push({ page: placed.page, heading: textOf(placed.row), text: paragraphsOf(readingOrder(body)), cells: body.flatMap(entry => entry.row.cells) })
+    if (body.length === 0) continue
+    const lines = readingOrder(body)
+    matches.push({ page: placed.page, heading: textOf(placed.row), text: paragraphsOf(lines), lines: lines.map(line => line.text), cells: body.flatMap(entry => entry.row.cells) })
   }
 
   return matches

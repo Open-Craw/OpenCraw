@@ -3,9 +3,11 @@ import { Badge, Box, HStack, Select, Text, createListCollection } from '@chakra-
 import type { OutlineCard, PdfCellView, PdfDocumentView, PdfPageView, PdfRowView, TablePreviewMatchView } from '@opencraw/studio'
 import { CARD_DRAG_MIME, cardDragData } from '../steps-outline'
 import { useRegionPreviewQuery, useTablePreviewQuery } from '../studio-client'
+import { choicesOf } from './pdf-selection-choices.algorithm'
+import type { SelectionChoice } from './pdf-selection-choices.algorithm'
 import { afterLineCardNode, cellBox, columnKeyFrom, escapedRowPattern, labelCardNode, paddedBox, regionCardNode, regionIdFrom, regionSelector, sectionCardNode, tableCardNode, unionBox } from './pdf-pick.mapper'
 import type { PointsBox, TableDraft } from './pdf-pick.mapper'
-import { anchorOf, idFromLabel, labelledValueOf, paragraphBox } from './pdf-prose.algorithm'
+import { idFromLabel, labelledValueOf, paragraphBox } from './pdf-prose.algorithm'
 import type { Anchor } from './pdf-prose.algorithm'
 import { REGION_COLOR, SelectionChip } from './selection-chip.component'
 import { regionStepsAt, stepIdsForBox } from './step-highlight.mapper'
@@ -40,10 +42,13 @@ const NO_STEPS: readonly PickedStep[] = []
 
 /** A selection staged on the canvas, not yet in the recipe: a box on one page, previewed through `region-preview` until added or cleared. */
 interface StagedRegion {
-  page:    number
-  box:     PointsBox
+  page:     number
+  box:      PointsBox
   /** What the selection is tied to in the document's structure; absent for a dragged or extended box, which is a position. */
-  anchor?: Anchor
+  anchor?:  Anchor
+  /** The ways the click could have been taken (whole block, one line, a date in it, a position), and the one in force. */
+  choices?: SelectionChoice[]
+  choice?:  number
 }
 
 /** A drag in flight on the canvas, in canvas pixels. */
@@ -185,10 +190,23 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
   }
 
   /** Stages `box` on this page, or widens the current selection to hold it too when extending (shift). */
-  function stage (box: PointsBox, extend: boolean, anchor?: Anchor): void {
+  function stage (box: PointsBox, extend: boolean, choices?: SelectionChoice[]): void {
     const current = staged
-    if (extend && current !== undefined && current.page === page.number) setStaged({ page: page.number, box: unionBox(current.box, box) })
-    else setStaged({ page: page.number, box, ...(anchor !== undefined && { anchor }) })
+    if (extend && current !== undefined && current.page === page.number) {
+      setStaged({ page: page.number, box: unionBox(current.box, box) })
+
+      return
+    }
+    const first = choices?.[0]
+    setStaged({ page: page.number, box, ...(first?.anchor !== undefined && { anchor: first.anchor }), ...(choices !== undefined && { choices, choice: 0 }) })
+  }
+
+  /** Takes the selection another way: the box and the anchor of the choice (the whole block, one line, the date in it, a position). */
+  function choose (index: number): void {
+    const current = staged
+    const next = current?.choices?.[index]
+    if (current === undefined || next === undefined) return
+    setStaged({ page: current.page, box: next.box, choices: current.choices, choice: index, ...(next.anchor !== undefined && { anchor: next.anchor }) })
   }
 
   /** Tells the other panels which step the mouse is over, once per change rather than per pixel. */
@@ -233,15 +251,21 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
 
       return
     }
-    const anchor = event.shiftKey ? undefined : anchorOf(view.pages, page, cell)
-    stage(paddedBox(anchor?.kind === 'section' || (anchor?.kind === 'after' && anchor.lines > 1) ? anchor.box : paragraphBox(page, cell)), event.shiftKey, anchor)
+    if (event.shiftKey) {
+      stage(paddedBox(paragraphBox(page, cell)), true)
+
+      return
+    }
+    const choices = choicesOf(view.pages, page, cell, paragraphBox(page, cell))
+    stage(choices[0]?.box ?? paddedBox(paragraphBox(page, cell)), false, choices)
   }
 
   /** The `region` card the staged selection would add — `undefined` until the preview has read something in the box. */
   function stagedCard (): OutlineCard | undefined {
     if (stagedSelector === undefined || stagedText === undefined) return undefined
     const anchor = staged?.anchor
-    if (anchor?.kind === 'section') return sectionCardNode(anchor.heading, anchor.until, anchor.ignoreHeadersFooters, stepPath, idFromLabel(anchor.heading))
+    if (anchor?.kind === 'section') return sectionCardNode(anchor.heading, anchor.until, anchor.ignoreHeadersFooters, stepPath, idFromLabel(anchor.matchName ?? (anchor.line === undefined ? anchor.heading : `${anchor.heading} line ${String(anchor.line)}`)), { ...(anchor.line !== undefined && { line: anchor.line }), ...(anchor.match !== undefined && { match: anchor.match }) })
+    if (anchor === undefined && (staged?.choices?.length ?? 0) > 1) return regionCardNode(stagedSelector, stepPath, regionIdFrom(stagedText))
     const labelled = stagedText.includes('\n') ? undefined : labelledValueOf(stagedText)
     if (labelled !== undefined) return labelCardNode(labelled.label, stepPath, idFromLabel(labelled.label))
     if (anchor?.kind === 'after') return afterLineCardNode(anchor.previous, stepPath, idFromLabel(anchor.previous), anchor.lines)
@@ -352,8 +376,11 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
               <SelectionChip
                 left={Math.min(stagedOnThisPage.box.x1, stagedOnThisPage.box.x2) * SCALE}
                 top={chipTop(stagedOnThisPage.box, page.height)}
-                text={stagedText}
+                text={shownText(stagedOnThisPage.anchor, stagedText)}
                 note={anchorNote(stagedOnThisPage.anchor, stagedText)}
+                choices={stagedOnThisPage.choices?.map(choice => choiceLabel(choice))}
+                choice={stagedOnThisPage.choice}
+                onChoose={choose}
                 loading={regionPreview.isPending}
                 onAdd={addStaged}
                 onClear={() => { setStaged(undefined) }}
@@ -379,8 +406,31 @@ function chipTop (box: PointsBox, pageHeight: number): number {
 }
 
 /** What the staged selection is tied to, in words: the person sees whether the step survives a document of another layout. */
+/** What the step will read from the text in the box: the part a `match` finds, else the text itself. */
+function shownText (anchor: Anchor | undefined, text: string | undefined): string | undefined {
+  if (text === undefined || anchor?.kind !== 'section' || anchor.match === undefined) return text
+  const found = new RegExp(anchor.match, 'i').exec(text)
+
+  return found === null ? undefined : (found[1] ?? found[0])
+}
+
+function choiceLabel (choice: SelectionChoice): string {
+  const { anchor } = choice
+  if (anchor?.kind === 'section') {
+    if (anchor.line !== undefined) return `Only this line (line ${String(anchor.line)} of the block)`
+    if (anchor.matchName !== undefined) return `Only the ${anchor.matchName} in the block`
+
+    return anchor.until === undefined ? `The whole block below “${anchor.heading}”` : `The whole block between “${anchor.heading}” and “${anchor.until}”`
+  }
+  if (anchor?.kind === 'after') return anchor.lines > 1 ? `The ${String(anchor.lines)} lines after “${anchor.previous}”` : `The line after “${anchor.previous}”`
+
+  return 'A fixed position on the page (breaks if the layout moves)'
+}
+
 function anchorNote (anchor: Anchor | undefined, text: string | undefined): string {
   const labelled = text !== undefined && !text.includes('\n') && labelledValueOf(text) !== undefined
+  if (anchor?.kind === 'section' && anchor.line !== undefined) return `Reads line ${String(anchor.line)} of what is between “${anchor.heading}” and ${anchor.until === undefined ? 'the end' : `“${anchor.until}”`}`
+  if (anchor?.kind === 'section' && anchor.matchName !== undefined) return `Reads the ${anchor.matchName} in what is below “${anchor.heading}”, wherever it sits`
   if (anchor?.kind === 'section') return anchor.until === undefined ? `Reads everything below “${anchor.heading}”` : `Reads what is between “${anchor.heading}” and “${anchor.until}”`
   if (labelled) return 'Reads the value after its label'
   if (anchor?.kind === 'after') return anchor.lines > 1 ? `Reads the ${String(anchor.lines)} lines after “${anchor.previous}”` : `Reads the line after “${anchor.previous}”`

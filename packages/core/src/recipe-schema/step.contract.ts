@@ -174,6 +174,10 @@ export interface ExtractStep extends StepBaseFields {
   shapes?:               boolean
   /** `section` and `table` (a PDF): leave out the running headers and footers (rows repeated at the top or bottom of several pages) from the text read. */
   ignoreHeadersFooters?: boolean
+  /** `section` only: take one printed line of the text instead of all of it: 1 is the first, -1 the last. */
+  line?:                 number
+  /** `section` only: a pattern (case-insensitive) for the part of the text (or of the `line`) to keep: its first group, else what it matches. A section it does not match in is no match. */
+  match?:                string
   /** `xpath` on XML only: prefix to namespace URI (`{ "atom": "http://www.w3.org/2005/Atom" }`). Prefixes the root declares are known already. */
   namespaces?:           Record<string, string>
   /** `xpath` on XML only: drop the document's namespaces, so `//entry/title` matches `<entry xmlns="…">`. */
@@ -345,6 +349,8 @@ const extractStep = z.strictObject({
   slide:                z.string().min(1).optional(),
   shapes:               z.boolean().optional(),
   ignoreHeadersFooters: z.boolean().optional(),
+  line:                 z.int().refine(line => line !== 0, 'a line is 1 for the first, -1 for the last').optional(),
+  match:                z.string().min(1).optional(),
   namespaces:           z.record(z.string().regex(/^[A-Za-z_][\w.-]*$/, 'a namespace prefix such as atom'), z.string().min(1)).optional(),
   ignoreNamespaces:     z.boolean().optional(),
 }).check((context) => {
@@ -355,6 +361,11 @@ const extractStep = z.strictObject({
   }
   if (context.value.kind !== 'section' && context.value.kind !== 'table' && context.value.ignoreHeadersFooters !== undefined) {
     context.issues.push({ code: 'custom', input: context.value, path: ['ignoreHeadersFooters'], message: '"ignoreHeadersFooters" belongs to kind "section" or "table"' })
+  }
+  if (context.value.kind !== 'section') {
+    for (const key of ['line', 'match'] as const) {
+      if (context.value[key] !== undefined) context.issues.push({ code: 'custom', input: context.value, path: [key], message: `"${key}" belongs to kind "section"` })
+    }
   }
   if (context.value.kind === 'table') return
   for (const key of tableOnly) {

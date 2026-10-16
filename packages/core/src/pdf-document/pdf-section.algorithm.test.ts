@@ -21,6 +21,10 @@ describe('findSections', () => {
     expect(findSections(LONG, { heading: /^Details$/i })[0]?.text).toBe('Premium all-electric SUV platform configurations.\nAdaptive air suspension.\nMatrix LED lighting.')
   })
 
+  it('keeps the printed lines of a body apart, the lines of a wrapped paragraph too', () => {
+    expect(findSections(LONG, { heading: /^Details$/i })[0]?.lines).toEqual(['Premium all-electric SUV platform', 'configurations.', 'Adaptive air suspension.', 'Matrix LED lighting.'])
+  })
+
   it('reads the last section to the end of the document', () => {
     expect(findSections(LONG, { heading: /^Price$/i })[0]?.text).toBe('Base MSRP: 54,200.')
   })

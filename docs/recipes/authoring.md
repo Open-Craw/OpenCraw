@@ -661,6 +661,16 @@ The text is read the way a person reads it: the lines of a paragraph are joined 
 a hyphen with none), paragraphs are separated by a newline, a numbered or bulleted item starts a paragraph, and
 a page laid out in columns is read one column after the other, left to right.
 
+A section can be narrowed to part of its text. `line` takes one printed line of it (1 is the first, -1 the last;
+the lines of a wrapped paragraph count apart), and `match` keeps the part a pattern matches (its first group,
+else the whole match; case-insensitive), after `line` when both are given. A section the pattern does not match
+in is no match:
+
+```json
+{ "type": "extract", "id": "date", "kind": "section", "selector": "^SUBSCRIPTION SERVICES$", "until": "^COMMERCIAL TERMS$", "line": 1 },
+{ "type": "extract", "id": "email", "kind": "section", "selector": "^Customer Details$", "match": "([\\w.]+@[\\w.]+)" }
+```
+
 `ignoreHeadersFooters: true` (kinds `section` and `table`) leaves out the running headers and footers: rows in
 the top or bottom 15% of a page whose text, digits aside (`Page 1 of 2`), shows at the same height on more than
 one page. Without it they are content like any other row, which is what a `regex` or a `region` over them wants.

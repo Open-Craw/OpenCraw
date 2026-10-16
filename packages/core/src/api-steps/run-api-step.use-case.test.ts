@@ -335,6 +335,25 @@ describe('ApiStepRunner', () => {
     expect(emitted[1].price).toBe('Base MSRP: £54,200. Premium Trim Package Supplement: £4,500. Total Estimated OTR: £58,700.')
   })
 
+  it('reads one printed line of a section, or the part of it a pattern matches', async () => {
+    const sender: HttpSender = { send: async request => ({ status: 200, url: request.url, headers: {}, body: await fixturePdf('vehicle-spec-a.pdf') }) }
+    const reading: InputRecipe = {
+      ...recipe,
+      start: [{ url: 'http://cars/a.pdf' }],
+      steps: [
+        { type: 'request', id: 'doc', url: '{{start.url}}', as: 'pdf' },
+        { type: 'extract', id: 'first', selector: '^Details$', until: '^Price$', kind: 'section', line: 1 },
+        { type: 'extract', id: 'last', selector: '^Details$', until: '^Price$', kind: 'section', line: -1 },
+        { type: 'extract', id: 'msrp', selector: '^Price$', kind: 'section', match: String.raw`MSRP: (£[\d,]+)` },
+        { type: 'extract', id: 'missing', selector: '^Price$', kind: 'section', line: 99, many: true },
+        { type: 'emit' },
+      ],
+    }
+    const [emitted] = await crawl(reading, sender)
+
+    expect(emitted).toMatchObject({ first: expect.stringMatching(/^This entry-level hatchback/), last: expect.stringMatching(/infotainment system\.$/), msrp: '£18,500', missing: [] })
+  })
+
   it('reads a CSV as a workbook: tables with filled groups, regex over its rows, jsonpath over its cells', async () => {
     // The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131); `decodeText` is covered by text-decoding.algorithm.test.ts.
     const text = readFileSync(join(__dirname, '..', 'workbook-document', 'fixtures', 'listino.csv')).toString('latin1').replaceAll('', '€').replaceAll('', '–')

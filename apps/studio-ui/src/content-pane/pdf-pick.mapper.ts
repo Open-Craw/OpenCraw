@@ -196,8 +196,9 @@ export function labelCardNode (label: string, path: string, id: string): Outline
  * @param ignoreHeadersFooters - Leave out the headers and footers the document repeats on its pages.
  * @param path - This node's outline path.
  * @param id - The step's own id.
+ * @param narrow - Read only one printed line of the body, or the part a pattern matches.
  */
-export function sectionCardNode (heading: string, until: string | undefined, ignoreHeadersFooters: boolean, path: string, id: string): OutlineCard {
+export function sectionCardNode (heading: string, until: string | undefined, ignoreHeadersFooters: boolean, path: string, id: string, narrow: { line?: number, match?: string } = {}): OutlineCard {
   return {
     kind:     'card',
     path,
@@ -211,6 +212,8 @@ export function sectionCardNode (heading: string, until: string | undefined, ign
       selector: `^${escapeRegexLiteral(heading)}$`,
       ...(until !== undefined && { until: `^${escapeRegexLiteral(until)}$` }),
       ...(ignoreHeadersFooters && { ignoreHeadersFooters: true }),
+      ...(narrow.line !== undefined && { line: narrow.line }),
+      ...(narrow.match !== undefined && { match: narrow.match }),
     },
   }
 }
