@@ -37,12 +37,15 @@ async function command (link, body) {
 
 /** Starts the MCP server the way the editor does (its own executable as plain Node), asks it for its tools over stdio and stops it. */
 async function mcpToolNames (script) {
-  const child = spawn(process.execPath, [script], { env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }, stdio: ['pipe', 'pipe', 'ignore'] })
+  const child = spawn(process.execPath, [script], { env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }, stdio: ['pipe', 'pipe', 'pipe'] })
+  let stderr = ''
+  child.stderr.on('data', (chunk) => { stderr += chunk })
   const send = message => { child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', ...message })}\n`) }
   try {
     return await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => { reject(new Error('the MCP server did not answer within 60 s')) }, 60_000)
+      const timer = setTimeout(() => { reject(new Error(`the MCP server did not answer within 60 s. Its errors: ${stderr}`)) }, 60_000)
       child.on('error', reject)
+      child.on('exit', (code) => { reject(new Error(`the MCP server stopped with code ${code}. Its errors: ${stderr}`)) })
       // One line is one message: the answer to initialize is followed by the request for the tools, whose answer ends the wait.
       createInterface({ input: child.stdout }).on('line', (line) => {
         const message = JSON.parse(line)
