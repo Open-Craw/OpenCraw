@@ -19,6 +19,16 @@ export type Command =
   { name: 'version' } |
   { name: 'validate', paths: string[] } |
   {
+    name:    'export'
+    /** A finished run's JSON Lines file. */
+    records: string
+    /** The output recipe the records were mapped to: it names the columns. */
+    output:  string
+    /** The file to write; its extension is the format. */
+    out:     string
+    options: CommonOptions
+  } |
+  {
     name:     'diff'
     previous: string
     current:  string

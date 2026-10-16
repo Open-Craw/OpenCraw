@@ -41,6 +41,11 @@ async function run () {
   const registered = await vscode.commands.getCommands(true)
   assert.ok(registered.includes('opencraw.openStudio'), 'Open Studio is registered')
   assert.ok(registered.includes('opencraw.openOn'), 'Open on OpenCraw is registered')
+  for (const name of ['runRecipe', 'openRecipeInStudio', 'refreshRecipes', 'showWalkthrough', 'openLink']) assert.ok(registered.includes(`opencraw.${name}`), `${name} is registered`)
+
+  // The recipes view lists the workspace's recipes by the output they fill: an input whose output is missing is kept, under its name.
+  const groups = await api.recipeGroups()
+  assert.deepEqual(groups.map(group => [group.outputId, group.outputFile !== undefined, group.inputs.map(input => input.id)]), [['cars', true, ['byd', 'kia']], ['elsewhere', false, ['lost']]])
 
   const folder = vscode.workspace.workspaceFolders[0].uri
   const report = vscode.Uri.joinPath(folder, 'docs', 'report.csv')
