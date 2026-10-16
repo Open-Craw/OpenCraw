@@ -3,6 +3,14 @@ import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import type { DocumentTreeView } from '@opencraw/studio'
 import { TreeCanvas } from './tree-canvas.component'
 
+// jsdom reports a zero-size scroll container, so the real virtualizer mounts no row; every row is "visible" here instead.
+jest.mock('@tanstack/react-virtual', () => ({
+  useVirtualizer: ({ count }: { count: number }) => ({
+    getTotalSize:    () => count * 20,
+    getVirtualItems: () => Array.from({ length: count }, (_unused, index) => ({ index, key: index, start: index * 20, size: 20 })),
+  }),
+}))
+
 const TREE: DocumentTreeView = {
   format: 'json',
   root:   {

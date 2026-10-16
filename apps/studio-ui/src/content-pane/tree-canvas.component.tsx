@@ -1,4 +1,5 @@
-import { memo, useState } from 'react'
+import { memo, useRef, useState } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { Badge, Box, HStack, Text } from '@chakra-ui/react'
 import type { DocumentTreeNodeView, DocumentTreeView } from '@opencraw/studio'
 import { stepIdsForTreeNode } from './step-highlight.mapper'
@@ -37,8 +38,9 @@ const TYPE_COLOR: Record<DocumentTreeNodeView['valueType'], string> = {
  * node inside a list (its `listPath` is set) also offers "the whole list",
  * with the count already shown; a leaf offers "use as pagination next" for
  * `paginate`'s `next.jsonpath` (JSON/YAML only — see `paginateFromNextNode`).
- * Not virtualised: unlike the Inspect panel's DOM tree or the workbook grid
- * (5c), a parsed JSON/XML document is not usually large enough to need it.
+ * Virtualised: the open rows are flattened to one list and only the ones in
+ * view (and a few either side) are drawn, so a document of tens of thousands of
+ * rows costs a screenful of page, not all of them.
  *
  * Cross-panel highlighting (issues #111, #124): a node a step already
  * reads (its exact path, or the list path it belongs to) carries that
@@ -77,8 +79,39 @@ function initiallyCollapsed (root: DocumentTreeNodeView): Set<string> {
   return closed
 }
 
+/** One row of the flattened tree: a node and how deep it sits. */
+interface FlatRow {
+  node:  DocumentTreeNodeView
+  depth: number
+}
+
+/** The rows a tree shows now: every node reached through open parents, in order. Iterative, so a very deep document cannot overflow the stack. */
+function visibleRows (root: DocumentTreeNodeView, collapsed: ReadonlySet<string>): FlatRow[] {
+  const rows: FlatRow[] = []
+  const pending: FlatRow[] = [{ node: root, depth: 0 }]
+  for (let next = pending.pop(); next !== undefined; next = pending.pop()) {
+    rows.push(next)
+    if (next.node.children.length === 0 || collapsed.has(next.node.id)) continue
+    for (let index = next.node.children.length - 1; index >= 0; index -= 1) pending.push({ node: next.node.children[index], depth: next.depth + 1 })
+  }
+
+  return rows
+}
+
+/** Every row is this tall (px), so the list can place rows without measuring them. */
+const ROW_HEIGHT = 20
+const OVERSCAN = 20
+
 function TreeCanvasView ({ tree, onPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: TreeCanvasProps): React.ReactElement {
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => initiallyCollapsed(tree.root))
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const rows = visibleRows(tree.root, collapsed)
+  const virtualizer = useVirtualizer({
+    count:            rows.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize:     () => ROW_HEIGHT,
+    overscan:         OVERSCAN,
+  })
 
   function toggle (id: string): void {
     setCollapsed((prev) => {
@@ -91,7 +124,7 @@ function TreeCanvasView ({ tree, onPick, steps = NO_STEPS, hoveredStepId, onHove
   }
 
   return (
-    <Box h='full' overflow='auto' fontFamily='mono' fontSize='xs' py={2}>
+    <Box ref={scrollRef} h='full' overflow='auto' fontFamily='mono' fontSize='xs' py={2}>
       {tree.namespaces !== undefined && Object.keys(tree.namespaces).length > 0 && (
         <HStack px={2} pb={2} gap={2} flexWrap='wrap'>
           <Text color='fg.muted'>Namespaces:</Text>
@@ -100,12 +133,22 @@ function TreeCanvasView ({ tree, onPick, steps = NO_STEPS, hoveredStepId, onHove
           ))}
         </HStack>
       )}
-      <TreeCanvasNode node={tree.root} depth={0} collapsed={collapsed} onToggle={toggle} onPick={onPick} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={onHoverStepId} />
+      <Box position='relative' style={{ height: `${String(virtualizer.getTotalSize())}px` }}>
+        {virtualizer.getVirtualItems().map((item) => {
+          const row = rows[item.index]
+
+          return (
+            <Box key={row.node.id} position='absolute' top={0} left={0} w='full' style={{ transform: `translateY(${String(item.start)}px)`, height: `${String(ROW_HEIGHT)}px` }}>
+              <TreeCanvasRow node={row.node} depth={row.depth} collapsed={collapsed} onToggle={toggle} onPick={onPick} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={onHoverStepId} />
+            </Box>
+          )
+        })}
+      </Box>
     </Box>
   )
 }
 
-interface NodeProps {
+interface RowProps {
   node:           DocumentTreeNodeView
   depth:          number
   collapsed:      ReadonlySet<string>
@@ -116,7 +159,7 @@ interface NodeProps {
   onHoverStepId?: (stepId: string | undefined) => void
 }
 
-function TreeCanvasNode ({ node, depth, collapsed, onToggle, onPick, steps, hoveredStepId, onHoverStepId }: NodeProps): React.ReactElement {
+function TreeCanvasRow ({ node, depth, collapsed, onToggle, onPick, steps, hoveredStepId, onHoverStepId }: RowProps): React.ReactElement {
   const hasChildren = node.children.length > 0
   const isCollapsed = collapsed.has(node.id)
   const isLeaf = node.valueType !== 'object' && node.valueType !== 'array' && node.valueType !== 'element'
@@ -182,9 +225,6 @@ function TreeCanvasNode ({ node, depth, collapsed, onToggle, onPick, steps, hove
           </Text>
         )}
       </HStack>
-      {hasChildren && !isCollapsed && node.children.map(child => (
-        <TreeCanvasNode key={child.id} node={child} depth={depth + 1} collapsed={collapsed} onToggle={onToggle} onPick={onPick} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={onHoverStepId} />
-      ))}
     </>
   )
 }
