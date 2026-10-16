@@ -31,6 +31,11 @@
       "types": "./dist/src/opendocument-spreadsheet/index.d.ts",
       "import": "./dist/ods.esm.js",
       "default": "./dist/ods.esm.js"
+    },
+    "./odt": {
+      "types": "./dist/src/opendocument-text/index.d.ts",
+      "import": "./dist/odt.esm.js",
+      "default": "./dist/odt.esm.js"
     }
   },
   "files": [

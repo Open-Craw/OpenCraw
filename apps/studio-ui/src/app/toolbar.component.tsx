@@ -10,7 +10,7 @@ import { RecipeMenu } from './recipe-menu.component'
 import { SaveStatus } from './save-status.component'
 
 /** What "Load ▾ Document…" offers: every format the engine reads off disk (core's `formatOfFile`), as the file picker's filter. */
-const DOCUMENT_EXTENSIONS = '.pdf,.xlsx,.xlsm,.xls,.ods,.csv,.tsv,.pptx,.docx,.md,.markdown,.html,.htm,.json,.jsonl,.yaml,.yml,.xml'
+const DOCUMENT_EXTENSIONS = '.pdf,.xlsx,.xlsm,.xls,.ods,.csv,.tsv,.pptx,.docx,.odt,.md,.markdown,.html,.htm,.json,.jsonl,.yaml,.yml,.xml'
 
 export interface ToolbarProps {
   folder:            string
