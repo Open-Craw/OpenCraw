@@ -4,7 +4,7 @@ import type { DocumentTreeNodeView, OutlineCard, OutlineView, RecipeListing } fr
 import { InspectorPanel, matchingNodeIds } from '../inspector'
 import { allSteps, stepById } from '../steps-outline'
 import type { GridViewOverride } from '../studio-client'
-import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
+import { plainError, useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
 import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
 import { SnapshotNotice } from './snapshot-notice.component'
@@ -543,7 +543,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         {snapshot.isError && (
           <Box p={4} color='fg.error' role='alert'>
             <Text fontWeight='semibold'>Could not take a snapshot of this recipe's page.</Text>
-            <Text>{snapshot.error.message}</Text>
+            <Text>{plainError(snapshot.error.message)}</Text>
           </Box>
         )}
         {!snapshot.isFetching && !snapshot.isError && snapshot.data === undefined && (

@@ -14,6 +14,7 @@ import { DocumentDropZone, useImportDocumentFlow, useLoadUrlFlow, useOpenPathFro
 import { CARD_DRAG_MIME, PILL_DRAG_MIME, StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
+  plainError,
   useExplainWhyMutation,
   useInputRecipes,
   useRunSampleMutation,
@@ -135,7 +136,7 @@ function AppShell () {
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
-  const workspaceError = linkError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? runError
+  const workspaceError = linkError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? (runError === undefined ? undefined : plainError(runError))
 
   const loadNotice = importFlow.notice ?? urlFlow.notice
 
@@ -241,7 +242,7 @@ function AppShell () {
 function messageOf (error: unknown): string | undefined {
   if (error === null || error === undefined) return undefined
 
-  return error instanceof Error ? error.message : String(error)
+  return plainError(error instanceof Error ? error.message : String(error))
 }
 
 /** Whether a drag in flight carries a pill or a content-pane selection. */
