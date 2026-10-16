@@ -8,5 +8,5 @@ export { previewDeckTable, previewGridTable, previewPdfTable } from './table-pre
 export type { DeckTablePreviewMatch, DeckTablePreviewOptions, DeckTablePreviewResult, GridTablePreviewMatch, GridTablePreviewOptions, GridTablePreviewResult, TablePreviewMatch, TablePreviewOptions, TablePreviewResult } from './table-preview.use-case'
 export { previewRegion } from './region-preview.use-case'
 export type { RegionPreviewResult, RegionPreviewMatch } from './region-preview.use-case'
-export { workbookDocumentView } from './workbook-view.mapper'
+export { workbookDocumentView, workbookSheetRows } from './workbook-view.mapper'
 export type { GridCellType, GridCellView, GridMergeView, GridSheetView, WorkbookDocumentView } from './workbook-view.mapper'

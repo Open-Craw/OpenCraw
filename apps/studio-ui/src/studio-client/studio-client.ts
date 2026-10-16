@@ -1,4 +1,4 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, DetectUrlView, OpenPathCommand, OpenPathView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridRowsView, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, DetectUrlView, OpenPathCommand, OpenPathView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -47,6 +47,8 @@ export interface StudioClient {
   pdfBytesUrl:    (recipeId: string, path: string, version?: string) => string
   /** The grid canvas's sheets and cells for a CSV/spreadsheet snapshot (`document-view`'s `workbook-view.mapper.ts`, studio plan §3.4, issue #94's 5c), off the same cached snapshot; `delimiter`/`encoding` override a CSV's auto-detected reading. */
   gridView:       (recipeId: string, path: string, override?: { delimiter?: string, encoding?: string }) => Promise<WorkbookDocumentView>
+  /** A run of one sheet's rows of a big CSV/spreadsheet (`grid-rows`): the grid asks for the windows around where it is scrolled to instead of being sent the whole file. */
+  gridRows:       (recipeId: string, path: string, sheet: number, from: number, count: number) => Promise<GridRowsView>
   /** The grid canvas's live preview of a `table` extract's options (`document-view`'s `previewGridTable`, issue #94's 5c): a pure computation over the cached snapshot, instant on every option change. */
   gridPreview:    (recipeId: string, path: string, options: GridPreviewOptions) => Promise<GridTablePreviewView>
   /** The deck canvas's slides, shapes, tables, charts and notes for a `.pptx` snapshot (`document-view`'s `deck-view.mapper.ts`, studio plan §3.4, issue #94's 5d), off the same cached snapshot. */
@@ -130,6 +132,7 @@ export function createStudioClient (): StudioClient {
     regionPreview:  (recipeId, path, selector) => send<RegionPreviewView>(token, { type: 'region-preview', recipeId, path, selector }),
     pdfBytesUrl:    (recipeId, path, version) => `/api/pdf-bytes?token=${encodeURIComponent(token)}&recipeId=${encodeURIComponent(recipeId)}&path=${encodeURIComponent(path)}${version === undefined ? '' : `&v=${encodeURIComponent(version)}`}`,
     gridView:       (recipeId, path, override) => send<WorkbookDocumentView>(token, { type: 'grid-view', recipeId, path, delimiter: override?.delimiter, encoding: override?.encoding }),
+    gridRows:       (recipeId, path, sheet, from, count) => send<GridRowsView>(token, { type: 'grid-rows', recipeId, path, sheet, from, count }),
     gridPreview:    (recipeId, path, options) => send<GridTablePreviewView>(token, { type: 'grid-preview', recipeId, path, options }),
     deckView:       (recipeId, path) => send<DeckDocumentView>(token, { type: 'deck-view', recipeId, path }),
     deckPreview:    (recipeId, path, options) => send<DeckTablePreviewView>(token, { type: 'deck-preview', recipeId, path, options }),

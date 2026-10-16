@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { csvWorkbook, readXlsxWorkbook } from '@opencraw/core'
 import type { WorkbookDocument } from '@opencraw/core'
-import { workbookDocumentView } from './workbook-view.mapper'
+import { workbookDocumentView, workbookSheetRows } from './workbook-view.mapper'
 
 // The fixture holds Windows-1252 bytes 0x80 (€) and 0x96 (–). Decoded by hand: some Node builds' TextDecoder('windows-1252') is plain Latin-1 (issue #131).
 function windows1252Text (bytes: Buffer): string {
@@ -76,5 +76,37 @@ describe('workbookDocumentView', () => {
   it('is a pure function: running it twice on the same document gives the same result', () => {
     const document: WorkbookDocument = { kind: 'workbook', sheets: [{ name: 's', rows: [['a']] }] }
     expect(workbookDocumentView(document)).toEqual(workbookDocumentView(document))
+  })
+})
+
+describe('a big sheet, in windows', () => {
+  const rows = Array.from({ length: 500 }, (_unused, index) => [`row ${String(index)}`, index])
+  const document: WorkbookDocument = { kind: 'workbook', sheets: [{ name: 'big', rows }, { name: 'small', rows: [['a']] }] }
+
+  it('carries only the first window of a sheet longer than it, with the number of rows in all', () => {
+    const [big, small] = workbookDocumentView(document, { windowRows: 200 }).sheets
+
+    expect(big.rows).toHaveLength(200)
+    expect(big.rowCount).toBe(500)
+    expect(big.columnCount).toBe(2)
+    expect(small.rows).toHaveLength(1)
+    expect(small.rowCount).toBeUndefined()
+  })
+
+  it('carries every row when no window is asked for', () => {
+    expect(workbookDocumentView(document).sheets[0].rows).toHaveLength(500)
+  })
+
+  it('answers a later window of rows, and the short last one', () => {
+    expect(workbookSheetRows(document, 0, 200, 200)[0][0]).toEqual({ value: 'row 200', type: 'string' })
+    expect(workbookSheetRows(document, 0, 400, 200)).toHaveLength(100)
+    expect(workbookSheetRows(document, 0, 900, 200)).toEqual([])
+    expect(workbookSheetRows(document, 7, 0, 200)).toEqual([])
+  })
+
+  it('reads the width of a sheet of hundreds of thousands of rows without overflowing the stack', () => {
+    const huge: WorkbookDocument = { kind: 'workbook', sheets: [{ name: 'huge', rows: Array.from({ length: 300_000 }, () => ['a', 'b']) }] }
+
+    expect(workbookDocumentView(huge, { windowRows: 200 }).sheets[0].columnCount).toBe(2)
   })
 })
