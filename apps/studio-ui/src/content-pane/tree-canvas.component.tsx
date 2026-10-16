@@ -51,8 +51,34 @@ const TYPE_COLOR: Record<DocumentTreeNodeView['valueType'], string> = {
  */
 export const TreeCanvas = memo(TreeCanvasView)
 
+/** How deep a tree is opened at first: deeper levels open with a click. */
+const MAX_OPEN_DEPTH = 6
+
+/**
+ * The rows a tree starts closed: every item of a list after the first (they have the same shape, and the first shows it, with the `[*]` that picks the
+ * whole list), and anything deeper than {@link MAX_OPEN_DEPTH}. A list of forty cars with a hundred fields each is then a few dozen rows, not five
+ * thousand, so the page stays quick and the structure can be seen at a glance.
+ */
+function initiallyCollapsed (root: DocumentTreeNodeView): Set<string> {
+  const closed = new Set<string>()
+  const visit = (node: DocumentTreeNodeView, depth: number): void => {
+    if (node.children.length === 0) return
+    const index = /^\[?(\d+)\]?$/.exec(node.label)?.[1]
+    const laterItem = index !== undefined && Number(index) > 0
+    if (laterItem || depth >= MAX_OPEN_DEPTH) {
+      closed.add(node.id)
+
+      return
+    }
+    for (const child of node.children) visit(child, depth + 1)
+  }
+  visit(root, 0)
+
+  return closed
+}
+
 function TreeCanvasView ({ tree, onPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: TreeCanvasProps): React.ReactElement {
-  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set())
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => initiallyCollapsed(tree.root))
 
   function toggle (id: string): void {
     setCollapsed((prev) => {
