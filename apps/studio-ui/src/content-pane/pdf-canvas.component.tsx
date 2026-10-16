@@ -3,9 +3,11 @@ import { Badge, Box, HStack, Select, Text, createListCollection } from '@chakra-
 import type { OutlineCard, PdfCellView, PdfDocumentView, PdfPageView, PdfRowView, TablePreviewMatchView } from '@opencraw/studio'
 import { CARD_DRAG_MIME, cardDragData } from '../steps-outline'
 import { useRegionPreviewQuery, useTablePreviewQuery } from '../studio-client'
+import { choicesOf } from './pdf-selection-choices.algorithm'
+import type { SelectionChoice } from './pdf-selection-choices.algorithm'
 import { afterLineCardNode, cellBox, columnKeyFrom, escapedRowPattern, labelCardNode, paddedBox, regionCardNode, regionIdFrom, regionSelector, sectionCardNode, tableCardNode, unionBox } from './pdf-pick.mapper'
 import type { PointsBox, TableDraft } from './pdf-pick.mapper'
-import { anchorOf, idFromLabel, labelledValueOf, paragraphBox } from './pdf-prose.algorithm'
+import { idFromLabel, labelledValueOf, paragraphBox } from './pdf-prose.algorithm'
 import type { Anchor } from './pdf-prose.algorithm'
 import { REGION_COLOR, SelectionChip } from './selection-chip.component'
 import { regionStepsAt, stepIdsForBox } from './step-highlight.mapper'
@@ -20,6 +22,8 @@ export interface PdfCanvasProps {
   stepPath:       string
   /** The document's cells and rows (`pdf-view`). */
   view:           PdfDocumentView
+  /** How much the page is magnified (1 = fitted to the pane's width). */
+  zoom?:          number
   /** Where `pdf.js` fetches the raw bytes to render (`GET /api/pdf-bytes`). */
   bytesUrl:       string
   /** Called with the `table` extract card every time a header/until/column pick changes it. */
@@ -38,10 +42,13 @@ const NO_STEPS: readonly PickedStep[] = []
 
 /** A selection staged on the canvas, not yet in the recipe: a box on one page, previewed through `region-preview` until added or cleared. */
 interface StagedRegion {
-  page:    number
-  box:     PointsBox
+  page:     number
+  box:      PointsBox
   /** What the selection is tied to in the document's structure; absent for a dragged or extended box, which is a position. */
-  anchor?: Anchor
+  anchor?:  Anchor
+  /** The ways the click could have been taken (whole block, one line, a date in it, a position), and the one in force. */
+  choices?: SelectionChoice[]
+  choice?:  number
 }
 
 /** A drag in flight on the canvas, in canvas pixels. */
@@ -97,7 +104,7 @@ const RECIPE_COLOR = '#ea580c'
  * hovering the step's card fills it in, and snapping to a line one of
  * them reads lights the card up.
  */
-export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, onRegionPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: PdfCanvasProps): React.ReactElement {
+export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTablePick, onRegionPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: PdfCanvasProps): React.ReactElement {
   const [pageIndex, setPageIndex] = useState(0)
   const [mode, setMode] = useState<PdfPickMode>('text')
   const [draft, setDraft] = useState<TableDraft>({})
@@ -108,6 +115,10 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
   const scrollerRef = useRef<HTMLDivElement>(null)
   /** How much the drawn page is shrunk to fit the pane's width (1 = as drawn): a page wider than the pane would otherwise scroll sideways. */
   const [fit, setFit] = useState(1)
+  /** The drawn page's scale on screen: the fit to the pane's width, times the person's zoom. */
+  const scale = fit * zoom
+  /** The page's own background, read off the drawn bitmap: the preview area behind and around the page uses it, so a PDF on a dark ground is not set in a light pane (or the reverse). */
+  const [paper, setPaper] = useState('white')
   const reportedHoverRef = useRef<string | undefined>(undefined)
 
   const page = view.pages[pageIndex]
@@ -149,7 +160,9 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
     const canvas = canvasRef.current
     if (canvas === null || page === undefined) return
     const controller = new AbortController()
-    void renderPdfPage(canvas, bytesUrl, page.number, SCALE, controller.signal).catch((error: unknown) => {
+    void renderPdfPage(canvas, bytesUrl, page.number, SCALE, controller.signal).then((background) => {
+      if (background !== undefined && !controller.signal.aborted) setPaper(background)
+    }).catch((error: unknown) => {
       if (!controller.signal.aborted) console.error('PDF canvas: could not render the page', error)
     })
 
@@ -177,10 +190,23 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
   }
 
   /** Stages `box` on this page, or widens the current selection to hold it too when extending (shift). */
-  function stage (box: PointsBox, extend: boolean, anchor?: Anchor): void {
+  function stage (box: PointsBox, extend: boolean, choices?: SelectionChoice[]): void {
     const current = staged
-    if (extend && current !== undefined && current.page === page.number) setStaged({ page: page.number, box: unionBox(current.box, box) })
-    else setStaged({ page: page.number, box, ...(anchor !== undefined && { anchor }) })
+    if (extend && current !== undefined && current.page === page.number) {
+      setStaged({ page: page.number, box: unionBox(current.box, box) })
+
+      return
+    }
+    const first = choices?.[0]
+    setStaged({ page: page.number, box, ...(first?.anchor !== undefined && { anchor: first.anchor }), ...(choices !== undefined && { choices, choice: 0 }) })
+  }
+
+  /** Takes the selection another way: the box and the anchor of the choice (the whole block, one line, the date in it, a position). */
+  function choose (index: number): void {
+    const current = staged
+    const next = current?.choices?.[index]
+    if (current === undefined || next === undefined) return
+    setStaged({ page: current.page, box: next.box, choices: current.choices, choice: index, ...(next.anchor !== undefined && { anchor: next.anchor }) })
   }
 
   /** Tells the other panels which step the mouse is over, once per change rather than per pixel. */
@@ -225,18 +251,24 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
 
       return
     }
-    const anchor = event.shiftKey ? undefined : anchorOf(view.pages, page, cell)
-    stage(paddedBox(anchor?.kind === 'section' ? anchor.box : paragraphBox(page, cell)), event.shiftKey, anchor)
+    if (event.shiftKey) {
+      stage(paddedBox(paragraphBox(page, cell)), true)
+
+      return
+    }
+    const choices = choicesOf(view.pages, page, cell, paragraphBox(page, cell))
+    stage(choices[0]?.box ?? paddedBox(paragraphBox(page, cell)), false, choices)
   }
 
   /** The `region` card the staged selection would add — `undefined` until the preview has read something in the box. */
   function stagedCard (): OutlineCard | undefined {
     if (stagedSelector === undefined || stagedText === undefined) return undefined
     const anchor = staged?.anchor
-    if (anchor?.kind === 'section') return sectionCardNode(anchor.heading, anchor.until, anchor.ignoreHeadersFooters, stepPath, idFromLabel(anchor.heading))
+    if (anchor?.kind === 'section') return sectionCardNode(anchor.heading, anchor.until, anchor.ignoreHeadersFooters, stepPath, idFromLabel(anchor.matchName ?? (anchor.line === undefined ? anchor.heading : `${anchor.heading} line ${String(anchor.line)}`)), { ...(anchor.line !== undefined && { line: anchor.line }), ...(anchor.match !== undefined && { match: anchor.match }) })
+    if (anchor === undefined && (staged?.choices?.length ?? 0) > 1) return regionCardNode(stagedSelector, stepPath, regionIdFrom(stagedText))
     const labelled = stagedText.includes('\n') ? undefined : labelledValueOf(stagedText)
     if (labelled !== undefined) return labelCardNode(labelled.label, stepPath, idFromLabel(labelled.label))
-    if (anchor?.kind === 'after') return afterLineCardNode(anchor.previous, stepPath, idFromLabel(anchor.previous))
+    if (anchor?.kind === 'after') return afterLineCardNode(anchor.previous, stepPath, idFromLabel(anchor.previous), anchor.lines)
 
     return regionCardNode(stagedSelector, stepPath, regionIdFrom(stagedText))
   }
@@ -263,19 +295,20 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
     <Box h='full' display='flex' flexDirection='column'>
       <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} flexWrap='wrap'>
         {view.pages.length > 1 && <PageSelect pages={view.pages.length} value={pageIndex} onChange={setPageIndex} />}
+        {view.pages.length > 1 && <Text fontSize='sm' color='fg.muted'>{`of ${String(view.pages.length)}`}</Text>}
         <ModeButton label='Text' active={textMode} onClick={() => { setMode('text') }} />
-        <ModeButton label='Header row' active={mode === 'header'} onClick={() => { setMode('header') }} />
-        <ModeButton label='Last row (until)' active={mode === 'until'} onClick={() => { setMode('until') }} />
-        <ModeButton label='Column' active={mode === 'column'} onClick={() => { setMode('column') }} />
+        <ModeButton label='Header row' tip='The row that names the columns of a table: click it to say where the table starts.' active={mode === 'header'} onClick={() => { setMode('header') }} />
+        <ModeButton label='Last row (until)' tip='The line that comes right after the table: click it to say where the table stops.' active={mode === 'until'} onClick={() => { setMode('until') }} />
+        <ModeButton label='Column' tip='Click a column to collect everything under it.' active={mode === 'column'} onClick={() => { setMode('column') }} />
         <Text fontSize='xs' color='fg.muted'>{`${String(page.rowCount)} rows, ${String(page.cellCount)} cells${page.hasTextLayer ? '' : ' — no text layer (a scan?)'}`}</Text>
         {textMode && <Text fontSize='xs' color='fg.muted' visibility={staged === undefined ? 'visible' : 'hidden'}>Click a line (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
         {draft.header !== undefined && <Badge size='sm' colorPalette='green'>{`table: ${draft.header}${draft.until === undefined ? '' : ` until ${draft.until}`}`}</Badge>}
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
         {regionPreview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{regionPreview.data.error}</Badge>}
       </HStack>
-      <Box ref={scrollerRef} flex='1' minH='0' overflow='auto' position='relative'>
-        <Box position='relative' width={`${String(Math.ceil(width * fit))}px`} height={`${String(Math.ceil(height * fit))}px`}>
-          <Box position='absolute' top={0} left={0} width={`${String(width)}px`} height={`${String(height)}px`} style={{ transform: `scale(${String(fit)})`, transformOrigin: 'top left' }}>
+      <Box ref={scrollerRef} flex='1' minH='0' overflow='auto' position='relative' style={{ background: paper }} onContextMenu={(event) => { event.preventDefault() }}>
+        <Box position='relative' width={`${String(Math.ceil(width * scale))}px`} height={`${String(Math.ceil(height * scale))}px`}>
+          <Box position='absolute' top={0} left={0} width={`${String(width)}px`} height={`${String(height)}px`} style={{ transform: `scale(${String(scale)})`, transformOrigin: 'top left' }}>
             <canvas ref={canvasRef} width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }} />
             <svg
               data-testid='pdf-overlay'
@@ -344,8 +377,11 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
               <SelectionChip
                 left={Math.min(stagedOnThisPage.box.x1, stagedOnThisPage.box.x2) * SCALE}
                 top={chipTop(stagedOnThisPage.box, page.height)}
-                text={stagedText}
+                text={shownText(stagedOnThisPage.anchor, stagedText)}
                 note={anchorNote(stagedOnThisPage.anchor, stagedText)}
+                choices={stagedOnThisPage.choices?.map(choice => choiceLabel(choice))}
+                choice={stagedOnThisPage.choice}
+                onChoose={choose}
                 loading={regionPreview.isPending}
                 onAdd={addStaged}
                 onClear={() => { setStaged(undefined) }}
@@ -371,11 +407,34 @@ function chipTop (box: PointsBox, pageHeight: number): number {
 }
 
 /** What the staged selection is tied to, in words: the person sees whether the step survives a document of another layout. */
+/** What the step will read from the text in the box: the part a `match` finds, else the text itself. */
+function shownText (anchor: Anchor | undefined, text: string | undefined): string | undefined {
+  if (text === undefined || anchor?.kind !== 'section' || anchor.match === undefined) return text
+  const found = new RegExp(anchor.match, 'i').exec(text)
+
+  return found === null ? undefined : (found[1] ?? found[0])
+}
+
+function choiceLabel (choice: SelectionChoice): string {
+  const { anchor } = choice
+  if (anchor?.kind === 'section') {
+    if (anchor.line !== undefined) return `Only this line (line ${String(anchor.line)} of the block)`
+    if (anchor.matchName !== undefined) return `Only the ${anchor.matchName} in the block`
+
+    return anchor.until === undefined ? `The whole block below “${anchor.heading}”` : `The whole block between “${anchor.heading}” and “${anchor.until}”`
+  }
+  if (anchor?.kind === 'after') return anchor.lines > 1 ? `The ${String(anchor.lines)} lines after “${anchor.previous}”` : `The line after “${anchor.previous}”`
+
+  return 'A fixed position on the page (breaks if the layout moves)'
+}
+
 function anchorNote (anchor: Anchor | undefined, text: string | undefined): string {
   const labelled = text !== undefined && !text.includes('\n') && labelledValueOf(text) !== undefined
+  if (anchor?.kind === 'section' && anchor.line !== undefined) return `Reads line ${String(anchor.line)} of what is between “${anchor.heading}” and ${anchor.until === undefined ? 'the end' : `“${anchor.until}”`}`
+  if (anchor?.kind === 'section' && anchor.matchName !== undefined) return `Reads the ${anchor.matchName} in what is below “${anchor.heading}”, wherever it sits`
   if (anchor?.kind === 'section') return anchor.until === undefined ? `Reads everything below “${anchor.heading}”` : `Reads what is between “${anchor.heading}” and “${anchor.until}”`
   if (labelled) return 'Reads the value after its label'
-  if (anchor?.kind === 'after') return `Reads the line after “${anchor.previous}”`
+  if (anchor?.kind === 'after') return anchor.lines > 1 ? `Reads the ${String(anchor.lines)} lines after “${anchor.previous}”` : `Reads the line after “${anchor.previous}”`
 
   return 'Reads a fixed position on the page: it breaks when the layout moves'
 }
@@ -428,14 +487,15 @@ function nearestCell (page: PdfPageView, point: { x: number, y: number }): PdfCe
   return best?.cell
 }
 
-function ModeButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }): React.ReactElement {
+function ModeButton ({ label, tip, active, onClick }: { label: string, tip?: string, active: boolean, onClick: () => void }): React.ReactElement {
   return (
     <Text
       as='button'
+      title={tip}
       fontSize='sm'
       fontWeight={active ? 'semibold' : 'normal'}
       color={active ? 'colorPalette.fg' : 'fg'}
-      colorPalette='blue'
+      colorPalette='brand'
       cursor='pointer'
       onClick={onClick}
     >
@@ -543,7 +603,7 @@ function BandOverlay ({ band, scale, pageHeight, onClick }: BandOverlayProps): R
  * `pdf-view`'s geometry, not the bitmap) still works. `signal` aborts the
  * draw (the page changed or the pane unmounted) so the next render can use the canvas.
  */
-async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageNumber: number, scale: number, signal: AbortSignal): Promise<void> {
+async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageNumber: number, scale: number, signal: AbortSignal): Promise<string | undefined> {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs')
   const workerModule = await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')
   pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default
@@ -551,16 +611,29 @@ async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageN
   const document = await loadingTask.promise
   try {
     const pdfPage = await document.getPage(pageNumber)
-    if (signal.aborted) return
+    if (signal.aborted) return undefined
     const viewport = pdfPage.getViewport({ scale })
     canvas.width = Math.ceil(viewport.width)
     canvas.height = Math.ceil(viewport.height)
     const context = canvas.getContext('2d')
-    if (context === null) return
+    if (context === null) return undefined
     const task = pdfPage.render({ canvas, canvasContext: context, viewport })
     signal.addEventListener('abort', () => { task.cancel() }) // a canvas takes one render at a time: a superseded one must let go of it
     await task.promise
+
+    return paperOf(context)
   } finally {
     await loadingTask.destroy()
+  }
+}
+
+/** The colour of the page's corner (pdf.js paints an opaque ground: white unless the document fills the page with its own). */
+function paperOf (context: CanvasRenderingContext2D): string | undefined {
+  try {
+    const [red, green, blue] = context.getImageData(1, 1, 1, 1).data
+
+    return `rgb(${String(red)}, ${String(green)}, ${String(blue)})`
+  } catch {
+    return undefined
   }
 }

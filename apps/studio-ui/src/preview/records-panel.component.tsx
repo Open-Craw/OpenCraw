@@ -98,8 +98,8 @@ function RecordsToolbar ({ view, onViewChange, onExport, onEnlarge, exportDisabl
 }) {
   return (
     <HStack px={2} py={1} gap={2} borderBottomWidth='1px' flexShrink={0}>
-      <Button size='2xs' variant={view === 'table' ? 'solid' : 'outline'} onClick={() => { onViewChange('table') }}>Table</Button>
-      <Button size='2xs' variant={view === 'jsonl' ? 'solid' : 'outline'} onClick={() => { onViewChange('jsonl') }}>JSONL</Button>
+      <Button size='2xs' colorPalette='brand' variant={view === 'table' ? 'solid' : 'outline'} onClick={() => { onViewChange('table') }}>Table</Button>
+      <Button size='2xs' colorPalette='brand' variant={view === 'jsonl' ? 'solid' : 'outline'} onClick={() => { onViewChange('jsonl') }}>JSONL</Button>
       <NativeSelect.Root size='xs' width='7em' variant='outline' disabled={exportDisabled}>
         <NativeSelect.Field
           aria-label='Export records'

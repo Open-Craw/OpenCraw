@@ -2,7 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>StudioUi</title>
+    <title>OpenCraw Studio</title>
+    <script>
+      // Sets the colour mode before the first paint (the app keeps it after): the saved choice, else the system's.
+      try {
+        var saved = localStorage.getItem('opencraw-studio:color-mode')
+        var dark = saved === 'dark' || (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.classList.add(dark ? 'dark' : 'light')
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+      } catch (error) {}
+    </script>
     <base href="/" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />

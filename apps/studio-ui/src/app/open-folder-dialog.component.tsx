@@ -47,7 +47,7 @@ export function OpenFolderDialog ({ open, onClose, folder, onFolderChange, onOpe
                 {onBrowse !== undefined && (
                   <Button size='sm' variant='outline' onClick={onBrowse} disabled={browsing} loading={browsing} title='Pick the folder in the operating system dialog'>Browse…</Button>
                 )}
-                <Button size='sm' colorPalette='blue' onClick={confirm} disabled={folder.trim() === ''}>Open</Button>
+                <Button size='sm' colorPalette='brand' onClick={confirm} disabled={folder.trim() === ''}>Open</Button>
               </HStack>
             </Dialog.Body>
           </Dialog.Content>

@@ -64,13 +64,13 @@ export function DocumentDropZone ({ onFile, children, ...boxProps }: DocumentDro
           display='flex'
           alignItems='center'
           justifyContent='center'
-          bg='blue.subtle/80'
+          bg='brand.subtle/80'
           borderWidth='3px'
           borderStyle='dashed'
-          borderColor='blue.solid'
+          borderColor='brand.solid'
           pointerEvents='none'
         >
-          <Text fontSize='lg' fontWeight='semibold' color='blue.fg'>Drop to load this file</Text>
+          <Text fontSize='lg' fontWeight='semibold' color='brand.fg'>Drop to load this file</Text>
         </Box>
       )}
     </Box>

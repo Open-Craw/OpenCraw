@@ -1,5 +1,5 @@
-import type { DocumentTreeNodeView, FieldPick, InferSelectorView } from '@opencraw/studio'
-import { addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import type { DocumentTreeNodeView, FieldPick, InferSelectorView, OutlineNode } from '@opencraw/studio'
+import { addHtmlListField, addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listItemsSelector, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 
 const priceField: FieldPick = { selector: '.price_color', tier: 'class', take: 'text', matches: 20 }
 const linkField: FieldPick = { selector: 'h3 a', tier: 'structure', take: 'attr:href', matches: 20 }
@@ -35,7 +35,7 @@ describe('listOutlineNodes', () => {
     expect(items.step).toEqual({ type: 'extract', id: 'items', selector: 'article.product_pod', kind: 'css', take: 'html', many: true })
     expect(forEach.step).toEqual({ type: 'forEach', over: 'items', as: 'item', emit: true, steps: [] })
     expect(forEach.children).toHaveLength(1)
-    expect(forEach.children.at(0)?.step).toEqual({ type: 'extract', id: 'value', from: 'item', selector: '.price_color', kind: 'css' })
+    expect(forEach.children.at(0)?.step).toEqual({ type: 'extract', id: 'priceColor', from: 'item', selector: '.price_color', kind: 'css' })
   })
 
   it('never reads the field selector against the whole document: it always carries "from": the item alias', () => {
@@ -141,7 +141,7 @@ describe('documentListOutlineNodes (issue #163)', () => {
     const nodes = documentListOutlineNodes(nameInList, 'steps.1')
     expect(nodes?.[0].step).toEqual({ type: 'extract', id: 'items', selector: '$.items[*]', kind: 'jsonpath', take: 'json', many: true })
     expect(nodes?.[1].step).toEqual({ type: 'forEach', over: 'items', as: 'item', emit: true, steps: [] })
-    expect(nodes?.[1].children.at(0)?.step).toEqual({ type: 'extract', id: 'value', from: 'item', selector: '$.name', kind: 'jsonpath', take: 'json' })
+    expect(nodes?.[1].children.at(0)?.step).toEqual({ type: 'extract', id: 'name', from: 'item', selector: '$.name', kind: 'jsonpath', take: 'json' })
     expect(nodes?.[1].children.at(0)?.path).toBe('steps.2.steps.0')
   })
 
@@ -160,12 +160,43 @@ describe('documentListOutlineNodes (issue #163)', () => {
     const steps = addJsonListField([items, loop], priceInList)
     const forEach = steps?.[1] as typeof loop
     expect(steps).toHaveLength(2)
-    expect(forEach.children.map(child => child.step.id)).toEqual(['value', 'value_2'])
+    expect(forEach.children.map(child => child.step.id)).toEqual(['name', 'price'])
     expect(forEach.children.at(1)?.step.selector).toBe('$.price')
     expect(forEach.children.at(1)?.path).toBe('steps.1.steps.1')
   })
 
   it('answers undefined when no loop is over this list yet', () => {
     expect(addJsonListField([], nameInList)).toBeUndefined()
+  })
+})
+
+describe('addHtmlListField', () => {
+  const items: OutlineNode = { kind: 'card', path: 'steps.1', stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id: 'items', selector: 'li.car', kind: 'css', take: 'html', many: true } }
+  const loop: OutlineNode = { kind: 'bracket', path: 'steps.2', stepType: 'forEach', sentence: [], children: [], step: { type: 'forEach', over: 'items', as: 'item', emit: true, steps: [] } }
+  const goto: OutlineNode = { kind: 'card', path: 'steps.0', stepType: 'goto', sentence: [], custom: false, step: { type: 'goto', url: '{{start.url}}' } }
+
+  it('finds the selector of the items a loop is over', () => {
+    expect(listItemsSelector([goto, items, loop])).toBe('li.car')
+    expect(listItemsSelector([goto])).toBeUndefined()
+  })
+
+  it('adds a field to the loop, named after what it reads, from the item', () => {
+    const next = addHtmlListField([goto, items, loop], { selector: 'span.car_img > img', tier: 'class', take: 'attr:src', matches: 17 })
+    const body = next?.[2]?.kind === 'bracket' ? next[2].children : []
+
+    expect(body).toHaveLength(1)
+    expect(body[0]).toMatchObject({ path: 'steps.2.steps.0', step: { id: 'image', from: 'item', selector: 'span.car_img > img', take: 'attr:src' } })
+  })
+
+  it('names a text field after its class, and keeps the ids of the recipe unique', () => {
+    const once = addHtmlListField([goto, items, loop], { selector: 'strong.car_name', tier: 'class', take: 'text', matches: 17 }) as OutlineNode[]
+    const twice = addHtmlListField(once, { selector: 'strong.car_name', tier: 'class', take: 'text', matches: 17 })
+    const body = twice?.[2]?.kind === 'bracket' ? twice[2].children.map(child => child.step.id) : []
+
+    expect(body).toEqual(['carName', 'carName_2'])
+  })
+
+  it('has nothing to add to when the recipe has no loop over elements', () => {
+    expect(addHtmlListField([goto], { selector: 'b', tier: 'class', take: 'text', matches: 1 })).toBeUndefined()
   })
 })

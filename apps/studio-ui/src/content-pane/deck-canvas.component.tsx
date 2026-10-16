@@ -307,10 +307,10 @@ export function DeckCanvas ({ recipeId, stepPath, view, onTablePick, onChartPick
         <ModeButton label='Text' active={textMode} onClick={() => { setMode('text') }} />
         {!textMode && <ModeButton label='Native table' active={source === 'table'} onClick={() => { switchSource('table') }} />}
         {!textMode && <ModeButton label='Text-box grid' active={source === 'shapes'} onClick={() => { switchSource('shapes') }} />}
-        <ModeButton label='Header row(s)' active={mode === 'header'} onClick={() => { setMode('header') }} />
-        <ModeButton label='Last row (until)' active={mode === 'until'} onClick={() => { setMode('until') }} />
-        <ModeButton label='Column' active={mode === 'column'} onClick={() => { setMode('column') }} />
-        {!textMode && source === 'table' && <ModeButton label='Fill down' active={mode === 'fillDown'} onClick={() => { setMode('fillDown') }} />}
+        <ModeButton label='Header row(s)' tip='The row that names the columns of a table: click it to say where the table starts.' active={mode === 'header'} onClick={() => { setMode('header') }} />
+        <ModeButton label='Last row (until)' tip='The line that comes right after the table: click it to say where the table stops.' active={mode === 'until'} onClick={() => { setMode('until') }} />
+        <ModeButton label='Column' tip='Click a column to collect everything under it.' active={mode === 'column'} onClick={() => { setMode('column') }} />
+        {!textMode && source === 'table' && <ModeButton label='Fill down' tip='Click a column whose empty cells should repeat the value above them (a group name written once).' active={mode === 'fillDown'} onClick={() => { setMode('fillDown') }} />}
         {textMode && <Text fontSize='xs' color='fg.muted' visibility={staged === undefined ? 'visible' : 'hidden'}>Click a text box (shift+click to extend) or drag a box, then add it to the recipe or drag it onto the Steps tab.</Text>}
         {draft.header !== undefined && <Badge size='sm' colorPalette='green'>{`table: ${draft.header}${draft.until === undefined ? '' : ` until ${draft.until}`}`}</Badge>}
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
@@ -438,14 +438,15 @@ function nearestShape (slide: DeckSlideView, point: { x: number, y: number }): D
   return best?.shape
 }
 
-function ModeButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }): React.ReactElement {
+function ModeButton ({ label, tip, active, onClick }: { label: string, tip?: string, active: boolean, onClick: () => void }): React.ReactElement {
   return (
     <Text
       as='button'
+      title={tip}
       fontSize='sm'
       fontWeight={active ? 'semibold' : 'normal'}
       color={active ? 'colorPalette.fg' : 'fg'}
-      colorPalette='blue'
+      colorPalette='brand'
       cursor='pointer'
       onClick={onClick}
     >

@@ -14,6 +14,8 @@ export const snapshotViewSchema = z.object({
   nodeCount: z.number(),
   baseUrl:   z.string(),
   format:    z.enum(BODY_KINDS).optional(),
+  /** Something to tell the person about the page: it is a bot check or an access-denied page, not the content. */
+  notice:    z.string().optional(),
 })
 
 export type SnapshotView = z.infer<typeof snapshotViewSchema>

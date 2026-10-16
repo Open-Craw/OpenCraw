@@ -4,8 +4,9 @@
 //   npm run build                      (the packages the Studio runs from)
 //   node docs/studio/capture/pdf-agreements.mjs
 //
-// Needs: the repository built, Playwright's Chromium, ffmpeg on the PATH (or FFMPEG=…) and Windows (the
-// narration is the system's own speech voice; NARRATION_VOICE picks one, default "Microsoft Zira Desktop").
+// Needs: the repository built, Playwright's Chromium and ffmpeg on the PATH (or FFMPEG=…). The narration is
+// Piper's neural voice when PIPER_MODEL points at a voice (.onnx; PIPER at the executable, default "piper"),
+// otherwise, on Windows, the system's own speech voice (NARRATION_VOICE picks one, default "Microsoft Zira Desktop").
 // Everything is driven through the Studio's own UI, the way a person would: the script finds a line by its
 // text on the PDF page and clicks it.
 import { execFileSync, spawn } from 'node:child_process'
@@ -22,15 +23,26 @@ const work = join(tmpdir(), `opencraw-tutorial-${Date.now()}`)
 const folder = join(work, 'recipes')
 const FFMPEG = process.env.FFMPEG ?? 'ffmpeg'
 const VOICE = process.env.NARRATION_VOICE ?? 'Microsoft Zira Desktop'
-const SIZE = { width: 1360, height: 860 }
+const PIPER = process.env.PIPER ?? 'piper'
+const PIPER_MODEL = process.env.PIPER_MODEL
+const SIZE ={ width: 1360, height: 860 }
 
 mkdirSync(shots, { recursive: true })
 mkdirSync(folder, { recursive: true })
 mkdirSync(join(work, 'audio'), { recursive: true })
 for (const stale of readdirSync(shots)) rmSync(join(shots, stale))
 
-/** Speaks `text` to a WAV file with the system voice; returns its length in milliseconds. */
+/** Speaks `text` to a WAV file; returns its length in milliseconds. Piper when PIPER_MODEL is set, else the system voice. */
 function speak (text, file) {
+  if (PIPER_MODEL !== undefined) execFileSync(PIPER, ['--model', PIPER_MODEL, '--length_scale', '1.05', '--output_file', file], { input: text, stdio: ['pipe', 'ignore', 'ignore'] })
+  else speakWithSystemVoice(text, file)
+  const bytes = readFileSync(file)
+  const byteRate = bytes.readUInt32LE(28)
+
+  return Math.round(((bytes.length - 44) / byteRate) * 1000)
+}
+
+function speakWithSystemVoice (text, file) {
   const script = [
     'Add-Type -AssemblyName System.Speech',
     '$s = New-Object System.Speech.Synthesis.SpeechSynthesizer',
@@ -41,10 +53,6 @@ function speak (text, file) {
     '$s.Dispose()',
   ].join('; ')
   execFileSync('powershell', ['-NoProfile', '-Command', script], { env: { ...process.env, NARRATION_VOICE: VOICE, NARRATION_FILE: file, NARRATION_TEXT: text } })
-  const bytes = readFileSync(file)
-  const byteRate = bytes.readUInt32LE(28)
-
-  return Math.round(((bytes.length - 44) / byteRate) * 1000)
 }
 
 // -- the Studio ------------------------------------------------------------------------------------------------

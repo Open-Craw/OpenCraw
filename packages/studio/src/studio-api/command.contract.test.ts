@@ -9,6 +9,7 @@ describe('studioCommandSchema', () => {
     { type: 'stop-run' },
     { type: 'save-recipe', path: '/tmp/recipes/books.input.json', recipe: { kind: 'input' } },
     { type: 'fetch-start-page', recipeId: 'books' },
+    { type: 'detect-url', url: 'https://shop.example/api/list' },
     { type: 'save-outline', path: '/tmp/recipes/books.input.json', outline: { recipe: {}, steps: [] } },
     { type: 'take-snapshot', recipeId: 'books', path: 'start' },
     { type: 'verify-selector', recipeId: 'books', path: 'start', selector: '.price_color' },

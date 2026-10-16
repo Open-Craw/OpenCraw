@@ -14,6 +14,11 @@ describe('newStep', () => {
     expect(newStep('hook', 'slug')).toEqual({ type: 'hook', name: 'slug' })
   })
 
+  it('offers a request, read as JSON, so an API recipe can chain one request after another', () => {
+    expect(NEW_STEP_OPTIONS.map(option => option.stepType)).toContain('request')
+    expect(newStep('request')).toEqual({ type: 'request', id: 'response', url: '', as: 'json' })
+  })
+
   it('gives a container type an empty "steps" array', () => {
     expect(newStep('forEach').steps).toEqual([])
     expect(newStep('if').steps).toEqual([])

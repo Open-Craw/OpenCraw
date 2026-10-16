@@ -74,7 +74,7 @@ describe('ContentPane', () => {
     renderWithProviders(<ContentPane recipe={recipe()} />)
 
     const alert = await screen.findByRole('alert')
-    expect(alert.textContent).toContain('ECONNREFUSED')
+    expect(alert.textContent).toContain('refused the connection')
     expect(screen.queryByText(/run a sample, or open a recipe/i)).toBeNull()
   })
 

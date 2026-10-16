@@ -18,6 +18,9 @@ export function pickerStyleCss (pickMode: boolean, showHidden: boolean, hoveredS
     '[data-oc-node]:hover { outline: 2px solid #3182ce !important; outline-offset: -2px; }',
   ]
   if (hoveredSelector !== undefined && hoveredSelector !== '') rules.push(`${hoveredSelector} { outline: 2px solid #dd6b20 !important; outline-offset: -2px; background: rgba(221,107,32,0.08) !important; }`)
+  // A pop-up that covers the page is left out of the picture, with the scroll lock it puts on the page; "Show hidden" brings it back.
+  if (showHidden) rules.push('[data-oc-overlay] { display: revert !important; opacity: 0.5 !important; outline: 1px dashed #ed8936 !important; }')
+  else rules.push('[data-oc-overlay] { display: none !important; }', 'html:has([data-oc-overlay]), body:has([data-oc-overlay]) { overflow: auto !important; position: static !important; }')
   if (showHidden) rules.push('[data-oc-hidden] { display: revert !important; visibility: visible !important; opacity: 0.5 !important; outline: 1px dashed #ed8936 !important; }')
 
   return rules.join('\n')

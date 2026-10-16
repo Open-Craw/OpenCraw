@@ -19,9 +19,12 @@ function listing (recipe: { id: string }) {
 function mockFetch (): jest.Mock {
   const fetchMock = jest.fn().mockImplementation(async (_url: string, init: RequestInit) => {
     const command = JSON.parse(init.body as string) as SentCommand
-    const body = command.type === 'import-document'
-      ? { path: `${command.folder as string}/${command.name as string}`, url: `file://${command.folder as string}/${command.name as string}` }
-      : (command.type === 'open-workspace' ? { folder: command.folder, recipes: [] } : { saved: true })
+    const answers: Record<string, unknown> = {
+      'import-document': { path: `${command.folder as string}/${command.name as string}`, url: `file://${command.folder as string}/${command.name as string}` },
+      'open-workspace':  { folder: command.folder, recipes: [] },
+      'detect-url':      { kind: 'html' },
+    }
+    const body = answers[command.type] ?? { saved: true }
 
     return { ok: true, status: 200, json: async () => body }
   })
@@ -72,14 +75,14 @@ describe('Load into the open recipe', () => {
     expect(useStudioUiStore.getState().selectedRecipeId).toBe('books')
   })
 
-  it('a page starts a new web recipe named after its host when the open recipe reads a document, leaving that one alone', async () => {
+  it('a page starts a new web recipe named after its site and page when the open recipe reads a document, leaving that one alone', async () => {
     const fetchMock = mockFetch()
     const { result } = renderHook(() => useLoadUrlFlow(), { wrapper: wrapperFor(openWith(documentRecipe)) })
 
     await act(async () => { await result.current.loadUrl('https://shop.test/catalog') })
 
-    expect(saved(fetchMock).map(command => command.path)).toEqual(['/r/shop.ocw-out.json', '/r/shop.ocw-in.json'])
-    expect(useStudioUiStore.getState().selectedRecipeId).toBe('shop')
+    expect(saved(fetchMock).map(command => command.path)).toEqual(['/r/shop-test-catalog.ocw-out.json', '/r/shop-test-catalog.ocw-in.json'])
+    expect(useStudioUiStore.getState().selectedRecipeId).toBe('shop-test-catalog')
     expect(result.current.notice).toMatch(/“q3” reads a document.*“q3” is unchanged/)
   })
 

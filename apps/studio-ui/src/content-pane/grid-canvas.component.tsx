@@ -274,10 +274,10 @@ export function GridCanvas ({ recipeId, stepPath, view, onTablePick, onCellPick,
       <HStack px={3} py={2} borderBottomWidth='1px' gap={3} flexShrink={0} flexWrap='wrap'>
         <ModeButton label='Cell' active={cellMode} onClick={() => { setMode('cell') }} />
         <ModeButton label='Sheet' active={mode === 'sheet'} onClick={() => { setMode('sheet') }} />
-        <ModeButton label='Header row(s)' active={mode === 'header'} onClick={() => { setMode('header') }} />
-        <ModeButton label='First non-data row (until)' active={mode === 'until'} onClick={() => { setMode('until') }} />
-        <ModeButton label='Column' active={mode === 'column'} onClick={() => { setMode('column') }} />
-        <ModeButton label='Fill down' active={mode === 'fillDown'} onClick={() => { setMode('fillDown') }} />
+        <ModeButton label='Header row(s)' tip='The row that names the columns of a table: click it to say where the table starts.' active={mode === 'header'} onClick={() => { setMode('header') }} />
+        <ModeButton label='First non-data row (until)' tip='The first row below the table that is not part of it (a total, a note, a blank): click it to say where the table stops.' active={mode === 'until'} onClick={() => { setMode('until') }} />
+        <ModeButton label='Column' tip='Click a column to collect everything under it.' active={mode === 'column'} onClick={() => { setMode('column') }} />
+        <ModeButton label='Fill down' tip='Click a column whose empty cells should repeat the value above them (a group name written once).' active={mode === 'fillDown'} onClick={() => { setMode('fillDown') }} />
         {view.csv !== undefined && (
           <CsvFormatControls format={view.csv} override={csvOverride} onChange={onCsvOverrideChange} />
         )}
@@ -457,14 +457,15 @@ function inRange (range: CellRange, row: number, column: number): boolean {
   return row >= range.top && row <= range.bottom && column >= range.left && column <= range.right
 }
 
-function ModeButton ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }): React.ReactElement {
+function ModeButton ({ label, tip, active, onClick }: { label: string, tip?: string, active: boolean, onClick: () => void }): React.ReactElement {
   return (
     <Text
       as='button'
+      title={tip}
       fontSize='sm'
       fontWeight={active ? 'semibold' : 'normal'}
       color={active ? 'colorPalette.fg' : 'fg'}
-      colorPalette='blue'
+      colorPalette='brand'
       cursor='pointer'
       onClick={onClick}
     >
@@ -559,7 +560,13 @@ function GridCellBox ({ cell, box, isHeader, isHidden, isSnapped, isStaged, step
       onMouseEnter={onMouseEnter === undefined ? undefined : () => { onMouseEnter(stepIds) }}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
-      title={inRecipe ? `In the recipe: ${stepIds.join(', ')}` : (isHidden ? 'Hidden row' : undefined)}
+      title={inRecipe
+        ? `In the recipe: ${stepIds.join(', ')}
+${String(cell.value)}`
+        : (isHidden
+            ? `Hidden row
+${String(cell.value)}`
+            : String(cell.value))}
       truncate
     >
       {String(cell.value)}

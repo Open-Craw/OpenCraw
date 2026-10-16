@@ -53,7 +53,7 @@ export function TreeRow ({ row, highlightColor, hovered, onToggle, onHover, onCl
           )
         : <Box w='12px' flexShrink={0} />}
       <Text as='span' color='purple.fg'>{`<${node.tag}`}</Text>
-      {node.id !== undefined && <Text as='span' color='blue.fg'>{`#${node.id}`}</Text>}
+      {node.id !== undefined && <Text as='span' color='brand.fg'>{`#${node.id}`}</Text>}
       {node.classes?.map(token => <Text as='span' key={token} color='teal.fg'>{`.${token}`}</Text>)}
       {attributeEntries.map(([name, value]) => <Text as='span' key={name} color='fg.muted'>{`${name}="${value}"`}</Text>)}
       {moreAttributes > 0 && <Text as='span' color='fg.muted'>{`…+${moreAttributes}`}</Text>}

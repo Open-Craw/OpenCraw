@@ -26,6 +26,18 @@ describe('openWorkspace', () => {
     expect(JSON.parse(output?.text ?? '')).toMatchObject({ kind: 'output', id: 'book' })
   })
 
+  it('shows a relative file: start URL as the file has it, not resolved against the folder', async () => {
+    const folder = folderOf({
+      'book.output.json': { kind: 'output', id: 'book', version: 1, fields: { title: { type: 'string', required: true, key: true } } },
+      'books.input.json': { kind: 'input', id: 'books', output: 'book', mode: 'api', start: [{ url: 'file:books.json' }], steps: [{ type: 'request', id: 'doc', url: '{{start.url}}', as: 'json' }, { type: 'emit' }], mapping: { title: { from: 'doc.title' } } },
+    })
+    const view = await openWorkspace(folder)
+    const input = view.recipes.find(recipe => recipe.kind === 'input')
+
+    expect(JSON.parse(input?.text ?? '').start).toEqual([{ url: 'file:books.json' }])
+    expect(input?.issues).toEqual([])
+  })
+
   it('gives every input recipe its outline, and no output/unknown recipe one', async () => {
     const folder = folderOf({
       'book.output.json': { kind: 'output', id: 'book', version: 1, fields: { title: { type: 'string', required: true, key: true } } },

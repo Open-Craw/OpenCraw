@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readdirSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { importDocument } from './import-document.use-case'
@@ -29,16 +29,27 @@ describe('importDocument', () => {
     expect(existsSync(imported.path)).toBe(true)
   })
 
-  it('never overwrites a file already there: the copy gets the next free numbered name', async () => {
+  it('reuses a file already there with the same bytes, so loading a document twice leaves one copy (#275)', async () => {
+    const folder = freshFolder()
+    const first = await importDocument(folder, 'report.pdf', PDF_BYTES)
+
+    const again = await importDocument(folder, 'report.pdf', PDF_BYTES)
+
+    expect(again).toEqual(first)
+    expect(readdirSync(folder)).toEqual(['report.pdf'])
+  })
+
+  it('never overwrites a different file of the same name: the copy gets the next free numbered name', async () => {
     const folder = freshFolder()
     await importDocument(folder, 'report.pdf', PDF_BYTES)
-    await importDocument(folder, 'report.pdf', PDF_BYTES)
-
+    const second = await importDocument(folder, 'report.pdf', new TextEncoder().encode('second'))
     const third = await importDocument(folder, 'report.pdf', new TextEncoder().encode('third'))
+    const secondAgain = await importDocument(folder, 'report.pdf', new TextEncoder().encode('second'))
 
+    expect(second.path).toBe(join(folder, 'report-2.pdf'))
     expect(third.path).toBe(join(folder, 'report-3.pdf'))
+    expect(secondAgain.path).toBe(second.path)
     expect(readFileSync(join(folder, 'report.pdf'), 'utf8')).toBe('%PDF-1.4 not really')
-    expect(readFileSync(join(folder, 'report-2.pdf'), 'utf8')).toBe('%PDF-1.4 not really')
     expect(readFileSync(third.path, 'utf8')).toBe('third')
   })
 
@@ -46,7 +57,7 @@ describe('importDocument', () => {
     const folder = freshFolder()
     await importDocument(folder, 'Makefile', PDF_BYTES)
 
-    const second = await importDocument(folder, 'Makefile', PDF_BYTES)
+    const second = await importDocument(folder, 'Makefile', new TextEncoder().encode('other'))
     expect(second.path).toBe(join(folder, 'Makefile-2'))
   })
 

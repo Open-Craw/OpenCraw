@@ -1,4 +1,4 @@
-import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, OpenPathCommand, OpenPathView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
+import type { DeckDocumentView, DeckPreviewOptions, DeckTablePreviewView, DocumentTreeView, ExplainWhyCommand, FetchStartPageCommand, GridPreviewOptions, GridTablePreviewView, ChooseFolderCommand, ChooseFolderView, DetectUrlView, OpenPathCommand, OpenPathView, ImportDocumentCommand, ImportDocumentView, InferSelectorView, InspectView, OpenWorkspaceCommand, RegionPreviewView, OutlineView, PdfDocumentView, ResponsesSeenView, RunSampleCommand, SampleBudget, SaveOutlineCommand, SaveRecipeCommand, SnapshotView, StartPageView, StartRecordingCommand, StopRecordingCommand, StopRunCommand, StudioCommand, StudioEvent, TablePreviewOptions, TablePreviewView, VerifySelectorView, WhyTarget, WhyView, WorkbookDocumentView, WorkspaceView } from '@opencraw/studio'
 
 /** The api client and the WebSocket, typed by `@opencraw/studio`'s `studio-api` (type-only: no server code ships to the browser). */
 export interface StudioClient {
@@ -15,6 +15,8 @@ export interface StudioClient {
   openPath:       (path: string, workspace?: string) => Promise<OpenPathView>
   /** Copies a dropped/opened file into `folder` (created when missing) and answers the copy's `file:` URL for a recipe's `start.url` (issue #120); `bytes` is the file's content, base64-encoded. */
   importDocument: (folder: string, name: string, bytes: string) => Promise<ImportDocumentView>
+  /** What an address returns (a page, or a JSON API, PDF, CSV, spreadsheet, Markdown...): a document is started as a recipe that reads it, not one that opens it as a page. */
+  detectUrl:      (url: string) => Promise<DetectUrlView>
   /** `stubs` are values a hook answers with instead of being called, by hook name, for this run only (issue #201). */
   runSample:      (recipeId: string, budget?: SampleBudget, stubs?: Record<string, unknown>) => Promise<void>
   stopRun:        () => Promise<void>
@@ -26,7 +28,7 @@ export interface StudioClient {
   /** Runs a candidate selector through the engine's own matching against the snapshot and, best-effort, the live page. */
   verifySelector: (recipeId: string, path: string, selector: string) => Promise<VerifySelectorView>
   /** Turns one or two picked nodes' `data-oc-node` ids into a verified selector (a `Read` card's field, or the safe item+field list shape). */
-  inferSelector:  (recipeId: string, path: string, nodeIds: [string] | [string, string]) => Promise<InferSelectorView>
+  inferSelector:  (recipeId: string, path: string, nodeIds: [string] | [string, string], within?: string) => Promise<InferSelectorView>
   /** Explains a missing or rejected value from the recipe's last sample run (issue #92's Why? tab). */
   explainWhy:     (target: WhyTarget) => Promise<WhyView>
   /** The Inspect panel's DOM tree and data-in-the-page findings, off the same cached snapshot (issue #93). */
@@ -106,6 +108,7 @@ export function createStudioClient (): StudioClient {
       return view.folder
     },
     importDocument: (folder, name, bytes) => send<ImportDocumentView>(token, { type: 'import-document', folder, name, bytes } satisfies ImportDocumentCommand),
+    detectUrl:      url => send<DetectUrlView>(token, { type: 'detect-url', url }),
     runSample:      async (recipeId, budget, stubs) => { await send(token, { type: 'run-sample', recipeId, budget, ...(stubs !== undefined && { stubs }) } satisfies RunSampleCommand) },
     stopRun:        async () => { await send(token, { type: 'stop-run' } satisfies StopRunCommand) },
     saveRecipe:     async (path, recipe) => { await send(token, { type: 'save-recipe', path, recipe: recipe as Record<string, unknown> } satisfies SaveRecipeCommand) },
@@ -117,7 +120,7 @@ export function createStudioClient (): StudioClient {
     },
     takeSnapshot:   (recipeId, path) => send<SnapshotView>(token, { type: 'take-snapshot', recipeId, path }),
     verifySelector: (recipeId, path, selector) => send<VerifySelectorView>(token, { type: 'verify-selector', recipeId, path, selector }),
-    inferSelector:  (recipeId, path, nodeIds) => send<InferSelectorView>(token, { type: 'infer-selector', recipeId, path, nodeIds }),
+    inferSelector:  (recipeId, path, nodeIds, within) => send<InferSelectorView>(token, { type: 'infer-selector', recipeId, path, nodeIds, ...(within !== undefined && { within }) }),
     explainWhy:     target => send<WhyView>(token, { type: 'explain-why', target } satisfies ExplainWhyCommand),
     inspectPage:    (recipeId, path) => send<InspectView>(token, { type: 'inspect-page', recipeId, path }),
     responsesSeen:  (recipeId, path) => send<ResponsesSeenView>(token, { type: 'responses-seen', recipeId, path }),

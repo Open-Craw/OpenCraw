@@ -23,6 +23,17 @@ describe('domTree', () => {
     expect(anchor?.attributes).toEqual({ 'href': '/x', 'data-x': '1' })
   })
 
+  it('reads a page nested very deep, with repeated siblings at every level, without running out of string', () => {
+    let html = '<span>x</span>'
+    for (let depth = 0; depth < 60; depth += 1) html = String.raw`<div class="box" title="a &quot;quoted&quot; \ title">${html}<i>1</i></div>`
+
+    const tree = domTree(snapshot(`<main>${html}${html}${html}</main>`))
+    const main = tree.children.find(node => node.tag === 'body')?.children[0]
+
+    expect(main?.children).toHaveLength(1)
+    expect(main?.children[0]?.repeatCount).toBe(3)
+  })
+
   it('greys a node marked data-oc-hidden by the snapshot', () => {
     const tree = domTree(snapshot('<input data-oc-hidden="1" value="secret">'))
     const input = tree.children.find(n => n.tag === 'body')?.children[0]

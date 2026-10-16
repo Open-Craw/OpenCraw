@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useSaveRecipeMutation, useStudioClient } from '../studio-client'
 import { useStudioUiStore } from '../studio-store'
 import { useLoadSource } from './load-source.hook'
-import { newRecipeFiles, recipeIdFromFileName, uniqueRecipeId } from './new-recipe.mapper'
+import { unsupportedFormatMessage } from './unsupported-format.policy'
+import { documentUrlRecipeFiles, newRecipeFiles, recipeIdFromAddress, uniqueRecipeId } from './new-recipe.mapper'
 
 export interface LoadUrlFlow {
   /** Loads a page address; resolves once the recipe is saved and selected, or once `error` is set. */
@@ -18,7 +19,9 @@ export interface LoadUrlFlow {
  * against, so with a web recipe open the address replaces its start URL and
  * the steps and mapping stay. With no recipe open (or a document recipe) a new
  * `web` recipe pair named after the host is written and selected. The folder
- * is the open one, else the toolbar's folder box, as for a dropped file.
+ * is the open one, else the toolbar's folder box, as for a dropped file. An address that returns a document (JSON, a PDF, a CSV, a
+ * spreadsheet, Markdown...) starts an `api` recipe that reads it as that kind, with the document's own view to pick from, not a browser
+ * recipe over a response that is not a page. The recipe is named after the site and the end of the address.
  */
 export function useLoadUrlFlow (): LoadUrlFlow {
   const client = useStudioClient()
@@ -35,8 +38,9 @@ export function useLoadUrlFlow (): LoadUrlFlow {
   async function startNew (target: string, url: string): Promise<void> {
     const listing = await client.openWorkspace(target)
     const taken = listing.recipes.map(recipe => recipe.id).filter((id): id is string => id !== undefined)
-    const id = uniqueRecipeId(recipeIdFromFileName(new URL(url).hostname), taken)
-    const files = newRecipeFiles(target, id, url)
+    const { kind } = await client.detectUrl(url)
+    const id = uniqueRecipeId(recipeIdFromAddress(url), taken)
+    const files = kind === 'html' || kind === 'unknown' ? newRecipeFiles(target, id, url) : documentUrlRecipeFiles(target, id, url, kind)
     await saveRecipe.mutateAsync({ path: files.outputPath, recipe: files.output })
     await saveRecipe.mutateAsync({ path: files.inputPath, recipe: files.input })
     if (useStudioUiStore.getState().openFolder !== target) commitFolder(target)
@@ -47,6 +51,12 @@ export function useLoadUrlFlow (): LoadUrlFlow {
     const target = (openFolder ?? folder).trim()
     if (target === '') {
       setError('Open a workspace folder first (Recipe ▾ → Open folder…): that is where the recipe is written.')
+
+      return
+    }
+    const unsupported = unsupportedFormatMessage(url.trim())
+    if (unsupported !== undefined) {
+      setError(unsupported)
 
       return
     }

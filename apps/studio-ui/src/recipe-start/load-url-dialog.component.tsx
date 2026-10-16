@@ -51,7 +51,7 @@ export function LoadUrlDialog ({ open, onClose, onLoad }: LoadUrlDialogProps) {
                 {problem !== undefined && <Field.ErrorText>{problem}</Field.ErrorText>}
                 <Field.HelperText>Becomes the open recipe's start page, or a new recipe when none reads a web page.</Field.HelperText>
               </Field.Root>
-              <Button size='sm' colorPalette='blue' alignSelf='flex-end' disabled={!ready} onClick={submit}>Load</Button>
+              <Button size='sm' colorPalette='brand' alignSelf='flex-end' disabled={!ready} onClick={submit}>Load</Button>
             </Dialog.Body>
           </Dialog.Content>
         </Dialog.Positioner>

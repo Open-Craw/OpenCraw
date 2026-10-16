@@ -1,4 +1,4 @@
-import { Box, Button, CloseButton, HStack, Text } from '@chakra-ui/react'
+import { Box, Button, CloseButton, HStack, NativeSelect, Text } from '@chakra-ui/react'
 
 /** The staged selection's outline colour, shared by the PDF and deck canvases' boxes and chips (issues #121, #122). */
 export const REGION_COLOR = '#9b5de5'
@@ -11,6 +11,10 @@ export interface SelectionChipProps {
   loading:     boolean
   /** One line saying what the step is tied to (a heading, a label, a position), under the text. */
   note?:       string
+  /** The ways the same click could be taken, as the person reads them; with `choice` (the one in force) and `onChoose`, a list to pick from. */
+  choices?:    string[]
+  choice?:     number
+  onChoose?:   (index: number) => void
   onAdd:       () => void
   onClear:     () => void
   onDragStart: (event: React.DragEvent<HTMLDivElement>) => void
@@ -24,7 +28,7 @@ export interface SelectionChipProps {
  * canvas clears a selection on a release over its background, and the
  * chip sits inside that background.
  */
-export function SelectionChip ({ left, top, text, loading, note, onAdd, onClear, onDragStart }: SelectionChipProps): React.ReactElement {
+export function SelectionChip ({ left, top, text, loading, note, choices, choice = 0, onChoose, onAdd, onClear, onDragStart }: SelectionChipProps): React.ReactElement {
   const empty = text === undefined && !loading
   const [firstLine = ''] = (text ?? '').split('\n', 1)
 
@@ -53,10 +57,17 @@ export function SelectionChip ({ left, top, text, loading, note, onAdd, onClear,
         <Text fontSize='xs' fontFamily='mono' truncate flex='1' color={empty ? 'fg.muted' : 'fg'}>
           {loading && text === undefined ? 'reading…' : (empty ? 'nothing to read here' : firstLine)}
         </Text>
-        <Button size='2xs' colorPalette='blue' onClick={onAdd} disabled={text === undefined}>Add to recipe</Button>
+        <Button size='2xs' colorPalette='brand' onClick={onAdd} disabled={text === undefined}>Add to recipe</Button>
         <CloseButton size='2xs' aria-label='Clear selection' onClick={onClear} />
       </HStack>
       {note !== undefined && <Text data-testid='region-chip-note' fontSize='2xs' color='fg.muted'>{note}</Text>}
+      {choices !== undefined && choices.length > 1 && onChoose !== undefined && (
+        <NativeSelect.Root size='xs' mt={1}>
+          <NativeSelect.Field aria-label='Select as' value={choice} onChange={(event) => { onChoose(Number(event.target.value)) }}>
+            {choices.map((label, index) => <option key={label} value={index}>{label}</option>)}
+          </NativeSelect.Field>
+        </NativeSelect.Root>
+      )}
     </Box>
   )
 }

@@ -7,6 +7,8 @@ const SAME_LEFT_EDGE = 2
 const SAME_HEIGHT_RATIO = 0.15
 /** A gap between two lines up to this share of the line height is leading inside a paragraph; more is a break between paragraphs. */
 const SAME_PARAGRAPH_GAP = 0.6
+/** Lines whose centres are this close (points) are centred on one axis: a title broken over two lines. */
+const SAME_CENTRE = 3
 /** The longest label taken as one (`Published`, `Head of Sustainability`): a longer run before a colon is a sentence. */
 const MAX_LABEL_LENGTH = 40
 
@@ -27,11 +29,21 @@ export type Anchor =
     box:                  PointsBox
     /** The document repeats a header or footer on its pages, so the section leaves them out. */
     ignoreHeadersFooters: boolean
+    /** Which printed line of the body the click was on (1 is the first), when the body is plain lines of text; what "only this line" reads. */
+    clickedLine?:         number
+    /** Read only this printed line of the body (1 first, -1 last). */
+    line?:                number
+    /** Read only the part of the body (or of its `line`) this pattern matches. */
+    match?:               string
+    /** What the `match` finds, in a word (`date`), for the note and the step's id. */
+    matchName?:           string
   } |
   {
     kind:     'after'
     /** The text of the row above the line. */
     previous: string
+    /** How many lines the selection is: a title broken over two touching lines is one text. */
+    lines:    number
     box:      PointsBox
     page:     number
   }
@@ -120,7 +132,10 @@ function continues (upper: PdfCellView, lower: PdfCellView): boolean {
   const gap = upper.y - (lower.y + lower.height)
   const sameHeight = Math.abs(upper.height - lower.height) <= Math.max(upper.height, lower.height) * SAME_HEIGHT_RATIO
 
-  return Math.abs(upper.x - lower.x) <= SAME_LEFT_EDGE && sameHeight && gap <= upper.height * SAME_PARAGRAPH_GAP
+  const sameEdge = Math.abs(upper.x - lower.x) <= SAME_LEFT_EDGE
+  const sameCentre = Math.abs(upper.x + upper.width / 2 - (lower.x + lower.width / 2)) <= SAME_CENTRE
+
+  return (sameEdge || sameCentre) && sameHeight && gap <= upper.height * SAME_PARAGRAPH_GAP
 }
 
 function boxOf (cell: PdfCellView): PointsBox {
@@ -161,7 +176,7 @@ export function anchorOf (pages: readonly PdfPageView[], page: PdfPageView, cell
   const own = rows[at]?.row
   if (own === undefined || isFieldRow(own)) return undefined
   const heading = headingAbove(rows, at, cell.height)
-  if (heading !== -1) return sectionAnchor(rows, heading, page.number, pages.some(each => each.rows.some(row => row.running === true)))
+  if (heading !== -1) return sectionAnchor(rows, heading, page.number, pages.some(each => each.rows.some(row => row.running === true)), cell)
 
   return afterAnchor(page, rows, at)
 }
@@ -189,7 +204,7 @@ function hasSibling (rows: readonly PlacedRow[], index: number): boolean {
   return rows.some((entry, other) => other !== index && entry.row.cells.length === 1 && Math.abs((entry.row.cells[0]?.height ?? 0) - height) <= height * (1 - SAME_LEVEL))
 }
 
-function sectionAnchor (rows: readonly PlacedRow[], heading: number, clickedPage: number, ignoreHeadersFooters: boolean): Anchor | undefined {
+function sectionAnchor (rows: readonly PlacedRow[], heading: number, clickedPage: number, ignoreHeadersFooters: boolean, clicked: PdfCellView): Anchor | undefined {
   const headingRow = rows[heading]?.row
   const size = headingRow?.cells[0]?.height ?? 0
   const headingText = headingRow?.cells[0]?.text
@@ -203,23 +218,38 @@ function sectionAnchor (rows: readonly PlacedRow[], heading: number, clickedPage
   if (first === undefined) return undefined
   const until = end === -1 ? undefined : rest[end]?.row.cells.map(cell => cell.text).join(' ')
 
-  return { kind: 'section', heading: headingText, ...(until !== undefined && { until }), box: others.reduce((all, box) => union(all, box), first), ignoreHeadersFooters }
+  const lineRows = body.map(entry => entry.row)
+  const clickedLine = lineRows.every(row => row.cells.length === 1) ? lineRows.findIndex(row => row.cells[0] === clicked) + 1 : 0
+
+  return { kind: 'section', heading: headingText, ...(until !== undefined && { until }), box: others.reduce((all, box) => union(all, box), first), ignoreHeadersFooters, ...(clickedLine > 0 && { clickedLine }) }
 }
 
 /** The single line `cell` is, taken with the row above it as its anchor; a wrapped paragraph of several lines has none. */
 function afterAnchor (page: PdfPageView, placed: readonly PlacedRow[], at: number): Anchor | undefined {
   const rows = placed.filter(entry => entry.page === page.number).map(entry => entry.row)
   const index = rows.indexOf(placed[at]?.row)
-  const own = rows[index]?.cells[0]
-  const above = rows[index - 1]
-  const aboveCell = above?.cells[0]
-  if (own === undefined || above === undefined || aboveCell === undefined || rows[index]?.cells.length !== 1) return undefined
-  const belowCell = rows[index + 1]?.cells[0]
-  const body = bodyHeight(rows)
-  const wrapped = (upper: PdfCellView | undefined, lower: PdfCellView | undefined): boolean => upper !== undefined && lower !== undefined && lower.height <= body * HEADING_LARGER && continues(upper, lower)
-  if (wrapped(own, belowCell) || wrapped(aboveCell, own)) return undefined
+  if (rows[index]?.cells.length !== 1) return undefined
+  let first = index
+  while (first > 0 && continuesRow(rows[first - 1], rows[first])) first -= 1
+  let last = index
+  while (last < rows.length - 1 && continuesRow(rows[last], rows[last + 1])) last += 1
+  const above = rows[first - 1]
+  const lines = rows.slice(first, last + 1).map(row => row.cells[0]).filter(line => line !== undefined)
+  const [top, ...rest] = lines
+  if (above === undefined || top === undefined) return undefined
+  // Lines of body text that run on are a paragraph (no anchor); stacked lines of a headline are one text.
+  if (lines.length > 1 && top.height <= bodyHeight(rows) * HEADING_LARGER) return undefined
 
-  return { kind: 'after', previous: above.cells.map(row => row.text).join('\t'), box: boxOf(own), page: page.number }
+  return { kind: 'after', previous: above.cells.map(row => row.text).join('\t'), lines: lines.length, box: rest.reduce((all, line) => union(all, boxOf(line)), boxOf(top)), page: page.number }
+}
+
+/** Whether the single line of `lower` runs on from the single line of `upper`. */
+function continuesRow (upper: PdfRowView | undefined, lower: PdfRowView | undefined): boolean {
+  const upperCell = upper?.cells.length === 1 ? upper.cells[0] : undefined
+  const lowerCell = lower?.cells.length === 1 ? lower.cells[0] : undefined
+
+  // A line that ends with a colon is a label: what follows it is its value, not more of it.
+  return upperCell !== undefined && lowerCell !== undefined && !upperCell.text.trimEnd().endsWith(':') && continues(upperCell, lowerCell)
 }
 
 /** The usual text height on the page: the median of its rows', so that headline lines stacked tight are not taken for a wrapped paragraph. */

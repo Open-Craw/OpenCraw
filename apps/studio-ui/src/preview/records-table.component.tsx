@@ -39,7 +39,7 @@ export function RecordsTable ({ records, onCellClick, highlightedField, onHoverF
   if (fields.length === 0) {
     return (
       <Box p={4} color='fg.muted'>
-        <Text>{records.length} record{records.length === 1 ? '' : 's'} emitted, but no output field is mapped yet, so there is nothing to show as columns. Add fields in the Record tab.</Text>
+        <Text>{records.length} record{records.length === 1 ? '' : 's'} emitted, but no output field is mapped yet, so there is nothing to show as columns. Pick a value from the page or document on the left, then add it as a field in the Record tab.</Text>
       </Box>
     )
   }

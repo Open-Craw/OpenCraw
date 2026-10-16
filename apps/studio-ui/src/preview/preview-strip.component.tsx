@@ -31,7 +31,7 @@ export interface PreviewStripProps {
  */
 export function PreviewStrip ({ records, traceLines, rejected = [], onExplainMissing, onExplainRejected, whyLoading, whyView, whyError, highlightedField, onHoverField }: PreviewStripProps) {
   return (
-    <Tabs.Root defaultValue='records' h='full' display='flex' flexDirection='column'>
+    <Tabs.Root colorPalette='brand' defaultValue='records' h='full' display='flex' flexDirection='column'>
       <Tabs.List>
         <Tabs.Trigger value='records'>Records ({records.length})</Tabs.Trigger>
         <Tabs.Trigger value='trace'>Trace</Tabs.Trigger>

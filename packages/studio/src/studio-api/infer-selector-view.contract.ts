@@ -29,6 +29,7 @@ const itemPickSchema = z.object({
 export const inferSelectorViewSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('field'), field: fieldPickSchema }),
   z.object({ kind: z.literal('list'), item: itemPickSchema, field: fieldPickSchema }),
+  z.object({ kind: z.literal('item-field'), field: fieldPickSchema }),
   z.object({ kind: z.literal('unsupported'), reason: z.string() }),
 ])
 

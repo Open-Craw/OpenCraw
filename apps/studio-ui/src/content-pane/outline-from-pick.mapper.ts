@@ -100,7 +100,7 @@ export function listOutlineNodes (
 ): [OutlineCard, OutlineBracket] {
   const itemsId = ids.itemsId ?? DEFAULT_ITEMS_ID
   const itemAlias = ids.itemAlias ?? DEFAULT_ITEM_ALIAS
-  const fieldId = ids.fieldId ?? DEFAULT_FIELD_ID
+  const fieldId = ids.fieldId ?? fieldIdOf(result.field)
   const forEachPath = siblingPath(path)
   const items: OutlineCard = {
     kind:     'card',
@@ -140,6 +140,13 @@ function jsonListParts (node: DocumentTreeNodeView): { items: string, field: str
   return { items: node.listPath.slice(0, at + 3), field: rest === '' ? '$' : `$${rest}` }
 }
 
+/** What a JSON field is called: its last key as a step id (`$.newcarsName` is `newcarsName`, `$.prices[0].gross` is `gross`), `value` when it has none (`$`). */
+function jsonFieldId (field: string): string {
+  const key = (field.match(/[A-Z_]\w*/gi) ?? []).pop()
+
+  return key ?? DEFAULT_FIELD_ID
+}
+
 function jsonFieldCard (field: string, path: string, itemAlias: string, id: string): OutlineCard {
   return { kind: 'card', path, stepType: 'extract', sentence: [], custom: false, step: { type: 'extract', id, from: itemAlias, selector: field, kind: 'jsonpath', take: 'json' } }
 }
@@ -166,7 +173,7 @@ export function documentListOutlineNodes (node: DocumentTreeNodeView, path: stri
     path:     forEachPath,
     stepType: 'forEach',
     sentence: [],
-    children: [jsonFieldCard(parts.field, `${forEachPath}.steps.0`, DEFAULT_ITEM_ALIAS, DEFAULT_FIELD_ID)],
+    children: [jsonFieldCard(parts.field, `${forEachPath}.steps.0`, DEFAULT_ITEM_ALIAS, jsonFieldId(parts.field))],
     step:     { type: 'forEach', over: DEFAULT_ITEMS_ID, as: DEFAULT_ITEM_ALIAS, emit: true, steps: [] },
   }
 
@@ -189,10 +196,60 @@ export function addJsonListField (steps: readonly OutlineNode[], node: DocumentT
   const loopIndex = steps.findIndex(step => step.kind === 'bracket' && step.stepType === 'forEach' && step.step.over === itemsCard?.step.id)
   const loop = steps[loopIndex]
   if (itemsCard === undefined || loop?.kind !== 'bracket') return undefined
-  const [field] = withUniqueStepIds(steps, [jsonFieldCard(parts.field, `${loop.path}.steps.${loop.children.length}`, String(loop.step.as), DEFAULT_FIELD_ID)])
+  const [field] = withUniqueStepIds(steps, [jsonFieldCard(parts.field, `${loop.path}.steps.${loop.children.length}`, String(loop.step.as), jsonFieldId(parts.field))])
   const next = steps.map((step, index) => index === loopIndex ? { ...loop, children: [...loop.children, field] } : step)
 
   return next.map((step, index) => reindexed(step, `steps.${index}`))
+}
+
+/**
+ * The selector of the items of a list the recipe already loops over: a top-level `extract` of elements (`many`, `take: html`) that a
+ * top-level `forEach` is over. A pick inside one of these items belongs in the loop (see {@link addHtmlListField}).
+ *
+ * @param steps - The current top-level outline nodes.
+ * @returns The items' selector, or `undefined` when the recipe has no such loop.
+ */
+export function listItemsSelector (steps: readonly OutlineNode[]): string | undefined {
+  for (const step of steps) {
+    if (step.kind !== 'bracket' || step.stepType !== 'forEach') continue
+    const items = steps.find(other => other.kind === 'card' && other.step.type === 'extract' && other.step.id === step.step.over && other.step.kind === 'css' && other.step.many === true)
+    if (items !== undefined && typeof items.step.selector === 'string') return items.step.selector
+  }
+
+  return undefined
+}
+
+/**
+ * Adds a field to the loop over a list of elements: one more `Read` of the item, in the loop's body, named after what it reads (`image`, `link`,
+ * the element's class). The same idea as {@link addJsonListField}, for a page.
+ *
+ * @param steps - The current top-level outline nodes.
+ * @param field - The field's selector, relative to the item, and what to take from it.
+ * @returns The new top-level list, or `undefined` when no loop is over a list of elements.
+ */
+export function addHtmlListField (steps: readonly OutlineNode[], field: FieldPick): OutlineNode[] | undefined {
+  const items = listItemsSelector(steps)
+  const loopIndex = steps.findIndex(step => step.kind === 'bracket' && step.stepType === 'forEach' && steps.some(other => other.kind === 'card' && other.step.id === step.step.over && other.step.selector === items))
+  const loop = steps[loopIndex]
+  if (items === undefined || loop?.kind !== 'bracket') return undefined
+  const card = readCardNode(field, `${loop.path}.steps.${loop.children.length}`, fieldIdOf(field))
+  const [named] = withUniqueStepIds(steps, [{ ...card, step: { ...card.step, from: String(loop.step.as) } }])
+  const next = steps.map((step, index) => index === loopIndex ? { ...loop, children: [...loop.children, named] } : step)
+
+  return next.map((step, index) => reindexed(step, `steps.${index}`))
+}
+
+/** What a field is called: `image` for a picture's source, `link` for an address, else the last class of its selector in camelCase, else `value`. */
+function fieldIdOf (field: FieldPick): string {
+  if (field.take === 'attr:src') return 'image'
+  if (field.take === 'attr:href') return 'link'
+  const lastPart = field.selector.split(/[\s>+~]+/).pop() ?? ''
+  const lastClass = (lastPart.match(/\.[A-Z][\w-]*/gi) ?? []).pop()
+  const words = lastClass === undefined ? [] : lastClass.slice(1).split(/[_-]+/).filter((word: string) => word !== '')
+  const [first, ...rest] = words
+  if (first === undefined) return DEFAULT_FIELD_ID
+
+  return first.toLowerCase() + rest.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')
 }
 
 /**

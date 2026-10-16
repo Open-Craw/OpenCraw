@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { load } from 'cheerio'
 import type { CheerioAPI } from 'cheerio'
 import type { Element } from 'domhandler'
@@ -102,9 +103,23 @@ function collapseRepeats (nodes: readonly DomTreeNode[]): DomTreeNode[] {
   return result
 }
 
-/** A run member's identity for collapsing: everything but its own `nodeId` (every instance has a different one by construction). */
+/** Signatures already worked out: a node is looked at once for its run and again as part of its parent's. */
+const signatures = new WeakMap<DomTreeNode, string>()
+
+/**
+ * A run member's identity for collapsing: everything but its own `nodeId` (every instance has a different one by
+ * construction). Its children enter as their own short hashes, not as the text of their signatures: nesting that
+ * text in JSON escapes it again at every level, which grows with the depth of the page until the string is too
+ * long to exist (a page nested 40 deep).
+ */
 function signatureOf (node: DomTreeNode): string {
-  return JSON.stringify({ ...node, nodeId: undefined, children: node.children.map(child => signatureOf(child)) })
+  const known = signatures.get(node)
+  if (known !== undefined) return known
+  const { children, ...own } = node
+  const signature = createHash('sha1').update(JSON.stringify({ ...own, nodeId: undefined, children: children.map(child => signatureOf(child)) })).digest('hex')
+  signatures.set(node, signature)
+
+  return signature
 }
 
 function abbreviate (text: string): string {

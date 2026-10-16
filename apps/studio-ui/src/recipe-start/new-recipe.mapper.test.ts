@@ -1,4 +1,4 @@
-import { RECIPE_ID_PATTERN, documentRecipeFiles, newRecipeFiles, recipeIdFromFileName, startUrlError, uniqueRecipeId } from './new-recipe.mapper'
+import { RECIPE_ID_PATTERN, documentRecipeFiles, documentUrlRecipeFiles, newRecipeFiles, recipeIdFromAddress, recipeIdFromFileName, startUrlError, uniqueRecipeId } from './new-recipe.mapper'
 
 describe('RECIPE_ID_PATTERN', () => {
   it('accepts lowercase letters, digits and hyphens, starting with a letter or digit', () => {
@@ -73,5 +73,33 @@ describe('uniqueRecipeId', () => {
     expect(uniqueRecipeId('report', [])).toBe('report')
     expect(uniqueRecipeId('report', ['report'])).toBe('report-2')
     expect(uniqueRecipeId('report', ['report', 'report-2', 'other'])).toBe('report-3')
+  })
+})
+
+describe('recipeIdFromAddress', () => {
+  it.each([
+    ['https://quotes.toscrape.com/', 'quotes-toscrape'],
+    ['https://www.legislation.gov.uk/ukpga/2019/4/section/1', 'legislation-section-1'],
+    ['https://www.legislation.gov.uk/ukpga/2019/4/contents', 'legislation-contents'],
+    ['https://www.legislation.gov.uk/ukpga/2019/4/pdfs/ukpga_20190004_en.pdf', 'legislation-ukpga-20190004-en'],
+    ['https://www.kia.com/uk/new-cars/ev3/pricing/', 'kia-pricing'],
+    ['https://jsonplaceholder.typicode.com/users', 'jsonplaceholder-typicode-users'],
+    ['https://raw.githubusercontent.com/github/gitignore/main/README.md', 'raw-githubusercontent-readme'],
+    ['not an address', 'document'],
+  ])('names %s %s', (address, id) => {
+    expect(recipeIdFromAddress(address)).toBe(id)
+  })
+
+  it('gives two pages of one site two names', () => {
+    expect(recipeIdFromAddress('https://www.legislation.gov.uk/a/section/1')).not.toBe(recipeIdFromAddress('https://www.legislation.gov.uk/a/contents'))
+  })
+})
+
+describe('documentUrlRecipeFiles', () => {
+  it('starts an api recipe whose request reads the response as the kind of document it is, whatever it is served as', () => {
+    const files = documentUrlRecipeFiles('/work', 'car-list', 'https://shop.example/api/car.list', 'json')
+
+    expect(files.inputPath).toBe('/work/car-list.ocw-in.json')
+    expect(files.input).toMatchObject({ mode: 'api', start: [{ url: 'https://shop.example/api/car.list' }], steps: [{ type: 'request', id: 'doc', url: '{{start.url}}', as: 'json' }] })
   })
 })

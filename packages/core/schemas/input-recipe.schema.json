@@ -1785,6 +1785,15 @@
             "ignoreHeadersFooters": {
               "type": "boolean"
             },
+            "line": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "match": {
+              "type": "string",
+              "minLength": 1
+            },
             "namespaces": {
               "type": "object",
               "propertyNames": {

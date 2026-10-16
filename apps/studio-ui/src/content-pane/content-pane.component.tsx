@@ -1,21 +1,26 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Badge, Box, Button, HStack, Spinner, Splitter, Switch, Text } from '@chakra-ui/react'
 import type { DocumentTreeNodeView, OutlineCard, OutlineView, RecipeListing } from '@opencraw/studio'
 import { InspectorPanel, matchingNodeIds } from '../inspector'
 import { allSteps, stepById } from '../steps-outline'
 import type { GridViewOverride } from '../studio-client'
-import { useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
+import { plainError, useDeckViewQuery, useDocumentTreeQuery, useGridViewQuery, useInferSelectorMutation, usePdfViewQuery, useSnapshotQuery, useStartRecordingMutation, useStopRecordingMutation, useStudioClient } from '../studio-client'
 import { useRecordingStore, useStudioUiStore } from '../studio-store'
 import { BlankSnapshotNotice } from './blank-snapshot-notice.component'
+import { SnapshotNotice } from './snapshot-notice.component'
+import { TreeViewSwitch } from './tree-view-switch.component'
+import type { TreeView } from './tree-view-switch.component'
 import { DeckCanvas } from './deck-canvas.component'
 import { GridCanvas } from './grid-canvas.component'
-import { addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
+import { addHtmlListField, addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listItemsSelector, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
 import { SnapshotFrame } from './snapshot-frame.component'
 import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
 import { hasVisibleContent } from './visible-content.algorithm'
+import { ZoomControls } from './zoom-controls.component'
+import { useZoom } from './zoom.hook'
 import type { TreePickMode } from './tree-canvas.component'
 
 /**
@@ -79,6 +84,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const snapshot = useSnapshotQuery(recipeId, recipeId === undefined ? undefined : STEP_PATH)
   const inferSelector = useInferSelectorMutation()
   const [inspecting, setInspecting] = useState(false)
+  const [treeView, setTreeView] = useState<TreeView>('tree')
   const client = useStudioClient()
   const format = snapshot.data?.format
   const isDocumentTree = format !== undefined && TREE_FORMATS.has(format)
@@ -105,6 +111,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
   const hoveredSelector = useMemo(() => selectorForStepId(recipe?.outline, hoveredStepId), [recipe?.outline, hoveredStepId])
   const steps = useMemo(() => pickedSteps(recipe?.outline), [recipe?.outline])
+  // The tree canvas is memoised (a big document is thousands of rows): it is given a callback that stays the same between renders, which calls the latest handler.
+  const treePickRef = useRef<(node: DocumentTreeNodeView, mode: TreePickMode) => Promise<void>>(handleTreePick)
+  treePickRef.current = handleTreePick
+  const onTreePick = useCallback((node: DocumentTreeNodeView, mode: TreePickMode) => { void treePickRef.current(node, mode) }, [])
   const handleHoverNode = (nodeId: string | undefined): void => {
     setHoveredNodeId(nodeId)
     setHoveredStepId(nodeId === undefined ? undefined : stepIdForNode(recipe?.outline, snapshot.data?.html, nodeId))
@@ -126,6 +136,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const warn = (text: string | undefined): void => { setStatus(text === undefined ? undefined : { text, ok: false }) }
   /** The top-level index a first pick's Read card landed at, so a following second pick upgrades it in place instead of adding a duplicate. */
   const insertedAtRef = useRef<number | undefined>(undefined)
+  const canvasAreaRef = useRef<HTMLDivElement>(null)
+  const zoomState = useZoom(canvasAreaRef)
   /** Same idea as `insertedAtRef`, but for the PDF, grid and deck canvases' `table` card (issue #94's 5b/5c/5d): every header/until/column/sheet/slide/fillDown/shapes pick re-sends the whole card, so it always replaces the same slot rather than piling up duplicates. Shared between the three canvases since only one of them is ever shown for a given recipe's format. */
   const tableInsertedAtRef = useRef<number | undefined>(undefined)
 
@@ -139,9 +151,28 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
 
   async function handlePick (nodeId: string): Promise<void> {
     if (recipeId === undefined) return
+    // A click on the page before "Read" was pressed starts the pick itself.
+    if (!pickMode) {
+      insertedAtRef.current = undefined
+      startPicking(recipeId, STEP_PATH)
+    }
     const outcome = registerPick(nodeId)
     if (outcome.kind === 'first') {
-      const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [nodeId] })
+      const within = recipe?.outline === undefined ? undefined : listItemsSelector(recipe.outline.steps)
+      const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [nodeId], ...(within !== undefined && { within }) })
+      if (result.kind === 'item-field') {
+        // A pick inside an item of the list the recipe loops over is one more field of that loop, not a Read of the first item.
+        startPicking(recipeId, STEP_PATH)
+        await writeOutline((steps) => {
+          const withField = addHtmlListField(steps, result.field)
+          if (withField === undefined) return steps
+          note(`Added to the list: ${result.field.selector}`)
+
+          return withField
+        })
+
+        return
+      }
       if (result.kind !== 'field') {
         warn(result.kind === 'unsupported' ? result.reason : undefined)
 
@@ -349,17 +380,19 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               as='button'
               fontSize='sm'
               fontWeight={pickMode ? 'semibold' : 'normal'}
+              whiteSpace='nowrap'
               color={pickMode ? 'colorPalette.fg' : 'fg'}
-              colorPalette='blue'
+              colorPalette='brand'
               cursor='pointer'
+              title='Pick data from the page: click here, then click the text you want to collect (click two similar things to collect a whole list)'
               onClick={togglePicking}
             >
               {pickMode ? 'Cancel pick' : 'Read'}
             </Text>
-            <Switch.Root checked={showHidden} onCheckedChange={(details) => { setShowHidden(details.checked) }} size='sm'>
+            <Switch.Root checked={showHidden} onCheckedChange={(details) => { setShowHidden(details.checked) }} size='sm' title='Also show the parts of the page that are normally out of sight (menus, pop-ups, tabs that are not open)'>
               <Switch.HiddenInput />
               <Switch.Control />
-              <Switch.Label fontSize='sm'>Show hidden</Switch.Label>
+              <Switch.Label fontSize='sm' whiteSpace='nowrap'>Show hidden</Switch.Label>
             </Switch.Root>
             <Text
               as='button'
@@ -368,6 +401,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               color={inspecting ? 'colorPalette.fg' : 'fg'}
               colorPalette='purple'
               cursor='pointer'
+              title='See how the page is built, and the data it loads: for things that are hard to click'
               onClick={() => { setInspecting(value => !value) }}
             >
               {inspecting ? 'Hide inspector' : 'Inspect'}
@@ -379,19 +413,22 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               color={isRecordingThis ? 'red.fg' : 'fg'}
               colorPalette='red'
               cursor='pointer'
+              title='Open a real browser window and record what you click and type (to log in, open a menu or fill a form), as steps'
               onClick={() => { if (isRecordingThis) stopRecording.mutate(); else handleStartRecording() }}
             >
               {isRecordingThis ? 'Stop recording' : 'Record'}
             </Text>
           </>
         )}
-        {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to read it; [*] reads every item of a list.</Text>}
+        {isDocumentTree && (format === 'json' || format === 'yaml') && <TreeViewSwitch value={treeView} onChange={setTreeView} />}
+        {isDocumentTree && <Text fontSize='sm' color='fg.muted'>Click a value to collect it. Click [*] beside a field to collect it for every item of a list.</Text>}
         {(snapshot.isFetching || (isDocumentTree && documentTree.isFetching) || (isPdf && pdfView.isFetching) || (isGrid && gridView.isFetching) || (isDeck && deckView.isFetching)) && <Spinner size='xs' />}
         {status !== undefined && (
           <Badge size='sm' colorPalette={status.ok ? 'green' : 'orange'}>
             {status.text}
           </Badge>
         )}
+        <Box ml='auto'><ZoomControls {...zoomState} /></Box>
       </HStack>
       {isRecordingThis && (
         <HStack px={3} py={2} bg='red.subtle' color='red.fg' fontSize='sm' gap={3} flexShrink={0} data-testid='recording-banner'>
@@ -408,7 +445,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
           <Text fontSize='sm'>
             Recording stopped: {recordingStoppedForThis.length} step{recordingStoppedForThis.length === 1 ? '' : 's'} recorded.
           </Text>
-          <Button size='xs' colorPalette='blue' onClick={() => { void handleMakeLogin() }} disabled={recordingStoppedForThis.length === 0}>
+          <Button size='xs' colorPalette='brand' onClick={() => { void handleMakeLogin() }} disabled={recordingStoppedForThis.length === 0}>
             Make this the login
           </Button>
           <Button size='xs' variant='outline' onClick={() => { void handleKeepAsSteps() }} disabled={recordingStoppedForThis.length === 0}>
@@ -419,19 +456,25 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
           </Button>
         </HStack>
       )}
-      {isHtmlSnapshot && snapshot.data !== undefined && !snapshotHasContent && <BlankSnapshotNotice />}
-      <Box flex='1' minH='0'>
-        {isDocumentTree && documentTree.data !== undefined && (
-          <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
+      {snapshot.data?.notice !== undefined && <SnapshotNotice text={snapshot.data.notice} />}
+      {isHtmlSnapshot && snapshot.data !== undefined && snapshot.data.notice === undefined && !snapshotHasContent && <BlankSnapshotNotice />}
+      <Box ref={canvasAreaRef} flex='1' minH='0' overflow='auto' style={isPdf ? undefined : { zoom: zoomState.zoom }} onContextMenu={(event) => { event.preventDefault() }}>
+        {isDocumentTree && treeView === 'text' && snapshot.data !== undefined && (
+          <SnapshotFrame html={snapshot.data.html} pickMode={false} showHidden={false} onHoverNode={() => {}} onPickNode={() => {}} />
+        )}
+        {isDocumentTree && treeView === 'tree' && documentTree.data !== undefined && (
+          <TreeCanvas tree={documentTree.data} onPick={onTreePick} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
         )}
         {isDocumentTree && documentTree.isError && (
           <Box p={4} color='fg.error'><Text>{documentTree.error.message}</Text></Box>
         )}
         {isPdf && pdfView.data !== undefined && (
           <PdfCanvas
+            key={client.pdfBytesUrl(recipeId, STEP_PATH, snapshot.data?.baseUrl)}
             recipeId={recipeId}
             stepPath={STEP_PATH}
             view={pdfView.data}
+            zoom={zoomState.zoom}
             bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH, snapshot.data?.baseUrl)}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onRegionPick={(card) => { void handleStagedPick(card) }}
@@ -513,7 +556,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         {snapshot.isError && (
           <Box p={4} color='fg.error' role='alert'>
             <Text fontWeight='semibold'>Could not take a snapshot of this recipe's page.</Text>
-            <Text>{snapshot.error.message}</Text>
+            <Text>{plainError(snapshot.error.message)}</Text>
           </Box>
         )}
         {!snapshot.isFetching && !snapshot.isError && snapshot.data === undefined && (

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Button, HStack, Text } from '@chakra-ui/react'
 import type { RecipeListing } from '@opencraw/studio'
+import { ColorModeToggle, StudioLogo } from '../appearance'
 import { LoadUrlDialog, NewRecipeDialog } from '../recipe-start'
 import type { BrowseOutcome } from './browse-folder.hook'
 import { LoadMenu } from './load-menu.component'
@@ -37,6 +38,8 @@ export interface ToolbarProps {
   running:           boolean
   onRunSample:       () => void
   onStop:            () => void
+  /** Forget the last run's records, trace and why, and any selection under way. */
+  onClear:           () => void
 }
 
 /** The last segment of a folder path, for showing beside the menus; the whole path is its tooltip. */
@@ -49,7 +52,7 @@ function folderName (path: string): string {
  * folder), **Load ▾** (what it reads: a document or a page), and Run sample / Stop; with a status that says edits
  * are saved as they are made.
  */
-export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBrowse, browsing, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, onImportFile, onLoadUrl, importing, running, onRunSample, onStop }: ToolbarProps) {
+export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBrowse, browsing, openFolder, inputs, selectedRecipeId, onSelectRecipe, onRecipeCreated, onImportFile, onLoadUrl, importing, running, onRunSample, onStop, onClear }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [newRecipeOpen, setNewRecipeOpen] = useState(false)
   const [urlOpen, setUrlOpen] = useState(false)
@@ -57,7 +60,7 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
 
   return (
     <HStack gap={2} p={2} borderBottomWidth='1px' wrap='wrap'>
-      <Text fontWeight='semibold' flexShrink={0}>OpenCraw Studio</Text>
+      <StudioLogo />
       <RecipeMenu
         inputs={inputs}
         selectedRecipeId={selectedRecipeId}
@@ -92,11 +95,15 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
       )}
       <SaveStatus />
       <HStack gap={2} flexShrink={0} ml='auto'>
-        <Button size='sm' colorPalette='blue' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
+        <ColorModeToggle />
+        <Button size='sm' colorPalette='brand' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
           Run sample
         </Button>
         <Button size='sm' variant='outline' onClick={onStop} disabled={!running}>
           Stop
+        </Button>
+        <Button size='sm' variant='ghost' onClick={onClear} disabled={running} title='Clear the records, trace and selection left from the last source'>
+          Clear
         </Button>
       </HStack>
       <NewRecipeDialog folder={openFolder} open={newRecipeOpen} onClose={() => { setNewRecipeOpen(false) }} onCreated={onRecipeCreated} />

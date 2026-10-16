@@ -27,13 +27,21 @@ describe('SnapshotFrame', () => {
     expect(onPickNode).toHaveBeenCalledWith('n1')
   })
 
-  it('does not pick outside pick mode', () => {
+  it('picks a clicked element even before Read was pressed, since a person just clicks the value', () => {
     const onPickNode = jest.fn()
     const { container } = render(<SnapshotFrame html={BODY} pickMode={false} showHidden={false} onHoverNode={() => undefined} onPickNode={onPickNode} />)
 
     fireEvent.click(loadedLink(container))
 
-    expect(onPickNode).not.toHaveBeenCalled()
+    expect(onPickNode).toHaveBeenCalledTimes(1)
+  })
+
+  it('blocks the right-click menu over the snapshot', () => {
+    const { container } = render(<SnapshotFrame html={BODY} pickMode={false} showHidden={false} onHoverNode={() => undefined} onPickNode={() => undefined} />)
+
+    const notPrevented = fireEvent.contextMenu(loadedLink(container))
+
+    expect(notPrevented).toBe(false)
   })
 
   it.each([true, false])('never lets a clicked link navigate the frame to the live site (pick mode %s)', (pickMode) => {

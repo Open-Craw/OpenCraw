@@ -1,5 +1,6 @@
 import { HStack, Text } from '@chakra-ui/react'
 import type { SentencePart } from '@opencraw/studio'
+import { useDensity } from '../appearance'
 import { Pill } from './pill.component'
 
 /**
@@ -16,8 +17,10 @@ const SECRET_PLACEHOLDER = /^\{\{env\.[A-Za-z_]\w*\}\}$/
 
 /** A card's sentence, laid out inline: words as plain text, ids as pills, literals as code — a `{{env.NAME}}` literal as a distinct secret pill instead. */
 export function SentenceView ({ parts }: { parts: SentencePart[] }) {
+  const { text } = useDensity()
+
   return (
-    <HStack gap={1} wrap='wrap' fontSize='sm'>
+    <HStack gap={1} wrap='wrap' fontSize={text}>
       {parts.map((part, index) => {
         const key = `${index}:${part.kind}:${part.text}`
         if (part.kind === 'pill') return <Pill key={key} name={part.text} />

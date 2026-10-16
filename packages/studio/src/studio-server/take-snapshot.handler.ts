@@ -27,6 +27,6 @@ export async function handleTakeSnapshot (state: StudioState, command: TakeSnaps
 }
 
 /** The wire view of a cached snapshot: `html`/`nodeCount`/`baseUrl`/`format`, never `rawHtml` or the parsed `body` (server-side only — see `SnapshotResult`'s own doc comments). */
-function snapshotView (snapshot: { html: string, nodeCount: number, baseUrl: string, format?: SnapshotView['format'] }): SnapshotView {
-  return { html: snapshot.html, nodeCount: snapshot.nodeCount, baseUrl: snapshot.baseUrl, ...(snapshot.format !== undefined && { format: snapshot.format }) }
+function snapshotView (snapshot: { html: string, nodeCount: number, baseUrl: string, format?: SnapshotView['format'], notice?: string }): SnapshotView {
+  return { html: snapshot.html, nodeCount: snapshot.nodeCount, baseUrl: snapshot.baseUrl, ...(snapshot.format !== undefined && { format: snapshot.format }), ...(snapshot.notice !== undefined && { notice: snapshot.notice }) }
 }

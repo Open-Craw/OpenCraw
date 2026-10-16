@@ -55,9 +55,27 @@ function nodeWithStep (stepIds: string): HTMLElement[] {
   return screen.getAllByTestId('tree-node').filter(node => node.dataset.stepIds === stepIds)
 }
 
+/** The items of a list after the first start closed: open the second one, to see what is inside. */
+function openSecondItem (): void {
+  const row = screen.getAllByTestId('tree-node').find(node => node.textContent?.startsWith('▸') && node.textContent.includes('[1]'))
+  fireEvent.click(row?.querySelector('button') as HTMLElement)
+}
+
+describe('TreeCanvas starting closed', () => {
+  it('opens the first item of a list and leaves the later ones closed, so a long list is short', () => {
+    renderCanvas()
+
+    expect(screen.queryByText('"Fiat"')).toBeTruthy()
+    expect(screen.queryByText('"Citroën"')).toBeNull()
+    openSecondItem()
+    expect(screen.queryByText('"Citroën"')).toBeTruthy()
+  })
+})
+
 describe('TreeCanvas cross-panel highlighting (issue #124)', () => {
   it('marks every node a step reads with the step\'s id: a list path on each item, an exact path on one', () => {
     renderCanvas()
+    openSecondItem()
     expect(nodeWithStep('names')).toHaveLength(2)
     expect(nodeWithStep('first')).toHaveLength(1)
     expect(screen.getAllByText('names')).toHaveLength(2)
@@ -65,6 +83,7 @@ describe('TreeCanvas cross-panel highlighting (issue #124)', () => {
 
   it('lights up the hovered step\'s nodes, and only those', () => {
     renderCanvas('names')
+    openSecondItem()
     const lit = screen.getAllByTestId('tree-node').filter(node => node.dataset.highlighted === 'true')
     expect(lit).toHaveLength(2)
     expect(lit.every(node => node.dataset.stepIds === 'names')).toBe(true)
@@ -73,6 +92,7 @@ describe('TreeCanvas cross-panel highlighting (issue #124)', () => {
   it('reports the step a hovered node belongs to, and nothing on leaving it or on a node no step reads', () => {
     const onHoverStepId = jest.fn()
     renderCanvas(undefined, onHoverStepId)
+    openSecondItem()
     const [citroen] = nodeWithStep('names').slice(1)
 
     fireEvent.mouseEnter(citroen)

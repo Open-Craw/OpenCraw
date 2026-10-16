@@ -181,7 +181,16 @@ function readRegion (document: ScopeDocument, selector: string): string[] {
 function readSections (document: ScopeDocument, step: ExtractStep, selector: string): string[] {
   if (document.kind !== 'pdf') throw new Error(`section reads a PDF (the text between two headings); the current document is ${document.kind}${document.kind === 'html' ? '' : ' (request it with "as": "pdf")'}`)
 
-  return findSections(document, { heading: patternOf(selector, 'selector'), until: optionalPattern(step.until, 'until'), ignoreHeadersFooters: step.ignoreHeadersFooters }).map(match => match.text)
+  const matches = findSections(document, { heading: patternOf(selector, 'selector'), until: optionalPattern(step.until, 'until'), ignoreHeadersFooters: step.ignoreHeadersFooters })
+  const pattern = optionalPattern(step.match, 'match')
+
+  return matches.flatMap((match) => {
+    const text = step.line === undefined ? match.text : match.lines.at(step.line > 0 ? step.line - 1 : step.line)
+    if (text === undefined || pattern === undefined) return text === undefined ? [] : [text]
+    const found = pattern.exec(text)
+
+    return found === null ? [] : [found[1] ?? found[0]]
+  })
 }
 
 /** What a `css` extract should have used instead, for a document that is not markup. */

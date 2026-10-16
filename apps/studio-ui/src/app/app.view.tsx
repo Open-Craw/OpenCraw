@@ -1,18 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Box, ChakraProvider, HStack, Splitter, Text, defaultSystem } from '@chakra-ui/react'
+import { Box, ChakraProvider, HStack, Splitter, Text } from '@chakra-ui/react'
 import { QueryClientProvider } from '@tanstack/react-query'
 import type { WhyTarget } from '@opencraw/studio'
+import { DensityToggle, studioSystem, useApplyColorMode } from '../appearance'
 import { ContentPane } from '../content-pane'
 import { JsonEditor } from '../json-editor'
 import { PreviewStrip } from '../preview'
+import type { PreviewStripProps } from '../preview'
 import { RecordEditor, fieldToStepIdOf } from '../record-editor'
-import type { MappingRuleJson } from '../record-editor'
+import type { MappingRuleJson, RecordEditorProps } from '../record-editor'
 import { HookNamesContext } from '../hook-names'
 import { activeStubs, useHookStubsStore } from '../hook-stubs'
 import { DocumentDropZone, useImportDocumentFlow, useLoadUrlFlow, useOpenPathFromLink } from '../recipe-start'
 import { CARD_DRAG_MIME, PILL_DRAG_MIME, StepsOutline } from '../steps-outline'
 import {
   createStudioQueryClient,
+  plainError,
   useExplainWhyMutation,
   useInputRecipes,
   useRunSampleMutation,
@@ -24,11 +27,14 @@ import {
   useStudioEvents,
   useWorkspaceQuery,
 } from '../studio-client'
-import { useRunSessionStore, useStudioUiStore } from '../studio-store'
+import { clearSourceState, useRunSessionStore, useStudioUiStore } from '../studio-store'
 import { desktopBridge } from './desktop-bridge.client'
 import { HooksBar } from './hooks-bar.component'
 import { useBrowseFolderFlow } from './browse-folder.hook'
 import { Toolbar } from './toolbar.component'
+
+/** How long a note about a load stays on screen. */
+const NOTICE_SHOWN_MS = 8000
 
 /** The studio's shell: the toolbar, the resizable content/editor split, and the preview strip along the bottom. */
 export default function App () {
@@ -36,7 +42,7 @@ export default function App () {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider value={defaultSystem}>
+      <ChakraProvider value={studioSystem}>
         <AppShell />
       </ChakraProvider>
     </QueryClientProvider>
@@ -54,6 +60,7 @@ export default function App () {
 function AppShell () {
   const client = useStudioClient()
   useStudioEvents()
+  useApplyColorMode()
 
   const folder = useStudioUiStore(state => state.folder)
   const openFolder = useStudioUiStore(state => state.openFolder)
@@ -66,14 +73,15 @@ function AppShell () {
   const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
   const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
 
+  // The splitters' sizes are kept here: left alone, a splitter goes back to its default sizes whenever its box is resized, so dragging the divider of one would reset the other.
+  const [rowSizes, setRowSizes] = useState([70, 30])
+  const [columnSizes, setColumnSizes] = useState([50, 50])
+
   const workspace = useWorkspaceQuery(openFolder)
   const inputs = useInputRecipes()
   const selectedRecipe = useSelectedRecipe()
 
   const running = useRunSessionStore(state => state.running)
-  const records = useRunSessionStore(state => state.records)
-  const rejected = useRunSessionStore(state => state.rejected)
-  const traceLines = useRunSessionStore(state => state.traceLines)
   const runError = useRunSessionStore(state => state.error)
 
   const runSample = useRunSampleMutation()
@@ -129,9 +137,18 @@ function AppShell () {
 
   const askWhy = (target: WhyTarget): void => { explainWhy.mutate(target) }
 
-  const workspaceError = linkError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? runError
+  const workspaceError = linkError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? (runError === undefined ? undefined : plainError(runError))
 
-  const loadNotice = importFlow.notice ?? urlFlow.notice
+  const latestNotice = importFlow.notice ?? urlFlow.notice
+  // A note about what a load did ("Loaded x into y") is for the moment after the load: it fades, so it is not still there when the person is elsewhere.
+  const [expiredNotice, setExpiredNotice] = useState<string>()
+  useEffect(() => {
+    if (latestNotice === undefined) return
+    const timer = setTimeout(() => { setExpiredNotice(latestNotice) }, NOTICE_SHOWN_MS)
+
+    return () => { clearTimeout(timer) }
+  }, [latestNotice])
+  const loadNotice = latestNotice === expiredNotice ? undefined : latestNotice
 
   return (
     <HookNamesContext.Provider value={workspace.data?.hooks?.names}>
@@ -154,17 +171,18 @@ function AppShell () {
           running={running}
           onRunSample={() => { if (selectedRecipeId !== undefined) runSample.mutate({ recipeId: selectedRecipeId, stubs: activeStubs(stubEntries) }) }}
           onStop={() => { stopRun.mutate() }}
+          onClear={() => { clearSourceState(); explainWhy.reset() }}
         />
         <HooksBar hooks={workspace.data?.hooks} />
         {loadNotice !== undefined && workspaceError === undefined && (
-          <Box role='status' px={4} py={1} bg='blue.subtle' color='blue.fg' fontSize='sm'>{loadNotice}</Box>
+          <Box role='status' px={4} py={1} bg='brand.subtle' color='brand.fg' fontSize='sm'>{loadNotice}</Box>
         )}
         {workspaceError !== undefined && (
           <Box px={4} py={1} bg='red.subtle' color='red.fg' fontSize='sm'>{workspaceError}</Box>
         )}
-        <Splitter.Root orientation='vertical' panels={[{ id: 'workspace', minSize: 20 }, { id: 'preview', minSize: 10 }]} defaultSize={[70, 30]} flex='1' minH='0'>
+        <Splitter.Root orientation='vertical' panels={[{ id: 'workspace', minSize: 20 }, { id: 'preview', minSize: 10 }]} size={rowSizes} onResize={(details) => { setRowSizes(details.size) }} flex='1' minH='0'>
           <Splitter.Panel id='workspace' overflow='hidden'>
-            <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} h='full'>
+            <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} size={columnSizes} onResize={(details) => { setColumnSizes(details.size) }} h='full'>
               <Splitter.Panel id='content' overflow='auto'>
                 <ContentPane
                   recipe={selectedRecipe}
@@ -178,6 +196,7 @@ function AppShell () {
                   <EditorTabButton label='Steps' active={editorTab === 'steps'} onClick={() => { setEditorTab('steps') }} />
                   <EditorTabButton label='Record' active={editorTab === 'record'} onClick={() => { setEditorTab('record') }} switchOnDrag />
                   <EditorTabButton label='JSON' active={editorTab === 'json'} onClick={() => { setEditorTab('json') }} />
+                  {editorTab === 'steps' && <Box ml='auto' pb={1}><DensityToggle /></Box>}
                 </HStack>
                 <Box flex='1' minH='0' overflow='auto'>
                   {editorTab === 'steps' && (
@@ -187,11 +206,9 @@ function AppShell () {
                     />
                   )}
                   {editorTab === 'record' && (
-                    <RecordEditor
+                    <ConnectedRecordEditor
                       inputRecipe={selectedRecipe}
                       outputRecipe={outputRecipe}
-                      records={records}
-                      rejected={rejected}
                       onSaveInput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
                       onSaveOutput={async (path, recipe) => { await saveRecipe.mutateAsync({ path, recipe }) }}
                       onSaveOutline={async (path, outline) => { await saveOutline.mutateAsync({ path, outline }) }}
@@ -211,10 +228,7 @@ function AppShell () {
           </Splitter.Panel>
           <Splitter.ResizeTrigger id='workspace:preview' />
           <Splitter.Panel id='preview' overflow='hidden' borderTopWidth='1px'>
-            <PreviewStrip
-              records={records}
-              traceLines={traceLines}
-              rejected={rejected}
+            <ConnectedPreviewStrip
               onExplainMissing={selectedRecipeId === undefined ? undefined : (recordIndex, field) => { askWhy({ kind: 'missing', recipeId: selectedRecipeId, recordIndex, field }) }}
               onExplainRejected={selectedRecipeId === undefined ? undefined : (rejectedIndex) => { askWhy({ kind: 'rejected', recipeId: selectedRecipeId, rejectedIndex }) }}
               whyLoading={explainWhy.isPending}
@@ -230,10 +244,30 @@ function AppShell () {
   )
 }
 
+/**
+ * The Record tab, given the run's records and rejections by the store itself and not by the shell: a run streams results many times a second, and
+ * every one of them redrew the whole window (the steps, the editors, the page) when the shell held them. Only this panel redraws now.
+ */
+function ConnectedRecordEditor (props: Omit<RecordEditorProps, 'records' | 'rejected'>) {
+  const records = useRunSessionStore(state => state.records)
+  const rejected = useRunSessionStore(state => state.rejected)
+
+  return <RecordEditor {...props} records={records} rejected={rejected} />
+}
+
+/** The records / trace strip, given the run's output by the store itself, for the same reason as {@link ConnectedRecordEditor}. */
+function ConnectedPreviewStrip (props: Omit<PreviewStripProps, 'records' | 'traceLines' | 'rejected'>) {
+  const records = useRunSessionStore(state => state.records)
+  const rejected = useRunSessionStore(state => state.rejected)
+  const traceLines = useRunSessionStore(state => state.traceLines)
+
+  return <PreviewStrip {...props} records={records} traceLines={traceLines} rejected={rejected} />
+}
+
 function messageOf (error: unknown): string | undefined {
   if (error === null || error === undefined) return undefined
 
-  return error instanceof Error ? error.message : String(error)
+  return plainError(error instanceof Error ? error.message : String(error))
 }
 
 /** Whether a drag in flight carries a pill or a content-pane selection. */
@@ -276,7 +310,7 @@ function EditorTabButton ({ label, active, onClick, switchOnDrag = false }: { la
       color={active ? 'fg' : 'fg.muted'}
       borderBottomWidth='2px'
       borderColor={active ? 'colorPalette.solid' : 'transparent'}
-      colorPalette='blue'
+      colorPalette='brand'
       cursor='pointer'
       onClick={onClick}
       onDragEnter={dragOver}

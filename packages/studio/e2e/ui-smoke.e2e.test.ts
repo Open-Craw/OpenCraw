@@ -178,7 +178,7 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
     writeFileSync(file, JSON.stringify(recipe))
     const page = await browser.newPage()
     await page.goto(server.url)
-    await page.getByText('Click a value to read it').waitFor()
+    await page.getByText('Click a value to collect it').waitFor()
 
     const nameRow = page.locator('div', { has: page.getByText('Widget', { exact: true }) }).last()
     await nameRow.getByText('[*]').first().click()
@@ -189,7 +189,7 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
 
     const written = JSON.parse(readFileSync(file, 'utf8')) as { steps: { type: string, over?: string, steps?: { id: string, selector: string }[] }[] }
     expect(written.steps.map(step => step.type)).toEqual(['request', 'extract', 'forEach'])
-    expect(written.steps[2].steps?.map(step => [step.id, step.selector])).toEqual([['value', '$.name'], ['value_2', '$.price']])
+    expect(written.steps[2].steps?.map(step => [step.id, step.selector])).toEqual([['name', '$.name'], ['price', '$.price']])
     await page.close()
   })
 
