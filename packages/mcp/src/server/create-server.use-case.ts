@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { diffInputShape, diffTool } from '../diff-tool'
+import { docsInputShape, docsRoot, docsTool } from '../docs-tool'
 import { listRecipesInputShape, listRecipesTool } from '../list-tool'
 import { probeInputShape, probeTool } from '../probe-tool'
 import { runInputShape, runTool } from '../run-tool'
@@ -9,7 +10,7 @@ const SERVER_INFO = { name: 'opencraw', version: '0.0.1' }
 
 /**
  * Builds the MCP server: one tool per crawl primitive (`probe`, `validate`,
- * `run`, `list_recipes`, `diff`), each a thin wrapper over `@opencraw/core` and
+ * `run`, `list_recipes`, `diff`) and `docs`, each a thin wrapper over `@opencraw/core` and
  * `@opencraw/cli`'s structured helpers. No transport is attached; `main`
  * connects it over stdio.
  *
@@ -43,6 +44,12 @@ export function createServer (): McpServer {
     'diff',
     { description: 'Compare two runs\' JSON Lines files by record key: what was added, removed, and changed (each field before and after). Use to report what changed in a source since the last crawl.', inputSchema: diffInputShape },
     args => diffTool(args),
+  )
+
+  server.registerTool(
+    'docs',
+    { description: 'OpenCraw\'s own documentation: the authoring guide (every step, selector, transform and policy), how it works, the examples and the Studio manual. Without a topic it lists the documents; with one it gives the document, or just a section of it. Read the guide before writing a recipe you are not sure of, instead of guessing.', inputSchema: docsInputShape },
+    args => docsTool(args, docsRoot()),
   )
 
   return server

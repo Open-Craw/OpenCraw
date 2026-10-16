@@ -76,7 +76,7 @@ async function run () {
 
   // The MCP server the extension registers with the editor's agent mode starts, and offers OpenCraw's tools.
   const tools = await mcpToolNames(api.mcpServerScript())
-  for (const name of ['probe', 'validate', 'run', 'list_recipes']) assert.ok(tools.includes(name), `the MCP server offers ${name} (offers: ${tools.join(', ')})`)
+  for (const name of ['probe', 'validate', 'run', 'list_recipes', 'docs']) assert.ok(tools.includes(name), `the MCP server offers ${name} (offers: ${tools.join(', ')})`)
 
   // The recipes view lists the workspace's recipes by the output they fill: an input whose output is missing is kept, under its name.
   const groups = await api.recipeGroups()

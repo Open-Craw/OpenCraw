@@ -40,9 +40,17 @@ function oneLine (path: string): string {
 }
 
 describe('opencraw mcp server', () => {
-  it('lists the four crawl-primitive tools', async () => {
+  it('lists the crawl-primitive tools and the documentation', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map(tool => tool.name).sort((a, b) => a.localeCompare(b))).toEqual(['diff', 'list_recipes', 'probe', 'run', 'validate'])
+    expect(tools.map(tool => tool.name).sort((a, b) => a.localeCompare(b))).toEqual(['diff', 'docs', 'list_recipes', 'probe', 'run', 'validate'])
+  })
+
+  it('docs: lists the documents, and gives a section of the authoring guide', async () => {
+    const listed = textOf(await client.callTool({ name: 'docs', arguments: {} })) as { topics: { id: string }[] }
+    expect(listed.topics.map(topic => topic.id)).toEqual(expect.arrayContaining(['recipes/authoring', 'how-it-works/06-documents', 'studio/manual']))
+
+    const section = textOf(await client.callTool({ name: 'docs', arguments: { topic: 'recipes/authoring', section: 'hooks' } })) as { text?: string }
+    expect(section.text).toMatch(/hook/i)
   })
 
   it('validate: accepts the reference recipes and reports the binding', async () => {
