@@ -33,6 +33,9 @@ import { HooksBar } from './hooks-bar.component'
 import { useBrowseFolderFlow } from './browse-folder.hook'
 import { Toolbar } from './toolbar.component'
 
+/** How long a note about a load stays on screen. */
+const NOTICE_SHOWN_MS = 8000
+
 /** The studio's shell: the toolbar, the resizable content/editor split, and the preview strip along the bottom. */
 export default function App () {
   const [queryClient] = useState(() => createStudioQueryClient())
@@ -136,7 +139,16 @@ function AppShell () {
 
   const workspaceError = linkError ?? importFlow.error ?? urlFlow.error ?? browseFlow.error ?? messageOf(workspace.error) ?? (runError === undefined ? undefined : plainError(runError))
 
-  const loadNotice = importFlow.notice ?? urlFlow.notice
+  const latestNotice = importFlow.notice ?? urlFlow.notice
+  // A note about what a load did ("Loaded x into y") is for the moment after the load: it fades, so it is not still there when the person is elsewhere.
+  const [expiredNotice, setExpiredNotice] = useState<string>()
+  useEffect(() => {
+    if (latestNotice === undefined) return
+    const timer = setTimeout(() => { setExpiredNotice(latestNotice) }, NOTICE_SHOWN_MS)
+
+    return () => { clearTimeout(timer) }
+  }, [latestNotice])
+  const loadNotice = latestNotice === expiredNotice ? undefined : latestNotice
 
   return (
     <HookNamesContext.Provider value={workspace.data?.hooks?.names}>
