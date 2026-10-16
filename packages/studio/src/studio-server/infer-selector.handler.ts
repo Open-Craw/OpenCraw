@@ -1,7 +1,8 @@
 import { load } from 'cheerio'
 import { NODE_ID_ATTRIBUTE } from '@opencraw/core'
 import { cachedSnapshot } from '../page-snapshot'
-import { bestCandidate, candidatesFor, inferList, pathToNode, ShadowDomUnsupportedError, takeKindFor } from '../selector-inference'
+import { candidatesFor, inferList, isStableId, pathToNode, rankCandidates, ShadowDomUnsupportedError, takeKindFor } from '../selector-inference'
+import type { RankedCandidate } from '../selector-inference'
 import type { DomPath } from '../selector-inference'
 import type { FieldPick, InferSelectorCommand, InferSelectorView } from '../studio-api'
 import type { StudioState } from './workspace.store'
@@ -28,16 +29,17 @@ export function handleInferSelector (state: StudioState, command: InferSelectorC
   if (paths.includes(undefined)) return { kind: 'unsupported', reason: 'one of the picked nodes is no longer in the snapshot; take a fresh snapshot and try again' }
   const [pathA, pathB] = paths as DomPath[]
 
-  if (pathB === undefined) return itemField(html, command, pathA) ?? { kind: 'field', field: fieldPick(html, pathA) }
+  if (pathB === undefined) return itemField(html, command, pathA) ?? { kind: 'field', field: fieldPick(html, pathA, pathA, command.nodeIds[0]) }
 
   try {
     const result = inferList(pathA, pathB)
     if (result === null) return { kind: 'unsupported', reason: 'these two picks do not belong to the same list: pick the same field on two similar items' }
-    const item = bestCandidate(html, candidatesFor(result.itemPath, false))
+    const itemOptions = rankCandidates(html, candidatesFor(result.itemPath, false))
+    const item = itemOptions[0]
     if (item === undefined) return { kind: 'unsupported', reason: 'no selector matches every item of this list; try picking two items closer to each other in the markup' }
     const field = fieldPick(html, result.fieldPathA, result.fieldPath)
 
-    return { kind: 'list', item: { selector: item.selector, tier: item.tier, matches: item.matches }, field }
+    return { kind: 'list', item: { selector: item.selector, tier: item.tier, matches: item.matches, alternatives: alternativesOf(itemOptions) }, field }
   } catch (error) {
     if (error instanceof ShadowDomUnsupportedError) return { kind: 'unsupported', reason: error.message }
     throw error
@@ -64,11 +66,30 @@ function itemField (html: string, command: InferSelectorCommand, clicked: DomPat
 }
 
 /** The best selector for one clicked node, `take` decided from the concrete clicked element; `rankSource` (a generalised path) is used for candidate generation when given, so a per-item-unique attribute of the one node picked cannot end up in the selector. */
-function fieldPick (html: string, clicked: DomPath, rankSource: DomPath = clicked): FieldPick {
+function fieldPick (html: string, clicked: DomPath, rankSource: DomPath = clicked, targetNodeId?: string): FieldPick {
   const leaf = clicked.at(-1)
   const take = leaf === undefined ? 'text' : takeKindFor(leaf)
-  const best = bestCandidate(html, candidatesFor(rankSource))
+  const options = rankCandidates(html, candidatesFor(rankSource), targetNodeId)
+  const best = options[0]
   if (best === undefined) throw new Error('no selector matches the picked node — this should not happen, since the node came from this same document')
+  const generatedId = leaf?.id !== undefined && !isStableId(leaf.id) ? leaf.id : undefined
 
-  return { selector: best.selector, tier: best.tier, take, matches: best.matches }
+  return { selector: best.selector, tier: best.tier, take, matches: best.matches, alternatives: alternativesOf(options), ...(generatedId !== undefined && { generatedId }) }
+}
+
+/** How many other selectors a person is offered at most. */
+const MAX_ALTERNATIVES = 6
+
+/** The verified candidates as the options shown to the person: the ones that reach the clicked node, each selector once. */
+function alternativesOf (options: readonly RankedCandidate[]): { selector: string, tier: RankedCandidate['tier'], matches: number }[] {
+  const seen = new Set<string>()
+  const alternatives: { selector: string, tier: RankedCandidate['tier'], matches: number }[] = []
+  for (const option of options) {
+    if (!option.hitsTarget || seen.has(option.selector)) continue
+    seen.add(option.selector)
+    alternatives.push({ selector: option.selector, tier: option.tier, matches: option.matches })
+    if (alternatives.length === MAX_ALTERNATIVES) break
+  }
+
+  return alternatives
 }

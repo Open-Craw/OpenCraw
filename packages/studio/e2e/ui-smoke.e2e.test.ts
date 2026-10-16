@@ -50,6 +50,11 @@ describeWithUi('studio UI smoke: the built UI in a browser', () => {
 
     await page.getByText('Read', { exact: true }).first().click()
     await page.frameLocator('iframe').first().getByText('Book 1', { exact: true }).click()
+    // The click only offers the ways to find the element; nothing is written until the person adds it.
+    await page.getByText('Collect this value').waitFor()
+    const beforeAdding = JSON.parse(readFileSync(join(folder, 'books.input.json'), 'utf8')) as { steps: { type: string }[] }
+    expect(beforeAdding.steps.map(step => step.type)).toEqual(['goto', 'emit'])
+    await page.getByRole('button', { name: 'Add to recipe' }).click()
     await page.getByText(/Read card:/).waitFor()
 
     // The click was a pick: the snapshot did not navigate away, and the card was saved ahead of the emit.

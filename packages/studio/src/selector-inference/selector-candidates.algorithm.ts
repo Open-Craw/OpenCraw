@@ -62,9 +62,15 @@ function structureCandidates (path: DomPath): SelectorCandidate[] {
     const parts = [simpleSelector(ancestor), ...between, node.tag]
     candidates.push({ selector: parts.join(' > '), tier: 'structure' })
   }
+  // The whole tree down to the node, each level named by its stable id or classes (an id or class that looks generated is left out of it).
+  const levels = path.slice(-CHAIN_LEVELS)
+  if (levels.length > 2) candidates.push({ selector: levels.map(level => simpleSelector(level)).join(' > '), tier: 'structure' })
 
   return candidates
 }
+
+/** How many levels of the tree, at most, the full-chain candidate names. */
+const CHAIN_LEVELS = 5
 
 /** `parent > tag:nth-of-type(n)`, the position-only fallback; never `nth-child`, which counts every sibling tag, not just this element's own. */
 function positionCandidates (path: DomPath): SelectorCandidate[] {

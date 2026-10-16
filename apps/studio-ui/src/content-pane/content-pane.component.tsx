@@ -15,9 +15,12 @@ import { GridCanvas } from './grid-canvas.component'
 import { addHtmlListField, addJsonListField, appendIndex, documentListOutlineNodes, documentReadCardNode, listItemsSelector, listOutlineNodes, paginateFromNextNode, readCardNode, spliceTopLevel } from './outline-from-pick.mapper'
 import { PdfCanvas } from './pdf-canvas.component'
 import { gotoCardNode, recipeStartUrl, suggestedBootstrap, suggestedStorageStatePath } from './recording-conversion.mapper'
+import { SelectorOptions } from './selector-options.component'
 import { SnapshotFrame } from './snapshot-frame.component'
 import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
+import { chosenPick, collectsMany, groupsOf, headingFor, hintFor, manyChoice, stagePick } from './web-pick-staging.mapper'
+import type { StagedWebPick } from './web-pick-staging.mapper'
 import { hasVisibleContent } from './visible-content.algorithm'
 import { ZoomControls } from './zoom-controls.component'
 import { useZoom } from './zoom.hook'
@@ -136,6 +139,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const warn = (text: string | undefined): void => { setStatus(text === undefined ? undefined : { text, ok: false }) }
   /** The top-level index a first pick's Read card landed at, so a following second pick upgrades it in place instead of adding a duplicate. */
   const insertedAtRef = useRef<number | undefined>(undefined)
+  /** What the last click(s) on the web page inferred, waiting for "Add to recipe" and for the person's choice of selectors. */
+  const [stagedPick, setStagedPick] = useState<StagedWebPick | undefined>(undefined)
   const canvasAreaRef = useRef<HTMLDivElement>(null)
   const zoomState = useZoom(canvasAreaRef)
   /** Same idea as `insertedAtRef`, but for the PDF, grid and deck canvases' `table` card (issue #94's 5b/5c/5d): every header/until/column/sheet/slide/fillDown/shapes pick re-sends the whole card, so it always replaces the same slot rather than piling up duplicates. Shared between the three canvases since only one of them is ever shown for a given recipe's format. */
@@ -147,8 +152,10 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   useEffect(() => {
     tableInsertedAtRef.current = undefined
     setCsvOverride(undefined)
+    setStagedPick(undefined)
   }, [recipeId])
 
+  /** A click on the web page: nothing is written to the recipe yet; the ways to reach the clicked element are shown to choose from, and "Add to recipe" writes it. */
   async function handlePick (nodeId: string): Promise<void> {
     if (recipeId === undefined) return
     // A click on the page before "Read" was pressed starts the pick itself.
@@ -160,30 +167,12 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     if (outcome.kind === 'first') {
       const within = recipe?.outline === undefined ? undefined : listItemsSelector(recipe.outline.steps)
       const result = await inferSelector.mutateAsync({ recipeId, path: STEP_PATH, nodeIds: [nodeId], ...(within !== undefined && { within }) })
-      if (result.kind === 'item-field') {
-        // A pick inside an item of the list the recipe loops over is one more field of that loop, not a Read of the first item.
-        startPicking(recipeId, STEP_PATH)
-        await writeOutline((steps) => {
-          const withField = addHtmlListField(steps, result.field)
-          if (withField === undefined) return steps
-          note(`Added to the list: ${result.field.selector}`)
-
-          return withField
-        })
-
-        return
-      }
-      if (result.kind !== 'field') {
+      if (result.kind !== 'field' && result.kind !== 'item-field') {
         warn(result.kind === 'unsupported' ? result.reason : undefined)
 
         return
       }
-      await writeOutline((steps) => {
-        insertedAtRef.current = appendIndex(steps)
-        note(`Read card: ${result.field.selector} (${result.field.matches} match${result.field.matches === 1 ? '' : 'es'})`)
-
-        return spliceTopLevel(steps, undefined, [readCardNode(result.field, `steps.${steps.length}`)])
-      })
+      setStagedPick(stagePick(result, clickedText(nodeId)))
 
       return
     }
@@ -193,14 +182,57 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
 
       return
     }
+    setStagedPick(previous => stagePick(result, previous?.text))
+  }
+
+  /** The text of a node of the web snapshot, for the options panel to show what was picked. */
+  function clickedText (nodeId: string): string | undefined {
+    const html = snapshot.data?.html
+    if (html === undefined) return undefined
+    const document = new DOMParser().parseFromString(html, 'text/html')
+    const text = document.querySelector(`[data-oc-node="${CSS.escape(nodeId)}"]`)?.textContent?.replace(/\s+/g, ' ').trim() // eslint-disable-line unicorn/prefer-string-replace-all -- this app's `lib` has no `replaceAll`
+
+    return text === undefined || text === '' ? undefined : text.slice(0, 160)
+  }
+
+  /** "Add to recipe" for the staged web pick: writes the card(s) with the selectors the person chose. */
+  async function addStagedPick (): Promise<void> {
+    if (recipeId === undefined || stagedPick === undefined) return
+    const result = chosenPick(stagedPick)
+    const many = collectsMany(stagedPick)
+    setStagedPick(undefined)
+    stopPicking()
+    if (result.kind === 'item-field') {
+      await writeOutline((steps) => {
+        const withField = addHtmlListField(steps, result.field, many)
+        if (withField === undefined) return steps
+        note(`Added to the list: ${result.field.selector}`)
+
+        return withField
+      })
+
+      return
+    }
+    if (result.kind === 'field') {
+      await writeOutline((steps) => {
+        note(`Read card: ${result.field.selector} (${result.field.matches} match${result.field.matches === 1 ? '' : 'es'})`)
+
+        return spliceTopLevel(steps, undefined, [readCardNode(result.field, `steps.${steps.length}`, undefined, many)])
+      })
+
+      return
+    }
     await writeOutline((steps) => {
-      const replaceAt = insertedAtRef.current
-      insertedAtRef.current = undefined
-      const at = replaceAt ?? appendIndex(steps)
+      const at = appendIndex(steps)
       note(`List: ${result.item.selector} (${result.item.matches} items) → ${result.field.selector}`)
 
-      return spliceTopLevel(steps, replaceAt, listOutlineNodes(result, `steps.${at}`))
+      return spliceTopLevel(steps, undefined, listOutlineNodes(result, `steps.${at}`))
     })
+  }
+
+  function cancelStagedPick (): void {
+    setStagedPick(undefined)
+    stopPicking()
   }
 
   /**
@@ -287,9 +319,18 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
     })
   }
 
+  /**
+   * Builds on the outline as the last write left it, until the recipe shown has caught up with it: two picks in quick succession (the second
+   * before the first save has come back and refreshed the recipe) would otherwise both start from the old steps, and the second would erase the first.
+   */
+  const writtenOutlineRef = useRef<{ basedOn: unknown, file: string, steps: NonNullable<RecipeListing['outline']>['steps'] } | undefined>(undefined)
+
   async function writeOutline (build: (steps: NonNullable<RecipeListing['outline']>['steps']) => NonNullable<RecipeListing['outline']>['steps']): Promise<void> {
     if (onSaveOutline === undefined || recipe?.outline === undefined) return
-    const steps = build(recipe.outline.steps)
+    const written = writtenOutlineRef.current
+    const base = written !== undefined && written.file === recipe.file && written.basedOn === recipe.outline ? written.steps : recipe.outline.steps
+    const steps = build(base)
+    writtenOutlineRef.current = { basedOn: recipe.outline, file: recipe.file, steps }
     await onSaveOutline(recipe.file, { ...recipe.outline, steps })
   }
 
@@ -457,6 +498,25 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         </HStack>
       )}
       {snapshot.data?.notice !== undefined && <SnapshotNotice text={snapshot.data.notice} />}
+      {stagedPick !== undefined && recipeId !== undefined && !isDocumentTree && !isPdf && !isGrid && !isDeck && (
+        <SelectorOptions
+          recipeId={recipeId}
+          stepPath={STEP_PATH}
+          heading={headingFor(stagedPick)}
+          hint={hintFor(stagedPick)}
+          preview={stagedPick.text}
+          groups={groupsOf(stagedPick).map(group => ({
+            title:    group.title,
+            options:  group.options,
+            selected: group.selected,
+            onSelect: (selector: string) => { setStagedPick(current => (current === undefined ? current : (group.target === 'item' ? { ...current, itemSelector: selector } : { ...current, fieldSelector: selector }))) },
+            ...(group.generatedId !== undefined && { generatedId: group.generatedId }),
+          }))}
+          collect={manyChoice(stagedPick) === undefined ? undefined : { matches: manyChoice(stagedPick) as number, many: collectsMany(stagedPick), onChange: (many: boolean) => { setStagedPick(current => (current === undefined ? current : { ...current, many })) } }}
+          onAdd={() => { void addStagedPick() }}
+          onCancel={cancelStagedPick}
+        />
+      )}
       {isHtmlSnapshot && snapshot.data !== undefined && snapshot.data.notice === undefined && !snapshotHasContent && <BlankSnapshotNotice />}
       <Box ref={canvasAreaRef} flex='1' minH='0' overflow='auto' style={isPdf ? undefined : { zoom: zoomState.zoom }} onContextMenu={(event) => { event.preventDefault() }}>
         {isDocumentTree && treeView === 'text' && snapshot.data !== undefined && (

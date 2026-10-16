@@ -19,7 +19,7 @@ export interface RankedCandidate extends SelectorCandidate {
  * Ordering: candidates that do not match `targetNodeId` (when given) sort
  * last; among the rest, best tier first, and within a tier the fewest
  * matches first (the most specific selector that still hits the target).
- * A candidate matching nothing is dropped entirely: it is not a real option.
+ * Equal on all that, the selector naming more ids and classes comes first. A candidate matching nothing is dropped entirely: it is not a real option.
  *
  * @param html - The document to verify against (the snapshot, or the live page for the second, cross-check pass).
  * @param candidates - Unranked candidates, e.g. from `candidatesFor`.
@@ -36,7 +36,12 @@ export function rankCandidates (html: string, candidates: readonly SelectorCandi
 
   return ranked
     .filter(candidate => candidate.matches > 0)
-    .sort((a, b) => Number(b.hitsTarget) - Number(a.hitsTarget) || TIER_ORDER[a.tier] - TIER_ORDER[b.tier] || a.matches - b.matches)
+    .sort((a, b) => Number(b.hitsTarget) - Number(a.hitsTarget) || TIER_ORDER[a.tier] - TIER_ORDER[b.tier] || a.matches - b.matches || namedParts(b.selector) - namedParts(a.selector))
+}
+
+/** How many ids and classes a selector names: of two that tie, the one built on names keeps working better than one made only of tags. */
+function namedParts (selector: string): number {
+  return (selector.match(/[#.]/g) ?? []).length
 }
 
 /** The single best candidate, or `undefined` when none of them matched anything. */
