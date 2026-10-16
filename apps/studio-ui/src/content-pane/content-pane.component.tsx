@@ -151,6 +151,11 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
 
   async function handlePick (nodeId: string): Promise<void> {
     if (recipeId === undefined) return
+    // A click on the page before "Read" was pressed starts the pick itself.
+    if (!pickMode) {
+      insertedAtRef.current = undefined
+      startPicking(recipeId, STEP_PATH)
+    }
     const outcome = registerPick(nodeId)
     if (outcome.kind === 'first') {
       const within = recipe?.outline === undefined ? undefined : listItemsSelector(recipe.outline.steps)

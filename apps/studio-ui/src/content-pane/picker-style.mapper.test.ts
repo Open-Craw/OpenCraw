@@ -24,4 +24,13 @@ describe('pickerStyleCss', () => {
     expect(pickerStyleCss(false, true)).toContain('[data-oc-hidden]')
     expect(pickerStyleCss(false, false)).not.toContain('[data-oc-hidden]')
   })
+
+  it('leaves a pop-up that covers the page out of the picture, and the scroll lock with it, until the toggle is on', () => {
+    const hidden = pickerStyleCss(false, false)
+    expect(hidden).toContain('[data-oc-overlay] { display: none !important; }')
+    expect(hidden).toContain('overflow: auto !important')
+    const shown = pickerStyleCss(false, true)
+    expect(shown).toContain('[data-oc-overlay] { display: revert !important')
+    expect(shown).not.toContain('display: none !important')
+  })
 })

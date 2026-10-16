@@ -10,7 +10,7 @@ export function NextStepHint (): React.ReactElement {
       <Text fontSize='sm' fontWeight='semibold' mb={1}>Nothing is collected yet</Text>
       <Text fontSize='sm' mb={1}>The steps below only open what you loaded. To collect data:</Text>
       <List.Root as='ol' ps={5} fontSize='sm' gap={0.5}>
-        <List.Item>Pick what you want from the left. On a web page, click <b>Read</b> first, then click the text. In a table or a list of data, click the value.</List.Item>
+        <List.Item>Pick what you want from the left. Click the text you want on the page (on a web page you can also press <b>Read</b> first). In a table or a list of data, click the value.</List.Item>
         <List.Item>Pick two similar things (two product names, say) to collect the whole list.</List.Item>
         <List.Item>Press <b>Run sample</b> to see what comes out.</List.Item>
       </List.Root>

@@ -2,15 +2,17 @@ import { BrowserClient, HttpClient, sessionStateOf } from '@opencraw/core'
 import type { BodyKind, BrowserSessionConfig, HookMap, HttpBody, HttpRequest, InputRecipe } from '@opencraw/core'
 import { ensureBrowserLaunch } from '../browser-provisioning'
 import { blockedPageNotice } from './blocked-page.algorithm'
-import { DISMISS_CONSENT_SCRIPT } from './consent-banner.algorithm'
+import { DISMISS_CONSENT_SCRIPT, MARK_OVERLAYS_SCRIPT } from './consent-banner.algorithm'
 import { HIDDEN_ATTRIBUTE, hiddenMarksScript } from './hidden-marks.algorithm'
+import { inlineAssets } from './inline-assets.mapper'
+import type { CapturedAsset } from './inline-assets.mapper'
 import { rewriteDocument } from './rewrite-document.mapper'
 
 /** How long a cookie banner is given to go away once its button is pressed. */
 const CONSENT_SETTLE_MS = 1200
-/** A banner appears a moment after the page loads: it is looked for this many times, this far apart, and a page with none costs this much time. */
-const CONSENT_ATTEMPTS = 4
-const CONSENT_RETRY_MS = 700
+/** A banner appears a moment after the page loads (some only after its scripts have run for a few seconds): it is looked for this many times, this far apart, and a page with none costs this much time. */
+const CONSENT_ATTEMPTS = 6
+const CONSENT_RETRY_MS = 800
 
 export interface SnapshotResult {
   /** The rewritten document, ready for the content pane's sandboxed iframe. */
@@ -105,13 +107,21 @@ async function snapshotWeb (url: string, storageState: Awaited<ReturnType<typeof
   try {
     const session = await client.newSession({ storageState })
     try {
+      const assets = new Map<string, CapturedAsset>()
+      const captures: Promise<void>[] = []
+      const budget = { bytes: 0 }
+      session.page.on('response', (loaded) => { captures.push(captureAsset(loaded, assets, budget)) })
       const response = await session.page.goto(url)
       // A cookie banner left in place covers the page in this view, and the clicks that pick a value would land on it.
       await dismissConsent(session.page)
+      // What still covers the page after that (a modal whose button the script does not know) is left out of the picture: "Show hidden" brings it back.
+      await session.page.evaluate(MARK_OVERLAYS_SCRIPT)
       const seen = String(await session.page.evaluate(String.raw`document.title + "\n" + (document.body ? document.body.innerText : "").slice(0, 3000)`))
       await session.page.evaluate(hiddenMarksScript(HIDDEN_ATTRIBUTE))
-      const html = await session.page.content()
+      await Promise.all(captures)
       const baseUrl = session.page.url()
+      // The page's own styles and fonts go inside the picture: the frame that shows it is not the site, so the site's fonts would be refused there.
+      const html = inlineAssets(await session.page.content(), baseUrl, assets)
       const rewritten = rewriteDocument(html, baseUrl)
       const notice = blockedPageNotice(seen, response?.status())
 
@@ -124,6 +134,32 @@ async function snapshotWeb (url: string, storageState: Awaited<ReturnType<typeof
   }
 }
 
+/** The most a stylesheet may weigh to be kept, the most a font may, and how much of both a page may bring (bytes): a picture is not worth a heavier page than this. */
+const MAX_CSS_BYTES = 800_000
+const MAX_FONT_BYTES = 600_000
+const MAX_ASSET_BUDGET = 6_000_000
+
+/** A response, as far as keeping a stylesheet or a font needs it. */
+interface LoadedResponse {
+  url:     () => string
+  request: () => { resourceType: () => string }
+  body:    () => Promise<Uint8Array>
+}
+
+/** Keeps a stylesheet or a font the page loaded, within the limits above; anything else, or anything that cannot be read, is let go. */
+async function captureAsset (loaded: LoadedResponse, assets: Map<string, CapturedAsset>, budget: { bytes: number }): Promise<void> {
+  const type = loaded.request().resourceType()
+  if (type !== 'stylesheet' && type !== 'font') return
+  try {
+    const body = await loaded.body()
+    if (body.length > (type === 'font' ? MAX_FONT_BYTES : MAX_CSS_BYTES) || budget.bytes + body.length > MAX_ASSET_BUDGET) return
+    budget.bytes += body.length
+    assets.set(loaded.url(), { kind: type === 'font' ? 'font' : 'css', body })
+  } catch {
+    // A response that went away before it could be read is not kept.
+  }
+}
+
 /** How the recipe's own first request reads the document (`as`), so a JSON API served as `text/plain` is shown as JSON here too. */
 function requestedAs (input: InputRecipe): HttpRequest['as'] {
   const request = input.steps.find(step => step.type === 'request')
@@ -131,14 +167,30 @@ function requestedAs (input: InputRecipe): HttpRequest['as'] {
   return request?.type === 'request' ? request.as : undefined
 }
 
-/** Presses the cookie banner's reject (or accept) button, if the page shows one; the page is looked at a few times since banners come late. */
-async function dismissConsent (page: { evaluate: (script: string) => Promise<unknown>, waitForTimeout: (ms: number) => Promise<void> }): Promise<void> {
-  for (let attempt = 0; attempt < CONSENT_ATTEMPTS; attempt += 1) {
-    const pressed = String(await page.evaluate(DISMISS_CONSENT_SCRIPT))
-    if (pressed !== '') {
-      await page.waitForTimeout(CONSENT_SETTLE_MS)
+/** A page, or a frame of it, as far as the consent script needs it. */
+interface ScriptTarget {
+  evaluate: (script: string) => Promise<unknown>
+}
 
-      return
+/**
+ * Presses the cookie banner's reject (or accept) button, if the page shows one. Many sites put their consent dialog in a frame of its
+ * own (a separate document, often covering the whole window), so every frame is searched, not only the page. The page is looked at
+ * a few times, since banners come late.
+ */
+async function dismissConsent (page: ScriptTarget & { waitForTimeout: (ms: number) => Promise<void>, frames: () => ScriptTarget[] }): Promise<void> {
+  for (let attempt = 0; attempt < CONSENT_ATTEMPTS; attempt += 1) {
+    for (const frame of page.frames()) {
+      let pressed = ''
+      try {
+        pressed = String(await frame.evaluate(DISMISS_CONSENT_SCRIPT))
+      } catch {
+        // A frame that went away or is not ready has no banner to press.
+      }
+      if (pressed !== '') {
+        await page.waitForTimeout(CONSENT_SETTLE_MS)
+
+        return
+      }
     }
     await page.waitForTimeout(CONSENT_RETRY_MS)
   }

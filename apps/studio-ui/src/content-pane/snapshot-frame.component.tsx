@@ -4,7 +4,7 @@ import { pickerStyleCss } from './picker-style.mapper'
 export interface SnapshotFrameProps {
   /** The rewritten snapshot document (`take-snapshot`): absolute urls, a base, every element carrying `data-oc-node`. */
   html:             string
-  /** Whether the content pane is in pick mode: a click on a stamped element calls `onPickNode` instead of doing nothing. */
+  /** Whether a pick is under way (the cursor becomes a crosshair); a click on a stamped element calls `onPickNode` either way. */
   pickMode:         boolean
   /** The hidden-elements toggle. */
   showHidden:       boolean
@@ -12,7 +12,7 @@ export interface SnapshotFrameProps {
   hoveredSelector?: string
   /** Called with the hovered element's `data-oc-node` id, or `undefined` once the pointer leaves it. */
   onHoverNode:      (nodeId: string | undefined) => void
-  /** Called with a clicked element's `data-oc-node` id, only while `pickMode` is true. */
+  /** Called with a clicked element's `data-oc-node` id. */
   onPickNode:       (nodeId: string) => void
 }
 
@@ -38,8 +38,8 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   const [pane, setPane] = useState({ width: 0, height: 0 })
-  const propsRef = useRef({ pickMode, onHoverNode, onPickNode })
-  propsRef.current = { pickMode, onHoverNode, onPickNode }
+  const propsRef = useRef({ onHoverNode, onPickNode })
+  propsRef.current = { onHoverNode, onPickNode }
 
   useEffect(() => {
     const iframe = iframeRef.current
@@ -53,7 +53,7 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
       // The snapshot is a picture of the page, not the page: a link must never navigate this frame to the live
       // site (which usually refuses to be framed), whether or not a pick is under way.
       if (linkOf(event.target) !== undefined) event.preventDefault()
-      if (!propsRef.current.pickMode) return
+      // A click is a pick whether or not "Read" was pressed first: hovering outlines the element, so a click on it must do something.
       const nodeId = nodeIdOf(event.target)
       if (nodeId === undefined) return
       event.preventDefault()
