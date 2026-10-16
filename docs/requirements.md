@@ -213,10 +213,10 @@ end, and returns `{ sheet, title, header, rows }`; merged ranges are filled, `he
 several rows, `fillDown` fills blank cells from the row above (PDF tables too). Text bodies of every kind are
 decoded the same way.
 
-A spreadsheet (`as: 'xlsx'`, a spreadsheet content type, `.xlsx`/`.xlsm`) is read by `@opencraw/office-reader`
+A spreadsheet (`as: 'xlsx'`, a spreadsheet content type, `.xlsx`/`.xlsm`, `.ods`) is read by `@opencraw/office-reader`
 into the same workbook shape: numbers and booleans typed, dates ISO text, errors their text, formulas their
-cached value, with hidden sheets and rows and merged ranges. `.xls`, encrypted files and `.ods` fail with what
-to do. `@opencraw/office-reader` is a standalone package: `readXlsx(source, { sheets, values, limits })` from
+cached value, with hidden sheets and rows and merged ranges. An OpenDocument spreadsheet (`.ods`) reads the same way,
+through `readOds`. `.xls` and encrypted files fail with what to do. `@opencraw/office-reader` is a standalone package: `readXlsx(source, { sheets, values, limits })` from
 a path, bytes, a Blob or a stream, in Node or a browser; zip entries capped by declared size, XML entities never
 expanded.
 

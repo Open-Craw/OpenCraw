@@ -1,8 +1,12 @@
 import { unsupportedFormatMessage } from './unsupported-format.policy'
 
 describe('unsupportedFormatMessage', () => {
-  it('says what an OpenDocument spreadsheet is and what to do instead', () => {
-    expect(unsupportedFormatMessage('LiveTable254.ods')).toBe('“LiveTable254.ods” is an OpenDocument spreadsheet, which the Studio cannot read yet. Open it in Excel or LibreOffice, save it as .xlsx or .csv, and load that file.')
+  it('says what an OpenDocument presentation is and what to do instead', () => {
+    expect(unsupportedFormatMessage('Talk.odp')).toBe('“Talk.odp” is an OpenDocument presentation, which the Studio cannot read yet. Open it in PowerPoint or LibreOffice, save it as .pptx or .pdf, and load that file.')
+  })
+
+  it('does not refuse an OpenDocument spreadsheet: the Studio reads it', () => {
+    expect(unsupportedFormatMessage('LiveTable254.ods')).toBeUndefined()
   })
 
   it('reads the type off an address, ignoring its query and the case', () => {

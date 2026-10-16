@@ -1,5 +1,7 @@
 export { readXlsx } from './spreadsheet'
 export type { ReadXlsxOptions, CellValue, Sheet, Workbook, ValueMode, SheetFilter } from './spreadsheet'
+export { readOds } from './opendocument-spreadsheet'
+export type { ReadOdsOptions } from './opendocument-spreadsheet'
 export { readPptx } from './presentation'
 export type { ReadPptxOptions, Deck, Slide, SlideShape, SlideChart, ChartSeries, SlideFilter } from './presentation'
 export { readDocx } from './document'

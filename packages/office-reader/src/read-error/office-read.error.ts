@@ -10,8 +10,10 @@ export type OfficeReadErrorCode =
   'legacy-format' |
   /** A password-protected Office file. */
   'encrypted' |
-  /** An OpenDocument file (`.ods`, `.odp`). */
+  /** An OpenDocument file this reader does not read. */
   'unsupported-format' |
+  /** A zip package that is not an OpenDocument spreadsheet. */
+  'not-ods' |
   /** A zip package that is not a spreadsheet. */
   'not-xlsx' |
   /** A zip package that is not a presentation. */

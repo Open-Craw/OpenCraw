@@ -32,6 +32,9 @@ npm install @opencraw/office-reader
 
 ## Read a workbook
 
+`.xlsx` and `.xlsm` are read by `readXlsx`; an OpenDocument spreadsheet (`.ods`, from LibreOffice, Google Sheets or Excel) by `readOds`, which
+gives the same `Workbook` (`import { readOds } from '@opencraw/office-reader/ods'`, same options). Formulas give the value stored with them.
+
 ```ts
 import { readXlsx } from '@opencraw/office-reader/xlsx'
 
@@ -124,7 +127,8 @@ says what to do:
 |---|---|
 | `legacy-format` | a legacy binary `.xls`, `.ppt` or `.doc`: save it as `.xlsx` / `.pptx` / `.docx`, or export it as PDF |
 | `encrypted` | password-protected |
-| `unsupported-format` | an OpenDocument `.ods` / `.odp` / `.odt` |
+| `unsupported-format` | an OpenDocument file this reader does not read yet (`.odp` / `.odt`), or a different kind of OpenDocument file than the one asked for |
+| `not-ods` | a zip package that is not an OpenDocument spreadsheet |
 | `not-xlsx` / `not-pptx` / `not-docx` | a zip package of another kind (a `.pptx` given to `readXlsx`, say) |
 | `not-zip` | not a zip at all |
 | `too-large` | past the `limits` |
@@ -251,7 +255,7 @@ returns flattened text, and the others are text-only or browser renderers.
 
 SheetJS's npm copy (0.18.5) carries two high-severity advisories (prototype pollution, ReDoS); the fixed
 versions are published on its own CDN only. Choose SheetJS or ExcelJS when you need to **write** workbooks,
-evaluate formulas, or read `.xls` and `.ods`. This package only reads.
+evaluate formulas, or read `.xls`. This package only reads.
 
 Tested against the 367 workbooks of Apache POI's test corpus, real files and fuzzer cases alike. It reads
 350 of them and refuses the other 17 with an `OfficeReadError`: encrypted, truncated or corrupted files.
@@ -260,7 +264,7 @@ Tested against the 367 workbooks of Apache POI's test corpus, real files and fuz
 
 - **Writing files.**
 - **Evaluating formulas, and applying display formats.** A percentage stays `0.125` and a price stays `15950`.
-- **Legacy `.xls`, `.ppt`, `.doc`, OpenDocument `.ods` / `.odp` / `.odt`, and binary `.xlsb`.** These are refused with a code.
+- **Legacy `.xls`, `.ppt`, `.doc`, OpenDocument `.odp` / `.odt`, and binary `.xlsb`.** These are refused with a code. (OpenDocument spreadsheets, `.ods`, are read.)
 - **In workbooks:** charts, pivot tables, images, comments and data validation.
 - **In presentations:** SmartArt text, text inside images (no OCR), animations and themes.
 - **In documents:** comments, formatting (bold, colours, fonts), images, equations, and the text of charts.

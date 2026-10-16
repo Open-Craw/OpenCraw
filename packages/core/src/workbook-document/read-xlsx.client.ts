@@ -1,3 +1,5 @@
+import type { Workbook } from '@opencraw/office-reader/xlsx'
+import { openDocumentFormat, openDocumentMimetype } from '../opendocument-sniff'
 import type { WorkbookCell, WorkbookDocument } from './workbook-document.model'
 
 /**
@@ -16,17 +18,43 @@ import type { WorkbookCell, WorkbookDocument } from './workbook-document.model'
  * not a readable workbook (a legacy `.xls`, a password-protected file, an `.ods`…).
  */
 export async function readXlsxWorkbook (bytes: Uint8Array, source: string): Promise<WorkbookDocument> {
+  const mimetype = openDocumentMimetype(bytes)
+  if (mimetype !== undefined && openDocumentFormat(mimetype) === 'xlsx') return await readOdsWorkbook(bytes, source)
   const { readXlsx, OfficeReadError } = await import('@opencraw/office-reader/xlsx')
   try {
     const book = await readXlsx(bytes)
 
-    return {
-      kind:   'workbook',
-      sheets: book.sheets.map(sheet => ({ name: sheet.name, rows: sheet.rows.map(row => row.map(cell => workbookCell(cell, book.date1904))), hidden: sheet.hidden, hiddenRows: sheet.hiddenRows, merges: sheet.merges, columnWidths: sheet.columnWidths, rowHeights: sheet.rowHeights, ...(sheet.defaultColumnWidth !== undefined && { defaultColumnWidth: sheet.defaultColumnWidth }), ...(sheet.defaultRowHeight !== undefined && { defaultRowHeight: sheet.defaultRowHeight }) })),
-    }
+    return workbookOf(book)
   } catch (error) {
     if (error instanceof OfficeReadError) throw new Error(`${source}: ${error.message}`, { cause: error })
     throw error
+  }
+}
+
+/**
+ * Reads an OpenDocument spreadsheet (`.ods`) into the same workbook document an `.xlsx` gives, through `@opencraw/office-reader`'s `readOds`.
+ * Loaded on first use, like the other readers.
+ *
+ * @param bytes - The file.
+ * @param source - Where it came from, for messages.
+ * @returns The workbook.
+ * @throws Error naming the source, and saying what to do, for a file that is not a readable spreadsheet.
+ */
+async function readOdsWorkbook (bytes: Uint8Array, source: string): Promise<WorkbookDocument> {
+  const { readOds, OfficeReadError } = await import('@opencraw/office-reader/ods')
+  try {
+    return workbookOf(await readOds(bytes))
+  } catch (error) {
+    if (error instanceof OfficeReadError) throw new Error(`${source}: ${error.message}`, { cause: error })
+    throw error
+  }
+}
+
+/** A workbook the office reader gave, as a workbook document. */
+function workbookOf (book: Workbook): WorkbookDocument {
+  return {
+    kind:   'workbook',
+    sheets: book.sheets.map(sheet => ({ name: sheet.name, rows: sheet.rows.map(row => row.map(cell => workbookCell(cell, book.date1904))), hidden: sheet.hidden, hiddenRows: sheet.hiddenRows, merges: sheet.merges, columnWidths: sheet.columnWidths, rowHeights: sheet.rowHeights, ...(sheet.defaultColumnWidth !== undefined && { defaultColumnWidth: sheet.defaultColumnWidth }), ...(sheet.defaultRowHeight !== undefined && { defaultRowHeight: sheet.defaultRowHeight }) })),
   }
 }
 

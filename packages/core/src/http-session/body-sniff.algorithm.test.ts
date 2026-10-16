@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
+import { strToU8, zipSync } from 'fflate'
 import { sniffFormat, zipPartNames } from './body-sniff.algorithm'
 
 const officeFixture = (folder: string, name: string): Uint8Array => new Uint8Array(readFileSync(join(__dirname, '..', '..', '..', 'office-reader', 'src', folder, 'fixtures', name)))
@@ -27,8 +28,13 @@ describe('sniffFormat', () => {
     expect(sniffFormat(pptx.subarray(0, -30), '/file')).toBe('pptx')
   })
 
+  it('knows an OpenDocument file by the media type its first entry declares', () => {
+    expect(sniffFormat(officeFixture('opendocument-spreadsheet', 'incentivi.ods'), '/file')).toBe('xlsx')
+  })
+
   it('leaves a zip that is not an Office package, plain text and nothing to the extension', () => {
-    expect(sniffFormat(officeFixture('ooxml-package', 'sheet.ods'), '/sheet')).toBeUndefined()
+    const other = zipSync({ 'readme.txt': strToU8('hello') })
+    expect(sniffFormat(other, '/archive')).toBeUndefined()
     expect(sniffFormat(new TextEncoder().encode('Marca;Modello\nFiat;Pandina\n'), '/listino')).toBeUndefined()
     expect(sniffFormat(new Uint8Array(), '/empty')).toBeUndefined()
   })

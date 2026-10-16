@@ -1,6 +1,5 @@
 /** File types the Studio cannot read yet, with what each one is called in plain words and what to do about it. */
 const UNSUPPORTED: Record<string, { what: string, instead: string }> = {
-  'ods':     { what: 'an OpenDocument spreadsheet', instead: 'Open it in Excel or LibreOffice, save it as .xlsx or .csv, and load that file.' },
   'odt':     { what: 'an OpenDocument text document', instead: 'Open it in Word or LibreOffice, save it as .docx or .pdf, and load that file.' },
   'odp':     { what: 'an OpenDocument presentation', instead: 'Open it in PowerPoint or LibreOffice, save it as .pptx or .pdf, and load that file.' },
   'rtf':     { what: 'a Rich Text document', instead: 'Open it in Word, save it as .docx or .pdf, and load that file.' },
