@@ -307,7 +307,8 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
         {regionPreview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{regionPreview.data.error}</Badge>}
       </HStack>
       <Box ref={scrollerRef} flex='1' minH='0' overflow='auto' position='relative' style={{ background: paper }} onContextMenu={(event) => { event.preventDefault() }}>
-        <Box position='relative' width={`${String(Math.ceil(width * scale))}px`} height={`${String(Math.ceil(height * scale))}px`}>
+        {/* The pane takes the page's own colour, so the page gets an edge of its own to be seen against it. */}
+        <Box position='relative' width={`${String(Math.ceil(width * scale))}px`} height={`${String(Math.ceil(height * scale))}px`} style={{ boxShadow: '0 0 0 1px rgba(128,128,128,0.5), 0 2px 10px rgba(0,0,0,0.22)' }}>
           <Box position='absolute' top={0} left={0} width={`${String(width)}px`} height={`${String(height)}px`} style={{ transform: `scale(${String(scale)})`, transformOrigin: 'top left' }}>
             <canvas ref={canvasRef} width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }} />
             <svg
