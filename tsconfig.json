@@ -34,6 +34,9 @@
       "path": "./packages/probe"
     },
     {
+      "path": "./packages/agent"
+    },
+    {
       "path": "./apps/studio-desktop"
     },
     {

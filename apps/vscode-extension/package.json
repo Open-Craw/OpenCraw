@@ -1,6 +1,6 @@
 {
   "name": "@opencraw/vscode",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "OpenCraw in the editor: open folders, recipes and documents in Studio, run your recipes from a view and save the result in the format you choose, and learn how it all works.",
   "type": "module",
@@ -54,7 +54,7 @@
       },
       {
         "view": "opencraw.agent",
-        "contents": "Connect an AI agent to OpenCraw.\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)"
+        "contents": "Connect an AI agent to OpenCraw.\n[Add the OpenCraw agent](command:opencraw.addAgent)\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)"
       }
     ],
     "jsonValidation": [
@@ -127,6 +127,12 @@
         "title": "Copy the MCP configuration for another agent",
         "category": "OpenCraw",
         "icon": "$(copy)"
+      },
+      {
+        "command": "opencraw.addAgent",
+        "title": "Add the OpenCraw agent to this workspace",
+        "category": "OpenCraw",
+        "icon": "$(sparkle)"
       }
     ],
     "menus": {
@@ -264,11 +270,12 @@
           {
             "id": "agent",
             "title": "Let an AI agent use OpenCraw",
-            "description": "In VS Code's agent mode the OpenCraw tools are already there. For Claude Code, Cursor and others, copy the configuration.\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)",
+            "description": "In VS Code's agent mode the OpenCraw tools are already there. Add the OpenCraw agent: a specialist who builds recipes with you. For Claude Code, Cursor and others, copy the MCP configuration.\n[Add the OpenCraw agent](command:opencraw.addAgent)\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)",
             "media": {
               "markdown": "media/walkthrough/agent.md"
             },
             "completionEvents": [
+              "onCommand:opencraw.addAgent",
               "onCommand:opencraw.copyMcpConfig"
             ]
           }
@@ -364,6 +371,7 @@
     }
   },
   "dependencies": {
+    "@opencraw/agent": "^0.0.1",
     "@opencraw/cli": "^0.0.1",
     "@opencraw/studio": "^0.0.1"
   },

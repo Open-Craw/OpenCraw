@@ -28,6 +28,9 @@ Issue #228. The server side it relies on is `choose-folder` (#234, the Browse bu
 - **AI agent** sets OpenCraw's tools up for an agent. In VS Code's own agent mode there is nothing to do: the extension registers the MCP
   server it carries, so OpenCraw is among the agent's tools. For Claude Code, Cursor and other hosts, **Copy the MCP configuration** puts a
   `claude mcp add` command, or the common `mcpServers` JSON, on the clipboard with this installation's server path filled in.
+- **Add the OpenCraw agent to this workspace** writes a specialist agent (it reads your pages and files and builds the recipes with you) for the agents
+  you use: a GitHub Copilot custom agent (`.github/agents/opencraw.agent.md`), a Claude Code subagent (`.claude/agents/opencraw.md`) and/or a section
+  of `AGENTS.md`. It never overwrites a file you changed without asking, and keeps what you wrote in `AGENTS.md`.
 - **Learn** links the Studio manual, the tutorial, the recipe guides and where to ask.
 - **OpenCraw: Get started** opens a walkthrough (it also opens once, the first time the extension runs).
 
@@ -56,6 +59,7 @@ editor (extension host)            Studio process                       browser
 - `src/recipe-run`: the Run action: the plan (which files, `--only`), the process that runs the bundled `opencraw` command line, the save dialog
   and the format from the extension, and `opencraw export` to write the records in it.
 - `src/mcp-setup`: registers the bundled `@opencraw/mcp` server with the editor's agent mode, the copy-configuration command and the AI agent view.
+- `src/agent-setup`: writes the agent that `@opencraw/agent` describes into the workspace (the plan of what to create, replace or update is pure).
 - `src/learn-studio`: the Learn view and the Get started walkthrough (`media/walkthrough`).
 - `src/extension.ts`: the entry point the editor requires.
 

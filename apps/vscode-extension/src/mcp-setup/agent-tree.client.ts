@@ -10,6 +10,7 @@ interface AgentRow {
 
 /** What the AI agent view shows: what is ready, and the button for each thing a person may want to do next. */
 const ROWS: readonly AgentRow[] = [
+  { label: 'Add the OpenCraw agent…', description: 'A specialist that builds recipes with you (Copilot, Claude Code, AGENTS.md)', icon: 'sparkle', command: { command: 'opencraw.addAgent', title: 'Add the OpenCraw agent' } },
   { label: 'OpenCraw tools in VS Code', description: 'Ready: pick OpenCraw in agent mode\'s tools', icon: 'check' },
   { label: 'Use OpenCraw in another agent…', description: 'Copy the configuration for Claude Code, Cursor and others', icon: 'copy', command: { command: 'opencraw.copyMcpConfig', title: 'Copy MCP configuration' } },
 ]

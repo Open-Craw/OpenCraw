@@ -11,7 +11,7 @@ const appDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const repoRoot = resolve(appDir, '..', '..')
 const stage = join(appDir, 'dist-vsix')
 const tarballs = join(stage, 'tarballs')
-const PACKAGES = ['core', 'office-reader', 'probe', 'studio', 'cli', 'mcp']
+const PACKAGES = ['core', 'office-reader', 'probe', 'studio', 'cli', 'mcp', 'agent']
 
 // Run npm's own CLI with this Node: no shell, so no quoting to get wrong and no .cmd shim on Windows.
 const npmCli = process.env.npm_execpath ?? [
