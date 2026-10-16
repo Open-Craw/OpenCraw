@@ -63,6 +63,8 @@ interface DragBox {
 const SCALE = 1.5
 /** Room kept beside the page, in pixels, for the vertical scrollbar. */
 const FIT_MARGIN = 20
+/** The pane behind the page: a mid grey, so a light page and a dark one both stand out from it where they do not fill the area. */
+const PANE_GREY = '#8a8d94'
 /** `pdfFigure`'s own cell-box padding: a cell is drawn a bit taller than its own font-size height. */
 const CELL_HEIGHT_PAD = 1.2
 /** How far (in pixels) from a cell's box the pointer may be and still snap to it. */
@@ -117,8 +119,6 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
   const [fit, setFit] = useState(1)
   /** The drawn page's scale on screen: the fit to the pane's width, times the person's zoom. */
   const scale = fit * zoom
-  /** The page's own background, read off the drawn bitmap: the preview area behind and around the page uses it, so a PDF on a dark ground is not set in a light pane (or the reverse). */
-  const [paper, setPaper] = useState('white')
   const reportedHoverRef = useRef<string | undefined>(undefined)
 
   const page = view.pages[pageIndex]
@@ -160,11 +160,13 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
     const canvas = canvasRef.current
     if (canvas === null || page === undefined) return
     const controller = new AbortController()
-    void renderPdfPage(canvas, bytesUrl, page.number, SCALE, controller.signal).then((background) => {
-      if (background !== undefined && !controller.signal.aborted) setPaper(background)
-    }).catch((error: unknown) => {
-      if (!controller.signal.aborted) console.error('PDF canvas: could not render the page', error)
-    })
+    void (async () => {
+      try {
+        await renderPdfPage(canvas, bytesUrl, page.number, SCALE, controller.signal)
+      } catch (error: unknown) {
+        if (!controller.signal.aborted) console.error('PDF canvas: could not render the page', error)
+      }
+    })()
 
     return () => { controller.abort() }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- re-render only on a real page change (`page.number`), not on `view`'s own identity churning every render.
@@ -306,8 +308,7 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTab
         {preview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{preview.data.error}</Badge>}
         {regionPreview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{regionPreview.data.error}</Badge>}
       </HStack>
-      <Box ref={scrollerRef} flex='1' minH='0' overflow='auto' position='relative' style={{ background: paper }} onContextMenu={(event) => { event.preventDefault() }}>
-        {/* The pane takes the page's own colour, so the page gets an edge of its own to be seen against it. */}
+      <Box ref={scrollerRef} flex='1' minH='0' overflow='auto' position='relative' style={{ background: PANE_GREY }} onContextMenu={(event) => { event.preventDefault() }}>
         <Box position='relative' width={`${String(Math.ceil(width * scale))}px`} height={`${String(Math.ceil(height * scale))}px`} style={{ boxShadow: '0 0 0 1px rgba(128,128,128,0.5), 0 2px 10px rgba(0,0,0,0.22)' }}>
           <Box position='absolute' top={0} left={0} width={`${String(width)}px`} height={`${String(height)}px`} style={{ transform: `scale(${String(scale)})`, transformOrigin: 'top left' }}>
             <canvas ref={canvasRef} width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }} />
@@ -604,7 +605,7 @@ function BandOverlay ({ band, scale, pageHeight, onClick }: BandOverlayProps): R
  * `pdf-view`'s geometry, not the bitmap) still works. `signal` aborts the
  * draw (the page changed or the pane unmounted) so the next render can use the canvas.
  */
-async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageNumber: number, scale: number, signal: AbortSignal): Promise<string | undefined> {
+async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageNumber: number, scale: number, signal: AbortSignal): Promise<void> {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs')
   const workerModule = await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')
   pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default
@@ -612,29 +613,16 @@ async function renderPdfPage (canvas: HTMLCanvasElement, bytesUrl: string, pageN
   const document = await loadingTask.promise
   try {
     const pdfPage = await document.getPage(pageNumber)
-    if (signal.aborted) return undefined
+    if (signal.aborted) return
     const viewport = pdfPage.getViewport({ scale })
     canvas.width = Math.ceil(viewport.width)
     canvas.height = Math.ceil(viewport.height)
     const context = canvas.getContext('2d')
-    if (context === null) return undefined
+    if (context === null) return
     const task = pdfPage.render({ canvas, canvasContext: context, viewport })
     signal.addEventListener('abort', () => { task.cancel() }) // a canvas takes one render at a time: a superseded one must let go of it
     await task.promise
-
-    return paperOf(context)
   } finally {
     await loadingTask.destroy()
-  }
-}
-
-/** The colour of the page's corner (pdf.js paints an opaque ground: white unless the document fills the page with its own). */
-function paperOf (context: CanvasRenderingContext2D): string | undefined {
-  try {
-    const [red, green, blue] = context.getImageData(1, 1, 1, 1).data
-
-    return `rgb(${String(red)}, ${String(green)}, ${String(blue)})`
-  } catch {
-    return undefined
   }
 }
