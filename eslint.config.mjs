@@ -44,6 +44,8 @@ export default [
       'apps/studio-desktop/release/**',
       'apps/vscode-extension/dist-vsix/**',
       'apps/vscode-extension/.vscode-test/**',
+      // Runs once to make the tutorial's pictures and video: it drives a browser page (code that runs in the page is a string of the page's own globals).
+      'docs/studio/capture/**',
     ],
   },
 ]
