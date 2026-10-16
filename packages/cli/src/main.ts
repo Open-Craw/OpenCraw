@@ -1,5 +1,6 @@
 import { USAGE, parseArguments } from './arguments'
 import { diffFiles } from './diff'
+import { exportRecords } from './export'
 import { probePage } from './probe'
 import { readFileSync } from 'node:fs'
 import { runRecipes } from './run'
@@ -44,6 +45,8 @@ export async function main (argv: readonly string[], terminal: Terminal): Promis
     case 'probe': { return probePage(command.url, { browser: command.browser, ...command.options }, terminal)
     }
     case 'diff': { return diffFiles(command, terminal)
+    }
+    case 'export': { return exportRecords(command, terminal)
     }
     case 'studio': { return runStudio(command.folder, terminal, undefined, command.plugins, undefined, command.open)
     }

@@ -2,7 +2,9 @@
 // editor loads it. It uses the real commands, a real Studio process and the real settings; the only thing it
 // does not look at is the browser the link is handed to.
 const assert = require('node:assert/strict')
+const { spawn } = require('node:child_process')
 const { mkdtempSync, writeFileSync } = require('node:fs')
+const { createInterface } = require('node:readline')
 const { tmpdir } = require('node:os')
 const { join } = require('node:path')
 const vscode = require('vscode')
@@ -33,6 +35,35 @@ async function command (link, body) {
   return await response.json()
 }
 
+/** Starts the MCP server the way the editor does (its own executable as plain Node), asks it for its tools over stdio and stops it. */
+async function mcpToolNames (script) {
+  const child = spawn(process.execPath, [script], { env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }, stdio: ['pipe', 'pipe', 'pipe'] })
+  let stderr = ''
+  child.stderr.on('data', (chunk) => { stderr += chunk })
+  const send = message => { child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', ...message })}\n`) }
+  try {
+    return await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { reject(new Error(`the MCP server did not answer within 60 s. Its errors: ${stderr}`)) }, 60_000)
+      child.on('error', reject)
+      child.on('exit', (code) => { reject(new Error(`the MCP server stopped with code ${code}. Its errors: ${stderr}`)) })
+      // One line is one message: the answer to initialize is followed by the request for the tools, whose answer ends the wait.
+      createInterface({ input: child.stdout }).on('line', (line) => {
+        const message = JSON.parse(line)
+        if (message.id === 1) {
+          send({ method: 'notifications/initialized' })
+          send({ id: 2, method: 'tools/list' })
+        } else if (message.id === 2) {
+          clearTimeout(timer)
+          resolve(message.result.tools.map(tool => tool.name))
+        }
+      })
+      send({ id: 1, method: 'initialize', params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'opencraw-e2e', version: '1' } } })
+    })
+  } finally {
+    child.kill()
+  }
+}
+
 async function run () {
   const extension = vscode.extensions.getExtension('opencraw.opencraw')
   assert.ok(extension, 'the extension is installed')
@@ -41,6 +72,28 @@ async function run () {
   const registered = await vscode.commands.getCommands(true)
   assert.ok(registered.includes('opencraw.openStudio'), 'Open Studio is registered')
   assert.ok(registered.includes('opencraw.openOn'), 'Open on OpenCraw is registered')
+  for (const name of ['runRecipe', 'openRecipeInStudio', 'refreshRecipes', 'showWalkthrough', 'openLink', 'copyMcpConfig', 'addAgent']) assert.ok(registered.includes(`opencraw.${name}`), `${name} is registered`)
+
+  // The MCP server the extension registers with the editor's agent mode starts, and offers OpenCraw's tools.
+  const tools = await mcpToolNames(api.mcpServerScript())
+  for (const name of ['probe', 'validate', 'run', 'list_recipes', 'docs']) assert.ok(tools.includes(name), `the MCP server offers ${name} (offers: ${tools.join(', ')})`)
+
+  // The OpenCraw agent is written for every host: a Copilot agent, a Claude Code subagent and a section of AGENTS.md that keeps what was there.
+  const folderUri = vscode.workspace.workspaceFolders[0].uri
+  await vscode.workspace.fs.writeFile(vscode.Uri.joinPath(folderUri, 'AGENTS.md'), new TextEncoder().encode('# My project\n\nRun the tests.\n'))
+  const written = await api.addAgentTo(['copilot', 'claude-code', 'agents-md'])
+  assert.deepEqual(written.sort((a, b) => a.localeCompare(b)), ['.claude/agents/opencraw.md', '.github/agents/opencraw.agent.md', 'AGENTS.md'])
+  const read = async path => new TextDecoder().decode(await vscode.workspace.fs.readFile(vscode.Uri.joinPath(folderUri, path)))
+  assert.match(await read('.github/agents/opencraw.agent.md'), /^---\nname: "OpenCraw"\ndescription: /)
+  assert.match(await read('.claude/agents/opencraw.md'), /^---\nname: opencraw\n/)
+  const agentsMd = await read('AGENTS.md')
+  assert.ok(agentsMd.startsWith('# My project\n\nRun the tests.'), 'AGENTS.md keeps what the person wrote')
+  assert.ok(agentsMd.includes('<!-- opencraw-agent:begin -->'), 'AGENTS.md has the agent section')
+  assert.deepEqual(await api.addAgentTo(['agents-md']), [], 'a second run changes nothing')
+
+  // The recipes view lists the workspace's recipes by the output they fill: an input whose output is missing is kept, under its name.
+  const groups = await api.recipeGroups()
+  assert.deepEqual(groups.map(group => [group.outputId, group.outputFile !== undefined, group.inputs.map(input => input.id)]), [['cars', true, ['byd', 'kia']], ['elsewhere', false, ['lost']]])
 
   const folder = vscode.workspace.workspaceFolders[0].uri
   const report = vscode.Uri.joinPath(folder, 'docs', 'report.csv')

@@ -8,6 +8,9 @@ Commands
   run <recipe files or directories...>        Crawl. Records go to --out (its extension picks the format), or to stdout as JSON Lines.
   probe <url>                                 Fetch a page and report where its data lives.
   diff <previous.jsonl> <current.jsonl>       Compare two runs' records by key: added, removed, changed.
+  export <records.jsonl> <output recipe> --out <file>
+                                              Write a finished run's records again in another format (the extension
+                                               of --out chooses it, as for run).
   studio [folder] [--open <path>]             Open a recipe folder in the browser: run samples, read
                                                the trace next to the page (needs @opencraw/studio).
                                                --open prints a link that opens a folder, recipe or
@@ -115,6 +118,12 @@ export function parseArguments (argv: readonly string[], env: Record<string, str
       if (rest.length === 0) throw new Error('validate needs at least one recipe file or directory')
 
       return { name: 'validate', paths: rest }
+    }
+    case 'export': {
+      if (rest.length !== 2) throw new Error('export needs the records file (JSON Lines) and the output recipe')
+      if (values.out === undefined) throw new Error('export needs --out <file>: its extension is the format')
+
+      return { name: 'export', records: rest[0], output: rest[1], out: values.out, options }
     }
     case 'diff': {
       if (rest.length !== 2) throw new Error('diff needs two JSON Lines files: the previous run, then the current one')

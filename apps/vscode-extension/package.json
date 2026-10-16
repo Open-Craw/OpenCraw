@@ -1,15 +1,15 @@
 {
   "name": "@opencraw/vscode",
-  "version": "0.1.6",
+  "version": "0.4.0",
   "private": true,
-  "description": "OpenCraw in the editor: starts the Studio server and opens a folder, recipe or document in the browser.",
+  "description": "OpenCraw in the editor: open folders, recipes and documents in Studio, run your recipes from a view and save the result in the format you choose, and learn how it all works.",
   "type": "module",
   "main": "dist/extension.cjs",
   "displayName": "OpenCraw",
   "publisher": "opencraw",
   "icon": "media/icon.png",
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.127.0"
   },
   "categories": [
     "Other"
@@ -28,15 +28,33 @@
     "views": {
       "opencraw": [
         {
-          "id": "opencraw.start",
-          "name": "OpenCraw"
+          "id": "opencraw.recipes",
+          "name": "Recipes",
+          "icon": "media/opencraw-activity-bar.svg",
+          "contextualTitle": "OpenCraw recipes"
+        },
+        {
+          "id": "opencraw.agent",
+          "name": "AI agent",
+          "icon": "media/opencraw-activity-bar.svg",
+          "contextualTitle": "OpenCraw AI agent"
+        },
+        {
+          "id": "opencraw.learn",
+          "name": "Learn",
+          "icon": "media/opencraw-activity-bar.svg",
+          "contextualTitle": "Learn OpenCraw"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "opencraw.start",
-        "contents": "Run recipes in your browser: Studio starts a local server and opens the page.\n[Open Studio](command:opencraw.openStudio)\nTo open a folder, recipe or document, right-click it in the Explorer and choose **Open on OpenCraw**."
+        "view": "opencraw.recipes",
+        "contents": "No recipes in this folder yet.\nStudio builds them for you: load a web page or a document, click what you want, and it writes the recipe.\n[Open Studio](command:opencraw.openStudio)\nRecipes are the files ending in `.ocw-in.json` (what to read) and `.ocw-out.json` (the shape of the result). They are grouped here by the output they fill."
+      },
+      {
+        "view": "opencraw.agent",
+        "contents": "Connect an AI agent to OpenCraw.\n[Add the OpenCraw agent](command:opencraw.addAgent)\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)"
       }
     ],
     "jsonValidation": [
@@ -74,6 +92,47 @@
         "command": "opencraw.openOn",
         "title": "Open on OpenCraw",
         "category": "OpenCraw"
+      },
+      {
+        "command": "opencraw.runRecipe",
+        "title": "Run",
+        "category": "OpenCraw",
+        "icon": "$(play)"
+      },
+      {
+        "command": "opencraw.openRecipeInStudio",
+        "title": "Open in Studio",
+        "category": "OpenCraw",
+        "icon": "$(browser)"
+      },
+      {
+        "command": "opencraw.refreshRecipes",
+        "title": "Refresh the recipes",
+        "category": "OpenCraw",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "opencraw.showWalkthrough",
+        "title": "Get started",
+        "category": "OpenCraw",
+        "icon": "$(mortar-board)"
+      },
+      {
+        "command": "opencraw.openLink",
+        "title": "Open a link",
+        "category": "OpenCraw"
+      },
+      {
+        "command": "opencraw.copyMcpConfig",
+        "title": "Copy the MCP configuration for another agent",
+        "category": "OpenCraw",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "opencraw.addAgent",
+        "title": "Add the OpenCraw agent to this workspace",
+        "category": "OpenCraw",
+        "icon": "$(sparkle)"
       }
     ],
     "menus": {
@@ -102,9 +161,133 @@
         {
           "command": "opencraw.openOn",
           "when": "resourceScheme == file"
+        },
+        {
+          "command": "opencraw.runRecipe",
+          "when": "false"
+        },
+        {
+          "command": "opencraw.openRecipeInStudio",
+          "when": "false"
+        },
+        {
+          "command": "opencraw.openLink",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "opencraw.openStudio",
+          "when": "view == opencraw.recipes",
+          "group": "navigation@1"
+        },
+        {
+          "command": "opencraw.refreshRecipes",
+          "when": "view == opencraw.recipes",
+          "group": "navigation@2"
+        },
+        {
+          "command": "opencraw.showWalkthrough",
+          "when": "view == opencraw.learn",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "opencraw.runRecipe",
+          "when": "view == opencraw.recipes && viewItem =~ /^opencraw\\.(output\\.runnable|input)$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "opencraw.openRecipeInStudio",
+          "when": "view == opencraw.recipes && viewItem =~ /^opencraw\\.(output|input)/ && viewItem != opencraw.output.missing",
+          "group": "inline@2"
+        },
+        {
+          "command": "opencraw.runRecipe",
+          "when": "view == opencraw.recipes && viewItem =~ /^opencraw\\.(output\\.runnable|input)$/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "opencraw.openRecipeInStudio",
+          "when": "view == opencraw.recipes && viewItem =~ /^opencraw\\.(output|input)/ && viewItem != opencraw.output.missing",
+          "group": "navigation@2"
         }
       ]
-    }
+    },
+    "walkthroughs": [
+      {
+        "id": "opencraw.getStarted",
+        "title": "Get started with OpenCraw",
+        "description": "Collect data from a web page, a PDF, a spreadsheet or a file, by clicking: no code.",
+        "steps": [
+          {
+            "id": "open",
+            "title": "Open Studio",
+            "description": "Studio runs on your computer and opens in your browser, on this workspace.\n[Open Studio](command:opencraw.openStudio)",
+            "media": {
+              "markdown": "media/walkthrough/open-studio.md"
+            },
+            "completionEvents": [
+              "onCommand:opencraw.openStudio"
+            ]
+          },
+          {
+            "id": "load",
+            "title": "Load what you want to read",
+            "description": "A web address, a PDF, a spreadsheet, a Word file, JSON: Load puts it on the left of Studio.",
+            "media": {
+              "markdown": "media/walkthrough/load.md"
+            }
+          },
+          {
+            "id": "collect",
+            "title": "Click what you want",
+            "description": "Click a value to collect it. Click a second, similar one to collect the whole list. Pick the way to find it that will keep working.",
+            "media": {
+              "markdown": "media/walkthrough/collect.md"
+            }
+          },
+          {
+            "id": "run",
+            "title": "Run a sample",
+            "description": "Run sample shows the records in a table. Fix what looks wrong, then save.",
+            "media": {
+              "markdown": "media/walkthrough/run.md"
+            }
+          },
+          {
+            "id": "recipes",
+            "title": "Run it from the editor",
+            "description": "Your recipes are listed here, grouped by the output they fill. Run one, or run them all, and choose where to save the result and in what format.\n[Show the recipes](command:opencraw.recipes.focus)",
+            "media": {
+              "markdown": "media/walkthrough/recipes.md"
+            },
+            "completionEvents": [
+              "onCommand:opencraw.runRecipe"
+            ]
+          },
+          {
+            "id": "agent",
+            "title": "Let an AI agent use OpenCraw",
+            "description": "In VS Code's agent mode the OpenCraw tools are already there. Add the OpenCraw agent: a specialist who builds recipes with you. For Claude Code, Cursor and others, copy the MCP configuration.\n[Add the OpenCraw agent](command:opencraw.addAgent)\n[Copy the MCP configuration](command:opencraw.copyMcpConfig)",
+            "media": {
+              "markdown": "media/walkthrough/agent.md"
+            },
+            "completionEvents": [
+              "onCommand:opencraw.addAgent",
+              "onCommand:opencraw.copyMcpConfig"
+            ]
+          }
+        ]
+      }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "opencraw.mcp",
+        "label": "OpenCraw"
+      }
+    ]
   },
   "nx": {
     "targets": {
@@ -163,6 +346,9 @@
         "executor": "nx:run-commands",
         "dependsOn": [
           "build",
+          "@opencraw/cli:build",
+          "@opencraw/mcp:build",
+          "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"
         ],
@@ -176,6 +362,9 @@
         "executor": "nx:run-commands",
         "dependsOn": [
           "build",
+          "@opencraw/cli:build",
+          "@opencraw/mcp:build",
+          "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"
         ],
@@ -188,11 +377,12 @@
     }
   },
   "dependencies": {
+    "@opencraw/agent": "^0.0.1",
     "@opencraw/cli": "^0.0.1",
     "@opencraw/studio": "^0.0.1"
   },
   "devDependencies": {
-    "@types/vscode": "1.90.0",
+    "@types/vscode": "1.125.0",
     "@vscode/test-electron": "^3.1.0"
   }
 }
