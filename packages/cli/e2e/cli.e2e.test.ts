@@ -53,6 +53,36 @@ describe('opencraw cli', () => {
     expect(content.trim().split('\n')).toHaveLength(6)
   }, 60000)
 
+  it('run --out: the extension of the file is the format (CSV, JSON, YAML, Excel, HTML, PDF)', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'cli-e2e-'))
+    const apiOnly = ['run', recipesDir, '--only', 'shop-api', '--hooks', hooksModule]
+    for (const name of ['out.csv', 'out.json', 'out.yml', 'out.xlsx', 'out.html']) {
+      const { stderr } = await run('node', [BIN, ...apiOnly, '--out', join(directory, name)])
+      expect(stderr).toContain(`6 records written to ${join(directory, name)}`)
+    }
+    const csv = await readFile(join(directory, 'out.csv'), 'utf8')
+    expect(csv.trim().split(/\r?\n/)).toHaveLength(7)
+    const json = await readFile(join(directory, 'out.json'), 'utf8')
+    expect(JSON.parse(json)).toHaveLength(6)
+    const page = await readFile(join(directory, 'out.html'), 'utf8')
+    expect(page).toContain('<b>6 records</b>')
+    expect(page).toContain('OpenCraw')
+    const book = await readFile(join(directory, 'out.xlsx'))
+    expect(String.fromCodePoint(book[0], book[1])).toBe('PK')
+  }, 90000)
+
+  it('run --out: an unknown extension is refused before the crawl, naming the formats that work', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'cli-e2e-'))
+    await expect(run('node', [BIN, 'run', recipesDir, '--only', 'shop-api', '--hooks', hooksModule, '--out', join(directory, 'out.txt')])).rejects.toMatchObject({
+      code:   1,
+      stderr: expect.stringMatching(/ends in "\.txt".*\.jsonl, \.json, \.csv, \.xlsx/),
+    })
+    await expect(run('node', [BIN, 'run', recipesDir, '--only', 'shop-api', '--hooks', hooksModule, '--out', join(directory, 'out.csv'), '--append'])).rejects.toMatchObject({
+      code:   1,
+      stderr: expect.stringContaining('only JSON Lines'),
+    })
+  }, 60000)
+
   it('run: without the hooks module, the api recipe stops on the hook it cannot find', async () => {
     await expect(run('node', [BIN, 'run', recipesDir, '--only', 'shop-api'], { env: { ...process.env, OPENCRAW_HOOKS: '' } })).rejects.toMatchObject({
       code:   1,
