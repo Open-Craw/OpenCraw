@@ -380,6 +380,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               as='button'
               fontSize='sm'
               fontWeight={pickMode ? 'semibold' : 'normal'}
+              whiteSpace='nowrap'
               color={pickMode ? 'colorPalette.fg' : 'fg'}
               colorPalette='brand'
               cursor='pointer'
@@ -391,7 +392,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             <Switch.Root checked={showHidden} onCheckedChange={(details) => { setShowHidden(details.checked) }} size='sm' title='Also show the parts of the page that are normally out of sight (menus, pop-ups, tabs that are not open)'>
               <Switch.HiddenInput />
               <Switch.Control />
-              <Switch.Label fontSize='sm'>Show hidden</Switch.Label>
+              <Switch.Label fontSize='sm' whiteSpace='nowrap'>Show hidden</Switch.Label>
             </Switch.Root>
             <Text
               as='button'
