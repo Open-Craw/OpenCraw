@@ -36,6 +36,14 @@ describe('SnapshotFrame', () => {
     expect(onPickNode).not.toHaveBeenCalled()
   })
 
+  it('blocks the right-click menu over the snapshot', () => {
+    const { container } = render(<SnapshotFrame html={BODY} pickMode={false} showHidden={false} onHoverNode={() => undefined} onPickNode={() => undefined} />)
+
+    const notPrevented = fireEvent.contextMenu(loadedLink(container))
+
+    expect(notPrevented).toBe(false)
+  })
+
   it.each([true, false])('never lets a clicked link navigate the frame to the live site (pick mode %s)', (pickMode) => {
     const { container } = render(<SnapshotFrame html={BODY} pickMode={pickMode} showHidden={false} onHoverNode={() => undefined} onPickNode={() => undefined} />)
     const link = loadedLink(container)

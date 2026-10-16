@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Box, ChakraProvider, HStack, Splitter, Text, defaultSystem } from '@chakra-ui/react'
+import { Box, ChakraProvider, HStack, Splitter, Text } from '@chakra-ui/react'
 import { QueryClientProvider } from '@tanstack/react-query'
 import type { WhyTarget } from '@opencraw/studio'
+import { DensityToggle, studioSystem, useApplyColorMode } from '../appearance'
 import { ContentPane } from '../content-pane'
 import { JsonEditor } from '../json-editor'
 import { PreviewStrip } from '../preview'
@@ -36,7 +37,7 @@ export default function App () {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider value={defaultSystem}>
+      <ChakraProvider value={studioSystem}>
         <AppShell />
       </ChakraProvider>
     </QueryClientProvider>
@@ -54,6 +55,7 @@ export default function App () {
 function AppShell () {
   const client = useStudioClient()
   useStudioEvents()
+  useApplyColorMode()
 
   const folder = useStudioUiStore(state => state.folder)
   const openFolder = useStudioUiStore(state => state.openFolder)
@@ -65,6 +67,10 @@ function AppShell () {
   const setEditorTab = useStudioUiStore(state => state.setEditorTab)
   const hoveredStepId = useStudioUiStore(state => state.hoveredStepId)
   const setHoveredStepId = useStudioUiStore(state => state.setHoveredStepId)
+
+  // The splitters' sizes are kept here: left alone, a splitter goes back to its default sizes whenever its box is resized, so dragging the divider of one would reset the other.
+  const [rowSizes, setRowSizes] = useState([70, 30])
+  const [columnSizes, setColumnSizes] = useState([50, 50])
 
   const workspace = useWorkspaceQuery(openFolder)
   const inputs = useInputRecipes()
@@ -157,14 +163,14 @@ function AppShell () {
         />
         <HooksBar hooks={workspace.data?.hooks} />
         {loadNotice !== undefined && workspaceError === undefined && (
-          <Box role='status' px={4} py={1} bg='blue.subtle' color='blue.fg' fontSize='sm'>{loadNotice}</Box>
+          <Box role='status' px={4} py={1} bg='brand.subtle' color='brand.fg' fontSize='sm'>{loadNotice}</Box>
         )}
         {workspaceError !== undefined && (
           <Box px={4} py={1} bg='red.subtle' color='red.fg' fontSize='sm'>{workspaceError}</Box>
         )}
-        <Splitter.Root orientation='vertical' panels={[{ id: 'workspace', minSize: 20 }, { id: 'preview', minSize: 10 }]} defaultSize={[70, 30]} flex='1' minH='0'>
+        <Splitter.Root orientation='vertical' panels={[{ id: 'workspace', minSize: 20 }, { id: 'preview', minSize: 10 }]} size={rowSizes} onResize={(details) => { setRowSizes(details.size) }} flex='1' minH='0'>
           <Splitter.Panel id='workspace' overflow='hidden'>
-            <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} h='full'>
+            <Splitter.Root panels={[{ id: 'content', minSize: 20 }, { id: 'editor', minSize: 20 }]} size={columnSizes} onResize={(details) => { setColumnSizes(details.size) }} h='full'>
               <Splitter.Panel id='content' overflow='auto'>
                 <ContentPane
                   recipe={selectedRecipe}
@@ -178,6 +184,7 @@ function AppShell () {
                   <EditorTabButton label='Steps' active={editorTab === 'steps'} onClick={() => { setEditorTab('steps') }} />
                   <EditorTabButton label='Record' active={editorTab === 'record'} onClick={() => { setEditorTab('record') }} switchOnDrag />
                   <EditorTabButton label='JSON' active={editorTab === 'json'} onClick={() => { setEditorTab('json') }} />
+                  {editorTab === 'steps' && <Box ml='auto' pb={1}><DensityToggle /></Box>}
                 </HStack>
                 <Box flex='1' minH='0' overflow='auto'>
                   {editorTab === 'steps' && (
@@ -276,7 +283,7 @@ function EditorTabButton ({ label, active, onClick, switchOnDrag = false }: { la
       color={active ? 'fg' : 'fg.muted'}
       borderBottomWidth='2px'
       borderColor={active ? 'colorPalette.solid' : 'transparent'}
-      colorPalette='blue'
+      colorPalette='brand'
       cursor='pointer'
       onClick={onClick}
       onDragEnter={dragOver}

@@ -464,7 +464,7 @@ function ModeButton ({ label, active, onClick }: { label: string, active: boolea
       fontSize='sm'
       fontWeight={active ? 'semibold' : 'normal'}
       color={active ? 'colorPalette.fg' : 'fg'}
-      colorPalette='blue'
+      colorPalette='brand'
       cursor='pointer'
       onClick={onClick}
     >

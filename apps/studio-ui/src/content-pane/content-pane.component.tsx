@@ -350,7 +350,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
               fontSize='sm'
               fontWeight={pickMode ? 'semibold' : 'normal'}
               color={pickMode ? 'colorPalette.fg' : 'fg'}
-              colorPalette='blue'
+              colorPalette='brand'
               cursor='pointer'
               onClick={togglePicking}
             >
@@ -408,7 +408,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
           <Text fontSize='sm'>
             Recording stopped: {recordingStoppedForThis.length} step{recordingStoppedForThis.length === 1 ? '' : 's'} recorded.
           </Text>
-          <Button size='xs' colorPalette='blue' onClick={() => { void handleMakeLogin() }} disabled={recordingStoppedForThis.length === 0}>
+          <Button size='xs' colorPalette='brand' onClick={() => { void handleMakeLogin() }} disabled={recordingStoppedForThis.length === 0}>
             Make this the login
           </Button>
           <Button size='xs' variant='outline' onClick={() => { void handleKeepAsSteps() }} disabled={recordingStoppedForThis.length === 0}>
@@ -420,7 +420,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         </HStack>
       )}
       {isHtmlSnapshot && snapshot.data !== undefined && !snapshotHasContent && <BlankSnapshotNotice />}
-      <Box flex='1' minH='0'>
+      <Box flex='1' minH='0' onContextMenu={(event) => { event.preventDefault() }}>
         {isDocumentTree && documentTree.data !== undefined && (
           <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
         )}

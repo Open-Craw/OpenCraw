@@ -94,7 +94,7 @@ export function NewRecipeDialog ({ folder, open, onClose, onCreated }: NewRecipe
               {error !== undefined && <Text color='fg.error' fontSize='sm'>{error}</Text>}
               <Button
                 size='sm'
-                colorPalette='blue'
+                colorPalette='brand'
                 alignSelf='flex-end'
                 onClick={() => { void create() }}
                 disabled={folder === undefined || id.length === 0 || idError !== undefined || urlError !== undefined || saveRecipe.isPending}

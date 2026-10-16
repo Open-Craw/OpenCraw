@@ -53,7 +53,7 @@ export function SelectionChip ({ left, top, text, loading, note, onAdd, onClear,
         <Text fontSize='xs' fontFamily='mono' truncate flex='1' color={empty ? 'fg.muted' : 'fg'}>
           {loading && text === undefined ? 'reading…' : (empty ? 'nothing to read here' : firstLine)}
         </Text>
-        <Button size='2xs' colorPalette='blue' onClick={onAdd} disabled={text === undefined}>Add to recipe</Button>
+        <Button size='2xs' colorPalette='brand' onClick={onAdd} disabled={text === undefined}>Add to recipe</Button>
         <CloseButton size='2xs' aria-label='Clear selection' onClick={onClear} />
       </HStack>
       {note !== undefined && <Text data-testid='region-chip-note' fontSize='2xs' color='fg.muted'>{note}</Text>}

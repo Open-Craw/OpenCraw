@@ -25,7 +25,7 @@ export function PageDataList ({ findings, onPick }: PageDataListProps): React.Re
         <Box key={`${finding.kind}-${finding.selector}`} borderBottomWidth='1px' px={3} py={2}>
           <HStack justify='space-between' gap={2}>
             <Text fontWeight='medium' truncate>{finding.label}</Text>
-            <Text as='button' flexShrink={0} fontSize='xs' color='blue.fg' onClick={() => { onPick(finding, undefined) }}>
+            <Text as='button' flexShrink={0} fontSize='xs' color='brand.fg' onClick={() => { onPick(finding, undefined) }}>
               {finding.keys === undefined ? 'Read' : 'Read whole value'}
             </Text>
           </HStack>

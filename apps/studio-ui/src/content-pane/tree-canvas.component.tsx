@@ -130,7 +130,7 @@ function TreeCanvasNode ({ node, depth, collapsed, onToggle, onPick, steps, hove
           <Badge
             as='button'
             size='xs'
-            colorPalette='blue'
+            colorPalette='brand'
             onClick={(event) => { event.stopPropagation(); onPick(node, 'list') }}
             title={`Read every one of the ${String(node.listCount ?? 0)} items in this list`}
           >

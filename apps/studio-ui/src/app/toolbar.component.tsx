@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Button, HStack, Text } from '@chakra-ui/react'
 import type { RecipeListing } from '@opencraw/studio'
+import { ColorModeToggle, StudioLogo } from '../appearance'
 import { LoadUrlDialog, NewRecipeDialog } from '../recipe-start'
 import type { BrowseOutcome } from './browse-folder.hook'
 import { LoadMenu } from './load-menu.component'
@@ -57,7 +58,7 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
 
   return (
     <HStack gap={2} p={2} borderBottomWidth='1px' wrap='wrap'>
-      <Text fontWeight='semibold' flexShrink={0}>OpenCraw Studio</Text>
+      <StudioLogo />
       <RecipeMenu
         inputs={inputs}
         selectedRecipeId={selectedRecipeId}
@@ -92,7 +93,8 @@ export function Toolbar ({ folder, onFolderChange, onOpen, onChooseFolder, onBro
       )}
       <SaveStatus />
       <HStack gap={2} flexShrink={0} ml='auto'>
-        <Button size='sm' colorPalette='blue' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
+        <ColorModeToggle />
+        <Button size='sm' colorPalette='brand' onClick={onRunSample} disabled={selectedRecipeId === undefined || running} loading={running}>
           Run sample
         </Button>
         <Button size='sm' variant='outline' onClick={onStop} disabled={!running}>

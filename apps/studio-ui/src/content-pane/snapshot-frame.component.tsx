@@ -57,13 +57,17 @@ export function SnapshotFrame ({ html, pickMode, showHidden, hoveredSelector, on
       propsRef.current.onPickNode(nodeId)
     }
 
+    const blockContextMenu = (event: MouseEvent): void => { event.preventDefault() }
+
     const handleLoad = (): void => {
       const doc = iframe.contentDocument
       if (doc === null) return
       doc.addEventListener('mouseover', handleMouseOver)
       doc.addEventListener('mouseout', handleMouseOut)
       doc.addEventListener('click', handleClick, { capture: true })
+      doc.addEventListener('contextmenu', blockContextMenu)
       cleanupDoc = () => {
+        doc.removeEventListener('contextmenu', blockContextMenu)
         doc.removeEventListener('mouseover', handleMouseOver)
         doc.removeEventListener('mouseout', handleMouseOut)
         doc.removeEventListener('click', handleClick, { capture: true })

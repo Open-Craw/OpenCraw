@@ -55,8 +55,8 @@ export function OutputDropZone ({ onPill, onCard, children }: OutputDropZoneProp
       data-drop-over={over}
       borderWidth='2px'
       borderStyle='dashed'
-      borderColor={over ? 'blue.solid' : 'transparent'}
-      bg={over ? 'blue.subtle' : undefined}
+      borderColor={over ? 'brand.solid' : 'transparent'}
+      bg={over ? 'brand.subtle' : undefined}
       borderRadius='md'
       minH='4em'
       onDragOver={dragOver}

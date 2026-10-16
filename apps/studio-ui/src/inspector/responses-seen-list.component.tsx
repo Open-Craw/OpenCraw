@@ -24,7 +24,7 @@ export function ResponsesSeenList ({ responses, loading, error, onCheck, onPick 
       <Text
         as='button'
         alignSelf='flex-start'
-        colorPalette='blue'
+        colorPalette='brand'
         color='colorPalette.fg'
         fontWeight='medium'
         opacity={loading ? 0.6 : 1}
@@ -39,7 +39,7 @@ export function ResponsesSeenList ({ responses, loading, error, onCheck, onPick 
         <Box key={response.url} borderWidth='1px' borderRadius='md' p={2}>
           <Text fontWeight='medium' truncate title={response.url}>{response.url}</Text>
           <Text color='fg.muted' fontSize='xs'>{`${response.status} · ${response.size} bytes · ${response.shape}`}</Text>
-          <Text as='button' fontSize='xs' color='blue.fg' mt={1} onClick={() => { onPick(response) }}>
+          <Text as='button' fontSize='xs' color='brand.fg' mt={1} onClick={() => { onPick(response) }}>
             Switch to api mode on this endpoint
           </Text>
         </Box>

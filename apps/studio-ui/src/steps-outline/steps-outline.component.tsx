@@ -17,11 +17,12 @@ export interface StepsOutlineProps {
 
 /** None of the live recording cards' move/remove/edit affordances are shown (`outline-node.component.tsx`'s `readOnly`), so these are never actually invoked — a plain, inert stand-in rather than threading the real `actions` (whose `listId`s belong to the real, saved outline) into a section that is not that outline yet. */
 const READ_ONLY_ACTIONS: OutlineActions = {
-  edit:   () => {},
-  commit: () => {},
-  move:   () => {},
-  remove: () => {},
-  insert: () => {},
+  edit:    () => {},
+  commit:  () => {},
+  move:    () => {},
+  reorder: () => {},
+  remove:  () => {},
+  insert:  () => {},
 }
 
 /**
@@ -92,6 +93,9 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
       const [moved] = reordered.splice(index, 1)
       reordered.splice(target, 0, moved)
       save(withList(outline, listId, reordered))
+    },
+    reorder: (listId, nodes) => {
+      setOutline(current => (current === undefined ? current : withList(current, listId, nodes)))
     },
     remove: (listId, index) => {
       if (outline === undefined) return
@@ -165,7 +169,7 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
       data-testid='steps-outline'
       data-card-over={cardOver}
       outline={cardOver ? '2px dashed' : undefined}
-      outlineColor='blue.solid'
+      outlineColor='brand.solid'
       outlineOffset='-4px'
       onDragOver={dragCardOver}
       onDragLeave={() => { setCardOver(false) }}
@@ -218,7 +222,7 @@ export function StepsOutline ({ recipe, onSaveOutline }: StepsOutlineProps) {
                 >
                   <Text fontSize='xs' flex='1'>{note.message}</Text>
                   {note.kind === 'next-link' && note.selector !== undefined && !convertedNotes.has(index) && (
-                    <Button size='2xs' colorPalette='blue' onClick={() => { convertNextLink(note, index) }}>
+                    <Button size='2xs' colorPalette='brand' onClick={() => { convertNextLink(note, index) }}>
                       Turn into pagination
                     </Button>
                   )}

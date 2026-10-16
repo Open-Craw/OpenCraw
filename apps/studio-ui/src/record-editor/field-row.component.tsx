@@ -107,7 +107,7 @@ export function FieldRow ({ name, field, rule, scopeIds, trace, value, missing, 
           py='2px'
           fontSize='xs'
           bg={dropHover ? 'colorPalette.subtle' : undefined}
-          colorPalette='blue'
+          colorPalette='brand'
           onDragOver={event => {
             if (!event.dataTransfer.types.includes(PILL_DRAG_MIME)) {
               return
@@ -251,7 +251,7 @@ export function FieldBadges ({ field }: { field: FieldSpecJson }) {
   return (
     <HStack gap={1}>
       {field.key === true && <Badge size='sm' colorPalette='purple'>key</Badge>}
-      {field.required === true && <Badge size='sm' colorPalette='blue'>required</Badge>}
+      {field.required === true && <Badge size='sm' colorPalette='brand'>required</Badge>}
     </HStack>
   )
 }
