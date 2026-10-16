@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { startStudioServer } from './studio-http.use-case'
@@ -121,6 +121,78 @@ describe('startStudioServer', () => {
     const page = await post(server, { type: 'fetch-start-page', recipeId: 'items' })
     const body = await page.json() as { html: string }
     expect(JSON.parse(body.html)).toEqual({ items: [{ name: 'a1' }, { name: 'a2' }] })
+  })
+})
+
+/** Sends a command and reads the JSON answer. */
+async function answer<T = unknown> (server: StudioServer, body: unknown): Promise<T> {
+  const response = await post(server, body)
+
+  return await response.json() as T
+}
+
+function instancesDirectory (): string {
+  return mkdtempSync(join(tmpdir(), 'opencraw-instances-'))
+}
+
+function portOf (server: StudioServer): string {
+  return new URL(server.url).port
+}
+
+describe('controlling a running studio', () => {
+  let server: StudioServer
+
+  afterEach(async () => { await server?.close() })
+
+  it('announces itself to controllers while it runs and withdraws the announcement when it stops', async () => {
+    const instancesDir = instancesDirectory()
+    const running = await startStudioServer({ uiRoot: emptyUiRoot(), initialFolder: '/work', instancesDir })
+    const port = portOf(running)
+
+    const [file] = readdirSync(instancesDir)
+    expect(file).toBe(`${String(process.pid)}-${port}.json`)
+    const announced: unknown = JSON.parse(readFileSync(join(instancesDir, file), 'utf8'))
+    expect(announced).toMatchObject({ pid: process.pid, url: `http://127.0.0.1:${port}`, token: running.token, folder: '/work' })
+    await running.close()
+    expect(readdirSync(instancesDir)).toEqual([])
+  })
+
+  it('tells every open page what a controller asked, and says how many were listening', async () => {
+    server = await startStudioServer({ uiRoot: emptyUiRoot(), instancesDir: instancesDirectory() })
+    const ask = { type: 'ask-ui', request: { kind: 'open', path: '/work/a.input.json' } }
+    expect(await answer(server, ask)).toEqual({ pages: 0 })
+
+    const socket = new WebSocket(`ws://127.0.0.1:${portOf(server)}/ws?token=${server.token}`)
+    const heard = new Promise<unknown>((resolve) => {
+      socket.addEventListener('message', (event) => {
+        resolve(JSON.parse(String(event.data)))
+      })
+    })
+    await new Promise((resolve, reject) => {
+      socket.addEventListener('open', resolve)
+      socket.addEventListener('error', reject)
+    })
+
+    expect(await answer(server, ask)).toEqual({ pages: 1 })
+    expect(await heard).toEqual({ type: 'ui-request', request: ask.request })
+    socket.close()
+  })
+
+  it('reports a sample run as never run, then finished with its first records', async () => {
+    server = await startStudioServer({ uiRoot: emptyUiRoot(), instancesDir: instancesDirectory() })
+    const folder = workspace()
+    const status = { type: 'run-status', recipeId: 'items' }
+    await post(server, { type: 'open-workspace', folder })
+    expect(await answer(server, status)).toEqual({ recipeId: 'items', state: 'never-run' })
+    expect(await answer(server, { type: 'studio-status' })).toMatchObject({ folder, pages: 0 })
+
+    await post(server, { type: 'run-sample', recipeId: 'items' })
+    let view = await answer<{ state: string, result?: { emitted: number, records: { data: unknown }[] } }>(server, status)
+    while (view.state === 'running') view = await answer(server, status)
+
+    expect(view.state).toBe('finished')
+    expect(view.result?.emitted).toBe(2)
+    expect(view.result?.records.map(record => record.data)).toEqual([{ name: 'a1' }, { name: 'a2' }])
   })
 })
 

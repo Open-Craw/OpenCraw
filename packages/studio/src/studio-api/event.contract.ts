@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { outlineNodeSchema } from './outline-view.contract'
+import { uiRequestSchema } from './ui-request.contract'
 
 /** Why a sample run stopped before finishing on its own; mirrors `@opencraw/core`'s `RecipeReport.stoppedBy`. */
 export const stoppedBySchema = z.enum(['sample-maxRecords', 'sample-maxPages', 'sample-maxMs'])
@@ -84,6 +85,12 @@ export const recordingStoppedEventSchema = z.object({
   steps: z.array(recordedStepSchema),
 })
 
+/** A controller (an agent, through the MCP server) asked the open page to do something; every page does it. */
+export const uiRequestEventSchema = z.object({
+  type:    z.literal('ui-request'),
+  request: uiRequestSchema,
+})
+
 export const studioEventSchema = z.discriminatedUnion('type', [
   traceLineEventSchema,
   recordEventSchema,
@@ -93,8 +100,10 @@ export const studioEventSchema = z.discriminatedUnion('type', [
   recordingCardEventSchema,
   recordingNoteEventSchema,
   recordingStoppedEventSchema,
+  uiRequestEventSchema,
 ])
 
+export type UiRequestEvent = z.infer<typeof uiRequestEventSchema>
 export type StoppedBy = z.infer<typeof stoppedBySchema>
 export type TraceLineEvent = z.infer<typeof traceLineEventSchema>
 export type FieldTraceView = z.infer<typeof fieldTraceSchema>

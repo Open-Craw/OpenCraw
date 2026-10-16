@@ -9,6 +9,8 @@ import { studioCommandSchema } from '../studio-api'
 import type { StudioCommand } from '../studio-api'
 import { generateToken, isAuthorized, TOKEN_COOKIE } from './access-token.policy'
 import { chooseFolderWithDialog } from '../folder-dialog'
+import { announceInstance, defaultInstancesDirectory, withdrawInstance } from '../studio-instance'
+import { handleAskUi } from './ask-ui.handler'
 import { handleChooseFolder } from './choose-folder.handler'
 import { handleDeckPreview } from './deck-preview.handler'
 import { handleDeckView } from './deck-view.handler'
@@ -28,10 +30,12 @@ import { handlePdfView } from './pdf-view.handler'
 import { handleStartRecording, handleStopRecording, settleRecording } from './recording.handler'
 import { handleResponsesSeen } from './responses-seen.handler'
 import { handleRegionPreview } from './region-preview.handler'
+import { handleRunStatus } from './run-status.handler'
 import { handleRunSample, handleStopRun } from './run-sample.handler'
 import { handleSaveOutline } from './save-outline.handler'
 import { handleSaveRecipe } from './save-recipe.handler'
 import { serveStatic } from './static-file.handler'
+import { handleStudioStatus } from './studio-status.handler'
 import { handleTablePreview } from './table-preview.handler'
 import type { TrustedPlugins } from '../trusted-plugins'
 import { handleTakeSnapshot } from './take-snapshot.handler'
@@ -66,6 +70,8 @@ export interface StudioServerOptions {
   chooseFolder?:       () => Promise<string | undefined>
   /** Where the studio's own recorder profile lives (issue #95); default: a fixed directory under the OS temp folder, never a crawl's own profile directory, never the person's default browser. */
   recorderProfileDir?: string
+  /** Where this Studio announces itself so an agent's MCP server can find it (`studio-instance`); default: `~/.opencraw/studio`. */
+  instancesDir?:       string
 }
 
 /** The running server: its URL (token included, ready to open), the token alone, and how to stop it. */
@@ -107,6 +113,9 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
   const folderParam = options.initialFolder === undefined ? '' : `&folder=${encodeURIComponent(options.initialFolder)}`
 
   const base = `http://127.0.0.1:${port}/?token=${token}`
+  const instancesDir = options.instancesDir ?? defaultInstancesDirectory()
+  const instance = { pid: process.pid, url: `http://127.0.0.1:${port}`, token, folder: options.initialFolder, startedAt: new Date().toISOString() }
+  await announceInstance(instance, instancesDir)
 
   return {
     url:  `${base}${folderParam}`,
@@ -117,7 +126,10 @@ export async function startStudioServer (options: StudioServerOptions = {}): Pro
 
       return `${base}${workspace === undefined ? '' : `&folder=${encodeURIComponent(workspace)}`}${open}`
     },
-    close: () => stop(server, state),
+    close: async () => {
+      await withdrawInstance(instance, instancesDir)
+      await stop(server, state)
+    },
   }
 }
 
@@ -253,6 +265,12 @@ function dispatch (command: StudioCommand, state: StudioState): Promise<unknown>
     case 'start-recording': { return handleStartRecording(state, command)
     }
     case 'stop-recording': { return handleStopRecording(state, command)
+    }
+    case 'ask-ui': { return Promise.resolve(handleAskUi(state, command))
+    }
+    case 'studio-status': { return Promise.resolve(handleStudioStatus(state))
+    }
+    case 'run-status': { return Promise.resolve(handleRunStatus(state, command))
     }
   }
 }
