@@ -1,7 +1,12 @@
 import { useEffect } from 'react'
+import type { PreviewRecord } from '../preview'
+import type { RejectedRecord } from '../studio-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRecordingStore, useRunSessionStore } from '../studio-store'
 import { useStudioClient } from './use-studio-client.hook'
+
+/** A run's lines and records reach the screen at most this often: a long run produces hundreds of events a second, and a redraw for each froze the page. */
+const RUN_FLUSH_MS = 120
 
 /**
  * Subscribes to the server's event stream for the lifetime of the app and
@@ -16,30 +21,52 @@ import { useStudioClient } from './use-studio-client.hook'
 export function useStudioEvents (): void {
   const client = useStudioClient()
   const queryClient = useQueryClient()
-  const appendTraceLine = useRunSessionStore(state => state.appendTraceLine)
-  const appendRecord = useRunSessionStore(state => state.appendRecord)
-  const appendRejected = useRunSessionStore(state => state.appendRejected)
+  const appendBatch = useRunSessionStore(state => state.appendBatch)
   const finishRun = useRunSessionStore(state => state.finishRun)
   const addCard = useRecordingStore(state => state.addCard)
   const addNote = useRecordingStore(state => state.addNote)
   const recordingStopped = useRecordingStore(state => state.recordingStopped)
 
-  useEffect(() => (
-    client.subscribe((event) => {
+  useEffect(() => {
+    // The run's output is collected and handed over in one go: the first event after a quiet moment at once, the rest at most every RUN_FLUSH_MS.
+    const pending: { traceLines: string[], records: PreviewRecord[], rejected: RejectedRecord[] } = { traceLines: [], records: [], rejected: [] }
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let lastFlush = 0
+    const flush = (): void => {
+      if (timer !== undefined) clearTimeout(timer)
+      timer = undefined
+      if (pending.traceLines.length === 0 && pending.records.length === 0 && pending.rejected.length === 0) return
+      lastFlush = Date.now()
+      const batch = { traceLines: [...pending.traceLines], records: [...pending.records], rejected: [...pending.rejected] }
+      pending.traceLines.length = 0
+      pending.records.length = 0
+      pending.rejected.length = 0
+      appendBatch(batch)
+    }
+    const queue = (): void => {
+      const quiet = Date.now() - lastFlush
+      if (quiet >= RUN_FLUSH_MS) flush()
+      else timer ??= setTimeout(flush, RUN_FLUSH_MS - quiet)
+    }
+    const unsubscribe = client.subscribe((event) => {
       switch (event.type) {
         case 'trace-line': {
-          appendTraceLine(event.line)
+          pending.traceLines.push(event.line)
+          queue()
           break
         }
         case 'record': {
-          appendRecord({ key: event.key, data: event.data, scope: event.scope, mapping: event.mapping })
+          pending.records.push({ key: event.key, data: event.data, scope: event.scope, mapping: event.mapping })
+          queue()
           break
         }
         case 'record-rejected': {
-          appendRejected({ field: event.field, reason: event.reason, scope: event.scope })
+          pending.rejected.push({ field: event.field, reason: event.reason, scope: event.scope })
+          queue()
           break
         }
         case 'run-finished': {
+          flush()
           finishRun(event.error)
           break
         }
@@ -68,7 +95,12 @@ export function useStudioEvents (): void {
         // No default
       }
     })
-  ), [client, queryClient, appendTraceLine, appendRecord, appendRejected, finishRun, addCard, addNote, recordingStopped])
+
+    return () => {
+      flush()
+      unsubscribe()
+    }
+  }, [client, queryClient, appendBatch, finishRun, addCard, addNote, recordingStopped])
 }
 
 /**

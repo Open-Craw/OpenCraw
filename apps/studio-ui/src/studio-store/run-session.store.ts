@@ -32,6 +32,8 @@ export interface RunSessionActions {
   appendTraceLine: (line: string) => void
   appendRecord:    (record: PreviewRecord) => void
   appendRejected:  (rejected: RejectedRecord) => void
+  /** Several lines, records and rejections at once: one update (so one redraw) for everything a run produced in the last instant. */
+  appendBatch:     (batch: { traceLines: string[], records: PreviewRecord[], rejected: RejectedRecord[] }) => void
   /** `run-finished` arrived (or the run failed to start): stop showing it as running; `error` is the run's own failure, shown with the other errors (issue #148). */
   finishRun:       (error?: string) => void
   setError:        (message: string | undefined) => void
@@ -53,6 +55,7 @@ export const useRunSessionStore = create<RunSessionStore>((set) => ({
   appendTraceLine: line => { set(state => ({ traceLines: [...state.traceLines, line] })) },
   appendRecord:    record => { set(state => ({ records: [...state.records, record] })) },
   appendRejected:  rejected => { set(state => ({ rejected: [...state.rejected, rejected] })) },
+  appendBatch:     batch => { set(state => ({ traceLines: [...state.traceLines, ...batch.traceLines], records: [...state.records, ...batch.records], rejected: [...state.rejected, ...batch.rejected] })) },
   finishRun:       error => { set(error === undefined ? { running: false } : { running: false, error }) },
   setError:        message => { set({ error: message }) },
 }))

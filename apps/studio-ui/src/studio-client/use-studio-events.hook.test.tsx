@@ -57,7 +57,7 @@ describe('useStudioEvents', () => {
     expect(useRunSessionStore.getState().records).toEqual([{ key: 'a1', data: { name: 'Widget' } }])
   })
 
-  it('appends record events\' scope and mapping trace, and record-rejected events, to the run session store', () => {
+  it('appends record events\' scope and mapping trace, and record-rejected events, to the run session store', async () => {
     const queryClient = createStudioQueryClient()
     function wrapper ({ children }: PropsWithChildren): React.ReactElement {
       return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -66,9 +66,27 @@ describe('useStudioEvents', () => {
 
     send({ type: 'record', recipeId: 'books', key: 'a1', data: { price: null }, scope: { vars: {} }, mapping: { price: { from: undefined, steps: [] } } })
     send({ type: 'record-rejected', recipeId: 'books', field: 'title', reason: 'missing', scope: { vars: {} } })
+    await waitFor(() => { expect(useRunSessionStore.getState().rejected).toHaveLength(1) })
 
     expect(useRunSessionStore.getState().records).toEqual([{ key: 'a1', data: { price: null }, scope: { vars: {} }, mapping: { price: { from: undefined, steps: [] } } }])
     expect(useRunSessionStore.getState().rejected).toEqual([{ field: 'title', reason: 'missing', scope: { vars: {} } }])
+  })
+
+  it('hands a burst of events over in one update, and does not lose the ones that come last', async () => {
+    const queryClient = createStudioQueryClient()
+    function wrapper ({ children }: PropsWithChildren): React.ReactElement {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    }
+    renderHook(() => { useStudioEvents() }, { wrapper })
+    let updates = 0
+    const stop = useRunSessionStore.subscribe(() => { updates += 1 })
+
+    for (let index = 0; index < 200; index += 1) send({ type: 'record', recipeId: 'books', key: `k${String(index)}`, data: { index } })
+    await waitFor(() => { expect(useRunSessionStore.getState().records).toHaveLength(200) })
+    stop()
+
+    expect(updates).toBeLessThan(20)
+    expect(useRunSessionStore.getState().records.at(-1)?.key).toBe('k199')
   })
 
   it('stops the run on run-finished', () => {
