@@ -69,16 +69,18 @@ describe('starting a recipe from a dropped document (#120)', () => {
     expect(snapshot.format).toBe('pdf')
   })
 
-  it('never overwrites a document already in the folder: a second drop of the same name gets a numbered copy', async () => {
+  it('never overwrites a document already in the folder: the same bytes are reused, other bytes get a numbered copy', async () => {
     server = await startStudioServer({ uiRoot: emptyUiRoot() })
     const folder = mkdtempSync(join(tmpdir(), 'opencraw-e2e-import-twice-'))
     const bytes = Buffer.from('%PDF-1.4').toString('base64')
 
     const first = await post<ImportDocumentView>(server, { type: 'import-document', folder, name: 'report.pdf', bytes })
-    const second = await post<ImportDocumentView>(server, { type: 'import-document', folder, name: 'report.pdf', bytes })
+    const again = await post<ImportDocumentView>(server, { type: 'import-document', folder, name: 'report.pdf', bytes })
+    const other = await post<ImportDocumentView>(server, { type: 'import-document', folder, name: 'report.pdf', bytes: Buffer.from('%PDF-1.7').toString('base64') })
 
     expect(first.path).toBe(join(folder, 'report.pdf'))
-    expect(second.path).toBe(join(folder, 'report-2.pdf'))
+    expect(again.path).toBe(first.path)
+    expect(other.path).toBe(join(folder, 'report-2.pdf'))
   })
 
   it('refuses a name that would escape the folder', async () => {
