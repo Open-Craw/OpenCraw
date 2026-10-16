@@ -7,6 +7,7 @@ import { readPptxDeck } from '../deck-document'
 import type { HostAllowlist } from '../host-allowlist'
 import { readDocxHtml } from '../docx-document'
 import { readMarkdown } from '../markdown-document'
+import { openDocumentFormat } from '../opendocument-sniff'
 import { readPdf } from '../pdf-document'
 import type { BodyKind } from '../recipe-schema'
 import { csvWorkbook, readXlsxWorkbook, sheetNameOf } from '../workbook-document'
@@ -266,6 +267,8 @@ function formatFromContentType (type: string, url: string): BodyKind {
   if (CSV_TYPES.has(type)) return 'csv'
   if (JSON_LINES_TYPES.has(type)) return 'jsonl'
   // A legacy .xls or .ppt goes to the Office reader too, which says what to do with it.
+  const opendocument = openDocumentFormat(type)
+  if (opendocument !== undefined) return opendocument
   if (type.includes('spreadsheetml') || type.startsWith('application/vnd.ms-excel')) return 'xlsx'
   if (type.includes('presentationml') || type.startsWith('application/vnd.ms-powerpoint')) return 'pptx'
   if (type === 'application/msword' || type.includes('wordprocessingml') || type.startsWith('application/vnd.ms-word')) return 'docx'
@@ -289,7 +292,7 @@ const CSV_TYPES = new Set(['text/csv', 'application/csv', 'text/x-csv', 'applica
 function formatFromExtension (path: string): BodyKind | undefined {
   if (/\.xml\.gz$/i.test(path)) return 'xml'
   const extension = extname(path)
-  const formats: Record<string, BodyKind> = { '.json': 'json', '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.pdf': 'pdf', '.csv': 'csv', '.tsv': 'csv', '.xlsx': 'xlsx', '.xlsm': 'xlsx', '.xls': 'xlsx', '.pptx': 'pptx', '.pptm': 'pptx', '.ppsx': 'pptx', '.ppt': 'pptx', '.docx': 'docx', '.docm': 'docx', '.dotx': 'docx', '.doc': 'docx', '.yaml': 'yaml', '.yml': 'yaml', '.md': 'markdown', '.markdown': 'markdown', '.html': 'html', '.htm': 'html', '.xml': 'xml', '.rss': 'xml', '.atom': 'xml', '.kml': 'xml', '.gpx': 'xml' }
+  const formats: Record<string, BodyKind> = { '.json': 'json', '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.pdf': 'pdf', '.csv': 'csv', '.tsv': 'csv', '.xlsx': 'xlsx', '.xlsm': 'xlsx', '.xls': 'xlsx', '.ods': 'xlsx', '.odt': 'docx', '.odp': 'pptx', '.pptx': 'pptx', '.pptm': 'pptx', '.ppsx': 'pptx', '.ppt': 'pptx', '.docx': 'docx', '.docm': 'docx', '.dotx': 'docx', '.doc': 'docx', '.yaml': 'yaml', '.yml': 'yaml', '.md': 'markdown', '.markdown': 'markdown', '.html': 'html', '.htm': 'html', '.xml': 'xml', '.rss': 'xml', '.atom': 'xml', '.kml': 'xml', '.gpx': 'xml' }
 
   return formats[extension.toLowerCase()]
 }

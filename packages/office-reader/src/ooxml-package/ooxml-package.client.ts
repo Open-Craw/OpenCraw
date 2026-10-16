@@ -45,7 +45,32 @@ export class OoxmlPackage {
     }
     const opened = new OoxmlPackage(bytes, entries, { entryBytes: limits.entryBytes ?? DEFAULT_ENTRY_BYTES, totalBytes: limits.totalBytes ?? DEFAULT_TOTAL_BYTES })
     const mimetype = opened.has('mimetype') ? opened.text('mimetype').trim() : ''
+    if (mimetype.startsWith('application/vnd.oasis.opendocument.spreadsheet')) throw new OfficeReadError('unsupported-format', 'an OpenDocument spreadsheet (.ods): read it with readOds, or save it as .xlsx')
     if (mimetype.startsWith('application/vnd.oasis.opendocument')) throw new OfficeReadError('unsupported-format', `an OpenDocument file (${mimetype}): save it as .xlsx, .pptx or .docx`)
+
+    return opened
+  }
+
+  /**
+   * Opens an OpenDocument package of one kind (a zip whose first entry, `mimetype`, names it), refusing anything else with the reason.
+   *
+   * @param bytes - The file.
+   * @param mimetype - The media type the package must declare (`application/vnd.oasis.opendocument.spreadsheet`).
+   * @param limits - How much it may inflate to.
+   * @returns The package; no part is inflated yet.
+   * @throws OfficeReadError: `not-zip`, `legacy-format`, `encrypted`, or `unsupported-format` when it is another kind of file.
+   */
+  static openOpenDocument (bytes: Uint8Array, mimetype: string, limits: PackageLimits = {}): OoxmlPackage {
+    if (isCompoundFile(bytes)) throw new OfficeReadError('legacy-format', 'a legacy binary Office file: save it as .ods, or export it as PDF')
+    const entries = new Map<string, ZipEntry>()
+    try {
+      for (const entry of readZipDirectory(bytes)) entries.set(partKey(entry.name), entry)
+    } catch (error) {
+      throw new OfficeReadError('not-zip', `not an OpenDocument file: not a readable zip (${(error as Error).message})`, { cause: error })
+    }
+    const opened = new OoxmlPackage(bytes, entries, { entryBytes: limits.entryBytes ?? DEFAULT_ENTRY_BYTES, totalBytes: limits.totalBytes ?? DEFAULT_TOTAL_BYTES })
+    const declared = opened.has('mimetype') ? opened.text('mimetype').trim() : ''
+    if (declared !== mimetype) throw new OfficeReadError('unsupported-format', declared === '' ? 'not an OpenDocument file: it has no mimetype entry' : `not the kind of file expected: this one is ${declared}`)
 
     return opened
   }

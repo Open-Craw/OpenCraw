@@ -735,7 +735,7 @@ local `file:…xlsx` / `…xlsm`) reads every worksheet with
 `2026-06-01T09:30:00`), errors their text (`#DIV/0!`), and empty cells `''`. Formulas give their cached
 value; nothing is evaluated, and display formats are not applied (a percentage stays `0.125`). Hidden sheets
 and rows are read, and `table` skips them unless `includeHidden`. Merged ranges are recorded, and `table`
-fills them. A legacy `.xls`, a password-protected file or an `.ods` fails the step, with what to do.
+fills them. An OpenDocument spreadsheet (`.ods`) reads exactly like an `.xlsx`, by its extension, its content type or the `mimetype` the file declares. A legacy `.xls` or a password-protected file fails the step, with what to do.
 
 **CSV.** `request` with `as: "csv"` (or a response served as `text/csv`, `application/csv` or
 `text/tab-separated-values`, or a local `file:…csv` / `…tsv`) reads the file into a **workbook**: a CSV is a

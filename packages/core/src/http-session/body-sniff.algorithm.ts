@@ -1,3 +1,5 @@
+import { openDocumentFormat, openDocumentMimetype } from '../opendocument-sniff'
+
 /** A format a body's first bytes can prove. */
 export type SniffedFormat = 'pdf' | 'xlsx' | 'pptx' | 'docx' | 'xml'
 
@@ -30,6 +32,8 @@ const OOXML_FOLDERS: readonly (readonly [string, SniffedFormat])[] = [['xl/', 'x
 export function sniffFormat (bytes: Uint8Array, path: string): SniffedFormat | undefined {
   if (startsPdf(bytes)) return 'pdf'
   if (bytes.length >= 4 && uint32(bytes, 0) === ZIP_LOCAL_HEADER) {
+    const opened = openDocumentMimetype(bytes)
+    if (opened !== undefined) return openDocumentFormat(opened)
     const names = zipPartNames(bytes)
 
     return OOXML_FOLDERS.find(([folder]) => names.some(name => name.startsWith(folder)))?.[1]

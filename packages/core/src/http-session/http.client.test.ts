@@ -237,6 +237,9 @@ describe('HttpClient', () => {
       expect(served.body).toMatchObject({ kind: 'workbook', sheets: [{ name: 'Incentivi giugno', hiddenRows: [6] }, { name: 'Archivio', hidden: true }, { name: 'Maggio' }] })
       const local = await client.send({ url: pathToFileURL(join(__dirname, '..', '..', '..', 'office-reader', 'src', 'spreadsheet', 'fixtures', 'incentivi.xlsx')).href })
       expect(local.body.kind === 'workbook' && local.body.sheets[0].rows[4]).toEqual(['Fiat', 'Pandina', 15_950, 13_955.625, 0.125, '2026-06-01', true, 'Solo rottamazione'])
+      const ods = await client.send({ url: pathToFileURL(join(__dirname, '..', '..', '..', 'office-reader', 'src', 'opendocument-spreadsheet', 'fixtures', 'incentivi.ods')).href })
+      expect(ods.body.kind === 'workbook' && ods.body.sheets[0].rows[4]).toEqual(['Fiat', 'Pandina', 15_950, 13_955.625, 0.125, '2026-06-01', true, 'Solo rottamazione'])
+      expect(ods.body.kind === 'workbook' && ods.body.sheets.map(sheet => [sheet.name, sheet.hidden])).toEqual([['Incentivi giugno', false], ['Archivio', true], ['Maggio', false]])
       const directory = await mkdtemp(join(tmpdir(), 'http-client-'))
       await writeFile(join(directory, 'old.xls'), new Uint8Array([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]))
       const legacy = pathToFileURL(join(directory, 'old.xls')).href

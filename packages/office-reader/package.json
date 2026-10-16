@@ -26,6 +26,11 @@
       "types": "./dist/src/document/index.d.ts",
       "import": "./dist/docx.esm.js",
       "default": "./dist/docx.esm.js"
+    },
+    "./ods": {
+      "types": "./dist/src/opendocument-spreadsheet/index.d.ts",
+      "import": "./dist/ods.esm.js",
+      "default": "./dist/ods.esm.js"
     }
   },
   "files": [
