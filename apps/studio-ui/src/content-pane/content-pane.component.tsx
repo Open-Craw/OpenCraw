@@ -16,6 +16,8 @@ import { SnapshotFrame } from './snapshot-frame.component'
 import { pickedSteps } from './step-highlight.mapper'
 import { TreeCanvas } from './tree-canvas.component'
 import { hasVisibleContent } from './visible-content.algorithm'
+import { ZoomControls } from './zoom-controls.component'
+import { useZoom } from './zoom.hook'
 import type { TreePickMode } from './tree-canvas.component'
 
 /**
@@ -126,6 +128,8 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
   const warn = (text: string | undefined): void => { setStatus(text === undefined ? undefined : { text, ok: false }) }
   /** The top-level index a first pick's Read card landed at, so a following second pick upgrades it in place instead of adding a duplicate. */
   const insertedAtRef = useRef<number | undefined>(undefined)
+  const canvasAreaRef = useRef<HTMLDivElement>(null)
+  const zoomState = useZoom(canvasAreaRef)
   /** Same idea as `insertedAtRef`, but for the PDF, grid and deck canvases' `table` card (issue #94's 5b/5c/5d): every header/until/column/sheet/slide/fillDown/shapes pick re-sends the whole card, so it always replaces the same slot rather than piling up duplicates. Shared between the three canvases since only one of them is ever shown for a given recipe's format. */
   const tableInsertedAtRef = useRef<number | undefined>(undefined)
 
@@ -392,6 +396,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             {status.text}
           </Badge>
         )}
+        <Box ml='auto'><ZoomControls {...zoomState} /></Box>
       </HStack>
       {isRecordingThis && (
         <HStack px={3} py={2} bg='red.subtle' color='red.fg' fontSize='sm' gap={3} flexShrink={0} data-testid='recording-banner'>
@@ -420,7 +425,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
         </HStack>
       )}
       {isHtmlSnapshot && snapshot.data !== undefined && !snapshotHasContent && <BlankSnapshotNotice />}
-      <Box flex='1' minH='0' onContextMenu={(event) => { event.preventDefault() }}>
+      <Box ref={canvasAreaRef} flex='1' minH='0' overflow='auto' style={isPdf ? undefined : { zoom: zoomState.zoom }} onContextMenu={(event) => { event.preventDefault() }}>
         {isDocumentTree && documentTree.data !== undefined && (
           <TreeCanvas tree={documentTree.data} onPick={(node, mode) => { void handleTreePick(node, mode) }} steps={steps} hoveredStepId={hoveredStepId} onHoverStepId={setHoveredStepId} />
         )}
@@ -433,6 +438,7 @@ export function ContentPane ({ recipe, onSaveOutline, onSaveRecipe }: ContentPan
             recipeId={recipeId}
             stepPath={STEP_PATH}
             view={pdfView.data}
+            zoom={zoomState.zoom}
             bytesUrl={client.pdfBytesUrl(recipeId, STEP_PATH, snapshot.data?.baseUrl)}
             onTablePick={(card) => { void handleTableCardPick(card) }}
             onRegionPick={(card) => { void handleStagedPick(card) }}

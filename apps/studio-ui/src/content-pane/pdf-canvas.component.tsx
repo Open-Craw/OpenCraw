@@ -20,6 +20,8 @@ export interface PdfCanvasProps {
   stepPath:       string
   /** The document's cells and rows (`pdf-view`). */
   view:           PdfDocumentView
+  /** How much the page is magnified (1 = fitted to the pane's width). */
+  zoom?:          number
   /** Where `pdf.js` fetches the raw bytes to render (`GET /api/pdf-bytes`). */
   bytesUrl:       string
   /** Called with the `table` extract card every time a header/until/column pick changes it. */
@@ -97,7 +99,7 @@ const RECIPE_COLOR = '#ea580c'
  * hovering the step's card fills it in, and snapping to a line one of
  * them reads lights the card up.
  */
-export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, onRegionPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: PdfCanvasProps): React.ReactElement {
+export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, zoom = 1, onTablePick, onRegionPick, steps = NO_STEPS, hoveredStepId, onHoverStepId }: PdfCanvasProps): React.ReactElement {
   const [pageIndex, setPageIndex] = useState(0)
   const [mode, setMode] = useState<PdfPickMode>('text')
   const [draft, setDraft] = useState<TableDraft>({})
@@ -108,6 +110,8 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
   const scrollerRef = useRef<HTMLDivElement>(null)
   /** How much the drawn page is shrunk to fit the pane's width (1 = as drawn): a page wider than the pane would otherwise scroll sideways. */
   const [fit, setFit] = useState(1)
+  /** The drawn page's scale on screen: the fit to the pane's width, times the person's zoom. */
+  const scale = fit * zoom
   /** The page's own background, read off the drawn bitmap: the preview area behind and around the page uses it, so a PDF on a dark ground is not set in a light pane (or the reverse). */
   const [paper, setPaper] = useState('white')
   const reportedHoverRef = useRef<string | undefined>(undefined)
@@ -278,8 +282,8 @@ export function PdfCanvas ({ recipeId, stepPath, view, bytesUrl, onTablePick, on
         {regionPreview.data?.error !== undefined && <Badge size='sm' colorPalette='orange'>{regionPreview.data.error}</Badge>}
       </HStack>
       <Box ref={scrollerRef} flex='1' minH='0' overflow='auto' position='relative' style={{ background: paper }} onContextMenu={(event) => { event.preventDefault() }}>
-        <Box position='relative' width={`${String(Math.ceil(width * fit))}px`} height={`${String(Math.ceil(height * fit))}px`}>
-          <Box position='absolute' top={0} left={0} width={`${String(width)}px`} height={`${String(height)}px`} style={{ transform: `scale(${String(fit)})`, transformOrigin: 'top left' }}>
+        <Box position='relative' width={`${String(Math.ceil(width * scale))}px`} height={`${String(Math.ceil(height * scale))}px`}>
+          <Box position='absolute' top={0} left={0} width={`${String(width)}px`} height={`${String(height)}px`} style={{ transform: `scale(${String(scale)})`, transformOrigin: 'top left' }}>
             <canvas ref={canvasRef} width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }} />
             <svg
               data-testid='pdf-overlay'
