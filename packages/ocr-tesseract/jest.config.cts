@@ -16,7 +16,7 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   // pdf.js is an ES module Jest cannot load itself: see jest-pdfjs.cjs.
-  moduleNameMapper: { '^pdfjs-dist/legacy/build/pdf\\.mjs$': '<rootDir>/jest-pdfjs.cjs' },
+  moduleNameMapper: { '^pdfjs-dist/legacy/build/pdf\\.mjs$': '<rootDir>/jest-pdfjs.cjs', '^@opencraw/ocr-tesseract$': '<rootDir>/src/index.ts' },
   // marked ships as an ES module only: transform it like the sources (@opencraw/core is read from its sources).
   transformIgnorePatterns: ['/node_modules/(?!marked/)'],
   coverageDirectory: 'test-output/jest/coverage',
