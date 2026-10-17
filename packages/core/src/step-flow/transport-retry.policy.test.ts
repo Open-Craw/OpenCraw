@@ -96,18 +96,27 @@ describe('transport retry', () => {
   })
 
   it('keeps trying through an outage until the budget ends, the last pause cut to fit', async () => {
+    // The budget is time: on the real clock, a busy machine fires the pauses late and fewer fit in it.
+    // Fake timers move setTimeout and Date.now together, so every run sees the same tries.
     const events: CrawlEvent[] = []
     const context = { recipeId: 'r', gate: new RunGate(1, 0), events: new EventBus((event) => { events.push(event) }), rule: resolveRetryRule({ forMs: 300, backoffMs: 20, maxDelayMs: 40 }) }
-    const down = { run: async () => 404, problem: () => ({ reason: 'HTTP 404' }) }
-    const started = Date.now()
-    await expect(withTransportRetry('https://a.example/', down, context)).resolves.toBe(404)
-    const took = Date.now() - started
-    const retries = events.filter(event => event.type === 'request:retry')
-    // More tries than the default 3, all within the budget, with no pause over maxDelayMs.
-    expect(retries.length).toBeGreaterThan(5)
-    expect(took).toBeGreaterThanOrEqual(250)
-    expect(took).toBeLessThan(600)
-    expect(retries.every(event => event.type === 'request:retry' && event.delayMs <= 40)).toBe(true)
+    jest.useFakeTimers()
+    try {
+      const down = { run: async () => 404, problem: () => ({ reason: 'HTTP 404' }) }
+      const started = Date.now()
+      const outcome = withTransportRetry('https://a.example/', down, context)
+      await jest.runAllTimersAsync()
+      await expect(outcome).resolves.toBe(404)
+      const took = Date.now() - started
+      const retries = events.filter(event => event.type === 'request:retry')
+      // More tries than the default 3, all within the budget, with no pause over maxDelayMs.
+      expect(retries.length).toBeGreaterThan(5)
+      expect(took).toBeGreaterThanOrEqual(250)
+      expect(took).toBeLessThan(600)
+      expect(retries.every(event => event.type === 'request:retry' && event.delayMs <= 40)).toBe(true)
+    } finally {
+      jest.useRealTimers()
+    }
 
     let calls = 0
     const recovers = {
