@@ -22,13 +22,16 @@ node = "node-vitest"
 [release]
 github_releases = true
 
-# azure-host ships as a container image: each release builds it and pushes it to the
-# org's GitHub Container Registry with the workflow's GITHUB_TOKEN (no stored secret).
-[conventions.docker]
-registry = "ghcr.io/open-craw"
-
-[projects.azure-host.docker]
-image = "opencraw-azure-host"
+# azure-host ships as a container image, pushed on release to the org's GitHub Container
+# Registry with the workflow's GITHUB_TOKEN. Off until the image builds in CI: the Dockerfile
+# needs a pruned dist/ (its own lockfile and the workspace packages it uses), which Nx's prune
+# target wrote and smith does not yet (monosmith-app/monosmith#297). Uncomment then:
+#
+# [conventions.docker]
+# registry = "ghcr.io/open-craw"
+#
+# [projects.azure-host.docker]
+# image = "opencraw-azure-host"
 
 # Files named for their role, one folder per outcome: Node is checked by the ESLint
 # config, the other languages by a slice-check task that runs before lint.
