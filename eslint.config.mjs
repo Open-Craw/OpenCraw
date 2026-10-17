@@ -25,11 +25,6 @@ export default [
       'apps/vscode-extension/.vscode-test/**',
       // Runs once to make the tutorial's pictures and video: it drives a browser page (code that runs in the page is a string of the page's own globals).
       'docs/studio/capture/**',
-      // Written by smith (convert, ci generate), which do not pass this config yet: monosmith-app/monosmith#286.
-      '.devcontainer/devcontainer.json',
-      'declaration-specifiers.mjs',
-      'jest.asset-transform.cjs',
-      'jest.preset.js',
       // Local only, never committed: field-test scratch (gitignored) and the browser tool's snapshots.
       'studio-field-tests/**',
       '.playwright-mcp/**',

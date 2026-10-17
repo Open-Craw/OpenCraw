@@ -3,24 +3,27 @@
 // TS file goes to @swc/jest or babel-jest, and any other file is its name.
 const path = require('node:path')
 
-function className(name) {
+function className (name) {
   const camel = name
-    .replace(/([^a-zA-Z0-9])+(.)?/g, (_, __, chr) => (chr ? chr.toUpperCase() : ''))
-    .replace(/[^a-zA-Z\d]/g, '')
+    .replaceAll(/([^a-z0-9])+(.)?/gi, (_, __, chr) => (chr ? chr.toUpperCase() : ''))
+    .replaceAll(/[^a-z\d]/gi, '')
+
   return camel.charAt(0).toUpperCase() + camel.slice(1)
 }
 
-function jsTransformer(transforms) {
+function jsTransformer (transforms) {
   const swc = (transforms ?? []).some((t) => Array.isArray(t) && t.some((v) => typeof v === 'string' && v.includes('@swc/jest')))
   if (swc) return require('@swc/jest').createTransformer()
+
   return require('babel-jest').default.createTransformer()
 }
 
 module.exports = {
-  process(src, filename, options) {
+  process (src, filename, options) {
     const assetFilename = JSON.stringify(path.basename(filename))
     if (filename.endsWith('.svg')) {
       const componentName = 'Svg' + className(path.parse(filename).name)
+
       return {
         code: `const React = require('react');
 module.exports = {
@@ -35,6 +38,7 @@ module.exports = {
     if (['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'].includes(path.extname(filename))) {
       return jsTransformer(options.config?.transform).process(src, filename, options)
     }
+
     return { code: `module.exports = ${assetFilename};` }
   },
 }
