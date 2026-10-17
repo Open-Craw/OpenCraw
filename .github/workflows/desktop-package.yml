@@ -31,13 +31,9 @@ jobs:
       # The npm scripts run smith (MonoSmith); the same installer the generated ci.yml uses.
       - name: Install smith
         shell: bash
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/monosmith-app/monosmith/main/install.sh | sh -s -- "$SMITH_VERSION"
-          # install.sh adds its folder to PATH in Git Bash form, which cmd and PowerShell cannot use
-          # (monosmith-app/monosmith#290): add the Windows form too.
-          if [ "$RUNNER_OS" = Windows ]; then cygpath -w "$HOME/.local/bin" >> "$GITHUB_PATH"; fi
+        run: curl -fsSL https://raw.githubusercontent.com/monosmith-app/monosmith/main/install.sh | sh -s -- "$SMITH_VERSION"
         env:
-          SMITH_VERSION: 1.10.0
+          SMITH_VERSION: 1.10.1
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm ci
       - name: Installer
