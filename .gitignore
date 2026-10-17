@@ -85,3 +85,6 @@ apps/vscode-extension/*.vsix
 # smith
 .smith/
 .venv/
+
+# studio-ui builds one bundle per environment (build-dev, build-uat, build-prod) for its package task
+apps/studio-ui/dist-*/
