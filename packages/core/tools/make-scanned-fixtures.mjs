@@ -84,8 +84,8 @@ function scan ({ lines, pageWidth = 420, pageHeight = 595, pixelsPerPoint = 2.5,
 const TABLE = ['Incentivi giugno 2026', 'Marca     Modello     Prezzo    Sconto', 'Fiat      Pandina     15950     12,5%', 'Jeep      Avenger     24950     8,0%', 'Totale ordini: 1.250']
 
 const fixtures = {
-  'scan-clean.pdf': scan({ lines: TABLE }),
-  'scan-poor.pdf':  scan({ lines: TABLE, pixelsPerPoint: 2, tiltDegrees: 2.2, noise: 0.5 }),
+  'scan-clean.pdf':          scan({ lines: TABLE }),
+  'scan-poor.pdf':           scan({ lines: TABLE, pixelsPerPoint: 2, tiltDegrees: 2.2, noise: 0.5 }),
   // 200 dpi, fed in 4.5 degrees crooked, with shaded paper: read as it is, Tesseract finds nothing; cleaned, every character.
   'scan-crooked-shaded.pdf': scan({ lines: TABLE, pageHeight: 300, pixelsPerPoint: 2.8, fontPoints: 10, tiltDegrees: 4.5, noise: 0.5, shade: 60, quality: 60 }),
 }

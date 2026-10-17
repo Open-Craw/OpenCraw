@@ -24,6 +24,9 @@
     "pngjs": "^7.0.0",
     "tesseract.js": "^7.0.0"
   },
+  "peerDependencies": {
+    "@opencraw/core": "^0.0.1"
+  },
   "publishConfig": {
     "access": "public"
   },
