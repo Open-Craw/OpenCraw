@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: curl -fsSL https://raw.githubusercontent.com/monosmith-app/monosmith/main/install.sh | sh -s -- "$SMITH_VERSION"
         env:
-          SMITH_VERSION: 1.11.0
+          SMITH_VERSION: 1.12.3
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm ci
       - name: Package the extension

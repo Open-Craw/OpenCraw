@@ -11,5 +11,5 @@
       "version": "3.12"
     }
   },
-  "postCreateCommand": "curl -fsSL https://raw.githubusercontent.com/monosmith-app/monosmith/main/install.sh | sh -s -- \"1.11.0\" && \"$HOME/.local/bin/smith\" ci setup"
+  "postCreateCommand": "curl -fsSL https://raw.githubusercontent.com/monosmith-app/monosmith/main/install.sh | sh -s -- \"1.12.3\" && \"$HOME/.local/bin/smith\" ci setup"
 }

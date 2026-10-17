@@ -87,7 +87,7 @@ tag_prefix = "@opencraw/captcha-tesseract@"
 depends_on = ["^build", "typecheck"]
 
 [projects.captcha-tesseract.tasks.e2e]
-depends_on = ["e2e-browsers", "build", "core:build"]
+depends_on = ["build", "core:build", "^build"]
 
 [projects.captcha-tesseract.tasks.test]
 env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
@@ -99,7 +99,7 @@ tag_prefix = "@opencraw/cli@"
 depends_on = ["^build", "typecheck"]
 
 [projects.cli.tasks.e2e]
-depends_on = ["e2e-browsers", "build", "core:e2e"]
+depends_on = ["build", "core:e2e", "^build"]
 
 [projects.cli.tasks.test]
 env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
@@ -111,7 +111,7 @@ tag_prefix = "@opencraw/core@"
 depends_on = ["^build", "typecheck"]
 
 [projects.core.tasks.e2e]
-depends_on = ["e2e-browsers", "build", "^build"]
+depends_on = ["build", "^build"]
 
 [projects.core.tasks.schemas]
 depends_on = ["build"]
@@ -126,7 +126,7 @@ tag_prefix = "@opencraw/mcp@"
 depends_on = ["^build", "copy-docs"]
 
 [projects.mcp.tasks.e2e]
-depends_on = ["e2e-browsers", "build", "core:e2e", "cli:e2e", "copy-docs"]
+depends_on = ["build", "core:e2e", "cli:e2e", "copy-docs", "^build"]
 
 [projects.mcp.tasks.test]
 env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
@@ -147,7 +147,7 @@ tag_prefix = "@opencraw/office-reader@"
 depends_on = ["^build", "typecheck"]
 
 [projects.office-reader.tasks.e2e]
-depends_on = ["e2e-browsers", "build"]
+depends_on = ["build", "^build"]
 
 [projects.office-reader.tasks.test]
 env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
@@ -171,13 +171,13 @@ tag_prefix = "@opencraw/studio@"
 depends_on = ["^build", "typecheck"]
 
 [projects.studio.tasks.e2e]
-depends_on = ["e2e-browsers", "build"]
+depends_on = ["build", "^build"]
 
 [projects.studio.tasks.test]
 env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
 
 [projects.studio-desktop.tasks.e2e]
-depends_on = ["e2e-browsers", "build"]
+depends_on = ["build", "^build"]
 
 [projects.studio-desktop.tasks.package]
 depends_on = ["build", "cli:build", "studio:build", "studio-ui:build"]
