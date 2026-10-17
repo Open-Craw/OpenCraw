@@ -255,6 +255,10 @@ merged ranges, nested tables on their own — through the grid table reader.
 without namespaces); on XML `namespaces` maps prefixes to URIs (the root's declared prefixes are known) and
 `ignoreNamespaces` drops them. XML (`as: 'xml'`, `*/xml`, `*+xml`, `.xml`, `.rss`, `.atom`, gzipped `.xml.gz`)
 is parsed strictly; DOCTYPE entities are never expanded and nothing external is fetched. On JSON use `jsonpath`.
+A YouTube video (`as: 'youtube'`, on the video's address) is read as JSON: its details, caption tracks and a transcript with the time of every line, in a
+language chosen among the tracks (`youtube.language`), or `youtube.translateTo` a language the video has a track for. Machine translation into other languages
+is not available (YouTube asks for a token only a browser session has). See the authoring guide, §4.14.
+
 Word (`as: 'docx'`, a WordprocessingML type, `.docx`/`.docm`/`.dotx`, and an OpenDocument text document, `.odt`) is read by
 `@opencraw/office-reader`'s `readDocx` (`readOdt` for `.odt`) and becomes an HTML document: headings sectioned like Markdown (`section[data-heading]`), nested
 lists, tables with `colspan`/`rowspan` from merged cells, links as anchors, `data-style` per paragraph, headers,

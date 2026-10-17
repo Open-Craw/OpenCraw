@@ -127,6 +127,15 @@ describe('parseInputRecipe', () => {
     expect(() => parseInputRecipe(request({ as: 'json', scalars: 'text' }))).toThrow(/"scalars" reads YAML only/)
   })
 
+  it('takes a YouTube video as a request, with the transcript language and a translation, and refuses the options on anything else', () => {
+    expect(() => parseInputRecipe(request({ as: 'youtube' }))).not.toThrow()
+    expect(() => parseInputRecipe(request({ as: 'youtube', youtube: { language: 'pt-BR', translateTo: 'es', transcript: true } }))).not.toThrow()
+    expect(() => parseInputRecipe(request({ as: 'json', youtube: { language: 'en' } }))).toThrow(/"youtube" is for a video/)
+    expect(() => parseInputRecipe(request({ youtube: { language: 'en' } }))).toThrow(/"youtube" is for a video/)
+    expect(() => parseInputRecipe(request({ as: 'youtube', youtube: { lang: 'en' } }))).toThrow()
+    expect(() => parseInputRecipe(request({ as: 'youtube', youtube: { language: '' } }))).toThrow()
+  })
+
   it('rejects unknown keys (typos) anywhere', () => {
     const bad = {
       kind:    'input',

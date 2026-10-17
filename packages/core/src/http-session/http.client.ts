@@ -15,6 +15,8 @@ import type { BodyKind } from '../recipe-schema'
 import { csvWorkbook, readXlsxWorkbook, sheetNameOf } from '../workbook-document'
 import { parseJsonLike, parseJsonLines } from '../selection'
 import { readYaml } from '../yaml-document'
+import { readYoutubeVideo, YoutubeError } from '../youtube-video'
+import type { YoutubeTransport } from '../youtube-video'
 import { gunzipIfNeeded, parseXml } from '../xml-document'
 import { sniffFormat } from './body-sniff.algorithm'
 import { HttpError } from './http-response.contract'
@@ -108,6 +110,39 @@ export class HttpClient implements HttpSender {
   }
 
   /**
+   * Reads a YouTube video (`as: 'youtube'`): its details, its caption tracks and its transcript, as a JSON document. The requests go through this
+   * client, so the allowed hosts, the proxy and the user agent rules apply to them like any other request.
+   */
+  private async readYoutube (httpRequest: HttpRequest): Promise<HttpResponse> {
+    const transport: YoutubeTransport = {
+      postJson: async (url, headers, body) => {
+        const response = await this.fetch({ url, method: 'POST', headers, body, timeoutMs: httpRequest.timeoutMs })
+        let json: unknown
+        try {
+          json = await response.json()
+        } catch {
+          // A body that is not JSON is a refusal: the reader reports it by its status and shape.
+        }
+
+        return { status: response.status(), json }
+      },
+      getText: async (url, headers) => {
+        const response = await this.fetch({ url, headers, timeoutMs: httpRequest.timeoutMs })
+
+        return { status: response.status(), text: await response.text() }
+      },
+    }
+    try {
+      const { video, warnings } = await readYoutubeVideo(httpRequest.url, httpRequest.youtube ?? {}, transport)
+
+      return { status: 200, url: video.url, headers: {}, body: { kind: 'json', data: video }, format: 'youtube', ...(warnings.length > 0 && { warnings }) }
+    } catch (error) {
+      if (error instanceof YoutubeError) throw new Error(`${httpRequest.url}: ${error.message}`, { cause: error })
+      throw error
+    }
+  }
+
+  /**
    * Sends a request and parses the body.
    *
    * @param httpRequest - What to send.
@@ -115,6 +150,7 @@ export class HttpClient implements HttpSender {
    * @throws HttpError for a 4xx or 5xx status.
    */
   async send (httpRequest: HttpRequest): Promise<HttpResponse> {
+    if (httpRequest.as === 'youtube') return await this.readYoutube(httpRequest)
     if (httpRequest.url.startsWith('file:')) {
       this.allowedHosts?.assert(httpRequest.url)
 
@@ -181,6 +217,7 @@ async function readLocalFile (httpRequest: HttpRequest): Promise<HttpResponse> {
 }
 
 async function parseBody (format: BodyKind, bytes: Uint8Array, url: string, reading: { encoding?: string, delimiter?: string, scalars?: 'typed' | 'text', charset?: string, ocr?: true | OcrSetting }): Promise<ReadBody> {
+  if (format === 'youtube') throw new Error(`${url}: "youtube" reads a video address, not a file or a response: use it as the "as" of a request step to a YouTube address`)
   if (format === 'yaml') {
     const { text } = decodeText(bytes, reading)
     const { data, warnings } = await readYaml(text, url, reading.scalars)

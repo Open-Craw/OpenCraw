@@ -4,6 +4,7 @@ import type { OcrSetting } from '../pdf-ocr'
 import type { WorkbookDocument } from '../workbook-document'
 import type { XmlDocument } from '../xml-document'
 import type { BodyKind, HttpMethod } from '../recipe-schema'
+import type { YoutubeOptions } from '../youtube-video'
 
 /** One HTTP request as the api runner sends it, templates already rendered. */
 export interface HttpRequest {
@@ -22,6 +23,8 @@ export interface HttpRequest {
   scalars?:   'typed' | 'text'
   /** Read a PDF that is a scan by OCR (needs `@opencraw/ocr-tesseract`): `true`, or the languages, `always` and `dpi`. */
   ocr?:       true | OcrSetting
+  /** With `as: 'youtube'`: the transcript's language, a translation, or no transcript. */
+  youtube?:   YoutubeOptions
   timeoutMs?: number
 }
 
