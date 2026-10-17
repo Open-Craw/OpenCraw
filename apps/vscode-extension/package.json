@@ -348,6 +348,7 @@
           "build",
           "@opencraw/cli:build",
           "@opencraw/mcp:build",
+          "@opencraw/ocr-tesseract:build",
           "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"
@@ -364,6 +365,7 @@
           "build",
           "@opencraw/cli:build",
           "@opencraw/mcp:build",
+          "@opencraw/ocr-tesseract:build",
           "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"

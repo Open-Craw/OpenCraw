@@ -43,6 +43,7 @@ export async function sendRequest (step: RequestStep, scope: ExtractionScope, cl
     encoding:  step.encoding,
     delimiter: step.delimiter,
     scalars:   step.scalars,
+    ocr:       step.ocr === false ? undefined : step.ocr,
     timeoutMs: recipe.limits?.timeoutMs,
   }
   const rule = resolveRetryRule(recipe.limits?.retry)

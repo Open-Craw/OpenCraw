@@ -145,6 +145,8 @@ export interface RequestStep extends StepBaseFields {
   delimiter?: string
   /** A YAML body's scalars: `typed` (default, YAML 1.2) or `text`, every scalar as written (`0123` stays `"0123"`). */
   scalars?:   'typed' | 'text'
+  /** Read a PDF that is a scan by OCR (needs `@opencraw/ocr-tesseract`): `true` reads the pages that have no text, in English; or give the Tesseract `languages`, `always` (read pages that have text too, for a wrong text layer) and `dpi`. */
+  ocr?:       boolean | { languages?: string[], always?: boolean, dpi?: number }
 }
 export interface ExtractStep extends StepBaseFields {
   type:                  'extract'
@@ -312,6 +314,9 @@ const waitStep = z.strictObject({ ...base, type: z.literal('wait'), selector: pl
 const evaluateStep = z.strictObject({ ...base, type: z.literal('evaluate'), script: z.string().min(1), args: z.record(z.string(), z.unknown()).optional() })
 const screenshotStep = z.strictObject({ ...base, type: z.literal('screenshot'), path: z.string().min(1) })
 const formFields = z.array(z.string().min(1))
+const ocrLanguage = z.string().regex(/^[a-z]{3}(?:_[a-z]+)?$/, 'a Tesseract language code: eng, por, ita, chi_sim')
+const ocrOptions = z.strictObject({ languages: z.array(ocrLanguage).min(1).optional(), always: z.boolean().optional(), dpi: z.int().min(72).max(600).optional() })
+const ocrSetting = z.union([z.boolean(), ocrOptions])
 const requestForm = z.strictObject({ selector: plainSelector, omit: formFields.optional(), set: stringMap.optional() })
 const requestStep = z.strictObject({
   ...base,
@@ -326,10 +331,12 @@ const requestStep = z.strictObject({
   encoding:  z.string().min(1).optional(),
   delimiter: z.string().length(1).optional(),
   scalars:   z.enum(YAML_SCALARS).optional(),
+  ocr:       ocrSetting.optional(),
 })
   .refine(step => step.body === undefined || step.form === undefined, { message: 'give body or form, not both', path: ['form'] })
   .refine(step => step.delimiter === undefined || step.as === undefined || step.as === 'csv', { message: '"delimiter" reads CSV only: drop it or set "as": "csv"', path: ['delimiter'] })
   .refine(step => step.scalars === undefined || step.as === undefined || step.as === 'yaml', { message: '"scalars" reads YAML only: drop it or set "as": "yaml"', path: ['scalars'] })
+  .refine(step => step.ocr === undefined || step.ocr === false || step.as === undefined || step.as === 'pdf', { message: '"ocr" reads PDF scans only: drop it or set "as": "pdf"', path: ['ocr'] })
 const tableOnly = ['columns', 'until', 'align', 'sheet', 'headerRows', 'fillDown', 'includeHidden', 'slide', 'shapes'] as const
 const extractStep = z.strictObject({
   ...base,
