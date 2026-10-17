@@ -305,13 +305,34 @@ release tags across the move to MonoSmith.
 | MonoSmith gaps block OpenCraw | Section 10: each gap is a MonoSmith issue fixed there, never worked around here for long; the two agents split the work. |
 | Java and PHP registries | Decided (GitHub Packages; split repo); both clients are built before their release path exists. |
 
-## 9. Measurements (phase 0 fills this)
+## 9. Measurements (phase 0)
 
-| Workload | Start-up | Fetch / navigate | Parse | Steps and transforms | Mapping and sink | OCR | PDF render | Total |
-|---|---|---|---|---|---|---|---|---|
-| 200 web pages | | | | | | n/a | n/a | |
-| 50-page digital PDF | | | | | | n/a | | |
-| 20-page scanned PDF | | | | | | | | |
+Measured on 2026-10-18 on one Windows 11 machine (Node 24.12, x64), against a local fixture site, so the
+network costs almost nothing and what is left is the browser, the engine and the parsers. Medians of three
+runs after a warm-up (two for the scan). The harness is `studio-field-tests/timing/` (local, not shipped):
+per-phase times come from the crawl's own events, each leaf step's `durationMs` summed by kind.
+
+| Workload | Start-up | Fetch / navigate | Parse | Steps, transforms, mapping, sink | OCR | PDF render | Total |
+|---|---|---|---|---|---|---|---|
+| 200 web pages (browser, 160 records) | 27 ms | 3.2 s | 3.5 s | ~0.1 s | n/a | n/a | 7.2 s |
+| 200 HTTP requests (api mode, 160 records) | 0 | 116 ms | 2 ms | 27 ms | n/a | n/a | 0.15 s |
+| 50-page digital PDF (2,000 table rows) | n/a | n/a | 86 ms, tables 8 ms | n/a | n/a | in parse | 0.09 s |
+| 20-page scanned PDF (200 dpi, 3,802 words) | n/a | n/a | n/a | n/a | 43.9 s (72%) | 16.8 s (28%) | 60.7 s |
+
+The browser crawl's navigate column is `goto` (1.1 s) plus `paginate`'s 40 next-page loads (2.1 s), which no
+step event times; its parse column is 960 `extract` steps, each a Playwright round trip to the page.
+
+What follows:
+
+- **The engine is not the bottleneck.** Step flow, templates, transforms, mapping and the sink take 27 ms
+  for 160 records over HTTP and about 0.1 s of a 7.2 s browser crawl. Rewriting the core in a compiled
+  language would save almost nothing; the recommendation stands.
+- **A browser crawl's largest cost is fixable in TypeScript.** Its extracts are separate round trips, about
+  3.7 ms each, six per product. Batching a page's consecutive extracts into one evaluation would cut most of
+  that 3.5 s. That is an engine improvement, not a native port.
+- **Phase 6 is justified for scans, both halves.** OCR is 2.2 s a page and rendering 0.85 s a page, in
+  WebAssembly and pdf.js. Native Tesseract and pdfium are where a scanned document's time goes.
+- **Digital PDFs need nothing.** 50 pages, read and their tables found, in under 0.1 s.
 
 ## 10. Working with MonoSmith
 
