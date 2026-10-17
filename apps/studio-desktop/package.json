@@ -11,7 +11,8 @@
   "description": "OpenCraw Studio as a desktop app: an Electron window around the local Studio server.",
   "devDependencies": {
     "electron": "^44.7.0",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "playwright": "^1.64.1"
   },
   "scripts": {
     "build": "esbuild src/main.ts --bundle --packages=external --platform=node --format=esm --outdir=dist --sourcemap && node -e \"const fs=require('node:fs'),p=require('node:path');for(const[i,g,o,w]of[['src/desktop-bridge','preload.cjs','dist',0]])for(const f of fs.globSync(g,{cwd:i})){const s=p.join(i,f),d=p.join(o,f);if(fs.statSync(s).isDirectory()){if(w)fs.cpSync(s,d,{recursive:true})}else{fs.mkdirSync(p.dirname(d),{recursive:true});fs.copyFileSync(s,d)}}\"",
@@ -25,7 +26,6 @@
   },
   "smith": {
     "playwright": {
-      "flavour": "library",
       "display": true
     }
   }

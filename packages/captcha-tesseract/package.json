@@ -53,9 +53,7 @@
     "test": "jest",
     "typecheck": "tsc --build tsconfig.json --emitDeclarationOnly"
   },
-  "smith": {
-    "playwright": {
-      "flavour": "library"
-    }
+  "devDependencies": {
+    "playwright": "^1.64.1"
   }
 }
