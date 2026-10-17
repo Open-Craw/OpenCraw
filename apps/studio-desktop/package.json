@@ -2,102 +2,6 @@
   "name": "@opencraw/studio-desktop",
   "version": "0.0.1",
   "private": true,
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/esbuild:esbuild",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "platform": "node",
-          "outputPath": "apps/studio-desktop/dist",
-          "format": [
-            "esm"
-          ],
-          "bundle": true,
-          "main": "apps/studio-desktop/src/main.ts",
-          "tsConfig": "apps/studio-desktop/tsconfig.app.json",
-          "esbuildOptions": {
-            "sourcemap": true,
-            "outExtension": {
-              ".js": ".js"
-            }
-          },
-          "thirdParty": false,
-          "assets": [
-            {
-              "input": "apps/studio-desktop/src/desktop-bridge",
-              "glob": "preload.cjs",
-              "output": "."
-            }
-          ],
-          "external": [
-            "@opencraw/*"
-          ]
-        },
-        "configurations": {
-          "development": {},
-          "production": {
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".js"
-              }
-            }
-          }
-        }
-      },
-      "test": {
-        "options": {
-          "passWithNoTests": true
-        }
-      },
-      "start": {
-        "executor": "nx:run-commands",
-        "continuous": true,
-        "dependsOn": [
-          "build",
-          "@opencraw/cli:build",
-          "@opencraw/studio:build",
-          "@opencraw/studio-ui:build"
-        ],
-        "options": {
-          "command": "electron .",
-          "cwd": "apps/studio-desktop"
-        }
-      },
-      "package": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build",
-          "@opencraw/cli:build",
-          "@opencraw/studio:build",
-          "@opencraw/studio-ui:build"
-        ],
-        "cache": false,
-        "options": {
-          "command": "node packaging/package-app.mjs",
-          "cwd": "apps/studio-desktop"
-        }
-      },
-      "e2e": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build"
-        ],
-        "inputs": [
-          "default",
-          "^production"
-        ],
-        "options": {
-          "command": "vite build -c ../studio-ui/vite.config.mts && tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts --forceExit",
-          "cwd": "apps/studio-desktop"
-        }
-      }
-    }
-  },
   "dependencies": {
     "@opencraw/cli": "^0.0.1",
     "@opencraw/studio": "^0.0.1"
@@ -108,5 +12,21 @@
   "devDependencies": {
     "electron": "^44.7.0",
     "electron-builder": "^26.15.3"
+  },
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --packages=external --platform=node --format=esm --outdir=dist --sourcemap && node -e \"const fs=require('node:fs'),p=require('node:path');for(const[i,g,o,w]of[['src/desktop-bridge','preload.cjs','dist',0]])for(const f of fs.globSync(g,{cwd:i})){const s=p.join(i,f),d=p.join(o,f);if(fs.statSync(s).isDirectory()){if(w)fs.cpSync(s,d,{recursive:true})}else{fs.mkdirSync(p.dirname(d),{recursive:true});fs.copyFileSync(s,d)}}\"",
+    "e2e": "vite build -c ../studio-ui/vite.config.mts && tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts --forceExit",
+    "lint": "eslint .",
+    "package": "node packaging/package-app.mjs",
+    "package:dir": "node packaging/package-app.mjs --dir",
+    "start": "electron .",
+    "test": "jest --passWithNoTests",
+    "typecheck": "tsc --build tsconfig.json --emitDeclarationOnly"
+  },
+  "smith": {
+    "playwright": {
+      "flavour": "library",
+      "display": true
+    }
   }
 }

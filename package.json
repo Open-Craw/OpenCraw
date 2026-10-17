@@ -3,82 +3,44 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "nx run-many -t build",
-    "lint": "nx run-many -t lint",
-    "test": "nx run-many -t test",
-    "typecheck": "nx run-many -t typecheck",
-    "affected": "nx affected -t lint,typecheck,test,build",
-    "graph": "nx graph",
-    "release:preview": "nx release --dry-run",
+    "build": "smith run build",
+    "lint": "smith run lint",
+    "test": "smith run test",
+    "typecheck": "smith run typecheck",
+    "affected": "smith run lint typecheck test build --affected",
+    "graph": "smith graph",
+    "release:preview": "smith release --dry-run",
     "prepare": "husky",
     "format": "eslint . --fix --cache",
-    "python:install": "node -e \"if(!require('node:fs').existsSync('requirements-dev.txt')){console.log('No Python projects - skipping.');process.exit(0)}const py=process.platform==='win32'?'python':'python3';process.exit(require('node:child_process').spawnSync(py+' -m pip install -r requirements-dev.txt',{stdio:'inherit',shell:true}).status ?? 1)\" && node -e \"const fs=require('node:fs'),path=require('node:path');const editableDirs=[...fs.globSync('apps/*/pyproject.toml'),...fs.globSync('python-packages/*/pyproject.toml'),...fs.globSync('libs/*/pyproject.toml')].map((p)=>path.dirname(p));const requirementsFiles=fs.globSync('apps/*/requirements.txt');if(editableDirs.length===0&&requirementsFiles.length===0){console.log('No Python projects - skipping.');process.exit(0)}const args=['-m','pip','install','--quiet',...editableDirs.flatMap((d)=>['-e',d]),...requirementsFiles.flatMap((f)=>['-r',f])];const py=process.platform==='win32'?'python':'python3';process.exit(require('node:child_process').spawnSync(py,args,{stdio:'inherit'}).status ?? 1)\"",
-    "core:qa": "nx run core:lint && nx run core:test",
-    "core:build": "nx run core:build",
-    "core:e2e": "nx run core:e2e",
-    "core:schemas": "nx run core:schemas",
+    "core:e2e": "smith run e2e -p core",
+    "core:schemas": "smith run schemas -p core",
     "playwright:install": "playwright install chromium",
-    "examples:check": "nx run core:build && node examples/check.mjs",
-    "examples:test": "nx run-many -t build -p core cli && node --test \"examples/*/*.test.mjs\"",
-    "docs:capture": "nx run core:build && node docs/how-it-works/capture/capture.mjs",
-    "docs:check": "nx run core:build && node docs/how-it-works/capture/capture.mjs --check",
-    "cli:qa": "nx run cli:lint && nx run cli:test",
-    "cli:build": "nx run cli:build",
-    "cli:e2e": "nx run cli:e2e",
-    "mcp:qa": "nx run mcp:lint && nx run mcp:test",
-    "mcp:build": "nx run mcp:build",
-    "office-reader:qa": "nx run office-reader:lint && nx run office-reader:test",
-    "office-reader:build": "nx run office-reader:build",
-    "office-reader:e2e": "nx run office-reader:e2e",
-    "captcha-tesseract:qa": "nx run captcha-tesseract:lint && nx run captcha-tesseract:test",
-    "captcha-tesseract:build": "nx run captcha-tesseract:build",
-    "captcha-tesseract:e2e": "nx run captcha-tesseract:e2e",
-    "ocr-tesseract:qa": "nx run ocr-tesseract:lint && nx run ocr-tesseract:test",
-    "ocr-tesseract:build": "nx run ocr-tesseract:build",
-    "azure-durable:qa": "nx run azure-durable:lint && nx run azure-durable:test",
-    "azure-durable:build": "nx run azure-durable:build",
-    "azure-durable:e2e": "nx run azure-durable:e2e",
-    "azure-host:qa": "nx run azure-host:lint && nx run azure-host:test",
-    "azure-host:build": "nx run azure-host:build",
-    "azure-host:start": "nx run azure-host:start",
-    "studio:qa": "nx run studio:lint && nx run studio:test",
-    "studio:build": "nx run studio:build",
-    "studio:e2e": "nx run studio:e2e",
-    "studio-ui:qa": "nx run studio-ui:lint && nx run studio-ui:test",
-    "studio-ui:build": "nx run studio-ui:build",
-    "studio-ui:start": "nx run studio-ui:serve",
-    "probe:qa": "nx run probe:lint && nx run probe:test",
-    "probe:build": "nx run probe:build",
-    "opencraw:qa": "nx run opencraw:lint && nx run opencraw:test",
-    "opencraw:build": "nx run opencraw:build",
-    "studio-desktop:qa": "nx run studio-desktop:lint && nx run studio-desktop:test",
-    "studio-desktop:build": "nx run studio-desktop:build",
-    "studio-desktop:start": "nx run studio-desktop:start",
-    "studio-desktop:e2e": "nx run studio-desktop:e2e",
-    "studio-desktop:package": "nx run studio-desktop:package",
-    "studio-desktop:package:dir": "nx run studio-desktop:package -- --dir",
-    "vscode:qa": "nx run @opencraw/vscode:lint && nx run @opencraw/vscode:test",
-    "vscode:build": "nx run @opencraw/vscode:build",
-    "vscode:package": "nx run @opencraw/vscode:package",
-    "vscode:e2e": "nx run @opencraw/vscode:e2e"
+    "examples:check": "smith run build -p core && node examples/check.mjs",
+    "examples:test": "smith run build -p core,cli && node --test \"examples/*/*.test.mjs\"",
+    "docs:capture": "smith run build -p core && node docs/how-it-works/capture/capture.mjs",
+    "docs:check": "smith run build -p core && node docs/how-it-works/capture/capture.mjs --check",
+    "cli:e2e": "smith run e2e -p cli",
+    "office-reader:e2e": "smith run e2e -p office-reader",
+    "captcha-tesseract:e2e": "smith run e2e -p captcha-tesseract",
+    "azure-durable:e2e": "smith run e2e -p azure-durable",
+    "studio:e2e": "smith run e2e -p studio",
+    "studio-desktop:e2e": "smith run e2e -p studio-desktop",
+    "studio-desktop:package": "smith run package -p studio-desktop",
+    "studio-desktop:package:dir": "smith run package:dir -p studio-desktop",
+    "vscode:qa": "smith run lint -p vscode-extension && smith run test -p vscode-extension",
+    "vscode:build": "smith run build -p vscode-extension",
+    "vscode:package": "smith run package -p vscode-extension",
+    "vscode:e2e": "smith run e2e -p vscode-extension",
+    "lint:workspace": "eslint . --cache --ignore-pattern \"apps/**\" --ignore-pattern \"libs/**\" --ignore-pattern \"packages/**\" --ignore-pattern \"python-packages/**\" --ignore-pattern package-lock.json"
   },
   "private": true,
   "devDependencies": {
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-react": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
-    "@mnci/cli": ">=4.0.0 <5.0.0",
-    "@mnci/eslint-config": ">=0.1.0 <1.0.0",
-    "@mnci/nx-python-pip": "^0.2.23",
-    "@nx/esbuild": "23.3.0",
-    "@nx/eslint": "23.3.0",
-    "@nx/eslint-plugin": "23.3.0",
-    "@nx/jest": "23.3.0",
-    "@nx/js": "23.3.0",
-    "@nx/node": "^23.3.0",
-    "@nx/react": "^23.3.0",
-    "@nx/rollup": "23.3.0",
-    "@nx/vite": "23.3.0",
-    "@nx/web": "23.3.0",
+    "@monosmith/eslint-config": "^1.0.0",
     "@swc-node/register": "1.11.1",
     "@swc/cli": "~0.8.1",
     "@swc/core": "1.15.8",
@@ -104,7 +66,6 @@
     "jest-environment-node": "~30.3.0",
     "jest-util": "~30.3.0",
     "jiti": "2.4.2",
-    "nx": "23.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "rollup": "^4.14.0",
@@ -130,24 +91,6 @@
     "eslint-plugin-jsx-a11y": {
       "eslint": "$eslint"
     },
-    "nx": {
-      "brace-expansion": "^5.0.9",
-      "smol-toml": "^1.7.1",
-      "axios": "^1.20.0",
-      "undici": "^7.29.1"
-    },
-    "@nx/js": {
-      "brace-expansion": "^5.0.9"
-    },
-    "@nx/eslint": {
-      "brace-expansion": "^5.0.9"
-    },
-    "@nx/eslint-plugin": {
-      "brace-expansion": "^5.0.9"
-    },
-    "@nx/workspace": {
-      "brace-expansion": "^5.0.9"
-    },
     "postcss": {
       "nanoid": "^3.3.18"
     },
@@ -155,23 +98,7 @@
     "uuid": "^11.1.1",
     "compression": "^1.8.2",
     "http-cache-semantics": "^4.3.0",
-    "source-map-js": "^1.2.2",
-    "@nx/react": {
-      "express": ">=4.0.0 <6.0.0"
-    }
-  },
-  "nx": {
-    "includedScripts": [],
-    "targets": {
-      "lint": {
-        "executor": "nx:run-commands",
-        "cache": true,
-        "options": {
-          "command": "eslint . --cache --ignore-pattern \"apps/**\" --ignore-pattern \"libs/**\" --ignore-pattern \"packages/**\" --ignore-pattern \"python-packages/**\" --ignore-pattern package-lock.json",
-          "cwd": "."
-        }
-      }
-    }
+    "source-map-js": "^1.2.2"
   },
   "dependencies": {
     "motion": "^14.3.0"

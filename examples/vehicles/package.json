@@ -5,12 +5,16 @@
   "description": "OpenCraw example: every version and priced configuration of one model on BYD UK and Kia UK.",
   "type": "module",
   "scripts": {
-    "start": "node run.mjs"
+    "start": "node run.mjs",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@opencraw/core": "^0.1.10"
   },
   "engines": {
     "node": ">=22"
+  },
+  "smith": {
+    "kind": "app"
   }
 }

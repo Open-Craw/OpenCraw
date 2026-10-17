@@ -82,18 +82,16 @@
     "node": ">=20"
   },
   "sideEffects": false,
-  "nx": {
-    "targets": {
-      "e2e": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build"
-        ],
-        "options": {
-          "command": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
-          "cwd": "packages/office-reader"
-        }
-      }
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --packages=external --format=esm --outfile=dist/index.esm.js --sourcemap && tsc -p tsconfig.lib.json --emitDeclarationOnly --declaration --declarationDir dist/src --tsBuildInfoFile dist/src/tsconfig.lib.tsbuildinfo && node ../../declaration-specifiers.mjs dist/src",
+    "e2e": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
+    "lint": "eslint .",
+    "test": "jest",
+    "typecheck": "tsc --build tsconfig.json --emitDeclarationOnly"
+  },
+  "smith": {
+    "playwright": {
+      "flavour": "library"
     }
   }
 }

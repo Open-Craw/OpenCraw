@@ -28,6 +28,13 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      # The npm scripts run smith (MonoSmith); the same installer the generated ci.yml uses.
+      - name: Install smith
+        shell: bash
+        run: curl -fsSL https://raw.githubusercontent.com/monosmith-app/monosmith/main/install.sh | sh -s -- "$SMITH_VERSION"
+        env:
+          SMITH_VERSION: 1.9.2
+          GITHUB_TOKEN: ${{ github.token }}
       - run: npm ci
       - name: Installer
         run: npm run studio-desktop:package

@@ -81,3 +81,7 @@ apps/vscode-extension/*.vsix
 
 # The documentation an agent reads, copied in at build (packages/mcp/scripts/copy-docs.mjs)
 /packages/mcp/docs/
+
+# smith
+.smith/
+.venv/
