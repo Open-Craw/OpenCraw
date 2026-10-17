@@ -36,6 +36,11 @@
       "types": "./dist/src/opendocument-text/index.d.ts",
       "import": "./dist/odt.esm.js",
       "default": "./dist/odt.esm.js"
+    },
+    "./odp": {
+      "types": "./dist/src/opendocument-presentation/index.d.ts",
+      "import": "./dist/odp.esm.js",
+      "default": "./dist/odp.esm.js"
     }
   },
   "files": [

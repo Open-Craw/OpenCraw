@@ -257,6 +257,8 @@ describe('HttpClient', () => {
       const local = await client.send({ url: pathToFileURL(join(__dirname, '..', '..', '..', 'office-reader', 'src', 'presentation', 'fixtures', 'incentivi.pptx')).href })
       const titles = local.body.kind === 'deck' ? local.body.slides.map(slide => slide.title) : []
       expect(titles).toEqual(['Incentivi giugno', 'Griglia prezzi Jeep', 'Vendite', 'Bozza'])
+      const odp = await client.send({ url: pathToFileURL(join(__dirname, '..', '..', '..', 'office-reader', 'src', 'opendocument-presentation', 'fixtures', 'incentivi.odp')).href })
+      expect(odp.body).toEqual(local.body)
     } finally {
       await client.dispose()
     }

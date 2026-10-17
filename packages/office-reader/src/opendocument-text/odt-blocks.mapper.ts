@@ -1,5 +1,6 @@
-import { walkXml } from '../ooxml-package'
 import type { DocumentBlock, DocumentLink, DocumentNote, DocumentTable, Paragraph } from '../document'
+import { OdfTable } from '../opendocument-table'
+import { walkXml } from '../ooxml-package'
 import { headingOfStyle, isOrderedList, namedStyle } from './odt-styles.mapper'
 import type { OdtStyles } from './odt-styles.mapper'
 
@@ -23,50 +24,16 @@ interface OpenParagraph {
   boxed:    DocumentBlock[]
 }
 
-interface OpenCell {
-  paragraphs: string[]
-  columns:    number
-  rows:       number
-  repeat:     number
-}
-
-interface OpenTable {
-  rows:      string[][]
-  merges:    string[]
-  row?:      string[]
-  rowRepeat: number
-  cell?:     OpenCell
-}
-
 /** Elements whose content is not part of the text: tracked changes, the templates of indexes, the number of a note, comments, declarations. */
 const SKIPPED = new Set([
   'tracked-changes', 'table-of-content-source', 'illustration-index-source', 'table-index-source', 'object-index-source', 'user-index-source',
   'alphabetical-index-source', 'bibliography-source', 'note-citation', 'annotation', 'sequence-decls', 'variable-decls', 'user-field-decls',
 ])
 
-/** How many times a repeated cell or row is written out: the format repeats empty ones to its limits. */
-const MAX_REPEAT = 1024
-
-/** A column index as its letters: 0 → `A`, 26 → `AA`. */
-function letters (index: number): string {
-  let rest = index + 1
-  let name = ''
-  while (rest > 0) {
-    name = String.fromCodePoint(65 + ((rest - 1) % 26)) + name
-    rest = Math.floor((rest - 1) / 26)
-  }
-
-  return name
-}
-
 function count (value: string | undefined): number {
   const number = Math.trunc(Number(value ?? ''))
 
   return Number.isNaN(number) || number < 1 ? 1 : number
-}
-
-function rangeOf (row: number, column: number, rows: number, columns: number): string {
-  return `${letters(column)}${String(row + 1)}:${letters(column + columns - 1)}${String(row + rows)}`
 }
 
 /**
@@ -86,7 +53,7 @@ export function odtParts (xml: string, roots: ReadonlySet<string>, styles: OdtSt
   let rootDepth = 0
   let note: { kind: DocumentNote['kind'], id: string, paragraphs: string[] } | undefined
   let paragraphs: OpenParagraph[] = []
-  let tables: OpenTable[] = []
+  let tables: OdfTable[] = []
   let lists: { style: string | undefined }[] = []
   // Where a paragraph that closes goes: a table cell, or the list of blocks (the body, a text box).
   let containers: ('cell' | 'blocks')[] = ['blocks']
@@ -106,7 +73,7 @@ export function odtParts (xml: string, roots: ReadonlySet<string>, styles: OdtSt
     if (note !== undefined) {
       if (text !== '') note.paragraphs.push(text)
     } else if (containers.at(-1) === 'cell') {
-      tables.at(-1)?.cell?.paragraphs.push(text, ...open.boxed.map(boxed => (boxed.kind === 'paragraph' ? boxed.text : '')))
+      for (const piece of [text, ...open.boxed.map(boxed => (boxed.kind === 'paragraph' ? boxed.text : ''))]) tables.at(-1)?.addParagraph(piece)
     } else if (host === undefined) {
       current.blocks.push(...emitted)
     } else {
@@ -175,20 +142,17 @@ export function odtParts (xml: string, roots: ReadonlySet<string>, styles: OdtSt
           break
         }
         case 'table': {
-          tables.push({ rows: [], merges: [], rowRepeat: 1 })
+          tables.push(new OdfTable())
           break
         }
         case 'table-row': {
-          if (table !== undefined) {
-            table.row = []
-            table.rowRepeat = count(attributes['table:number-rows-repeated'])
-          }
+          table?.openRow(attributes)
           break
         }
         case 'table-cell':
         case 'covered-table-cell': {
           if (table !== undefined) {
-            table.cell = { paragraphs: [], columns: count(attributes['table:number-columns-spanned']), rows: count(attributes['table:number-rows-spanned']), repeat: Math.min(count(attributes['table:number-columns-repeated']), MAX_REPEAT) }
+            table.openCell(attributes)
             containers.push('cell')
             listsOfCells.push(lists)
             lists = []
@@ -237,24 +201,14 @@ export function odtParts (xml: string, roots: ReadonlySet<string>, styles: OdtSt
         case 'table-cell':
         case 'covered-table-cell': {
           const table = tables.at(-1)
-          if (table?.cell === undefined) break
+          if (table?.inCell !== true) break
           containers.pop()
           lists = listsOfCells.pop() ?? []
-          const { cell } = table
-          const row = table.row ?? []
-          const text = cell.paragraphs.join('\n').trim()
-          if (cell.columns > 1 || cell.rows > 1) table.merges.push(rangeOf(table.rows.length, row.length, cell.rows, cell.columns))
-          for (let copy = 0; copy < cell.repeat; copy += 1) row.push(text)
-          table.row = row
-          table.cell = undefined
+          table.closeCell()
           break
         }
         case 'table-row': {
-          const table = tables.at(-1)
-          if (table?.row === undefined) break
-          for (let copy = 0; copy < Math.min(table.rowRepeat, MAX_REPEAT); copy += 1) table.rows.push([...table.row])
-          table.row = undefined
-          table.rowRepeat = 1
+          tables.at(-1)?.closeRow()
           break
         }
         case 'table': {
@@ -263,13 +217,13 @@ export function odtParts (xml: string, roots: ReadonlySet<string>, styles: OdtSt
           const block: DocumentTable = { kind: 'table', name: '', hidden: false, rows: table.rows, hiddenRows: [], merges: table.merges }
           // A table inside a cell: its text belongs to the cell too.
           const outer = tables.at(-1)
-          if (outer?.cell === undefined) {
+          if (outer?.inCell === true) {
+            part.blocks.push(block)
+            outer.addParagraph(table.text)
+          } else {
             const host = paragraphs.at(-1)
             if (host === undefined) part.blocks.push(block)
             else host.boxed.push(block)
-          } else {
-            part.blocks.push(block)
-            outer.cell.paragraphs.push(table.rows.map(row => row.filter(cell => cell !== '').join(' ')).join('\n'))
           }
           break
         }
