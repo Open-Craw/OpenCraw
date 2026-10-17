@@ -1,4 +1,5 @@
 export { readPdf, PdfReadError } from './read-pdf.client'
+export type { PdfPageHandle, PdfPageOcr, ReadPdfOptions } from './read-pdf.client'
 export { pdfText, isPdfDocument } from './pdf-document.model'
 export type { PdfDocument, PdfPage, PdfRow, PdfCell, PositionedText } from './pdf-document.model'
 export { assembleRows, rowsOfCells } from './row-assembly.algorithm'

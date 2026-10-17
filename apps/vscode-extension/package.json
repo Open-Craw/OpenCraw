@@ -1,6 +1,6 @@
 {
   "name": "@opencraw/vscode",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "description": "OpenCraw in the editor: open folders, recipes and documents in Studio, run your recipes from a view and save the result in the format you choose, and learn how it all works.",
   "type": "module",
@@ -348,6 +348,7 @@
           "build",
           "@opencraw/cli:build",
           "@opencraw/mcp:build",
+          "@opencraw/ocr-tesseract:build",
           "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"
@@ -364,6 +365,7 @@
           "build",
           "@opencraw/cli:build",
           "@opencraw/mcp:build",
+          "@opencraw/ocr-tesseract:build",
           "@opencraw/agent:build",
           "@opencraw/studio:build",
           "@opencraw/studio-ui:build"

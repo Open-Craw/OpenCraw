@@ -265,7 +265,7 @@ call their JSON endpoints: a report whose table the page reads from an API is re
 
 | Step | Fields | Notes |
 |---|---|---|
-| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`, `youtube`: §4.14), `encoding?`, `delimiter?`, `scalars?`, `youtube?` | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page; one with no page to resolve against fails with a message saying so. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13); a type that says nothing (below) is sniffed. A `file:` URL reads a local file, its kind from `as`, else the extension (`.pdf`, `.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.json`, `.jsonl`, `.ndjson`, `.md`, `.html`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`), else its bytes; a relative one (`file:data/listino.csv`) is read from the recipe file's folder (below). 4xx/5xx fail the step. |
+| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`, `youtube`: §4.14), `encoding?`, `delimiter?`, `scalars?`, `youtube?`, `ocr?` (a scanned PDF: see **A scanned PDF** in the PDF section) | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page; one with no page to resolve against fails with a message saying so. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13); a type that says nothing (below) is sniffed. A `file:` URL reads a local file, its kind from `as`, else the extension (`.pdf`, `.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.json`, `.jsonl`, `.ndjson`, `.md`, `.html`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`), else its bytes; a relative one (`file:data/listino.csv`) is read from the recipe file's folder (below). 4xx/5xx fail the step. |
 
 **A body served as anything** (`application/octet-stream`, `binary/octet-stream`, `text/plain`, `application/zip`
 and the like, or no content type: a file behind a bucket or a CDN, a download link, a raw file) is read by what it
@@ -630,7 +630,7 @@ repeating element (`table.credit_group tr`, not `tr`) and check the first record
 `request` with `as: "pdf"` (or a response served as `application/pdf`, or a local `file:…pdf`) reads the
 PDF's text layer with pdf.js into pages of **rows**: text that sits side by side becomes a cell, cells whose
 vertical extents overlap become a row. A scanned page has no text layer and gives no rows; a PDF where no page
-has one fails the step (no OCR). Five extract kinds read it:
+has one fails the step, unless the request says `"ocr": true` (below). Five extract kinds read it:
 
 | `kind` | Reads | Use for |
 |---|---|---|
@@ -639,6 +639,21 @@ has one fails the step (no OCR). Five extract kinds read it:
 | `section` | the text between a heading and the next one, wherever they sit (below) | a description, a list of terms, a price block: content under a title |
 | `regex` | the text: one line per row, cells separated by a tab, pages by a blank line | a value next to a label: `Valid until\t(\S+)` |
 | `jsonpath` | the structure: `{ kind: "pdf", pages: [{ number, width, height, rows: [{ text, top, bottom, cells: [{ x, y, width, height, text }] }] }] }` | positions, a given page |
+
+**A scanned PDF** has pictures where the text should be. Say `"ocr": true` on the `request` and OpenCraw renders each page
+that has no text, reads it with Tesseract, and hands the words on as the same positioned cells a text layer gives, so every kind
+above (`table`, `region`, `section`) works on a scan as it does on a digital PDF:
+
+```json
+{ "type": "request", "id": "doc", "url": "{{start.url}}", "as": "pdf", "ocr": { "languages": ["por", "eng"] } }
+```
+
+`ocr` is `true` (English, only the pages that have no text) or an object: `languages` (Tesseract codes; `eng` comes with the engine, any
+other is `npm install @tesseract.js-data/<code>`), `always` (read pages that have text too, for a PDF with a wrong text layer from bad OCR;
+the text layer is then dropped) and `dpi` (default: the scan's own resolution, between 150 and 300; rendering a soft scan larger only blurs
+it). The engine is the `@opencraw/ocr-tesseract` package, installed next to `@opencraw/core` (the request says how if it is not). It
+straightens a crooked page, flattens a shaded one and tries a second, stronger cleaning when the first reads poorly. OCR reads
+what is printed; it can still confuse a character (`8,0%` read as `8,09`), so check a number that matters against a second source.
 
 **Prefer structure to position.** A `region` is a place on the page: it breaks when a description is longer, a
 table has one more row or a column is added. Two sheets of the same layout and different content are read with

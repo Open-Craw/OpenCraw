@@ -33,6 +33,8 @@
     "captcha-tesseract:qa": "nx run captcha-tesseract:lint && nx run captcha-tesseract:test",
     "captcha-tesseract:build": "nx run captcha-tesseract:build",
     "captcha-tesseract:e2e": "nx run captcha-tesseract:e2e",
+    "ocr-tesseract:qa": "nx run ocr-tesseract:lint && nx run ocr-tesseract:test",
+    "ocr-tesseract:build": "nx run ocr-tesseract:build",
     "azure-durable:qa": "nx run azure-durable:lint && nx run azure-durable:test",
     "azure-durable:build": "nx run azure-durable:build",
     "azure-durable:e2e": "nx run azure-durable:e2e",

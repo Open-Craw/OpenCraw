@@ -175,7 +175,7 @@ steps; section 5).
 | `evaluate` | web | value | `script`, JavaScript run in the page; `args?`. Trusted recipes only. |
 | `screenshot` | web | – | `path` |
 | `captcha` | web | – | `solver?`, `selector?`, `verify?`, `attempts?`, `timeoutMs?`; for form captchas `image`, `refresh?`, `field`, `submit`; defaults from `session.captcha` |
-| `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`; relative to the current page, else a clear error), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML) |
+| `request` | both | document | in web mode through the page's session, with `form?` (`{ selector, omit?, set? }`) instead of `body`; `method?`, `url` (`http(s):` or a local `file:`; relative to the current page, else a clear error), `query?`, `headers?`, `body?` (templated at every depth), `as: 'json' \| 'jsonl' \| 'html' \| 'text' \| 'pdf' \| 'csv' \| 'xlsx' \| 'pptx' \| 'yaml' \| 'markdown' \| 'xml' \| 'docx'`, `encoding?`, `delimiter?` (CSV), `scalars?` (YAML), `ocr?` (a scanned PDF: `true`, or `{ languages?, always?, dpi? }`) |
 | `extract` | both | value or list | `selector` (a template), `kind: 'css' \| 'xpath' \| 'jsonpath' \| 'regex' \| 'table' \| 'region'`, `take`, `many?`, `from?`; `table` also `columns?`, `until?`, `align?` (PDF), `fillDown?`, `sheet?`, `headerRows?`, `includeHidden?` (workbook), `slide?`, `shapes?` (deck) |
 | `set` | both | value | `value` (template or literal) |
 | `collect` | both | – | `into` (a list id bound in an enclosing scope), `value` (template or literal); appends, so values outlive the `forEach` iteration or `paginate` page that found them |
@@ -197,7 +197,7 @@ the folder of the recipe file that names it when the recipe is read from a file 
 `vars`, `matrix` values, every step `url`; a template's placeholders are kept), else against the process working
 directory. `allowedHosts` refuses `file:` URLs, relative or not.
 
-A PDF (`as: 'pdf'`) is read into pages of rows of positioned cells (pdf.js, text layer only; a scan fails).
+A PDF (`as: 'pdf'`) is read into pages of rows of positioned cells (pdf.js on the text layer; a scan fails unless the request has `ocr`, which reads its pages by OCR with `@opencraw/ocr-tesseract` and gives the words as the same positioned cells, so `table` and `region` work on a scan too).
 `table` finds tables by their header row and returns `{ page, title, header, rows }`, rows keyed by column:
 columns come from where the body's cells start, and lines of a wrapped cell are regrouped into their row.
 `regex` reads a PDF as text (one line per row, cells tab-separated), `jsonpath` reads its structure. `region`

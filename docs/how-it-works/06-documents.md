@@ -204,8 +204,9 @@ stellantis-it: 147 emitted, 0 rejected, 0 duplicates, 1 pages
    The font name, the direction (`dir`), the rotation part of the matrix, colours and every drawing are
    **not** kept: the reader works from text positions alone, and never sees table ruling.
 5. The page's runs go through `assembleRows`. If **every** page ends with no row, the read fails with
-   `no page has a text layer (a scanned PDF? OCR is not supported)` (`:40`). A PDF where only some pages are
-   scans reads, and those pages have no rows.
+   `no page has a text layer: it is a scan. Read it with OCR…`. A PDF where only some pages are scans reads, and
+   those pages have no rows, unless the request has `ocr` (see below): then those pages are rendered, read by the OCR engine and their words
+   become runs like a text layer's.
 
 The result, `{ kind: 'pdf', pages: [{ number, width, height, rows: [{ top, bottom, cells, text }] }] }`, is
 what `jsonpath` queries. A cell is `{ x, y, width, height, text }`; a row's `top` is its highest `y + height`,
@@ -676,7 +677,7 @@ as on workbooks ([`extract-from-document.use-case.ts:128`](../../packages/core/s
 
 | Case | What happens | Why |
 |---|---|---|
-| A scanned page | No rows on it. If every page is a scan, the read fails. | pdf.js reads the text layer; there is no OCR. |
+| A scanned page | No rows on it. If every page is a scan, the read fails. With `ocr` the page is read from its picture. | pdf.js reads the text layer; OCR is opt-in. |
 | Password-protected PDF | The read fails at load. | No password is passed to `getDocument`. |
 | Rotated or vertical text | Rows and columns come out wrong. | Only the origin and `width`/`height` are kept; every stage assumes horizontal, left-to-right baselines. A page with `/Rotate` reports its rotated size, but the item coordinates are not transformed. |
 | Two columns closer than `JOIN_GAP` | They merge into one cell (3.5 pt at 10 pt). | Nothing but the gap separates two runs on a line. |

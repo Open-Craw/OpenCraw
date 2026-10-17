@@ -1,0 +1,52 @@
+{
+  "name": "@opencraw/ocr-tesseract",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.esm.js",
+  "module": "./dist/index.esm.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "default": "./dist/index.esm.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo",
+    "!**/*.d.ts.map",
+    "!**/*.js.map"
+  ],
+  "dependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
+    "pngjs": "^7.0.0",
+    "tesseract.js": "^7.0.0"
+  },
+  "peerDependencies": {
+    "@opencraw/core": "^0.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "OCR for scanned PDFs, for OpenCraw: Tesseract (WebAssembly, bundled English model, other languages from @tesseract.js-data packages) behind the engine contract @opencraw/core reads a scan with. Each page is cleaned before it is read (background flattened, straightened, binarized), and every word comes back where it was on the original page.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Open-Craw/OpenCraw.git",
+    "directory": "packages/ocr-tesseract"
+  },
+  "keywords": [
+    "ocr",
+    "tesseract",
+    "pdf",
+    "scan",
+    "crawler",
+    "opencraw"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "sideEffects": false
+}

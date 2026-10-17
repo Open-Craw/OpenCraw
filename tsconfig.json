@@ -41,6 +41,9 @@
     },
     {
       "path": "./apps/vscode-extension"
+    },
+    {
+      "path": "./packages/ocr-tesseract"
     }
   ],
   "compilerOptions": {}

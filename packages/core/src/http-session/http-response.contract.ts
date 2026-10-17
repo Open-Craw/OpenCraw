@@ -1,5 +1,6 @@
 import type { DeckDocument } from '../deck-document'
 import type { PdfDocument } from '../pdf-document'
+import type { OcrSetting } from '../pdf-ocr'
 import type { WorkbookDocument } from '../workbook-document'
 import type { XmlDocument } from '../xml-document'
 import type { BodyKind, HttpMethod } from '../recipe-schema'
@@ -20,6 +21,8 @@ export interface HttpRequest {
   delimiter?: string
   /** A YAML body's scalars: `typed` (default) or `text`. */
   scalars?:   'typed' | 'text'
+  /** Read a PDF that is a scan by OCR (needs `@opencraw/ocr-tesseract`): `true`, or the languages, `always` and `dpi`. */
+  ocr?:       true | OcrSetting
   /** With `as: 'youtube'`: the transcript's language, a translation, or no transcript. */
   youtube?:   YoutubeOptions
   timeoutMs?: number

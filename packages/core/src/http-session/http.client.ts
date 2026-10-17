@@ -9,6 +9,8 @@ import { readDocxHtml } from '../docx-document'
 import { readMarkdown } from '../markdown-document'
 import { openDocumentFormat } from '../opendocument-sniff'
 import { readPdf } from '../pdf-document'
+import { withOcr } from '../pdf-ocr'
+import type { OcrSetting } from '../pdf-ocr'
 import type { BodyKind } from '../recipe-schema'
 import { csvWorkbook, readXlsxWorkbook, sheetNameOf } from '../workbook-document'
 import { parseJsonLike, parseJsonLines } from '../selection'
@@ -182,7 +184,7 @@ export class HttpClient implements HttpSender {
  * @param reading - `as`, `encoding`, `delimiter`, `scalars`.
  * @returns The document, what reading noticed, and the format.
  */
-export async function readFileBody (bytes: Uint8Array, name: string, reading: Pick<HttpRequest, 'as' | 'encoding' | 'delimiter' | 'scalars'> = {}): Promise<ReadBody> {
+export async function readFileBody (bytes: Uint8Array, name: string, reading: Pick<HttpRequest, 'as' | 'encoding' | 'delimiter' | 'scalars' | 'ocr'> = {}): Promise<ReadBody> {
   return parseBody(reading.as ?? formatOfFile(name, bytes), bytes, name, reading)
 }
 
@@ -214,7 +216,7 @@ async function readLocalFile (httpRequest: HttpRequest): Promise<HttpResponse> {
   return { status: 200, url: httpRequest.url, headers: {}, body, format, ...(warnings.length > 0 && { warnings }) }
 }
 
-async function parseBody (format: BodyKind, bytes: Uint8Array, url: string, reading: { encoding?: string, delimiter?: string, scalars?: 'typed' | 'text', charset?: string }): Promise<ReadBody> {
+async function parseBody (format: BodyKind, bytes: Uint8Array, url: string, reading: { encoding?: string, delimiter?: string, scalars?: 'typed' | 'text', charset?: string, ocr?: true | OcrSetting }): Promise<ReadBody> {
   if (format === 'youtube') throw new Error(`${url}: "youtube" reads a video address, not a file or a response: use it as the "as" of a request step to a YouTube address`)
   if (format === 'yaml') {
     const { text } = decodeText(bytes, reading)
@@ -244,8 +246,8 @@ async function parseBody (format: BodyKind, bytes: Uint8Array, url: string, read
   return { body: await parseFormat(format, bytes, url, reading), warnings: [], format }
 }
 
-async function parseFormat (format: BodyKind, bytes: Uint8Array, url: string, reading: { encoding?: string, delimiter?: string, charset?: string }): Promise<HttpBody> {
-  if (format === 'pdf') return readPdf(bytes, url)
+async function parseFormat (format: BodyKind, bytes: Uint8Array, url: string, reading: { encoding?: string, delimiter?: string, charset?: string, ocr?: true | OcrSetting }): Promise<HttpBody> {
+  if (format === 'pdf') return reading.ocr === undefined ? readPdf(bytes, url) : withOcr(reading.ocr, async ocr => readPdf(bytes, url, { ocr }))
   if (format === 'xlsx') return readXlsxWorkbook(bytes, url)
   if (format === 'pptx') return readPptxDeck(bytes, url)
   const { text, encoding } = decodeText(bytes, reading)

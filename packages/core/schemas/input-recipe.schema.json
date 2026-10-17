@@ -1617,6 +1617,35 @@
                 "text"
               ]
             },
+            "ocr": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "languages": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-z]{3}(?:_[a-z]+)?$"
+                      }
+                    },
+                    "always": {
+                      "type": "boolean"
+                    },
+                    "dpi": {
+                      "type": "integer",
+                      "minimum": 72,
+                      "maximum": 600
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            },
             "youtube": {
               "type": "object",
               "properties": {

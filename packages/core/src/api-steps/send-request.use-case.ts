@@ -43,6 +43,7 @@ export async function sendRequest (step: RequestStep, scope: ExtractionScope, cl
     encoding:  step.encoding,
     delimiter: step.delimiter,
     scalars:   step.scalars,
+    ocr:       step.ocr === false ? undefined : step.ocr,
     // The video's address is templated like the rest; the languages may be too (`{{start.lang}}`).
     youtube:   step.youtube === undefined ? undefined : { ...step.youtube, ...(step.youtube.language !== undefined && { language: renderText(step.youtube.language, lookup) }), ...(step.youtube.translateTo !== undefined && { translateTo: renderText(step.youtube.translateTo, lookup) }) },
     timeoutMs: recipe.limits?.timeoutMs,
