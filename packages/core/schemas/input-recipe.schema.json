@@ -732,7 +732,8 @@
                     "yaml",
                     "markdown",
                     "xml",
-                    "docx"
+                    "docx",
+                    "youtube"
                   ]
                 },
                 "saveTo": {
@@ -1596,7 +1597,8 @@
                 "yaml",
                 "markdown",
                 "xml",
-                "docx"
+                "docx",
+                "youtube"
               ]
             },
             "encoding": {
@@ -1614,6 +1616,23 @@
                 "typed",
                 "text"
               ]
+            },
+            "youtube": {
+              "type": "object",
+              "properties": {
+                "language": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "translateTo": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "transcript": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "required": [
@@ -2696,7 +2715,8 @@
                               "yaml",
                               "markdown",
                               "xml",
-                              "docx"
+                              "docx",
+                              "youtube"
                             ]
                           },
                           "saveTo": {

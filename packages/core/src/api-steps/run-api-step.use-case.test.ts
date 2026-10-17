@@ -252,6 +252,21 @@ describe('ApiStepRunner', () => {
     expect(sender.sent[0].body).toEqual({ client_id: 'abc', grant: 'client_credentials', note: 'id=abc', limit: 10, raw: 5, flag: true, none: null, nested: { x: 'abc-x', list: ['s3cr3t', 1] } })
   })
 
+  it('sends a YouTube video as a request with its options, the languages rendered like the rest of the step', async () => {
+    const sender = fakeSender()
+    const video: InputRecipe = {
+      ...recipe,
+      steps: [
+        { type: 'set', id: 'lang', value: 'pt-BR' },
+        { type: 'request', id: 'video', url: '{{start.url}}', as: 'youtube', youtube: { language: '{{lang}}', translateTo: 'es', transcript: true } },
+        { type: 'emit' },
+      ],
+    }
+    await crawl(video, sender)
+
+    expect(sender.sent[0]).toMatchObject({ as: 'youtube', youtube: { language: 'pt-BR', translateTo: 'es', transcript: true } })
+  })
+
   it('collects ids across every page, then fans out once pagination has finished', async () => {
     const sender = fakeSender()
     const twoPhase: InputRecipe = {

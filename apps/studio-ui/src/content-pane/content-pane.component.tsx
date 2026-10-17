@@ -55,7 +55,7 @@ function stepIdForNode (outline: OutlineView | undefined, html: string | undefin
 const STEP_PATH = 'start' // v1: only the start point is captured — see `page-snapshot`'s take-snapshot.use-case.ts.
 
 /** The snapshot `format`s the tree canvas reads (studio plan §3.4, issue #94's 5a) — YAML and JSON Lines are both normalised to JSON by `http.client.ts`, so `document-tree` (and this canvas) handles them exactly like `json`. */
-const TREE_FORMATS = new Set(['json', 'yaml', 'jsonl', 'xml'])
+const TREE_FORMATS = new Set(['json', 'yaml', 'jsonl', 'xml', 'youtube'])
 /** The snapshot `format`s the grid canvas reads (studio plan §3.4, issue #94's 5c). */
 const GRID_FORMATS = new Set(['csv', 'xlsx'])
 /** The snapshot `format` the deck canvas reads (studio plan §3.4, issue #94's 5d). */

@@ -6,7 +6,9 @@ import type { AddressInfo } from 'node:net'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { HttpClient } from './http.client'
+import type { APIRequestContext, APIResponse } from 'playwright'
+import { HostAllowlist } from '../host-allowlist'
+import { HttpClient, readFileBody } from './http.client'
 import { HttpError } from './http-response.contract'
 
 let server: Server
@@ -365,5 +367,62 @@ describe('HttpClient', () => {
     } finally {
       await client.dispose()
     }
+  })
+})
+
+describe('reading a YouTube video (as: "youtube")', () => {
+  const fixtures = join(__dirname, '..', 'youtube-video', 'fixtures')
+  const player: unknown = JSON.parse(readFileSync(join(fixtures, 'player-response.json'), 'utf8'))
+  const transcript: unknown = JSON.parse(readFileSync(join(fixtures, 'transcript-en.json3.json'), 'utf8'))
+
+  const answer = (body: unknown): APIResponse => ({
+    status:  () => 200,
+    json:    () => Promise.resolve(body),
+    text:    () => Promise.resolve(JSON.stringify(body)),
+    headers: () => ({}),
+    url:     () => 'https://www.youtube.com/',
+  } as unknown as APIResponse)
+
+  /** A request context that answers like YouTube: the player endpoint with the captured response, the track address with the captured transcript. */
+  function youtubeContext (): { context: APIRequestContext, urls: string[] } {
+    const urls: string[] = []
+    const context = {
+      fetch: (url: string) => {
+        urls.push(url)
+
+        return Promise.resolve(answer(url.includes('/youtubei/v1/player') ? player : transcript))
+      },
+    } as unknown as APIRequestContext
+
+    return { context, urls }
+  }
+
+  it('reads the video, its tracks and its transcript through the client\'s own requests, as a JSON document', async () => {
+    const { context, urls } = youtubeContext()
+    const client = HttpClient.over(context, 5000, new HostAllowlist(['www.youtube.com']))
+
+    const response = await client.send({ url: 'https://youtu.be/jNQXAC9IVRw?si=x', as: 'youtube', youtube: { language: 'en' } })
+
+    expect(response.format).toBe('youtube')
+    expect(response.url).toBe('https://www.youtube.com/watch?v=jNQXAC9IVRw')
+    expect(response.body).toMatchObject({ kind: 'json', data: { title: 'Me at the zoo', transcript: { language: 'en' } } })
+    expect(urls[0]).toContain('/youtubei/v1/player')
+    expect(urls[1]).toContain('fmt=json3')
+  })
+
+  it('stays inside the allowed hosts, and says what is wrong with an address that is not a video', async () => {
+    const { context } = youtubeContext()
+    const closed = HttpClient.over(context, 5000, new HostAllowlist(['example.com']))
+    await expect(closed.send({ url: 'https://www.youtube.com/watch?v=jNQXAC9IVRw', as: 'youtube' })).rejects.toThrow(/outside the allowed hosts/)
+
+    const open = HttpClient.over(context, 5000)
+    await expect(open.send({ url: 'https://example.com/watch?v=jNQXAC9IVRw', as: 'youtube' })).rejects.toThrow(/example\.com\/watch\?v=jNQXAC9IVRw: .*is not a YouTube video/)
+  })
+
+  it('does not read a file or a response as a video: "youtube" belongs to a request step to a YouTube address', async () => {
+    const client = HttpClient.over(youtubeContext().context, 5000)
+
+    await expect(readFileBody(new Uint8Array(), 'video.txt', { as: 'youtube' })).rejects.toThrow(/reads a video address, not a file/)
+    await expect(client.send({ url: 'file:///tmp/video.txt', as: 'youtube' })).rejects.toThrow(/not a YouTube video/)
   })
 })

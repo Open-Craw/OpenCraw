@@ -1,4 +1,4 @@
-import { formatOfResponse } from '@opencraw/core'
+import { formatOfResponse, videoIdOf } from '@opencraw/core'
 
 /** How much of the start of a response is looked at: enough for the engine to tell a PDF or an Office package from its bytes, and for JSON to start. */
 const LOOKED_AT_BYTES = 65_536
@@ -6,18 +6,20 @@ const LOOKED_AT_BYTES = 65_536
 const TIMEOUT_MS = 20_000
 
 /** What an address returns, in the engine's own words (`html` is a page; anything else is a document it reads), or `unknown` when it cannot be fetched. */
-export type UrlKind = 'html' | 'json' | 'jsonl' | 'text' | 'pdf' | 'csv' | 'xlsx' | 'pptx' | 'yaml' | 'markdown' | 'xml' | 'docx' | 'unknown'
+export type UrlKind = 'html' | 'json' | 'jsonl' | 'text' | 'pdf' | 'csv' | 'xlsx' | 'pptx' | 'yaml' | 'markdown' | 'xml' | 'docx' | 'youtube' | 'unknown'
 
 /**
  * What an address returns: the format the engine reads its response as (content type, then what the first bytes
  * show, then the file extension in the address), and, for an API that serves JSON as `text/plain` (common), JSON when
  * the text starts like an object or an array. Only the start of the response is read: a large file is not downloaded.
- * An address that cannot be fetched is `unknown`; the recipe started from it then reports why on its first snapshot.
+ * The address of a YouTube video is `youtube` without being fetched. An address that cannot be fetched is `unknown`; the recipe started from it then reports why on its first snapshot.
  *
  * @param url - The address.
  * @returns The kind: `html` is a page to open in a browser, anything else a document to read.
  */
 export async function detectUrlKind (url: string): Promise<UrlKind> {
+  // A video's address is read as a video (its details and transcript), not fetched as the page it opens in a browser.
+  if (/^https?:/i.test(url.trim()) && videoIdOf(url) !== undefined) return 'youtube'
   const controller = new AbortController()
   const timer = setTimeout(() => { controller.abort() }, TIMEOUT_MS)
   try {
