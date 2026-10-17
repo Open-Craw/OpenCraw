@@ -66,10 +66,10 @@ depends_on = ["build", "core:build"]
 env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
 
 [projects.azure-host.tasks.package]
-command = ["node", "-e", "const fs=require('node:fs');fs.mkdirSync('dist/drop',{recursive:true});const A=require('adm-zip');const z=new A();z.addLocalFolder('apps/azure-host/dist','dist');z.addLocalFile('apps/azure-host/host.json');z.addLocalFile('apps/azure-host/package.json');z.writeZip('dist/drop/node-function-app-azure-host.zip')"]
+command = ["node", "-e", "const fs=require('node:fs');fs.mkdirSync('dist/drop/azure-host',{recursive:true});const A=require('adm-zip');const z=new A();z.addLocalFolder('apps/azure-host/dist','dist');z.addLocalFile('apps/azure-host/host.json');z.addLocalFile('apps/azure-host/package.json');z.writeZip('dist/drop/azure-host/node-function-app-azure-host.zip')"]
 cwd = "."
 depends_on = ["build"]
-outputs = ["../../dist/drop"]
+outputs = ["../../dist/drop/azure-host"]
 
 [projects.azure-host.tasks.serve]
 depends_on = ["build"]
@@ -192,10 +192,10 @@ env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":
 depends_on = ["^build", "typecheck"]
 
 [projects.studio-ui.tasks.package]
-command = ["node", "-e", "const fs=require('node:fs');fs.mkdirSync('dist/drop',{recursive:true});const A=require('adm-zip');let z;z=new A();z.addLocalFolder('apps/studio-ui/dist-dev');z.writeZip('dist/drop/react-app-studio-ui-dev.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-uat');z.writeZip('dist/drop/react-app-studio-ui-uat.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-prod');z.writeZip('dist/drop/react-app-studio-ui-prod.zip')"]
+command = ["node", "-e", "const fs=require('node:fs');fs.mkdirSync('dist/drop/studio-ui',{recursive:true});const A=require('adm-zip');let z;z=new A();z.addLocalFolder('apps/studio-ui/dist-dev');z.writeZip('dist/drop/studio-ui/react-app-studio-ui-dev.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-uat');z.writeZip('dist/drop/studio-ui/react-app-studio-ui-uat.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-prod');z.writeZip('dist/drop/studio-ui/react-app-studio-ui-prod.zip')"]
 cwd = "."
 depends_on = ["build-dev", "build-uat", "build-prod"]
-outputs = ["../../dist/drop"]
+outputs = ["../../dist/drop/studio-ui"]
 
 [projects.studio-ui.tasks.preview]
 depends_on = ["build"]
