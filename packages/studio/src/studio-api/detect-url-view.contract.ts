@@ -5,7 +5,7 @@ import { z } from 'zod'
  * browser); `json`, `pdf`, `csv`, `xlsx`, `markdown`, `xml`... are documents (read with a request); `unknown` when it could not be fetched.
  */
 export const detectUrlViewSchema = z.object({
-  kind: z.enum(['html', 'json', 'jsonl', 'text', 'pdf', 'csv', 'xlsx', 'pptx', 'yaml', 'markdown', 'xml', 'docx', 'unknown']),
+  kind: z.enum(['html', 'json', 'jsonl', 'text', 'pdf', 'csv', 'xlsx', 'pptx', 'yaml', 'markdown', 'xml', 'docx', 'youtube', 'unknown']),
 })
 
 export type DetectUrlView = z.infer<typeof detectUrlViewSchema>

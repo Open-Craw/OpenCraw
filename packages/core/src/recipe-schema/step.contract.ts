@@ -145,6 +145,8 @@ export interface RequestStep extends StepBaseFields {
   delimiter?: string
   /** A YAML body's scalars: `typed` (default, YAML 1.2) or `text`, every scalar as written (`0123` stays `"0123"`). */
   scalars?:   'typed' | 'text'
+  /** With `as: "youtube"`: the transcript's language, a translation of it, or `transcript: false` to read only what is about the video. */
+  youtube?:   { language?: string, translateTo?: string, transcript?: boolean }
 }
 export interface ExtractStep extends StepBaseFields {
   type:                  'extract'
@@ -312,6 +314,7 @@ const waitStep = z.strictObject({ ...base, type: z.literal('wait'), selector: pl
 const evaluateStep = z.strictObject({ ...base, type: z.literal('evaluate'), script: z.string().min(1), args: z.record(z.string(), z.unknown()).optional() })
 const screenshotStep = z.strictObject({ ...base, type: z.literal('screenshot'), path: z.string().min(1) })
 const formFields = z.array(z.string().min(1))
+const youtubeOptions = z.strictObject({ language: z.string().min(1).optional(), translateTo: z.string().min(1).optional(), transcript: z.boolean().optional() })
 const requestForm = z.strictObject({ selector: plainSelector, omit: formFields.optional(), set: stringMap.optional() })
 const requestStep = z.strictObject({
   ...base,
@@ -326,10 +329,12 @@ const requestStep = z.strictObject({
   encoding:  z.string().min(1).optional(),
   delimiter: z.string().length(1).optional(),
   scalars:   z.enum(YAML_SCALARS).optional(),
+  youtube:   youtubeOptions.optional(),
 })
   .refine(step => step.body === undefined || step.form === undefined, { message: 'give body or form, not both', path: ['form'] })
   .refine(step => step.delimiter === undefined || step.as === undefined || step.as === 'csv', { message: '"delimiter" reads CSV only: drop it or set "as": "csv"', path: ['delimiter'] })
   .refine(step => step.scalars === undefined || step.as === undefined || step.as === 'yaml', { message: '"scalars" reads YAML only: drop it or set "as": "yaml"', path: ['scalars'] })
+  .refine(step => step.youtube === undefined || step.as === 'youtube', { message: '"youtube" is for a video: set "as": "youtube"', path: ['youtube'] })
 const tableOnly = ['columns', 'until', 'align', 'sheet', 'headerRows', 'fillDown', 'includeHidden', 'slide', 'shapes'] as const
 const extractStep = z.strictObject({
   ...base,

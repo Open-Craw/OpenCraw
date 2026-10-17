@@ -265,7 +265,7 @@ call their JSON endpoints: a report whose table the page reads from an API is re
 
 | Step | Fields | Notes |
 |---|---|---|
-| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`), `encoding?`, `delimiter?`, `scalars?` | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page; one with no page to resolve against fails with a message saying so. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13); a type that says nothing (below) is sniffed. A `file:` URL reads a local file, its kind from `as`, else the extension (`.pdf`, `.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.json`, `.jsonl`, `.ndjson`, `.md`, `.html`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`), else its bytes; a relative one (`file:data/listino.csv`) is read from the recipe file's folder (below). 4xx/5xx fail the step. |
+| `request` | `url` (template), `method?`, `query?`, `headers?`, `body?` or `form?`, `as?` (`json`, `jsonl`, `html`, `text`, `pdf`, `csv`, `xlsx`, `pptx`, `yaml`, `markdown`, `xml`, `docx`, `youtube`: §4.14), `encoding?`, `delimiter?`, `scalars?`, `youtube?` | The response becomes the current document and, if `id` is set, the id holds the parsed JSON, the read PDF, workbook or deck, the markup or the text. Relative URLs resolve against the current page; one with no page to resolve against fails with a message saying so. Without `as`, the content type decides (`application/pdf` is a PDF, `text/csv` a CSV, a spreadsheet type a workbook, a presentation type a deck, `application/yaml` YAML, `application/x-ndjson` JSON Lines, `text/markdown` Markdown, an XML type XML: §4.12, a Word type a document read as HTML: §4.13); a type that says nothing (below) is sniffed. A `file:` URL reads a local file, its kind from `as`, else the extension (`.pdf`, `.csv`, `.tsv`, `.xlsx`, `.xlsm`, `.pptx`, `.yaml`, `.yml`, `.json`, `.jsonl`, `.ndjson`, `.md`, `.html`, `.xml`, `.rss`, `.atom`, `.xml.gz`, `.docx`), else its bytes; a relative one (`file:data/listino.csv`) is read from the recipe file's folder (below). 4xx/5xx fail the step. |
 
 **A body served as anything** (`application/octet-stream`, `binary/octet-stream`, `text/plain`, `application/zip`
 and the like, or no content type: a file behind a bucket or a CDN, a download link, a raw file) is read by what it
@@ -941,7 +941,7 @@ matches a page whose markup has no `<tbody>`.
 
 ### 4.13 Word documents
 
-A `.docx` (a Word content type, `.docx`/`.docm`/`.dotx`, or `as: "docx"`) is read by `@opencraw/office-reader`
+A `.docx` (a Word content type, `.docx`/`.docm`/`.dotx`, or `as: "docx"`; an OpenDocument `.odt` reads the same way) is read by `@opencraw/office-reader`
 and handed to the recipe as **HTML**, built like rendered Markdown (§4.10), so every tool for pages works on it:
 
 - headings (`Heading 1`, a localized `Titolo 2`, `Title`) become `<h1>`…`<h6>`, each in a
@@ -963,6 +963,42 @@ and handed to the recipe as **HTML**, built like rendered Markdown (§4.10), so 
 Its `id` holds the HTML, so `table` with `from: <id>` reads its tables after another `request` has replaced the
 current document. Tracked changes read as accepted (insertions in, deletions out). A legacy `.doc` is refused with
 what to do: save it as `.docx`, or export it as PDF (§4.6). `probe` lists a document's sections and tables.
+
+### 4.14 YouTube videos
+
+A `request` with `"as": "youtube"` to a video's address reads the **video**, not the page: what the page says about it, the caption tracks it has,
+and a transcript with the time of every line. The result is JSON, so `jsonpath` reads it and every mapping and output works on it.
+
+```json
+{ "type": "request", "id": "video", "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw", "as": "youtube", "youtube": { "language": "en" } },
+{ "type": "extract", "id": "lines", "from": "video", "selector": "$.transcript.segments[*]", "kind": "jsonpath", "take": "json", "many": true },
+{ "type": "forEach", "over": "lines", "as": "line", "emit": true, "steps": [] }
+```
+
+The address may be `watch?v=`, `youtu.be/`, `/shorts/`, `/embed/` or `/live/`. The document:
+
+```json
+{ "videoId": "jNQXAC9IVRw", "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw", "title": "Me at the zoo", "author": "jawed", "channelId": "UC4Q…",
+  "description": "…", "lengthSeconds": 19, "viewCount": 444571253, "keywords": ["me at the zoo"], "isLive": false, "thumbnail": "https://i.ytimg.com/…",
+  "captions": [{ "language": "en", "name": "English", "auto": false, "translatable": true }, { "language": "de", "name": "German", "auto": false, "translatable": true }],
+  "transcript": { "language": "en", "name": "English", "auto": false, "text": "All right, so here we are…\nthe cool thing…",
+                  "segments": [{ "start": 1.2, "duration": 2.16, "text": "All right, so here we are, in front of the elephants" }] } }
+```
+
+- `youtube.language` picks the transcript's language among the video's tracks: `pt-BR` exactly, or `pt` for any Portuguese track. Without it, the first
+  track the uploader wrote, else the first automatic one (`auto: true`, speech recognition: it makes mistakes).
+- `youtube.translateTo` asks for a translation. When the video **has** a track in that language it is that track, the uploader's own words; the
+  transcript's `language` is then that language. YouTube's machine translation of a track into a language the video has no track for is **not**
+  available: YouTube asks for a token only a signed-in browser has, and the step fails saying so and listing the tracks the video does have.
+- `youtube.transcript: false` reads only what is about the video (one request, no transcript).
+- A video with no captions still reads: the document has `"captions": []` and no `transcript`, and a warning says so. A private, removed,
+  age-restricted or region-locked video fails the step with YouTube's own reason; so does a request YouTube turns away as automated (a captcha
+  page): wait and retry, or run from another network.
+- Segments are the caption lines as YouTube cuts them (line breaks inside a line become spaces); `text` joins them with line breaks.
+
+The requests go through the engine's own HTTP client, so `allowedHosts`, the proxy and the user agent rules apply (`www.youtube.com` must be allowed).
+This reads what YouTube shows anyone watching, as its own apps ask for it; respect the site's terms and do not collect at a rate its servers would
+take for abuse (`limits.delayMs` spaces the requests). In Studio, loading a YouTube address from **Load ▾** makes this recipe and shows the document as a tree.
 
 ## 5. Mapping
 

@@ -3,6 +3,7 @@ import type { PdfDocument } from '../pdf-document'
 import type { WorkbookDocument } from '../workbook-document'
 import type { XmlDocument } from '../xml-document'
 import type { BodyKind, HttpMethod } from '../recipe-schema'
+import type { YoutubeOptions } from '../youtube-video'
 
 /** One HTTP request as the api runner sends it, templates already rendered. */
 export interface HttpRequest {
@@ -19,6 +20,8 @@ export interface HttpRequest {
   delimiter?: string
   /** A YAML body's scalars: `typed` (default) or `text`. */
   scalars?:   'typed' | 'text'
+  /** With `as: 'youtube'`: the transcript's language, a translation, or no transcript. */
+  youtube?:   YoutubeOptions
   timeoutMs?: number
 }
 

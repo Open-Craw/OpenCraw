@@ -57,6 +57,13 @@ describe('detectUrlKind', () => {
     expect(await detectUrlKind(`${base}/README.md`)).toBe('markdown')
   })
 
+  it('knows the address of a YouTube video without fetching it, and leaves its channel and playlist pages to the browser', async () => {
+    expect(await detectUrlKind('https://www.youtube.com/watch?v=jNQXAC9IVRw')).toBe('youtube')
+    expect(await detectUrlKind('https://youtu.be/jNQXAC9IVRw')).toBe('youtube')
+    expect(await detectUrlKind('https://www.youtube.com/shorts/jNQXAC9IVRw')).toBe('youtube')
+    expect(await detectUrlKind('https://www.youtube.com/@channel')).not.toBe('youtube')
+  })
+
   it('leaves plain words as text', async () => {
     expect(await detectUrlKind(`${base}/words`)).toBe('text')
   })
