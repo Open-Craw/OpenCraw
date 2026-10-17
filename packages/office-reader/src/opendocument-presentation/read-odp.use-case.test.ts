@@ -107,6 +107,17 @@ describe('readOdp', () => {
     expect(withoutNotes[0].notes).toBe('')
   })
 
+  it('reads the notes from a notes frame that is not marked as one, leaving out the thumbnail and the page furniture', async () => {
+    const note = frame(at(0, 400), p('Unmarked note.'))
+    const furniture = frame(at(0, 500), p('Notes footer'), 'footer')
+    const notes = `<presentation:notes><draw:page-thumbnail svg:x="0pt" svg:y="0pt" svg:width="0pt" svg:height="0pt"/>${note}${furniture}</presentation:notes>`
+    const body = frame(at(0, 0), p('Body'))
+    const slides = await slidesOf(page(body + notes))
+
+    expect(slides[0].notes).toBe('Unmarked note.')
+    expect(slides[0].shapes.map(shape => shape.text)).toEqual(['Body'])
+  })
+
   it('reads a chart from its data table: type, title once (not an axis\'s), series, categories and a missing point', async () => {
     const cells = (...values: (number | undefined)[]): string => values.map(value => (value === undefined ? '<table:table-cell/>' : `<table:table-cell office:value-type="float" office:value="${String(value)}"><text:p>${String(value)}</text:p></table:table-cell>`)).join('')
     const header = `<table:table-row><table:table-cell><text:p/></table:table-cell>${name('A')}${name('B')}</table:table-row>`

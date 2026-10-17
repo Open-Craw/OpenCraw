@@ -78,7 +78,8 @@ export function odpSlides (xml: string): OdpContent {
     if (target.chartLink !== undefined) current.chartLinks.push(target.chartLink)
     if (text === '' || FURNITURE.has(target.placeholder ?? '')) return
     if (inNotes) {
-      if (target.placeholder === 'notes') current.notes += `${current.notes === '' ? '' : '\n'}${text}`
+      // A notes page holds the notes in a frame that is usually, not always, marked as such: the thumbnail of the slide has no text, the rest is furniture.
+      current.notes += `${current.notes === '' ? '' : '\n'}${text}`
 
       return
     }
