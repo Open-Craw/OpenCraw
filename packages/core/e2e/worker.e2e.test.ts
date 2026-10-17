@@ -10,6 +10,9 @@ beforeAll(async () => { site = await startFixtureSite() })
 afterAll(async () => { await stopFixtureSite(site) })
 beforeEach(() => { workerSite.loads = 0 })
 
+/** `killBrowsers` lists processes with `ps`, which Windows does not have: the one test that simulates a crash is for the systems that do. */
+const itWhereProcessesAreListed = process.platform === 'win32' ? it.skip : it
+
 const output = { kind: 'output', id: 'row', version: 1, fields: { row: { type: 'string', key: true, required: true } } }
 
 /** The report as a worker recipe: settings and filters kept on the window, Apply and the rows every item. */
@@ -123,7 +126,7 @@ describe('worker mode', () => {
     expect(rows).toEqual(['maker|DL|DL1|all', 'maker|GA|GA1|all'])
   }, 60_000)
 
-  it('survives a browser that dies between items: the next window launches a new one', async () => {
+  itWhereProcessesAreListed('survives a browser that dies between items: the next window launches a new one', async () => {
     const queue = [item('DL', 'DL1'), item('DL', 'DL2'), item('GA', 'GA1'), item('DL', 'DL1', 'Bus')]
     let taken = 0
     const source: WorkSource = {
