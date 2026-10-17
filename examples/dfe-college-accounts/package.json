@@ -7,16 +7,12 @@
   "scripts": {
     "start": "node run.mjs",
     "live": "node run.mjs --live",
-    "test": "node --test",
-    "lint": "eslint ."
+    "test": "node --test"
   },
   "dependencies": {
     "@opencraw/core": "^0.1.10"
   },
   "engines": {
     "node": ">=22"
-  },
-  "smith": {
-    "kind": "app"
   }
 }

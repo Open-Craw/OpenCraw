@@ -6,6 +6,9 @@ schema = 1
 [workspace]
 name = "opencraw"
 scope = "@opencraw"
+# The examples are standalone folders a reader copies and installs on their own
+# (examples/README.md), not workspace projects: smith leaves them alone.
+exclude = ["examples/*"]
 
 [ci]
 providers = ["github"]

@@ -83,7 +83,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --packages=external --format=esm --outfile=dist/index.esm.js --sourcemap && tsc -p tsconfig.lib.json --emitDeclarationOnly --declaration --declarationDir dist/src --tsBuildInfoFile dist/src/tsconfig.lib.tsbuildinfo && node ../../declaration-specifiers.mjs dist/src",
+    "build": "esbuild index=src/index.ts xlsx=src/spreadsheet/index.ts pptx=src/presentation/index.ts docx=src/document/index.ts ods=src/opendocument-spreadsheet/index.ts odt=src/opendocument-text/index.ts odp=src/opendocument-presentation/index.ts --bundle --splitting --packages=external --format=esm --outdir=dist --out-extension:.js=.esm.js --chunk-names=chunks/[name]-[hash] --sourcemap && tsc -p tsconfig.lib.json --emitDeclarationOnly --declaration --declarationDir dist/src --tsBuildInfoFile dist/src/tsconfig.lib.tsbuildinfo && node ../../declaration-specifiers.mjs dist/src",
     "e2e": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
     "lint": "eslint .",
     "test": "jest",

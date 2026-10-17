@@ -32,7 +32,7 @@ jobs:
       - name: Install smith
         run: curl -fsSL https://raw.githubusercontent.com/monosmith-app/monosmith/main/install.sh | sh -s -- "$SMITH_VERSION"
         env:
-          SMITH_VERSION: 1.9.2
+          SMITH_VERSION: 1.10.0
           GITHUB_TOKEN: ${{ github.token }}
       # smith:slot before-setup
       # The lockfile is written by npm 12: npm 11 prunes the nested @emnapi entries of the
