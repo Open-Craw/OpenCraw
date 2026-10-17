@@ -19,6 +19,9 @@
     "!**/*.d.ts.map",
     "!**/*.js.map"
   ],
+  "scripts": {
+    "prepublishOnly": "node -e \"for (const f of ['dist/index.esm.js', 'dist/src/index.d.ts']) if (!require('node:fs').existsSync(f)) { console.error('@opencraw/core: ' + f + ' is missing, so this publish would ship no code: build first (0.1.47 went out like that)'); process.exit(1) }\""
+  },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.0",
     "@opencraw/office-reader": "^0.0.1",
