@@ -4,3 +4,4 @@ ruff
 mypy
 pytest
 pip-audit
+setuptools==84.0.0

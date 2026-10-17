@@ -20,7 +20,13 @@
     "!**/*.js.map"
   ],
   "scripts": {
-    "prepublishOnly": "node -e \"for (const f of ['dist/index.esm.js', 'dist/src/index.d.ts']) if (!require('node:fs').existsSync(f)) { console.error('@opencraw/core: ' + f + ' is missing, so this publish would ship no code: build first (0.1.47 went out like that)'); process.exit(1) }\""
+    "prepublishOnly": "node -e \"for (const f of ['dist/index.esm.js', 'dist/src/index.d.ts']) if (!require('node:fs').existsSync(f)) { console.error('@opencraw/core: ' + f + ' is missing, so this publish would ship no code: build first (0.1.47 went out like that)'); process.exit(1) }\"",
+    "build": "esbuild src/index.ts --bundle --packages=external --format=esm --outfile=dist/index.esm.js --sourcemap && tsc -p tsconfig.lib.json --emitDeclarationOnly --declaration --declarationDir dist/src --tsBuildInfoFile dist/src/tsconfig.lib.tsbuildinfo && node ../../declaration-specifiers.mjs dist/src",
+    "e2e": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
+    "lint": "eslint .",
+    "schemas": "node tools/emit-json-schemas.mjs",
+    "test": "jest",
+    "typecheck": "tsc --build tsconfig.json --emitDeclarationOnly"
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.0",
@@ -58,40 +64,5 @@
   "engines": {
     "node": ">=22"
   },
-  "sideEffects": false,
-  "nx": {
-    "targets": {
-      "e2e": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build",
-          "^build"
-        ],
-        "options": {
-          "command": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
-          "cwd": "packages/core"
-        }
-      },
-      "schemas": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build"
-        ],
-        "options": {
-          "command": "node tools/emit-json-schemas.mjs",
-          "cwd": "packages/core"
-        }
-      },
-      "typecheck": {
-        "dependsOn": [
-          "^build"
-        ]
-      },
-      "lint": {
-        "dependsOn": [
-          "^build"
-        ]
-      }
-    }
-  }
+  "sideEffects": false
 }

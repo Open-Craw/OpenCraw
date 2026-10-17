@@ -1,7 +1,7 @@
-import mnci from './eslint.config.mnci.mjs'
+import monosmith from '@monosmith/eslint-config'
 
 export default [
-  ...mnci({ verticalSlices: ['packages/*/src/**/*.ts'] }),
+  ...monosmith({ verticalSlices: ['packages/*/src/**/*.ts'] }),
   { name: 'local/test-fixtures-are-data', ignores: ['packages/*/src/**/fixtures/**/*.{html,json,txt}'] },
   {
     name:  'local/contract-regexes-are-flag-free',
@@ -11,27 +11,6 @@ export default [
       'no-restricted-syntax':   ['error', {
         selector: 'Literal[regex.flags=/./]',
         message:  'A contract regex becomes a JSON Schema pattern, which keeps no flags: write it without one (for example [A-Za-z] instead of the i flag).',
-      }],
-    },
-  },
-  {
-    name:  'local/dependency-checks-never-remove',
-    files: ['packages/*/package.json', 'libs/*/package.json'],
-    // Rule options replace mnci's rather than merge, so its ignoredFiles are repeated here.
-    rules: {
-      '@nx/dependency-checks': ['error', {
-        checkObsoleteDependencies: false,
-        checkVersionMismatches:    false,
-        ignoredFiles:              [
-          '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
-          '{projectRoot}/rollup.config.{js,ts,mjs,mts,cjs,cts}',
-          '{projectRoot}/jest.config.{js,ts,mjs,mts,cjs,cts}',
-          '{projectRoot}/jest.e2e.config.{js,ts,mjs,mts,cjs,cts}',
-          '{projectRoot}/e2e/**',
-          '{projectRoot}/tools/**',
-          '{projectRoot}/**/*.spec.{js,ts,jsx,tsx}',
-          '{projectRoot}/**/*.test.{js,ts,jsx,tsx}',
-        ],
       }],
     },
   },
@@ -46,6 +25,14 @@ export default [
       'apps/vscode-extension/.vscode-test/**',
       // Runs once to make the tutorial's pictures and video: it drives a browser page (code that runs in the page is a string of the page's own globals).
       'docs/studio/capture/**',
+      // Written by smith (convert, ci generate), which do not pass this config yet: monosmith-app/monosmith#286.
+      '.devcontainer/devcontainer.json',
+      'declaration-specifiers.mjs',
+      'jest.asset-transform.cjs',
+      'jest.preset.js',
+      // Local only, never committed: field-test scratch (gitignored) and the browser tool's snapshots.
+      'studio-field-tests/**',
+      '.playwright-mcp/**',
     ],
   },
 ]

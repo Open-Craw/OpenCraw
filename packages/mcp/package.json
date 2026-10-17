@@ -52,69 +52,12 @@
     "node": ">=22"
   },
   "sideEffects": false,
-  "nx": {
-    "targets": {
-      "typecheck": {
-        "dependsOn": [
-          "^build"
-        ]
-      },
-      "lint": {
-        "dependsOn": [
-          "^build"
-        ]
-      },
-      "e2e": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build",
-          {
-            "projects": [
-              "@opencraw/core"
-            ],
-            "target": "e2e"
-          },
-          {
-            "projects": [
-              "@opencraw/cli"
-            ],
-            "target": "e2e"
-          },
-          "copy-docs"
-        ],
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}/packages/core/e2e/**"
-        ],
-        "options": {
-          "command": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
-          "cwd": "packages/mcp"
-        }
-      },
-      "copy-docs": {
-        "executor": "nx:run-commands",
-        "cache": true,
-        "inputs": [
-          "{workspaceRoot}/docs/recipes/*.md",
-          "{workspaceRoot}/docs/how-it-works/*.md",
-          "{workspaceRoot}/docs/studio/*.md",
-          "{projectRoot}/scripts/copy-docs.mjs"
-        ],
-        "outputs": [
-          "{projectRoot}/docs"
-        ],
-        "options": {
-          "command": "node scripts/copy-docs.mjs",
-          "cwd": "packages/mcp"
-        }
-      },
-      "build": {
-        "dependsOn": [
-          "^build",
-          "copy-docs"
-        ]
-      }
-    }
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --packages=external --format=esm --outfile=dist/index.esm.js --sourcemap && tsc -p tsconfig.lib.json --emitDeclarationOnly --declaration --declarationDir dist/src --tsBuildInfoFile dist/src/tsconfig.lib.tsbuildinfo && node ../../declaration-specifiers.mjs dist/src",
+    "copy-docs": "node scripts/copy-docs.mjs",
+    "e2e": "tsc -p tsconfig.e2e.json && jest --config jest.e2e.config.cts",
+    "lint": "eslint .",
+    "test": "jest",
+    "typecheck": "tsc --build tsconfig.json --emitDeclarationOnly"
   }
 }

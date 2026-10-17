@@ -32,3 +32,6 @@ strict = true
 # that one code keeps every other strict check on your own code, and a module
 # that genuinely cannot be found still fails, as import-not-found.
 disable_error_code = ["import-untyped"]
+
+[tool.smith]
+kind = "package"

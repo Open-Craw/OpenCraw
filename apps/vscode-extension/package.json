@@ -289,95 +289,6 @@
       }
     ]
   },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/esbuild:esbuild",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "platform": "node",
-          "outputPath": "apps/vscode-extension/dist",
-          "format": [
-            "cjs"
-          ],
-          "bundle": true,
-          "main": "apps/vscode-extension/src/extension.ts",
-          "tsConfig": "apps/vscode-extension/tsconfig.app.json",
-          "esbuildOptions": {
-            "sourcemap": true,
-            "outExtension": {
-              ".js": ".cjs"
-            }
-          },
-          "thirdParty": false,
-          "assets": [
-            {
-              "input": "apps/vscode-extension/src/studio-host",
-              "glob": "studio-host.process.mjs",
-              "output": "."
-            }
-          ],
-          "external": [
-            "vscode",
-            "@opencraw/*"
-          ]
-        },
-        "configurations": {
-          "development": {},
-          "production": {
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".cjs"
-              }
-            }
-          }
-        }
-      },
-      "test": {
-        "options": {
-          "passWithNoTests": true
-        }
-      },
-      "e2e": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build",
-          "@opencraw/cli:build",
-          "@opencraw/mcp:build",
-          "@opencraw/ocr-tesseract:build",
-          "@opencraw/agent:build",
-          "@opencraw/studio:build",
-          "@opencraw/studio-ui:build"
-        ],
-        "cache": false,
-        "options": {
-          "command": "node packaging/package-vsix.mjs --stage-only && node e2e/run-editor-test.mjs",
-          "cwd": "apps/vscode-extension"
-        }
-      },
-      "package": {
-        "executor": "nx:run-commands",
-        "dependsOn": [
-          "build",
-          "@opencraw/cli:build",
-          "@opencraw/mcp:build",
-          "@opencraw/ocr-tesseract:build",
-          "@opencraw/agent:build",
-          "@opencraw/studio:build",
-          "@opencraw/studio-ui:build"
-        ],
-        "cache": false,
-        "options": {
-          "command": "node packaging/package-vsix.mjs",
-          "cwd": "apps/vscode-extension"
-        }
-      }
-    }
-  },
   "dependencies": {
     "@opencraw/agent": "^0.0.1",
     "@opencraw/cli": "^0.0.1",
@@ -386,5 +297,13 @@
   "devDependencies": {
     "@types/vscode": "1.125.0",
     "@vscode/test-electron": "^3.1.0"
+  },
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --packages=external --platform=node --format=cjs --outdir=dist --out-extension:.js=.cjs --sourcemap && node -e \"const fs=require('node:fs'),p=require('node:path');for(const[i,g,o,w]of[['src/studio-host','studio-host.process.mjs','dist',0]])for(const f of fs.globSync(g,{cwd:i})){const s=p.join(i,f),d=p.join(o,f);if(fs.statSync(s).isDirectory()){if(w)fs.cpSync(s,d,{recursive:true})}else{fs.mkdirSync(p.dirname(d),{recursive:true});fs.copyFileSync(s,d)}}\"",
+    "e2e": "node packaging/package-vsix.mjs --stage-only && node e2e/run-editor-test.mjs",
+    "lint": "eslint .",
+    "package": "node packaging/package-vsix.mjs",
+    "test": "jest --passWithNoTests",
+    "typecheck": "tsc --build tsconfig.json --emitDeclarationOnly"
   }
 }

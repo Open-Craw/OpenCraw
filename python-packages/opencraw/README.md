@@ -82,5 +82,10 @@ under `python-packages/`.
 
 ## Development
 
-`nx test opencraw` (pytest; the CLI integration tests use this repository's built CLI and skip without it),
-`nx lint opencraw` (Ruff), `nx typecheck opencraw` (mypy strict).
+`smith run test -p opencraw` (pytest; the CLI integration tests use this repository's built CLI and skip
+without it), `smith run lint -p opencraw` (Ruff), `smith run typecheck -p opencraw` (mypy strict).
+
+**Layout exception.** The package's seven modules sit at its top level rather than in slice packages, which
+the vertical-slices convention forbids, so `smith.toml` excludes `opencraw` from it. The constraint is that
+this client is replaced, not refactored: phase 3 of `docs/research/driver-and-language-packages.md` rewrites
+it over the driver, in slices. Temporary: the exclusion goes with that rewrite.

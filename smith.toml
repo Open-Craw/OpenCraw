@@ -1,0 +1,206 @@
+#:schema https://raw.githubusercontent.com/monosmith-app/monosmith/main/apps/smith/workspace/smith.schema.json
+# smith workspace configuration. Written by `smith convert`; edit it freely or with the TUI.
+# Every setting is optional except [workspace] name; see docs/configuration.md.
+schema = 1
+
+[workspace]
+name = "opencraw"
+scope = "@opencraw"
+# The examples are standalone folders a reader copies and installs on their own
+# (examples/README.md), not workspace projects: smith leaves them alone.
+exclude = ["examples/*"]
+
+[ci]
+providers = ["github"]
+# A dev container with the toolchains CI installs, at the same versions.
+devcontainer = true
+
+# New Node projects: TypeScript, ESLint and Vitest. Existing projects keep Jest.
+[default_stacks]
+node = "node-vitest"
+
+[release]
+github_releases = true
+
+# Files named for their role, one folder per outcome: Node is checked by the ESLint
+# config, the other languages by a slice-check task that runs before lint.
+[conventions.vertical-slices]
+# python-packages/opencraw is flat (seven modules at the package top) and is rewritten as
+# the driver client in phase 3 of docs/research/driver-and-language-packages.md, laid out
+# in slices then. Remove the exclusion with that rewrite.
+exclude = ["opencraw"]
+
+# The e2e task of every project with a Playwright suite, with its browsers installed first.
+[conventions.playwright]
+
+[projects.agent]
+tag_prefix = "@opencraw/agent@"
+
+[projects.agent.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.agent.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.azure-durable]
+tag_prefix = "@opencraw/azure-durable@"
+
+[projects.azure-durable.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.azure-durable.tasks.e2e]
+depends_on = ["build", "core:build"]
+
+[projects.azure-durable.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.azure-host.tasks.package]
+command = ["node", "-e", "const fs=require('node:fs');fs.mkdirSync('dist/drop',{recursive:true});const A=require('adm-zip');const z=new A();z.addLocalFolder('apps/azure-host/dist','dist');z.addLocalFile('apps/azure-host/host.json');z.addLocalFile('apps/azure-host/package.json');z.writeZip('dist/drop/node-function-app-azure-host.zip')"]
+cwd = "."
+depends_on = ["build"]
+outputs = ["../../dist/drop"]
+
+[projects.azure-host.tasks.serve]
+depends_on = ["build"]
+
+[projects.azure-host.tasks.start]
+depends_on = ["build"]
+
+[projects.azure-host.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.captcha-tesseract]
+tag_prefix = "@opencraw/captcha-tesseract@"
+
+[projects.captcha-tesseract.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.captcha-tesseract.tasks.e2e]
+depends_on = ["e2e-browsers", "build", "core:build"]
+
+[projects.captcha-tesseract.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.cli]
+tag_prefix = "@opencraw/cli@"
+
+[projects.cli.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.cli.tasks.e2e]
+depends_on = ["e2e-browsers", "build", "core:e2e"]
+
+[projects.cli.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.core]
+tag_prefix = "@opencraw/core@"
+
+[projects.core.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.core.tasks.e2e]
+depends_on = ["e2e-browsers", "build", "^build"]
+
+[projects.core.tasks.schemas]
+depends_on = ["build"]
+
+[projects.core.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.mcp]
+tag_prefix = "@opencraw/mcp@"
+
+[projects.mcp.tasks.build]
+depends_on = ["^build", "copy-docs"]
+
+[projects.mcp.tasks.e2e]
+depends_on = ["e2e-browsers", "build", "core:e2e", "cli:e2e", "copy-docs"]
+
+[projects.mcp.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.ocr-tesseract]
+tag_prefix = "@opencraw/ocr-tesseract@"
+
+[projects.ocr-tesseract.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.ocr-tesseract.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.office-reader]
+tag_prefix = "@opencraw/office-reader@"
+
+[projects.office-reader.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.office-reader.tasks.e2e]
+depends_on = ["e2e-browsers", "build"]
+
+[projects.office-reader.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.opencraw.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.probe]
+tag_prefix = "@opencraw/probe@"
+
+[projects.probe.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.probe.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.studio]
+tag_prefix = "@opencraw/studio@"
+
+[projects.studio.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.studio.tasks.e2e]
+depends_on = ["e2e-browsers", "build"]
+
+[projects.studio.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.studio-desktop.tasks.e2e]
+depends_on = ["e2e-browsers", "build"]
+
+[projects.studio-desktop.tasks.package]
+depends_on = ["build", "cli:build", "studio:build", "studio-ui:build"]
+
+[projects.studio-desktop.tasks.start]
+depends_on = ["build", "cli:build", "studio:build", "studio-ui:build"]
+
+[projects.studio-desktop.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.studio-ui.tasks.build]
+depends_on = ["^build", "typecheck"]
+
+[projects.studio-ui.tasks.package]
+command = ["node", "-e", "const fs=require('node:fs');fs.mkdirSync('dist/drop',{recursive:true});const A=require('adm-zip');let z;z=new A();z.addLocalFolder('apps/studio-ui/dist-dev');z.writeZip('dist/drop/react-app-studio-ui-dev.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-uat');z.writeZip('dist/drop/react-app-studio-ui-uat.zip');z=new A();z.addLocalFolder('apps/studio-ui/dist-prod');z.writeZip('dist/drop/react-app-studio-ui-prod.zip')"]
+cwd = "."
+depends_on = ["build-dev", "build-uat", "build-prod"]
+outputs = ["../../dist/drop"]
+
+[projects.studio-ui.tasks.preview]
+depends_on = ["build"]
+
+[projects.studio-ui.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+[projects.vscode-extension.tasks.e2e]
+depends_on = ["build", "cli:build", "mcp:build", "ocr-tesseract:build", "agent:build", "studio:build", "studio-ui:build"]
+
+[projects.vscode-extension.tasks.package]
+depends_on = ["build", "cli:build", "mcp:build", "ocr-tesseract:build", "agent:build", "studio:build", "studio-ui:build"]
+
+[projects.vscode-extension.tasks.test]
+env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}" }
+
+# The unpacked app only, for a quick try (desktop-package.yml): same inputs as package.
+[projects.studio-desktop.tasks."package:dir"]
+depends_on = ["build", "cli:build", "studio:build", "studio-ui:build"]

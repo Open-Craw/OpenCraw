@@ -11,8 +11,8 @@
   no flat-folder limit, no barrel-only-import rule — but its `.tsx` files and hooks *do* follow the file-role
   naming convention in [UI file naming](#ui-file-naming-appstsx-and-hooks), so a file's role is legible from its
   name everywhere in the repo, not just under `packages/`.
-- **Enforced by:** `@mnci/eslint-config`'s `verticalSlices` rules, switched on in the root `eslint.config.mjs`, for
-  `packages/**`. The `apps/**` UI naming convention below is not yet lint-enforced — it's a PR-review convention.
+- **Enforced by:** `@monosmith/eslint-config`'s `verticalSlices` rules, switched on in the root `eslint.config.mjs`, for
+  `packages/**`, and smith's `vertical-slices` convention (`smith.toml`) for the other languages. The `apps/**` UI naming convention below is not yet lint-enforced — it's a PR-review convention.
 
 ## Decision
 
