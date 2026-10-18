@@ -1,0 +1,10 @@
+{
+  "name": "handshake",
+  "description": "A client initializes, learns the driver's methods and protocol, and shuts the driver down.",
+  "steps": [
+    { "send": { "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": { "clientName": "conformance", "clientVersion": "1.0.0", "protocolVersion": "1.0.0" } } },
+    { "receive": { "jsonrpc": "2.0", "id": 1, "result": { "driverVersion": "<any>", "protocolVersion": "1.0.0", "methods": ["initialize", "validate", "run", "cancel", "shutdown"] } } },
+    { "send": { "jsonrpc": "2.0", "id": 2, "method": "shutdown" } },
+    { "receive": { "jsonrpc": "2.0", "id": 2, "result": {} } }
+  ]
+}

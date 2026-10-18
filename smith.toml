@@ -215,3 +215,7 @@ env = { TS_NODE_COMPILER_OPTIONS = "{\"moduleResolution\":\"node10\",\"module\":
 # The unpacked app only, for a quick try (desktop-package.yml): same inputs as package.
 [projects.studio-desktop.tasks."package:dir"]
 depends_on = ["build", "cli:build", "studio:build", "studio-ui:build"]
+
+# The protocol schema is written from the build (tools/emit-protocol-schema.mjs).
+[projects.driver.tasks.schemas]
+depends_on = ["build"]
