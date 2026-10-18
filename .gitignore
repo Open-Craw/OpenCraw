@@ -88,3 +88,6 @@ apps/vscode-extension/*.vsix
 
 # studio-ui builds one bundle per environment (build-dev, build-uat, build-prod) for its package task
 apps/studio-ui/dist-*/
+
+# TypeScript build info, written beside a tsconfig by an incremental or composite build
+*.tsbuildinfo
