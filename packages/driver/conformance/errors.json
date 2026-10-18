@@ -1,0 +1,20 @@
+{
+  "name": "errors",
+  "description": "What the driver answers to a client that gets things wrong: every error has a code and a message.",
+  "steps": [
+    { "send": { "jsonrpc": "2.0", "id": 1, "method": "validate", "params": { "paths": ["."] } } },
+    { "receive": { "jsonrpc": "2.0", "id": 1, "error": { "code": -32000, "message": "call initialize first" } } },
+    { "send": { "jsonrpc": "2.0", "id": 2, "method": "initialize", "params": { "clientName": "conformance", "clientVersion": "1.0.0", "protocolVersion": "2.0.0" } } },
+    { "receive": { "jsonrpc": "2.0", "id": 2, "error": { "code": -32000, "message": "<any>" } } },
+    { "send": { "jsonrpc": "2.0", "id": 3, "method": "initialize", "params": { "clientName": "conformance", "clientVersion": "1.0.0", "protocolVersion": "1.0.0" } } },
+    { "receive": { "jsonrpc": "2.0", "id": 3, "result": { "protocolVersion": "1.0.0" } } },
+    { "send": { "jsonrpc": "2.0", "id": 4, "method": "fly" } },
+    { "receive": { "jsonrpc": "2.0", "id": 4, "error": { "code": -32601, "message": "<any>" } } },
+    { "send": { "jsonrpc": "2.0", "id": 5, "method": "run", "params": { "paths": ["."], "parallel": 0 } } },
+    { "receive": { "jsonrpc": "2.0", "id": 5, "error": { "code": -32602, "message": "<any>" } } },
+    { "send": { "jsonrpc": "2.0", "id": 6, "method": "cancel", "params": { "runId": "run-unknown" } } },
+    { "receive": { "jsonrpc": "2.0", "id": 6, "result": { "cancelled": false } } },
+    { "send": { "jsonrpc": "2.0", "id": 7, "method": "shutdown" } },
+    { "receive": { "jsonrpc": "2.0", "id": 7, "result": {} } }
+  ]
+}

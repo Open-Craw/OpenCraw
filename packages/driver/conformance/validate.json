@@ -1,0 +1,22 @@
+{
+  "name": "validate",
+  "description": "Recipes sent inline are checked without running: a good set names its inputs and hooks; a bad one lists each problem with its path.",
+  "steps": [
+    { "send": { "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": { "clientName": "conformance", "clientVersion": "1.0.0", "protocolVersion": "1.0.0" } } },
+    { "receive": { "jsonrpc": "2.0", "id": 1, "result": { "protocolVersion": "1.0.0" } } },
+    { "send": { "jsonrpc": "2.0", "id": 2, "method": "validate", "params": { "recipes": [
+      { "kind": "output", "id": "thing", "version": 1, "fields": { "name": { "type": "string", "required": true, "key": true } } },
+      { "kind": "input", "id": "things", "output": "thing", "mode": "api", "start": [{ "url": "https://example.com/list" }],
+        "steps": [{ "type": "request", "id": "list", "url": "{{start.url}}", "as": "json" }],
+        "mapping": { "name": { "from": "list.name", "transform": [{ "op": "hook", "name": "tidy" }] } } }
+    ] } } },
+    { "receive": { "jsonrpc": "2.0", "id": 2, "result": { "ok": true, "inputs": ["things"], "hooks": ["tidy"], "issues": [] } } },
+    { "send": { "jsonrpc": "2.0", "id": 3, "method": "validate", "params": { "recipes": [
+      { "kind": "output", "id": "thing", "version": 1, "fields": { "name": { "type": "string" } } },
+      { "kind": "input", "id": "things", "output": "thing", "mode": "sideways", "start": [{ "url": "https://example.com/list" }], "steps": [], "mapping": {} }
+    ] } } },
+    { "receive": { "jsonrpc": "2.0", "id": 3, "result": { "ok": false, "inputs": [], "hooks": [], "issues": "<any>" } } },
+    { "send": { "jsonrpc": "2.0", "id": 4, "method": "shutdown" } },
+    { "receive": { "jsonrpc": "2.0", "id": 4, "result": {} } }
+  ]
+}

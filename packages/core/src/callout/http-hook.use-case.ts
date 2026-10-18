@@ -1,7 +1,7 @@
 import type { Hook } from '../hooks'
-import { hookRequest } from '../callout-protocol'
-import { httpTransport, markCallout, settleCallout, withCallback } from '../callout-transport'
+import { httpTransport } from '../callout-transport'
 import type { CalloutPollingOptions, HttpTransportOptions } from '../callout-transport'
+import { calloutHook } from './callout-hook.use-case'
 
 /** Timeout, secrets and allowed hosts (per POST), and how long a `pending` answer may last. */
 export type HttpHookOptions = HttpTransportOptions & CalloutPollingOptions
@@ -20,13 +20,5 @@ export type HttpHookOptions = HttpTransportOptions & CalloutPollingOptions
  * @throws HostNotAllowedError When `options.allowedHosts` is set and `url` is not on it.
  */
 export function httpHook (name: string, url: string, options: HttpHookOptions = {}): Hook {
-  const transport = httpTransport(url, options)
-
-  const hook: Hook = async (input, args, context) => {
-    const request = withCallback(hookRequest(name, input, args, context))
-
-    return await settleCallout(transport.label, request.idempotencyKey, async () => await transport.call(request, context.log), options)
-  }
-
-  return markCallout(hook, transport.label)
+  return calloutHook(name, httpTransport(url, options), options)
 }
