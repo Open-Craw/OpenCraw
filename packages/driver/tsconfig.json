@@ -11,7 +11,10 @@
     "lib": [
       "es2024",
       "esnext.iterator"
-    ]
+    ],
+    "composite": false,
+    "incremental": false,
+    "declaration": true
   },
   "include": [
     "src"
